@@ -16,7 +16,10 @@ except ImportError:
 
 def getNumSubset(name):
     src_ds = gdal.Open(name)
-    return len(src_ds.GetSubDatasets())
+    if len(src_ds.GetSubDatasets()) != 0:
+        return len(src_ds.GetSubDatasets())
+    else:
+        return src_ds.RasterCount
 
 
 class convertGDAL:
@@ -24,6 +27,8 @@ class convertGDAL:
 
        :param str inname: name of input data
        :param str output: prefix for output data
+       :param str outformat: the name of output format according with gdal
+                             format names
     """
     def __init__(self, innames, output, outformat='GTIFF'):
         """Function for the initialize the object"""
