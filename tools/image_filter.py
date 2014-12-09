@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Aug  6 10:04:54 2014
 
-@author: lucadelu
+"""
+***************************************************************************
+    image_filter.py
+    ---------------------
+    Date                 : June 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : 
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -12,6 +16,14 @@ Created on Wed Aug  6 10:04:54 2014
 *                                                                         *
 ***************************************************************************
 """
+
+__author__ = 'Luca Delucchi'
+__date__ = 'June 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -24,17 +36,9 @@ from grass_stem import helpUrl
 
 
 class STEMToolsDialog(BaseDialog):
-
-    def __init__(self, iface):
-        QWidget.__init__(self)
-        self.iface = iface
+    def __init__(self, iface, name):
+        BaseDialog.__init__(self, name)
         self.name = "Filtro riduzione del rumore"
-        self.canvas = self.iface.mapCanvas()
-
-        self.setupUi(self)
-
-        BaseDialog.__init__(self, self.iface.mainWindow(), self.iface,
-                            self.name)
         self._insertSingleInput()
         self.addLayerToComboBox(self.BaseInput, 1)
         self._insertLayerChooseCheckBox()

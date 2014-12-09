@@ -1,16 +1,29 @@
-# --------------------------------------------------------
-#    stem_menu - QGIS plugins menu class
-#
-#    begin                : 19 june 2014
-#    copyright            : (c) 2014 Luca Delucchi
-#    email                :
-#
-#   MMQGIS is free software and is offered without guarantee
-#   or warranty. You can redistribute it and/or modify it
-#   under the terms of version 2 of the GNU General Public
-#   License (GPL v2) as published by the Free Software
-#   Foundation (www.gnu.org).
-# --------------------------------------------------------
+# -*- coding: utf-8 -*-
+
+"""
+***************************************************************************
+    stem_menu.py
+    ---------------------
+    Date                 : June 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : 
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************
+"""
+
+__author__ = 'Luca Delucchi'
+__date__ = 'June 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -135,7 +148,7 @@ class stem_menu:
 
     def filter_img(self):
         from image_filter import STEMToolsDialog as filter_img_dialog
-        dialog = filter_img_dialog(self.iface)
+        dialog = filter_img_dialog(self.iface, "Filtro riduzione del rumore")
         dialog.exec_()
 
     def corr_geom(self):
@@ -145,7 +158,7 @@ class stem_menu:
 
     def corr_atmo(self):
         from image_corratmo import STEMToolsDialog as corr_atmo_dialog
-        dialog = corr_atmo_dialog(self.iface)
+        dialog = corr_atmo_dialog(self.iface, "Correzione atmosferica")
         dialog.exec_()
 
     def segmentation(self):

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+
 """
-Created on Wed Aug  6 09:13:19 2014
-
-@author: lucadelu
-
+***************************************************************************
+    stem_base_dialogs.py
+    ---------------------
+    Date                 : June 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : 
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -13,6 +16,14 @@ Created on Wed Aug  6 09:13:19 2014
 *                                                                         *
 ***************************************************************************
 """
+
+__author__ = 'Luca Delucchi'
+__date__ = 'June 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -70,13 +81,13 @@ class CheckableComboBox(QComboBox):
 
 class BaseDialog(QDialog, Ui_Dialog):
 
-    def __init__(self, parent, iface, pluginName):
-        QDialog.__init__(self, parent)
+    def __init__(self, title):
+        QDialog.__init__(self)
         self.dialog = Ui_Dialog
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.iface = iface
+        #self.iface = iface
 
-        self.mapCanvas = iface.mapCanvas()
+        #self.mapCanvas = iface.mapCanvas()
         self.process = QProcess(self)
         self.connect(self.process, SIGNAL("error(QProcess::ProcessError)"),
                      self.processError)
@@ -91,12 +102,12 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.connect(self.BrowseButton, SIGNAL("clicked()"), self.BrowseDir)
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
-        self.setWindowTitle(pluginName)
+        self.setWindowTitle(title)
         self.inlayers = {}
         self.rect_str = None
         self.mask = None
 
-        self.helpui = helpDialog(self.iface.mainWindow(), self.iface)
+        self.helpui = helpDialog()
 
     def _reject(self):
         """Function for reject button"""
@@ -321,8 +332,11 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.LabelOut2.setText(_translate("Dialog", label, None))
 
     def AddLayersNumber(self):
-        name = str(self.BaseInput.currentText())
-        source = self.getLayersSource(name)
+        layerName = self.BaseInput.currentText()
+        if not layerName:
+            return
+        else:
+            source = self.getLayersSource(layerName)
         gdalF = gdal.Open(source)
         gdalBands = gdalF.RasterCount
         gdalMeta = None
@@ -495,20 +509,24 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def addLayerToComboBox(self, combo, typ):
         """Add layers to input files list"""
-        for i in range(self.mapCanvas.layerCount()-1, -1, -1):
-            # define actual layer
-            layer = self.mapCanvas.layer(i)
-            # check if is a vector
-            # 0 for vector
-            # 1 for raster
+        combo.clear()
+        layerlist = []
+        layermap = QgsMapLayerRegistry.instance().mapLayers()
+        for name, layer in layermap.iteritems():
             if layer.type() == typ:
-                combo.addItem(layer.name())
-                self.inlayers[layer.name()] = layer
+                layerlist.append( layer.name() )
+        
+        combo.addItems(layerlist)
 
-    def getLayersSource(self, name):
-        """Return the source of a layer"""
-        layer = self.inlayers[name]
-        return layer.source()
+    def getLayersSource(self, layerName):
+        layermap = QgsMapLayerRegistry.instance().mapLayers()
+        
+        for name, layer in layermap.iteritems():
+            if layer.name() == layerName:
+                if layer.isValid():
+                    return layer.source()
+                else:
+                    return None
 
     def addLayerIntoCanvas(self, filename, typ):
         """Add the output in the QGIS canvas"""
@@ -651,11 +669,11 @@ class SettingsDialog(QDialog, Setting_Dialog):
 
 
 class helpDialog(QDialog, Help_Dialog):
-    def __init__(self, parent, iface):
+    def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         """Set up the help user interface"""
         self.dialog = Help_Dialog
-        self.iface = iface
+        #self.iface = iface
         self.setupUi(self)
 
     def fillfromUrl(self, url):
