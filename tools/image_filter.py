@@ -37,7 +37,10 @@ class STEMToolsDialog(BaseDialog):
                             self.name)
         self._insertSingleInput()
         self.addLayerToComboBox(self.BaseInput, 1)
-        self._insertLayerChoose()
+        self._insertLayerChooseCheckBox()
+
+        self.BaseInput.currentIndexChanged.connect(self.AddLayersNumber)
+        self.AddLayersNumber()
 
         # TODO add filter
         items = ['neighbors']
@@ -101,14 +104,24 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
         source = self.getLayersSource(name)
-        typ = self.checkMultiRaster()
-        cut, cutsource, mask = self.cutInput(name, source, 'raster')
+        typ = self.checkMultiRaster(source)
+        nlayers = self.checkLayers(source)
+
+        cut, cutsource, mask = self.cutInput(name, source, typ)
         if cut:
             name = cut
             source = cutsource
+        print "prima di grass"
         tempin, tempout, gs = temporaryFilesGRASS(name)
+        print "dopo di grass"
+        if nlayers > 0:
+            gs.import_grass(source, tempin, typ, nlayers)
+        else:
+            gs.import_grass(source, tempin, typ)
+        print "dopo import"
         if mask:
             gs.check_mask(mask)
+        return
         if self.BaseInputCombo.currentText() == 'filter':
             pass
         else:
@@ -117,6 +130,6 @@ class STEMToolsDialog(BaseDialog):
                    'size={val}'.format(val=self.Linedit.text()),
                    'method={met}'.format(met=self.MethodInput.currentText())]
         self.saveCommand(com)
-        gs.run_grass(com, source, tempin, tempout, self.TextOut.text(), 'raster')
+        gs.run_grass(com, source, tempin, tempout, self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
-            self.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+            self.addLayerIntoCanvas(self.TextOut.text(), typ)
