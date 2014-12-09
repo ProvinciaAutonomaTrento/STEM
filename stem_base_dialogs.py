@@ -31,6 +31,13 @@ import tempfile
 from functools import partial
 from gdal_functions import getNumSubset
 
+try:
+    import osgeo.gdal as gdal
+except ImportError:
+    try:
+        import gdal
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
 
 MSG_BOX_TITLE = "STEM Plugin Warning"
 
@@ -45,6 +52,20 @@ def escapeAndJoin(strList):
             escaped = s
         joined += escaped + " "
     return joined.strip()
+
+
+class CheckableComboBox(QComboBox):
+    def __init__(self):
+        super(CheckableComboBox, self).__init__()
+        self.view().pressed.connect(self.handleItemPressed)
+        self.setModel(QStandardItemModel(self))
+
+    def handleItemPressed(self, index):
+        item = self.model().itemFromIndex(index)
+        if item.checkState() == Qt.Checked:
+            item.setCheckState(Qt.Unchecked)
+        else:
+            item.setCheckState(Qt.Checked)
 
 
 class BaseDialog(QDialog, Ui_Dialog):
@@ -169,6 +190,22 @@ class BaseDialog(QDialog, Ui_Dialog):
                                             " lasciato vuoto considererà tutti"
                                             " i layer", None))
 
+    def _insertLayerChooseCheckBox(self):
+        self.horizontalLayout_layer2 = QHBoxLayout()
+        self.horizontalLayout_layer2.setObjectName(_fromUtf8("horizontalLayout_layer2"))
+        self.label_layer2 = QLabel()
+        self.label_layer2.setWordWrap(True)
+        self.label_layer2.setObjectName(_fromUtf8("label_layer2"))
+        self.horizontalLayout_layer2.addWidget(self.label_layer2)
+        self.layer_list2 = CheckableComboBox()
+        self.layer_list2.setObjectName(_fromUtf8("layer_list2"))
+        self.horizontalLayout_layer2.addWidget(self.layer_list2)
+        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer2)
+        self.label_layer2.setText(_translate("Dialog", "Selezionare le bande "
+                                             "da utilizzare cliccandoci sopra."
+                                             "", None))
+
+
     def _insertMethod(self, methods, label, posnum):
         """Function to add ComboBox Widget"""
         self.horizontalLayout_method = QHBoxLayout()
@@ -283,6 +320,29 @@ class BaseDialog(QDialog, Ui_Dialog):
                                                 self.horizontalLayout_output2)
         self.LabelOut2.setText(_translate("Dialog", label, None))
 
+    def AddLayersNumber(self):
+        name = str(self.BaseInput.currentText())
+        source = self.getLayersSource(name)
+        gdalF = gdal.Open(source)
+        gdalBands = gdalF.RasterCount
+        gdalMeta = None
+        self.layer_list2.clear()
+        if gdalF.GetDriver().LongName == 'ENVI .hdr Labelled':
+            gdalMeta = gdalF.GetMetadata_Dict()
+        for n in range(1, gdalBands+1):
+            st = "Banda {i}".format(i=n)
+            if gdalMeta:
+                try:
+                    band = gdalMeta["Band_{i}".format(i=n)].split()
+                    st += " {mm} {nano}".format(mm=" ".join(band[2:5]),
+                                                nano=" ".join(band[-2:]))
+                except:
+                    pass
+            self.layer_list2.addItem(st)
+            model = self.layer_list2.model()
+            item = model.item(n-1)
+            item.setCheckState(Qt.Unchecked)
+
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
 
@@ -305,13 +365,16 @@ class BaseDialog(QDialog, Ui_Dialog):
         s = QSettings()
         mask = s.value("stem/mask", "")
         bbox = self.QGISextent.isChecked()
-        outname = "stem_cut_{name}".format(name=inp)
-        out = os.path.join(tempfile.gettempdir(), outname)
-        PIPE = subprocess.PIPE
+        if not bbox and not mask:
+            out = os.path.join(tempfile.gettempdir(), inp)
+            return inp, out, None
         if bbox and mask:
             self.onError("Sono state impostate sia una maschera vettoriale "
                          "sia una estensione di QGIS. Si prega di "
                          "rimuoverne una delle due")
+        outname = "stem_cut_{name}".format(name=inp)
+        out = os.path.join(tempfile.gettempdir(), outname)
+        PIPE = subprocess.PIPE
         if typ == 'raster' or typ == 'image':
             if bbox:
                 com = ['gdal_translate', source, out, '-projwin']
@@ -365,19 +428,29 @@ class BaseDialog(QDialog, Ui_Dialog):
         # function to return error
         QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
 
-    def checkMultiRaster(self):
-        if self.MultiBand.isChecked():
+    def checkMultiRaster(self, inmap):
+        nsub = getNumSubset(inmap)
+        nlayerchoose = self.checkLayers(inmap)
+        if nsub > 0 and nlayerchoose > 1:
             return 'image'
         else:
             return 'raster'
 
     def checkLayers(self, inmap):
         """Function to check if layers are choosen"""
-        if self.layer_list.text() == u'':
-            n = getNumSubset(inmap)
-            return range(n)
-        else:
-            return self.layer_list.text()
+        try:
+            if self.layer_list.text() == u'':
+                n = getNumSubset(inmap)
+                return range(n)
+            else:
+                return self.layer_list.text().split(',')
+        except:
+            itemlist = []
+            for i in range(self.layer_list2.count()):
+                item = self.layer_list2.model().item(i)
+                if item.checkState() == Qt.Checked:
+                    itemlist.append(i + 1)
+            return itemlist
 
     def onFinished(self, exitCode, status):
         """called when the command finished its execution, shows an error message if
