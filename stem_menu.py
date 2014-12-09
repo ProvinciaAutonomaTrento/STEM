@@ -42,104 +42,30 @@ class stem_menu:
         self.stem_menu = QMenu(QCoreApplication.translate("STEM", "STEM"))
         self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(),
                                                      self.stem_menu)
-
         # Preprocessing Image Submenu
         self.preproc_menu = QMenu(QCoreApplication.translate("STEM",
                                   "&Pre-elaborazione immagini"))
         self.stem_add_submenu(self.preproc_menu)
 
 #        icon = QIcon(os.path.dirname(__file__) + "/icons/stem_animate_columns.png")
-        self.filter_noise_action = QAction("Filtro riduzione del rumore",
-                                           self.iface.mainWindow())
-        QObject.connect(self.filter_noise_action, SIGNAL("triggered()"),
-                        self.filter_img)
-        self.preproc_menu.addAction(self.filter_noise_action)
 
-
-#        self.corr_geom_action = QAction("Correzione geometrica",
-#                                        self.iface.mainWindow())
-#        QObject.connect(self.corr_geom_action, SIGNAL("triggered()"),
-#                        self.corr_geom)
-#        self.preproc_menu.addAction(self.corr_geom_action)
-
-        self.corr_atmo_action = QAction("Correzione atmosferica",
-                                        self.iface.mainWindow())
-        QObject.connect(self.corr_atmo_action, SIGNAL("triggered()"),
-                        self.corr_atmo)
-        self.preproc_menu.addAction(self.corr_atmo_action)
-
-        self.segment_action = QAction("Segmentazione", self.iface.mainWindow())
-        QObject.connect(self.segment_action, SIGNAL("triggered()"),
-                        self.segmentation)
-        self.preproc_menu.addAction(self.segment_action)
-
-        self.pansharp_action = QAction("Pansharpening",
-                                       self.iface.mainWindow())
-        QObject.connect(self.pansharp_action, SIGNAL("triggered()"),
-                        self.pansharp)
-        self.preproc_menu.addAction(self.pansharp_action)
-
-#        self.registr_action = QAction("Georeferenziazione",
-#                                      self.iface.mainWindow())
-#        QObject.connect(self.registr_action, SIGNAL("triggered()"),
-#                        self.registr)
-#        self.preproc_menu.addAction(self.registr_action)
-
-#        self.mosaic_img_action = QAction("Mosaicatura",
-#                                         self.iface.mainWindow())
-#        QObject.connect(self.mosaic_img_action, SIGNAL("triggered()"),
-#                        self.mosaic_img)
-#        self.preproc_menu.addAction(self.mosaic_img_action)
-
-        self.mask_img_action = QAction("Maschera", self.iface.mainWindow())
-        QObject.connect(self.mask_img_action, SIGNAL("triggered()"),
-                        self.mask_img)
-        self.preproc_menu.addAction(self.mask_img_action)
-
-        self.multilayer_action = QAction("Accatastamento",
-                                         self.iface.mainWindow())
-        QObject.connect(self.multilayer_action, SIGNAL("triggered()"),
-                        self.multilayer)
-        self.preproc_menu.addAction(self.multilayer_action)
-
-#        self.repr_action = QAction("Riproiezione immagini",
-#                                   self.iface.mainWindow())
-#        QObject.connect(self.repr_action, SIGNAL("triggered()"),
-#                        self.reprojection)
-#        self.preproc_menu.addAction(self.repr_action)
+        self.preproc_menu.addAction("Filtro riduzione del rumore", self.filter_img)
+        self.preproc_menu.addAction("Correzione atmosferica", self.corr_atmo)
+        self.preproc_menu.addAction("Segmentazione", self.segmentation)
+        self.preproc_menu.addAction("Pansharpening", self.pansharp)
+        self.preproc_menu.addAction("Maschera", self.mask_img)
+        self.preproc_menu.addAction("Accatastamento", self.multilayer)
 
         # Pre-Processing LIDAR Submenu
         self.preproc_lidar_menu = QMenu(QCoreApplication.translate("STEM",
                                         "&Pre-elaborazioni LIDAR"))
         self.stem_add_submenu(self.preproc_lidar_menu)
 
-        self.filter_action = QAction("Filtraggio file LAS",
-                                        self.iface.mainWindow())
-        QObject.connect(self.filter_action, SIGNAL("triggered()"),
-                        self.filterlidar)
-        self.preproc_lidar_menu.addAction(self.filter_action)
-
-        self.unione_action = QAction("Unione file LAS",
-                                     self.iface.mainWindow())
-        QObject.connect(self.unione_action, SIGNAL("triggered()"), self.unione)
-        self.preproc_lidar_menu.addAction(self.unione_action)
-
-        self.clip_action = QAction("Ritaglio file LAS",
-                                   self.iface.mainWindow())
-        QObject.connect(self.clip_action, SIGNAL("triggered()"), self.clip)
-        self.preproc_lidar_menu.addAction(self.clip_action)
-
-        self.rastlidar_action = QAction("Rasterizzazione file LAS",
-                                        self.iface.mainWindow())
-        QObject.connect(self.rastlidar_action, SIGNAL("triggered()"),
-                        self.rastlidar)
-        self.preproc_lidar_menu.addAction(self.rastlidar_action)
-
-        self.removedtm_action = QAction("Estrazione CHM",
-                                        self.iface.mainWindow())
-        QObject.connect(self.removedtm_action, SIGNAL("triggered()"),
-                        self.removedtm)
-        self.preproc_lidar_menu.addAction(self.removedtm_action)
+        self.preproc_lidar_menu.addAction("Filtraggio file LAS", self.filterlidar)
+        self.preproc_lidar_menu.addAction("Unione file LAS", self.unione)
+        self.preproc_lidar_menu.addAction("Ritaglio file LAS", self.clip)
+        self.preproc_lidar_menu.addAction("Rasterizzazione file LAS", self.rastlidar)
+        self.preproc_lidar_menu.addAction("Estrazione CHM", self.removedtm)
 
         # Feature Image Submenu
         self.feature_menu = QMenu(QCoreApplication.translate("STEM",
@@ -147,165 +73,60 @@ class stem_menu:
                                   " la classificazione"))
         self.stem_add_submenu(self.feature_menu)
 
-        self.texture_action = QAction("Feature di tessitura",
-                                      self.iface.mainWindow())
-        QObject.connect(self.texture_action, SIGNAL("triggered()"),
-                        self.texture)
-        self.feature_menu.addAction(self.texture_action)
-
-        self.feat_geom_action = QAction("Feature geometriche",
-                                        self.iface.mainWindow())
-        QObject.connect(self.feat_geom_action, SIGNAL("triggered()"),
-                        self.feat_geom)
-        self.feature_menu.addAction(self.feat_geom_action)
-
-        self.indveg_action = QAction("Indici di vegetazione",
-                                     self.iface.mainWindow())
-        QObject.connect(self.indveg_action, SIGNAL("triggered()"), self.indveg)
-        self.feature_menu.addAction(self.indveg_action)
-
-        self.select_action = QAction("Selezione feature",
-                                     self.iface.mainWindow())
-        QObject.connect(self.select_action, SIGNAL("triggered()"), self.select)
-        self.feature_menu.addAction(self.select_action)
+        self.feature_menu.addAction("Feature di tessitura", self.texture)
+        self.feature_menu.addAction("Feature geometriche", self.feat_geom)
+        self.feature_menu.addAction("Indici di vegetazione", self.indveg)
+        self.feature_menu.addAction("Selezione feature", self.select)
 
         # Classificazione supervisionata Submenu
         self.class_menu = QMenu(QCoreApplication.translate("STEM",
                                 "&Classificazione supervisionata"))
         self.stem_add_submenu(self.class_menu)
 
-        self.svm_action = QAction("Support Vector Machines",
-                                  self.iface.mainWindow())
-        QObject.connect(self.svm_action, SIGNAL("triggered()"), self.svm)
-        self.class_menu.addAction(self.svm_action)
-
-        self.class_mindist_action = QAction("Minima distanza",
-                                            self.iface.mainWindow())
-        QObject.connect(self.class_mindist_action, SIGNAL("triggered()"),
-                        self.class_mindist)
-        self.class_menu.addAction(self.class_mindist_action)
-
-        self.class_maxvero_action = QAction("Massima Verosimiglianza",
-                                            self.iface.mainWindow())
-        QObject.connect(self.class_maxvero_action, SIGNAL("triggered()"),
-                        self.class_maxvero)
-        self.class_menu.addAction(self.class_maxvero_action)
-
-        self.classsap_action = QAction("Spectral Angle Mapper",
-                                       self.iface.mainWindow())
-        QObject.connect(self.classsap_action, SIGNAL("triggered()"),
-                        self.classsap)
-        self.class_menu.addAction(self.classsap_action)
+        self.class_menu.addAction("Support Vector Machines", self.svm)
+        self.class_menu.addAction("Minima distanza", self.class_mindist)
+        self.class_menu.addAction("Massima Verosimiglianza", self.class_maxvero)
+        self.class_menu.addAction("Spectral Angle Mapper", self.classsap)
 
         # Post Classificazione Submenu
         self.post_menu = QMenu(QCoreApplication.translate("STEM",
                                "&Post-classificazione"))
         self.stem_add_submenu(self.post_menu)
 
-        self.clasmod_action = QAction("Attribuzione/modifica classi tematiche",
-                                      self.iface.mainWindow())
-        QObject.connect(self.clasmod_action, SIGNAL("triggered()"),
-                        self.clasmod)
-        self.post_menu.addAction(self.clasmod_action)
-
-        self.error_reduction_action = QAction("Riduzione degli errori",
-                                              self.iface.mainWindow())
-        QObject.connect(self.error_reduction_action, SIGNAL("triggered()"),
-                        self.error_reduction)
-        self.post_menu.addAction(self.error_reduction_action)
-
-        self.stats_action = QAction("Statistiche",
-                                    self.iface.mainWindow())
-        QObject.connect(self.stats_action, SIGNAL("triggered()"), self.stats)
-        self.post_menu.addAction(self.stats_action)
-
-        self.accu_action = QAction("Metriche di accuratezza",
-                                   self.iface.mainWindow())
-        QObject.connect(self.accu_action, SIGNAL("triggered()"),
-                        self.accu)
-        self.post_menu.addAction(self.accu_action)
-
-        self.kfold_action = QAction("K-fold cross validation",
-                                    self.iface.mainWindow())
-        QObject.connect(self.kfold_action, SIGNAL("triggered()"),
-                        self.kfold)
-        self.post_menu.addAction(self.kfold_action)
+        self.post_menu.addAction("Attribuzione/modifica classi tematiche", self.clasmod)
+        self.post_menu.addAction("Riduzione degli errori", self.error_reduction)
+        self.post_menu.addAction("Statistiche", self.stats)
+        self.post_menu.addAction("Metriche di accuratezza", self.accu)
+        self.post_menu.addAction("K-fold cross validation", self.kfold)
 
         # Feature LIDAR Submenu
         self.feature_lidar_menu = QMenu(QCoreApplication.translate("STEM",
                                         "&Estrazione feature dalle chiome"))
         self.stem_add_submenu(self.feature_lidar_menu)
 
-        self.delin_action = QAction("Delineazione chiome",
-                                    self.iface.mainWindow())
-        QObject.connect(self.delin_action, SIGNAL("triggered()"), self.delin)
-        self.feature_lidar_menu.addAction(self.delin_action)
-
-        self.rastlidar_action = QAction("Estrazione feature",
-                                        self.iface.mainWindow())
-        QObject.connect(self.rastlidar_action, SIGNAL("triggered()"),
-                        self.rastlidar)
-        self.feature_lidar_menu.addAction(self.rastlidar_action)
+        self.feature_lidar_menu.addAction("Delineazione chiome", self.delin)
+        self.feature_lidar_menu.addAction("Estrazione feature", self.rastlidar)
 
         # Stima parametri Submenu
         self.stima_menu = QMenu(QCoreApplication.translate("STEM",
                                 "&Stima di parametri"))
         self.stem_add_submenu(self.stima_menu)
 
-        self.selvar_action = QAction("Selezione variabili",
-                                     self.iface.mainWindow())
-        QObject.connect(self.selvar_action, SIGNAL("triggered()"),
-                        self.selvar)
-        self.stima_menu.addAction(self.selvar_action)
-
-        self.stimlin_action = QAction("Stimatore lineare",
-                                      self.iface.mainWindow())
-        QObject.connect(self.stimlin_action, SIGNAL("triggered()"),
-                        self.stimlim)
-        self.stima_menu.addAction(self.stimlin_action)
-
-        self.svr_action = QAction("Support Vector Regression",
-                                  self.iface.mainWindow())
-        QObject.connect(self.svr_action, SIGNAL("triggered()"),
-                        self.svr)
-        self.stima_menu.addAction(self.svr_action)
+        self.stima_menu.addAction("Selezione variabili", self.selvar)
+        self.stima_menu.addAction("Stimatore lineare", self.stimlim)
+        self.stima_menu.addAction("Support Vector Regression", self.svr)
 
         # Accuratezza Submenu
         self.valistima_menu = QMenu(QCoreApplication.translate("STEM",
                                     "&Post-elaborazione stima"))
         self.stem_add_submenu(self.valistima_menu)
 
-        self.areeaggr_action = QAction("Aggregazione ad aree",
-                                       self.iface.mainWindow())
-        QObject.connect(self.areeaggr_action, SIGNAL("triggered()"),
-                        self.areeaggr)
-        self.valistima_menu.addAction(self.areeaggr_action)
+        self.valistima_menu.addAction("Aggregazione ad aree", self.areeaggr)
+        self.valistima_menu.addAction("Metriche di accuratezza", self.accuaccu)
+        self.valistima_menu.addAction("K-fold cross validation", self.accukfold)
 
-        self.accuaccu_action = QAction("Metriche di accuratezza",
-                                       self.iface.mainWindow())
-        QObject.connect(self.accuaccu_action, SIGNAL("triggered()"),
-                        self.accuaccu)
-        self.valistima_menu.addAction(self.accuaccu_action)
-
-        self.accukfold_action = QAction("K-fold cross validation",
-                                        self.iface.mainWindow())
-        QObject.connect(self.accukfold_action, SIGNAL("triggered()"),
-                        self.accukfold)
-        self.valistima_menu.addAction(self.accukfold_action)
-
-        self.bosco_action = QAction(QCoreApplication.translate("STEM",
-                                    "&Struttura bosco"),
-                                    self.iface.mainWindow())
-        QObject.connect(self.bosco_action, SIGNAL("triggered()"),
-                        self.bosco)
-        self.stem_menu.addAction(self.bosco_action)
-
-        self.settings_action = QAction(QCoreApplication.translate("STEM",
-                                       "&Impostazioni"),
-                                       self.iface.mainWindow())
-        QObject.connect(self.settings_action, SIGNAL("triggered()"),
-                        self.settings)
-        self.stem_menu.addAction(self.settings_action)
+        self.stem_menu.addAction("&Struttura bosco", self.bosco)
+        self.stem_menu.addAction("&Impostazioni", self.settings)
 
     def unload(self):
         self.iface.mainWindow().menuBar().removeAction(self.stem_menu.menuAction())
