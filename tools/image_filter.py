@@ -30,7 +30,6 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from base import _translate
 from stem_functions import temporaryFilesGRASS
 from stem_utils import STEMUtils
 from grass_stem import helpUrl
@@ -82,13 +81,11 @@ class STEMToolsDialog(BaseDialog):
 #        self.horizontalLayout_filter.addWidget(self.BrowseButtonFilter)
 #        self.BrowseButtonFilter.setEnabled(False)
 #        self.verticalLayout_options.insertLayout(4, self.horizontalLayout_filter)
-#        self.labelfilter.setText(_translate("Dialog",
-#                                            "Selezionare il file dei filtri",
-#                                            None))
+#        self.labelfilter.setText(self.tr(name, "Selezionare il file dei filtri"))
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'filter':
-            self.LabelLinedit.setText(_translate("Dialog", self.lf, None))
+            self.LabelLinedit.setText(self.tr(name, self.lf))
             self.labelmethod.setEnabled(False)
             self.MethodInput.setEnabled(False)
 #            self.labelfilter.setEnabled(True)
@@ -96,7 +93,7 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonFilter.setEnabled(True)
             self.helpui.fillfromUrl(helpUrl('r.mfilter'))
         else:
-            self.LabelLinedit.setText(_translate("Dialog", self.ln, None))
+            self.LabelLinedit.setText(self.tr(name, self.ln))
             self.labelmethod.setEnabled(True)
             self.MethodInput.setEnabled(True)
 #            self.labelfilter.setEnabled(False)

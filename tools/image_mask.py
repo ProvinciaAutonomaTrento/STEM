@@ -31,7 +31,6 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
-from base import _fromUtf8, _translate
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -42,14 +41,13 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         self.addLayerToComboBox(self.BaseInput, 0)
 
-        self.LabelOut.setText(_translate("Dialog", "Impostando la maschera "
-                                         "tutte le successive operazioni "
-                                         "verranno effettuate all'interno "
-                                         "della mappa selezionata", None))
+        self.LabelOut.setText(self.tr(name, "Impostando la maschera "
+                                     "tutte le successive operazioni "
+                                     "verranno effettuate all'interno "
+                                     "della mappa selezionata"))
         self.TextOut.hide()
         self.BrowseButton.hide()
-        self.AddLayerToCanvas.setText(_translate("Dialog",
-                                                 "Rimuovi la maschera", None))
+        self.AddLayerToCanvas.setText(self.tr(name, "Rimuovi la maschera"))
         self.AddLayerToCanvas.setChecked(False)
         self.LocalCheck.hide()
         self.MultiBand.hide()

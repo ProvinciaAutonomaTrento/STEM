@@ -41,13 +41,13 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
         self._insertLayerChoose()
-        self.label_layer.setText(_translate("Dialog", "Inserire i numeri dei "
-                                            "layer da utilizzare, separati da"
-                                            " una virgola e partendo da 1.",
-                                            " Il primo valore dev'essere la "
-                                            "banda dell'infrarosso mentre la "
-                                            "seconda dev'essere quella del "
-                                            "rosso", None))
+        self.label_layer.setText(self.tr(name, "Inserire i numeri dei "
+                                        "layer da utilizzare, separati da"
+                                        " una virgola e partendo da 1."
+                                        " Il primo valore dev'essere la "
+                                        "banda dell'infrarosso mentre la "
+                                        "seconda dev'essere quella del "
+                                        "rosso"))
 
     def show_(self):
         self.switchClippingMode()

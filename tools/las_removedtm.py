@@ -31,7 +31,6 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
-from base import _fromUtf8, _translate
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -43,6 +42,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondSingleInput()
         self.label2.setText(_translate("Dialog", "Input DTM", None))
         self.addLayerToComboBox(self.BaseInput2, 1)
+        
+        self.label2.setText(self.tr(name, "Input DTM"))
+        self.label.setText(self.tr(name, "Input LAS file"))
 
     def show_(self):
         self.switchClippingMode()
