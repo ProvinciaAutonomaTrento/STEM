@@ -36,7 +36,7 @@ from stem_base_dialogs import BaseDialog
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name)
-        self.name = "Correzione atmosferica"
+        self.toolName = name
         self._insertSingleInput()
         self.iface = iface
 

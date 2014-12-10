@@ -38,7 +38,7 @@ from grass_stem import helpUrl
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name)
-        self.name = "Filtro riduzione del rumore"
+        self.toolName = name
         self._insertSingleInput()
         self.addLayerToComboBox(self.BaseInput, 1)
         self._insertLayerChooseCheckBox()
