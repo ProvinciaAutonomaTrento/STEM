@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Aug  6 10:04:54 2014
 
-@author: lucadelu
+"""
+***************************************************************************
+    las_extract.py
+    ---------------------
+    Date                 : August 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : luca.delucchi@fmach.it
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -13,6 +17,14 @@ Created on Wed Aug  6 10:04:54 2014
 ***************************************************************************
 """
 
+__author__ = 'Luca Delucchi'
+__date__ = 'August 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
@@ -21,19 +33,12 @@ from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from grass_stem import stats
 
-
 class STEMToolsDialog(BaseDialog):
-
-    def __init__(self, iface):
-        QWidget.__init__(self)
+    def __init__(self, iface, name):
+        BaseDialog.__init__(self, name)
+        self.toolName = name
         self.iface = iface
-        self.name = "Rasterizzazione file LAS"
-        self.canvas = self.iface.mapCanvas()
 
-        self.setupUi(self)
-
-        BaseDialog.__init__(self, self.iface.mainWindow(), self.iface,
-                            self.name)
         self._insertSingleInput()
         methods = ['all', 'first', 'last', 'mid']
         label = "Selezionare il ritorno desiderato"
@@ -51,7 +56,7 @@ class STEMToolsDialog(BaseDialog):
 
     def show_(self):
         self.switchClippingMode()
-        BaseDialog.show_(self)
+        self.show_(self)
 
     def checkPercentile(self):
         if self.BaseInputCombo.currentText() == 'percentile':

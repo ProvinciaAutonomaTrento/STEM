@@ -163,12 +163,12 @@ class stem_menu:
 
     def segmentation(self):
         from image_segm import STEMToolsDialog as segmentation_dialog
-        dialog = segmentation_dialog(self.iface)
+        dialog = segmentation_dialog(self.iface, "Segmentazione")
         dialog.exec_()
 
     def pansharp(self):
         from image_pansh import STEMToolsDialog as pansharp_dialog
-        dialog = pansharp_dialog(self.iface)
+        dialog = pansharp_dialog(self.iface, "Pansharpening")
         dialog.exec_()
 
     def registr(self):
@@ -183,12 +183,12 @@ class stem_menu:
 
     def mask_img(self):
         from image_mask import STEMToolsDialog as mask_img_dialog
-        dialog = mask_img_dialog(self.iface)
+        dialog = mask_img_dialog(self.iface, "Maschera")
         dialog.exec_()
 
     def multilayer(self):
         from image_multi import STEMToolsDialog as multi_img_dialog
-        dialog = multi_img_dialog(self.iface)
+        dialog = multi_img_dialog(self.iface, "Accatastamento")
         dialog.exec_()
 
 #    def reprojection(self):
@@ -200,144 +200,144 @@ class stem_menu:
 
     def texture(self):
         from feat_texture import STEMToolsDialog as texture_dialog
-        dialog = texture_dialog(self.iface)
+        dialog = texture_dialog(self.iface, "Feature di tessitura")
         dialog.exec_()
 
     def feat_geom(self):
         from feat_geometry import STEMToolsDialog as feat_geom_dialog
-        dialog = feat_geom_dialog(self.iface)
+        dialog = feat_geom_dialog(self.iface, "Feature geometriche")
         dialog.exec_()
 
     def indveg(self):
         from feat_vege import STEMToolsDialog as indveg_dialog
-        dialog = indveg_dialog(self.iface)
+        dialog = indveg_dialog(self.iface, "Indici di vegetazione")
         dialog.exec_()
 
     def select(self):
         from feat_select import STEMToolsDialog as select_dialog
-        dialog = select_dialog(self.iface)
+        dialog = select_dialog(self.iface, "Selezione feature")
         dialog.exec_()
 
     # supervised classification
 
     def svm(self):
         from class_svm import STEMToolsDialog as svm_dialog
-        dialog = svm_dialog(self.iface)
+        dialog = svm_dialog(self.iface, "Support Vector Machines")
         dialog.exec_()
 
     def class_mindist(self):
         from class_mindist import STEMToolsDialog as mindist_dialog
-        dialog = mindist_dialog(self.iface)
+        dialog = mindist_dialog(self.iface, "Minima distanza")
         dialog.exec_()
 
     def class_maxvero(self):
         from class_maxvero import STEMToolsDialog as maxvero_dialog
-        dialog = maxvero_dialog(self.iface)
+        dialog = maxvero_dialog(self.iface, "Massima Verosimiglianza")
         dialog.exec_()
 
     def classsap(self):
         from class_sap import STEMToolsDialog as classap_dialog
-        dialog = classap_dialog(self.iface)
+        dialog = classap_dialog(self.iface, "Spectral Angle Mapper")
         dialog.exec_()
 
     # post-elaborazione
 
     def clasmod(self):
         from clas_mod import STEMToolsDialog as clasmod_dialog
-        dialog = clasmod_dialog(self.iface)
+        dialog = clasmod_dialog(self.iface, "Attribuzione/modifica classi tematiche")
         dialog.exec_()
 
     def error_reduction(self):
         from error_reduction import STEMToolsDialog as error_reduction_dialog
-        dialog = error_reduction_dialog(self.iface)
+        dialog = error_reduction_dialog(self.iface, "Riduzione degli errori")
         dialog.exec_()
 
     # validation
 
     def stats(self):
         from vali_stats import STEMToolsDialog as stats_dialog
-        dialog = stats_dialog(self.iface)
+        dialog = stats_dialog(self.iface, "Statistiche")
         dialog.exec_()
 
     def accu(self):
         from vali_accu import STEMToolsDialog as accu_dialog
-        dialog = accu_dialog(self.iface)
+        dialog = accu_dialog(self.iface, "Metriche di accuratezza")
         dialog.exec_()
 
     def kfold(self):
         from vali_kfold import STEMToolsDialog as kfold_dialog
-        dialog = kfold_dialog(self.iface)
+        dialog = kfold_dialog(self.iface, "K-fold cross validation")
         dialog.exec_()
 
     # preproc lidar
 
     def removedtm(self):
         from las_removedtm import STEMToolsDialog as removedtm_dialog
-        dialog = removedtm_dialog(self.iface)
+        dialog = removedtm_dialog(self.iface, "Estrazione CHM")
         dialog.exec_()
 
     def unione(self):
         from las_union import STEMToolsDialog as union_dialog
-        dialog = union_dialog(self.iface)
+        dialog = union_dialog(self.iface, "Unione file LAS")
         dialog.exec_()
 
     def clip(self):
         from las_clip import STEMToolsDialog as clip_dialog
-        dialog = clip_dialog(self.iface)
+        dialog = clip_dialog(self.iface, "Ritaglio file LAS")
         dialog.exec_()
 
     def rastlidar(self):
         from las_extract import STEMToolsDialog as rastlidar_dialog
-        dialog = rastlidar_dialog(self.iface)
+        dialog = rastlidar_dialog(self.iface, "Rasterizzazione file LAS")
         dialog.exec_()
 
     def delin(self):
         from feat_delin import STEMToolsDialog as delin_dialog
-        dialog = delin_dialog(self.iface)
+        dialog = delin_dialog(self.iface, "Delineazione chiome")
         dialog.exec_()
 
     def filterlidar(self):
         from las_filter import STEMToolsDialog as filterlidar_dialog
-        dialog = filterlidar_dialog(self.iface)
+        dialog = filterlidar_dialog(self.iface, "Filtraggio file LAS")
         dialog.exec_()
 
     # stima
 
     def selvar(self):
         from stim_selvar import STEMToolsDialog as selvar_dialog
-        dialog = selvar_dialog(self.iface)
+        dialog = selvar_dialog(self.iface, "Selezione variabili")
         dialog.exec_()
 
     def stimlim(self):
         from stim_linear import STEMToolsDialog as stimlim_dialog
-        dialog = stimlim_dialog(self.iface)
+        dialog = stimlim_dialog(self.iface, "Stimatore lineare")
         dialog.exec_()
 
     def svr(self):
         from stim_svr import STEMToolsDialog as svr_dialog
-        dialog = svr_dialog(self.iface)
+        dialog = svr_dialog(self.iface, "Support Vector Regression")
         dialog.exec_()
 
     # accuratezza
 
     def accuaccu(self):
         from post_accu import STEMToolsDialog as accu_dialog
-        dialog = accu_dialog(self.iface)
+        dialog = accu_dialog(self.iface, "Metriche di accuratezza")
         dialog.exec_()
 
     def accukfold(self):
         from post_kfold import STEMToolsDialog as kfold_dialog
-        dialog = kfold_dialog(self.iface)
+        dialog = kfold_dialog(self.iface, "K-fold cross validation")
         dialog.exec_()
 
     def areeaggr(self):
         from post_aggraree import STEMToolsDialog as areeaggr_dialog
-        dialog = areeaggr_dialog(self.iface)
+        dialog = areeaggr_dialog(self.iface, "Aggregazione ad aree")
         dialog.exec_()
 
     def bosco(self):
         from bosco import STEMToolsDialog as bosco_dialog
-        dialog = bosco_dialog(self.iface)
+        dialog = bosco_dialog(self.iface, "Struttura bosco")
         dialog.exec_()
 
     def settings(self):
