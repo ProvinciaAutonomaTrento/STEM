@@ -4,9 +4,9 @@
 ***************************************************************************
     image_filter.py
     ---------------------
-    Date                 : June 2014
+    Date                 : August 2014
     Copyright            : (C) 2014 Luca Delucchi
-    Email                : 
+    Email                : luca.delucchi@fmach.it
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -18,7 +18,7 @@
 """
 
 __author__ = 'Luca Delucchi'
-__date__ = 'June 2014'
+__date__ = 'August 2014'
 __copyright__ = '(C) 2014 Luca Delucchi'
 
 # This will get replaced with a git SHA1 when you do a git archive
@@ -42,7 +42,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         self.addLayerToComboBox(self.BaseInput, 1)
         self._insertLayerChooseCheckBox()
-
+        self.iface = iface
         self.BaseInput.currentIndexChanged.connect(self.AddLayersNumber)
         self.AddLayersNumber()
 
@@ -109,31 +109,38 @@ class STEMToolsDialog(BaseDialog):
         name = str(self.BaseInput.currentText())
         source = self.getLayersSource(name)
         typ = self.checkMultiRaster(source)
-        nlayers = self.checkLayers(source)
+        coms = []
+        outnames = []
 
         cut, cutsource, mask = self.cutInput(name, source, typ)
         if cut:
             name = cut
             source = cutsource
-        print "prima di grass"
         tempin, tempout, gs = temporaryFilesGRASS(name)
-        print "dopo di grass"
-        if nlayers > 0:
-            gs.import_grass(source, tempin, typ, nlayers)
+        if len(self.nlayerchoose) > 0:
+            gs.import_grass(source, tempin, typ, self.nlayerchoose)
         else:
             gs.import_grass(source, tempin, typ)
-        print "dopo import"
         if mask:
             gs.check_mask(mask)
-        return
         if self.BaseInputCombo.currentText() == 'filter':
             pass
         else:
-            com = ['r.neighbors', 'input={name}'.format(name=tempin),
-                   'output={name}'.format(name=tempout),
-                   'size={val}'.format(val=self.Linedit.text()),
-                   'method={met}'.format(met=self.MethodInput.currentText())]
-        self.saveCommand(com)
-        gs.run_grass(com, source, tempin, tempout, self.TextOut.text(), typ)
+            for n in self.nlayerchoose:
+                out = '{name}_{lay}'.format(name=tempout, lay=n)
+                outnames.append(out)
+                com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
+                                                                  lay=n),
+                       'output={outname}'.format(outname=out),
+                       'size={val}'.format(val=self.Linedit.text()),
+                       'method={met}'.format(met=self.MethodInput.currentText())]
+                coms.append(com)
+                self.saveCommand(com)
+        gs.run_grass(coms)
+        if len(self.nlayerchoose) > 1:
+            gs.create_group(outnames, tempout)
+            gs.export_grass(tempout, self.TextOut.text(), typ)
+        else:
+            gs.export_grass(outnames[0], self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
             self.addLayerIntoCanvas(self.TextOut.text(), typ)
