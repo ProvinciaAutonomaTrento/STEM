@@ -31,7 +31,6 @@ from qgis.core import *
 from qgis.gui import *
 from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
-from base import _translate
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -44,16 +43,15 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose()
         methods = ['brovey', 'ihs', 'pca']
         self._insertMethod(methods, "Seleziona tipo di Pansharpening", 0)
-        self.label_layer.setText(_translate("Dialog", "Inserire i numeri dei "
-                                            "layer da utilizzare, divisi da "
-                                            "una virgola, il primo "
-                                            "dev'essere il canale per il rosso"
-                                            ", il secondo per verde, il terzo "
-                                            "per il blu, mentre il quarto deve"
-                                            " essere la banda con risoluzione"
-                                            " più alta", None))
-        self.LabelOut.setText(_translate("Dialog", "Prefisso del risultato",
-                                         None))
+        self.label_layer.setText(self.tr(name, "Inserire i numeri dei "
+                                        "layer da utilizzare, divisi da "
+                                        "una virgola, il primo "
+                                        "dev'essere il canale per il rosso"
+                                        ", il secondo per verde, il terzo "
+                                        "per il blu, mentre il quarto deve"
+                                        " essere la banda con risoluzione"
+                                        " più alta"))
+        self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
 
     def show_(self):
         self.switchClippingMode()

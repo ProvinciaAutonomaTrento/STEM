@@ -33,7 +33,6 @@ from qgis.gui import *
 from base import Ui_Dialog
 from help_ui import Ui_Dialog as Help_Dialog
 from settings_ui import Ui_Dialog as Setting_Dialog
-from base import _fromUtf8, _translate
 
 import os
 import sys
@@ -145,194 +144,189 @@ class BaseDialog(QDialog, Ui_Dialog):
     def _insertMultipleInput(self):
         """Function to add List Widget where insert multiple input files name"""
         self.horizontalLayout_input = QVBoxLayout()
-        self.horizontalLayout_input.setObjectName(_fromUtf8("horizontalLayout_input"))
+        self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label.setObjectName("label")
         self.horizontalLayout_input.addWidget(self.label)
         self.BaseInput = QListWidget()
         self.BaseInput.setGeometry(QRect(10, 30, 341, 211))
         self.BaseInput.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.BaseInput.setObjectName(_fromUtf8("BaseInput"))
+        self.BaseInput.setObjectName("BaseInput")
         self.horizontalLayout_input.addWidget(self.BaseInput)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
-        self.label.setText(_translate("Dialog", "Dati di input", None))
+        self.label.setText(self.tr("", "Dati di input"))
 
     def _insertSingleInput(self):
         """Function to add ComboBox Widget where insert a single input file"""
         self.horizontalLayout_input = QHBoxLayout()
-        self.horizontalLayout_input.setObjectName(_fromUtf8("horizontalLayout_input"))
+        self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label.setObjectName("label")
         self.horizontalLayout_input.addWidget(self.label)
         self.BaseInput = QComboBox()
         self.BaseInput.setEditable(True)
-        self.BaseInput.setObjectName(_fromUtf8("BaseInput"))
+        self.BaseInput.setObjectName("BaseInput")
         self.horizontalLayout_input.addWidget(self.BaseInput)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
-        self.label.setText(_translate("Dialog", "Dati di input", None))
+        self.label.setText(self.tr("", "Dati di input"))
 
     def _insertSecondSingleInput(self):
         """Function to add a second ComboBox Widget where insert a single
         input file"""
         self.horizontalLayout_input2 = QHBoxLayout()
-        self.horizontalLayout_input2.setObjectName(_fromUtf8("horizontalLayout_input2"))
+        self.horizontalLayout_input2.setObjectName("horizontalLayout_input2")
         self.label2 = QLabel()
-        self.label2.setObjectName(_fromUtf8("label2"))
-        self.horizontalLayout_input.addWidget(self.label2)
+        self.label2.setObjectName("label2")
+        self.horizontalLayout_input2.addWidget(self.label2)
         self.BaseInput2 = QComboBox()
         self.BaseInput2.setEditable(True)
-        self.BaseInput2.setObjectName(_fromUtf8("BaseInput2"))
+        self.BaseInput2.setObjectName("BaseInput2")
         self.horizontalLayout_input2.addWidget(self.BaseInput2)
         self.verticalLayout_input.insertLayout(1, self.horizontalLayout_input2)
-        self.label2.setText(_translate("Dialog", "Dati di input", None))
+        self.label2.setText(self.tr("", "Dati di input"))
 
     def _insertLayerChoose(self):
         """Function to add a LineEdit Widget for the layers list"""
         self.horizontalLayout_layer = QHBoxLayout()
-        self.horizontalLayout_layer.setObjectName(_fromUtf8("horizontalLayout_layer"))
+        self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
         self.label_layer.setWordWrap(True)
-        self.label_layer.setObjectName(_fromUtf8("label_layer"))
+        self.label_layer.setObjectName("label_layer")
         self.horizontalLayout_layer.addWidget(self.label_layer)
         self.layer_list = QLineEdit()
-        self.layer_list.setObjectName(_fromUtf8("layer_list"))
+        self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
         self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
-        self.label_layer.setText(_translate("Dialog", "Inserire i numeri dei "
-                                            "layer da utilizzare, separati da"
-                                            " una virgola e partendo da 1 (se"
-                                            " lasciato vuoto considererà tutti"
-                                            " i layer", None))
+        self.label_layer.setText(self.tr("", "Inserire i numeri dei "
+                                        "layer da utilizzare, separati da"
+                                        " una virgola e partendo da 1 (se"
+                                        " lasciato vuoto considererà tutti"
+                                        " i layer"))
 
     def _insertLayerChooseCheckBox(self):
         self.horizontalLayout_layer2 = QHBoxLayout()
-        self.horizontalLayout_layer2.setObjectName(_fromUtf8("horizontalLayout_layer2"))
+        self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
         self.label_layer2.setWordWrap(True)
-        self.label_layer2.setObjectName(_fromUtf8("label_layer2"))
+        self.label_layer2.setObjectName("label_layer2")
         self.horizontalLayout_layer2.addWidget(self.label_layer2)
         self.layer_list2 = CheckableComboBox()
-        self.layer_list2.setObjectName(_fromUtf8("layer_list2"))
+        self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
         self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer2)
-        self.label_layer2.setText(_translate("Dialog", "Selezionare le bande "
-                                             "da utilizzare cliccandoci sopra."
-                                             "", None))
+        self.label_layer2.setText(self.tr("", "Selezionare le bande "
+                                             "da utilizzare cliccandoci sopra."))
 
 
     def _insertMethod(self, methods, label, posnum):
         """Function to add ComboBox Widget"""
         self.horizontalLayout_method = QHBoxLayout()
-        self.horizontalLayout_method.setObjectName(_fromUtf8("horizontalLayout_method"))
+        self.horizontalLayout_method.setObjectName("horizontalLayout_method")
         self.labelmethod = QLabel()
-        self.labelmethod.setObjectName(_fromUtf8("labelmethod"))
+        self.labelmethod.setObjectName("labelmethod")
         self.horizontalLayout_method.addWidget(self.labelmethod)
         self.MethodInput = QComboBox()
         self.MethodInput.setEnabled(True)
-        self.MethodInput.setObjectName(_fromUtf8("MethodInput"))
+        self.MethodInput.setObjectName("MethodInput")
         self.horizontalLayout_method.addWidget(self.MethodInput)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_method)
         [self.MethodInput.addItem(m) for m in methods]
-        self.labelmethod.setText(_translate("Dialog", label, None))
+        self.labelmethod.setText(self.tr("", label))
 
     def _insertThresholdDouble(self, minn, maxx, step, posnum, deci=2):
         """Function to add SpinBox Widget for decimal number"""
         self.horizontalLayout_thred = QHBoxLayout()
-        self.horizontalLayout_thred.setObjectName(_fromUtf8("horizontalLayout_thred"))
+        self.horizontalLayout_thred.setObjectName("horizontalLayout_thred")
         self.LabelThred = QLabel()
-        self.LabelThred.setObjectName(_fromUtf8("LabelThred"))
+        self.LabelThred.setObjectName("LabelThred")
         self.horizontalLayout_thred.addWidget(self.LabelThred)
         self.thresholdd = QDoubleSpinBox()
         self.thresholdd.setDecimals(deci)
-        self.thresholdd.setObjectName(_fromUtf8("thresholdd"))
+        self.thresholdd.setObjectName("thresholdd")
         self.thresholdd.setRange(minn, maxx)
         self.thresholdd.setSingleStep(step)
         self.horizontalLayout_thred.addWidget(self.thresholdd)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_thred)
-        self.LabelThred.setText(_translate("Dialog",
-                                           "Seleziona il threshold da utilizzare",
-                                           None))
+        self.LabelThred.setText(self.tr("", "Seleziona il threshold da utilizzare"))
 
     def _insertThresholdInteger(self, minn, maxx, step, posnum):
         """Function to add SpinBox Widget for integer number"""
         self.horizontalLayout_threi = QHBoxLayout()
-        self.horizontalLayout_threi.setObjectName(_fromUtf8("horizontalLayout_threi"))
+        self.horizontalLayout_threi.setObjectName("horizontalLayout_threi")
         self.LabelThrei = QLabel()
-        self.LabelThrei.setObjectName(_fromUtf8("LabelThrei"))
+        self.LabelThrei.setObjectName("LabelThrei")
         self.horizontalLayout_threi.addWidget(self.LabelThrei)
         self.thresholdi = QDoubleSpinBox()
-        self.thresholdi.setObjectName(_fromUtf8("thresholdd"))
+        self.thresholdi.setObjectName("thresholdd")
         self.thresholdi.setRange(minn, maxx)
         self.thresholdi.setSingleStep(step)
         self.horizontalLayout_threi.addWidget(self.thresholdi)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_threi)
-        self.LabelThred.setText(_translate("Dialog",
-                                           "Seleziona il threshold da utilizzare",
-                                           None))
+        self.LabelThred.setText(self.tr("", "Seleziona il threshold da utilizzare"))
 
     def _insertFirstLineEdit(self, label, posnum):
         """Function to add a LineEdit Widget"""
         self.horizontalLayout_linedit = QHBoxLayout()
-        self.horizontalLayout_linedit.setObjectName(_fromUtf8("horizontalLayout_linedit"))
+        self.horizontalLayout_linedit.setObjectName("horizontalLayout_linedit")
         self.LabelLinedit = QLabel()
-        self.LabelLinedit.setObjectName(_fromUtf8("LabelLinedit"))
+        self.LabelLinedit.setObjectName("LabelLinedit")
         self.horizontalLayout_linedit.addWidget(self.LabelLinedit)
         self.Linedit = QLineEdit()
-        self.Linedit.setObjectName(_fromUtf8("Linedit"))
+        self.Linedit.setObjectName("Linedit")
         self.horizontalLayout_linedit.addWidget(self.Linedit)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_linedit)
-        self.LabelLinedit.setText(_translate("Dialog", label, None))
+        self.LabelLinedit.setText(self.tr("", label))
 
     def _insertSecondLineEdit(self, label, posnum):
         """Function to add a LineEdit Widget"""
         self.horizontalLayout_linedit2 = QHBoxLayout()
-        self.horizontalLayout_linedit2.setObjectName(_fromUtf8("horizontalLayout_linedit2"))
+        self.horizontalLayout_linedit2.setObjectName("horizontalLayout_linedit2")
         self.LabelLinedit2 = QLabel()
-        self.LabelLinedit2.setObjectName(_fromUtf8("LabelLinedit2"))
+        self.LabelLinedit2.setObjectName("LabelLinedit2")
         self.horizontalLayout_linedit2.addWidget(self.LabelLinedit2)
         self.Linedit2 = QLineEdit()
-        self.Linedit2.setObjectName(_fromUtf8("Linedit2"))
+        self.Linedit2.setObjectName("Linedit2")
         self.horizontalLayout_linedit2.addWidget(self.Linedit2)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_linedit2)
-        self.LabelLinedit2.setText(_translate("Dialog", label, None))
+        self.LabelLinedit2.setText(self.tr("", label))
 
     def _insertFirstCombobox(self, items, label, posnum):
         """Function to add a ComboBox Widget"""
         self.horizontalLayout_combo = QHBoxLayout()
-        self.horizontalLayout_combo.setObjectName(_fromUtf8("horizontalLayout_combo"))
+        self.horizontalLayout_combo.setObjectName("horizontalLayout_combo")
         self.LabelCombo = QLabel()
-        self.LabelCombo.setObjectName(_fromUtf8("LabelCombo"))
+        self.LabelCombo.setObjectName("LabelCombo")
         self.horizontalLayout_combo.addWidget(self.LabelCombo)
         self.BaseInputCombo = QComboBox()
         self.BaseInputCombo.setEditable(True)
-        self.BaseInputCombo.setObjectName(_fromUtf8("BaseInputCombo"))
+        self.BaseInputCombo.setObjectName("BaseInputCombo")
         self.horizontalLayout_combo.addWidget(self.BaseInputCombo)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_combo)
         [self.BaseInputCombo.addItem(m) for m in items]
-        self.LabelCombo.setText(_translate("Dialog", label, None))
+        self.LabelCombo.setText(self.tr("", label))
 
     def _insertSecondOutput(self, label, posnum):
         """Function to add a second output"""
         self.horizontalLayout_output2 = QHBoxLayout()
-        self.horizontalLayout_output2.setObjectName(_fromUtf8("horizontalLayout_output2"))
+        self.horizontalLayout_output2.setObjectName("horizontalLayout_output2")
         self.LabelOut2 = QLabel()
-        self.LabelOut2.setObjectName(_fromUtf8("LabelOut"))
+        self.LabelOut2.setObjectName("LabelOut")
         self.horizontalLayout_output2.addWidget(self.LabelOut2)
         self.TextOut2 = QLineEdit()
-        self.TextOut2.setObjectName(_fromUtf8("TextOut2"))
+        self.TextOut2.setObjectName("TextOut2")
         self.horizontalLayout_output2.addWidget(self.TextOut2)
         self.BrowseButton2 = QPushButton()
-        self.BrowseButton2.setObjectName(_fromUtf8("BrowseButton"))
+        self.BrowseButton2.setObjectName("BrowseButton")
         self.horizontalLayout_output2.addWidget(self.BrowseButton2)
         self.verticalLayout_output.insertLayout(posnum,
                                                 self.horizontalLayout_output2)
-        self.LabelOut2.setText(_translate("Dialog", label, None))
+        self.LabelOut2.setText(self.tr("", label))
 
     def AddLayersNumber(self):
         layerName = self.BaseInput.currentText()
@@ -502,7 +496,11 @@ class BaseDialog(QDialog, Ui_Dialog):
         else:
             # QMessageBox.warning(self, self.tr( "Warning" ), self.tr( "%1 not created." ).arg( outFn ) )
             QMessageBox.warning(self, "Warning", "%s not created." % outFn)
-
+            
+    def tr(self, context, text):
+        if context == '':
+            context = 'STEM'
+        return QCoreApplication.translate(context, text.decode('utf-8'))
 
 class SettingsDialog(QDialog, Setting_Dialog):
 
