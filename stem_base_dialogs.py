@@ -6,7 +6,7 @@
     ---------------------
     Date                 : June 2014
     Copyright            : (C) 2014 Luca Delucchi
-    Email                : 
+    Email                :
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -380,8 +380,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         mask = s.value("stem/mask", "")
         bbox = self.QGISextent.isChecked()
         if not bbox and not mask:
-            out = os.path.join(tempfile.gettempdir(), inp)
-            return inp, out, None
+            return False, False, False
         if bbox and mask:
             self.onError("Sono state impostate sia una maschera vettoriale "
                          "sia una estensione di QGIS. Si prega di "
@@ -397,7 +396,7 @@ class BaseDialog(QDialog, Ui_Dialog):
                 com = ['gdalwarp', '-cutline', mask, '-crop_to_cutline',
                        '-overwrite', source, out]
             else:
-                return False
+                return False, False, False
         if typ == 'vector':
             com = ['ogr2ogr']
             if bbox:
@@ -406,7 +405,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             elif mask:
                 com.append('-clipsrc {bbox}'.format(bbox=mask))
             else:
-                return False
+                return False, False, False
             com.append(out, source)
 
         runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -444,8 +443,8 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def checkMultiRaster(self, inmap):
         nsub = getNumSubset(inmap)
-        nlayerchoose = self.checkLayers(inmap)
-        if nsub > 0 and nlayerchoose > 1:
+        self.nlayerchoose = self.checkLayers(inmap)
+        if nsub > 0 and self.nlayerchoose > 1:
             return 'image'
         else:
             return 'raster'
@@ -454,8 +453,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         """Function to check if layers are choosen"""
         try:
             if self.layer_list.text() == u'':
-                n = getNumSubset(inmap)
-                return range(n)
+                return getNumSubset(inmap)
             else:
                 return self.layer_list.text().split(',')
         except:
@@ -463,7 +461,9 @@ class BaseDialog(QDialog, Ui_Dialog):
             for i in range(self.layer_list2.count()):
                 item = self.layer_list2.model().item(i)
                 if item.checkState() == Qt.Checked:
-                    itemlist.append(i + 1)
+                    itemlist.append(str(i + 1))
+            if len(itemlist) == 0:
+                return getNumSubset(inmap)
             return itemlist
 
     def onFinished(self, exitCode, status):
@@ -515,12 +515,12 @@ class BaseDialog(QDialog, Ui_Dialog):
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
                 layerlist.append( layer.name() )
-        
+
         combo.addItems(layerlist)
 
     def getLayersSource(self, layerName):
         layermap = QgsMapLayerRegistry.instance().mapLayers()
-        
+
         for name, layer in layermap.iteritems():
             if layer.name() == layerName:
                 if layer.isValid():
