@@ -17,9 +17,9 @@ except ImportError:
 def getNumSubset(name):
     src_ds = gdal.Open(name)
     if len(src_ds.GetSubDatasets()) != 0:
-        return len(src_ds.GetSubDatasets())
+        return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
     else:
-        return src_ds.RasterCount
+        return [str(i) for i in range(1, src_ds.RasterCount + 1)]
 
 
 class convertGDAL:
