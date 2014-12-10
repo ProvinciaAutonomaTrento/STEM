@@ -42,6 +42,9 @@ import tempfile
 from functools import partial
 from gdal_functions import getNumSubset
 
+## temporary import
+from stem_utils import STEMUtils
+
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -380,7 +383,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         if not layerName:
             return
         else:
-            source = self.getLayersSource(layerName)
+            source = STEMUtils.getLayersSource(layerName)
         gdalF = gdal.Open(source)
         gdalBands = gdalF.RasterCount
         gdalMeta = None
@@ -485,31 +488,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         # function to return error
         QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
 
-    def checkMultiRaster(self, inmap):
-        nsub = getNumSubset(inmap)
-        self.nlayerchoose = self.checkLayers(inmap)
-        if nsub > 0 and self.nlayerchoose > 1:
-            return 'image'
-        else:
-            return 'raster'
-
-    def checkLayers(self, inmap):
-        """Function to check if layers are choosen"""
-        try:
-            if self.layer_list.text() == u'':
-                return getNumSubset(inmap)
-            else:
-                return self.layer_list.text().split(',')
-        except:
-            itemlist = []
-            for i in range(self.layer_list2.count()):
-                item = self.layer_list2.model().item(i)
-                if item.checkState() == Qt.Checked:
-                    itemlist.append(str(i + 1))
-            if len(itemlist) == 0:
-                return getNumSubset(inmap)
-            return itemlist
-
     def onFinished(self, exitCode, status):
         """called when the command finished its execution, shows an error message if
         there's one and, if required, load the output file in canvas"""
@@ -550,42 +528,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         else:
             # TODO add overwrite option
             self.onError("'%s' file già presente." % mydir)
-
-    def addLayerToComboBox(self, combo, typ):
-        """Add layers to input files list"""
-        combo.clear()
-        layerlist = []
-        layermap = QgsMapLayerRegistry.instance().mapLayers()
-        for name, layer in layermap.iteritems():
-            if layer.type() == typ:
-                layerlist.append( layer.name() )
-
-        combo.addItems(layerlist)
-
-    def getLayersSource(self, layerName):
-        layermap = QgsMapLayerRegistry.instance().mapLayers()
-
-        for name, layer in layermap.iteritems():
-            if layer.name() == layerName:
-                if layer.isValid():
-                    return layer.source()
-                else:
-                    return None
-
-    def addLayerIntoCanvas(self, filename, typ):
-        """Add the output in the QGIS canvas"""
-        if typ == 'raster' or typ=='image':
-            fileInfo = QFileInfo(filename)
-            baseName = fileInfo.baseName()
-            layer = QgsRasterLayer(filename, baseName)
-        elif typ == 'vector':
-            # TODO check layer name
-            layer = QgsVectorLayer(filename, layer_name, 'ogr')
-        if not layer.isValid():
-            print "Layer failed to load!"
-        else:
-            QgsMapLayerRegistry.instance().addMapLayer(layer)
-        pass
 
     def finished(self, load):
         outFn = self.getOutputFileName()
