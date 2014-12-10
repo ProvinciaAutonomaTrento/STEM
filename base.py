@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'base.ui'
 #
-# Created: Mon Oct 20 10:51:17 2014
-#      by: PyQt4 UI code generator 4.11.2
+# Created: Thu Dec 11 00:32:32 2014
+#      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,16 +12,7 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+    _fromUtf8 = lambda s: s
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -55,31 +46,36 @@ class Ui_Dialog(object):
         self.verticalLayout.addLayout(self.verticalLayout_options)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
-        self.verticalLayout_std_opt = QtGui.QVBoxLayout()
-        self.verticalLayout_std_opt.setObjectName(_fromUtf8("verticalLayout_std_opt"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.LocalCheck = QtGui.QCheckBox(Dialog)
+        self.groupBox = QgsCollapsibleGroupBox(Dialog)
+        self.groupBox.setObjectName(_fromUtf8("groupBox"))
+        self.gridLayout_4 = QtGui.QGridLayout(self.groupBox)
+        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
+        self.gridLayout_2 = QtGui.QGridLayout()
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.gridLayout_3 = QtGui.QGridLayout()
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
+        self.LocalCheck = QtGui.QCheckBox(self.groupBox)
         self.LocalCheck.setMaximumSize(QtCore.QSize(16777215, 30))
         self.LocalCheck.setChecked(True)
         self.LocalCheck.setObjectName(_fromUtf8("LocalCheck"))
-        self.horizontalLayout.addWidget(self.LocalCheck)
-        self.AddLayerToCanvas = QtGui.QCheckBox(Dialog)
+        self.gridLayout_3.addWidget(self.LocalCheck, 0, 0, 1, 1)
+        self.AddLayerToCanvas = QtGui.QCheckBox(self.groupBox)
         self.AddLayerToCanvas.setMaximumSize(QtCore.QSize(16777215, 30))
         self.AddLayerToCanvas.setChecked(True)
         self.AddLayerToCanvas.setObjectName(_fromUtf8("AddLayerToCanvas"))
-        self.horizontalLayout.addWidget(self.AddLayerToCanvas)
-        self.verticalLayout_std_opt.addLayout(self.horizontalLayout)
+        self.gridLayout_3.addWidget(self.AddLayerToCanvas, 0, 1, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.MultiBand = QtGui.QCheckBox(Dialog)
+        self.MultiBand = QtGui.QCheckBox(self.groupBox)
         self.MultiBand.setObjectName(_fromUtf8("MultiBand"))
         self.horizontalLayout_2.addWidget(self.MultiBand)
-        self.QGISextent = QtGui.QCheckBox(Dialog)
+        self.QGISextent = QtGui.QCheckBox(self.groupBox)
         self.QGISextent.setObjectName(_fromUtf8("QGISextent"))
         self.horizontalLayout_2.addWidget(self.QGISextent)
-        self.verticalLayout_std_opt.addLayout(self.horizontalLayout_2)
-        self.verticalLayout.addLayout(self.verticalLayout_std_opt)
+        self.gridLayout_2.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
+        self.gridLayout_4.addLayout(self.gridLayout_2, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.groupBox)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Help|QtGui.QDialogButtonBox.Ok)
@@ -93,11 +89,13 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "STEM", None))
-        self.LabelOut.setText(_translate("Dialog", "Risultato", None))
-        self.BrowseButton.setText(_translate("Dialog", "Sfoglia", None))
-        self.LocalCheck.setText(_translate("Dialog", "Esegui localmente", None))
-        self.AddLayerToCanvas.setText(_translate("Dialog", "Aggiungi risultato sulla mappa", None))
-        self.MultiBand.setText(_translate("Dialog", " Raster multibanda", None))
-        self.QGISextent.setText(_translate("Dialog", "Utilizza estensione QGIS", None))
+        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "STEM", None, QtGui.QApplication.UnicodeUTF8))
+        self.LabelOut.setText(QtGui.QApplication.translate("Dialog", "Risultato", None, QtGui.QApplication.UnicodeUTF8))
+        self.BrowseButton.setText(QtGui.QApplication.translate("Dialog", "Sfoglia", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Opzioni", None, QtGui.QApplication.UnicodeUTF8))
+        self.LocalCheck.setText(QtGui.QApplication.translate("Dialog", "Esegui localmente", None, QtGui.QApplication.UnicodeUTF8))
+        self.AddLayerToCanvas.setText(QtGui.QApplication.translate("Dialog", "Aggiungi risultato sulla mappa", None, QtGui.QApplication.UnicodeUTF8))
+        self.MultiBand.setText(QtGui.QApplication.translate("Dialog", " Raster multibanda", None, QtGui.QApplication.UnicodeUTF8))
+        self.QGISextent.setText(QtGui.QApplication.translate("Dialog", "Utilizza estensione QGIS", None, QtGui.QApplication.UnicodeUTF8))
 
+from qgis.gui import QgsCollapsibleGroupBox

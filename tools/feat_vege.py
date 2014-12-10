@@ -35,7 +35,7 @@ from base import _translate
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name)
+        BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
         self.iface = iface
 

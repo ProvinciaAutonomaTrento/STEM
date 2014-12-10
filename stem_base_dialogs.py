@@ -83,8 +83,8 @@ class CheckableComboBox(QComboBox):
 
 class BaseDialog(QDialog, Ui_Dialog):
 
-    def __init__(self, title):
-        QDialog.__init__(self)
+    def __init__(self, title, parent=None):
+        QDialog.__init__(self, parent)
         self.dialog = Ui_Dialog
         self.setAttribute(Qt.WA_DeleteOnClose)
         #self.iface = iface
