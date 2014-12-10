@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-import pdb
+
 from stem_base_dialogs import BaseDialog
 import os
 
@@ -56,5 +56,3 @@ class STEMToolsDialog(BaseDialog):
         innames = self.BaseInput.selectedItems()
         out = self.TextOut.text()
         nlayers = self.checkLayers()
-        pyqtRemoveInputHook()
-        pdb.set_trace()
