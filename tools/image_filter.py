@@ -32,6 +32,7 @@ from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from base import _translate
 from stem_functions import temporaryFilesGRASS
+from stem_utils import STEMUtils
 from grass_stem import helpUrl
 
 
@@ -39,10 +40,12 @@ class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name)
         self.toolName = name
-        self._insertSingleInput()
-        self.addLayerToComboBox(self.BaseInput, 1)
-        self._insertLayerChooseCheckBox()
         self.iface = iface
+
+        self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+        self._insertLayerChooseCheckBox()
+
         self.BaseInput.currentIndexChanged.connect(self.AddLayersNumber)
         self.AddLayersNumber()
 
@@ -107,8 +110,8 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
-        source = self.getLayersSource(name)
-        typ = self.checkMultiRaster(source)
+        source = STEMUtils.getLayersSource(name)
+        typ = STEMUtils.checkMultiRaster(source)
         coms = []
         outnames = []
 
@@ -143,4 +146,4 @@ class STEMToolsDialog(BaseDialog):
         else:
             gs.export_grass(outnames[0], self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
-            self.addLayerIntoCanvas(self.TextOut.text(), typ)
+            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
