@@ -31,6 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -39,18 +40,20 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
-        self.addLayerToComboBox(self.BaseInput, 1)
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
         self._insertLayerChoose()
         methods = ['brovey', 'ihs', 'pca']
         self._insertMethod(methods, "Seleziona tipo di Pansharpening", 0)
-        self.label_layer.setText(self.tr(name, "Inserire i numeri dei "
-                                        "layer da utilizzare, divisi da "
-                                        "una virgola, il primo "
-                                        "dev'essere il canale per il rosso"
-                                        ", il secondo per verde, il terzo "
-                                        "per il blu, mentre il quarto deve"
-                                        " essere la banda con risoluzione"
-                                        " più alta"))
+        tooltip = self.tr(name, "Inserire i numeri dei "
+                        "layer da utilizzare, divisi da \n"
+                        "una virgola, il primo "
+                        "dev'essere il canale per il rosso,\n"
+                        " il secondo per verde, il terzo "
+                        "per il blu, mentre il quarto deve\n"
+                        " essere la banda con risoluzione"
+                        " più alta")
+        self.layer_list.setToolTip(tooltip)
+        self.label_layer.setToolTip(tooltip)
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
 
     def show_(self):

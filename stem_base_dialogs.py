@@ -195,18 +195,18 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
-        self.label_layer.setWordWrap(True)
         self.label_layer.setObjectName("label_layer")
         self.horizontalLayout_layer.addWidget(self.label_layer)
         self.layer_list = QLineEdit()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
         self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
-        self.label_layer.setText(self.tr("", "Inserire i numeri dei "
-                                        "layer da utilizzare, separati da"
-                                        " una virgola e partendo da 1 (se"
-                                        " lasciato vuoto considererà tutti"
-                                        " i layer"))
+        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
+                                            "layer da utilizzare, separati da\n"
+                                            " una virgola e partendo da 1 (se\n"
+                                            " lasciato vuoto considererà tutti"
+                                            " i layer"))
+        self.label_layer.setText(self.tr("", "Inserire numero layers"))
 
     def _insertLayerChooseCheckBox(self):
         self.horizontalLayout_layer2 = QHBoxLayout()
