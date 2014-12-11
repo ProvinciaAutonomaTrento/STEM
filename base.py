@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'base.ui'
 #
-# Created: Thu Dec 11 00:32:32 2014
+# Created: Thu Dec 11 11:43:16 2014
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,6 +25,14 @@ class Ui_Dialog(object):
         self.verticalLayout_input = QtGui.QVBoxLayout()
         self.verticalLayout_input.setObjectName(_fromUtf8("verticalLayout_input"))
         self.verticalLayout.addLayout(self.verticalLayout_input)
+        self.groupBox_2 = QtGui.QGroupBox(Dialog)
+        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
+        self.gridLayout_5 = QtGui.QGridLayout(self.groupBox_2)
+        self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
+        self.verticalLayout_options = QtGui.QVBoxLayout()
+        self.verticalLayout_options.setObjectName(_fromUtf8("verticalLayout_options"))
+        self.gridLayout_5.addLayout(self.verticalLayout_options, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.groupBox_2)
         self.verticalLayout_output = QtGui.QVBoxLayout()
         self.verticalLayout_output.setObjectName(_fromUtf8("verticalLayout_output"))
         self.horizontalLayout_output = QtGui.QHBoxLayout()
@@ -41,9 +49,6 @@ class Ui_Dialog(object):
         self.horizontalLayout_output.addWidget(self.BrowseButton)
         self.verticalLayout_output.addLayout(self.horizontalLayout_output)
         self.verticalLayout.addLayout(self.verticalLayout_output)
-        self.verticalLayout_options = QtGui.QVBoxLayout()
-        self.verticalLayout_options.setObjectName(_fromUtf8("verticalLayout_options"))
-        self.verticalLayout.addLayout(self.verticalLayout_options)
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         self.groupBox = QgsCollapsibleGroupBox(Dialog)
@@ -90,6 +95,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "STEM", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_2.setTitle(QtGui.QApplication.translate("Dialog", "Parametri", None, QtGui.QApplication.UnicodeUTF8))
         self.LabelOut.setText(QtGui.QApplication.translate("Dialog", "Risultato", None, QtGui.QApplication.UnicodeUTF8))
         self.BrowseButton.setText(QtGui.QApplication.translate("Dialog", "Sfoglia", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Opzioni", None, QtGui.QApplication.UnicodeUTF8))
