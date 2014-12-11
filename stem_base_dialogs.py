@@ -347,7 +347,7 @@ class BaseDialog(QDialog, Ui_Dialog):
     def saveCommand(self, command):
         """Save the command in Qsetting"""
         s = QSettings()
-        s.setValue("stem/{com}".format(com=self.name.replace(' ', '_')),
+        s.setValue("stem/{com}".format(com=self.toolName.replace(' ', '_')),
                    " ".join(command))
 
     def cutInput(self, inp, source, typ):
@@ -475,7 +475,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         else:
             # QMessageBox.warning(self, self.tr( "Warning" ), self.tr( "%1 not created." ).arg( outFn ) )
             QMessageBox.warning(self, "Warning", "%s not created." % outFn)
-            
+
     def tr(self, context, text):
         if context == '':
             context = 'STEM'
