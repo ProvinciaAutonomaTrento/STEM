@@ -144,6 +144,23 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
 
+    def _insertFileInput(self, posnum):
+        """Function to add a second output"""
+        self.horizontalLayout_input = QHBoxLayout()
+        self.horizontalLayout_input.setObjectName(_fromUtf8("horizontalLayout_output2"))
+        self.label = QLabel()
+        self.label.setObjectName(_fromUtf8("LabelOut"))
+        self.horizontalLayout_input.addWidget(self.label)
+        self.TextIn = QLineEdit()
+        self.TextIn.setObjectName(_fromUtf8("TextIn"))
+        self.horizontalLayout_input.addWidget(self.TextIn)
+        self.BrowseButton = QPushButton()
+        self.BrowseButton.setObjectName(_fromUtf8("BrowseButton"))
+        self.horizontalLayout_input.addWidget(self.BrowseButton)
+        self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
+        self.label.setText(_translate("Dialog", "Selezionare file LAS di input",
+                                      None))
+
     def _insertSingleInput(self):
         """Function to add ComboBox Widget where insert a single input file"""
         self.horizontalLayout_input = QHBoxLayout()
