@@ -73,26 +73,26 @@ class STEMUtils:
             STEMUtils.registry.addMapLayer(layer)
 
     @staticmethod
-    def checkMultiRaster(inmap):
+    def checkMultiRaster(inmap, checkCombo, lineEdit=None):
         nsub = getNumSubset(inmap)
-        nlayerchoose = STEMUtils.checkLayers(inmap)
+        nlayerchoose = STEMUtils.checkLayers(inmap, checkCombo, lineEdit)
         if nsub > 0 and nlayerchoose > 1:
             return 'image'
         else:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap):
+    def checkLayers(inmap, checkCombo, lineEdit=None):
         """Function to check if layers are choosen"""
         try:
-            if self.layer_list.text() == u'':
+            if lineEdit.text() == u'':
                 return getNumSubset(inmap)
             else:
-                return self.layer_list.text().split(',')
+                return lineEdit.text().split(',')
         except:
             itemlist = []
-            for i in range(self.layer_list2.count()):
-                item = self.layer_list2.model().item(i)
+            for i in range(checkCombo.count()):
+                item = checkCombo.model().item(i)
                 if item.checkState() == Qt.Checked:
                     itemlist.append(str(i + 1))
             if len(itemlist) == 0:
