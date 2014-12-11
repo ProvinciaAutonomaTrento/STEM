@@ -31,6 +31,13 @@ from qgis.core import *
 from qgis.gui import *
 
 from gdal_functions import getNumSubset
+try:
+    import osgeo.gdal as gdal
+except ImportError:
+    try:
+        import gdal
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
 
 class STEMUtils:
 
@@ -73,7 +80,7 @@ class STEMUtils:
             STEMUtils.registry.addMapLayer(layer)
 
     @staticmethod
-    def checkMultiRaster(inmap, checkCombo, lineEdit=None):
+    def checkMultiRaster(inmap, checkCombo=None, lineEdit=None):
         nsub = getNumSubset(inmap)
         nlayerchoose = STEMUtils.checkLayers(inmap, checkCombo, lineEdit)
         if nsub > 0 and nlayerchoose > 1:
@@ -82,7 +89,7 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, checkCombo, lineEdit=None):
+    def checkLayers(inmap, checkCombo=None, lineEdit=None):
         """Function to check if layers are choosen"""
         try:
             if lineEdit.text() == u'':
@@ -98,3 +105,30 @@ class STEMUtils:
             if len(itemlist) == 0:
                 return getNumSubset(inmap)
             return itemlist
+
+    @staticmethod
+    def addLayersNumber(combo, checkCombo=None):
+        layerName = combo.currentText()
+        if not layerName:
+            return
+        else:
+            source = STEMUtils.getLayersSource(layerName)
+        gdalF = gdal.Open(source)
+        gdalBands = gdalF.RasterCount
+        gdalMeta = None
+        checkCombo.clear()
+        if gdalF.GetDriver().LongName == 'ENVI .hdr Labelled':
+            gdalMeta = gdalF.GetMetadata_Dict()
+        for n in range(1, gdalBands+1):
+            st = "Banda {i}".format(i=n)
+            if gdalMeta:
+                try:
+                    band = gdalMeta["Band_{i}".format(i=n)].split()
+                    st += " {mm} {nano}".format(mm=" ".join(band[2:5]),
+                                                nano=" ".join(band[-2:]))
+                except:
+                    pass
+            checkCombo.addItem(st)
+            model = checkCombo.model()
+            item = model.item(n-1)
+            item.setCheckState(Qt.Unchecked)
