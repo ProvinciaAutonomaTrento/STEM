@@ -108,7 +108,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
         source = STEMUtils.getLayersSource(name)
-        typ = STEMUtils.checkMultiRaster(source)
+        typ = STEMUtils.checkMultiRaster(source, self.layer_list2)
         coms = []
         outnames = []
 
