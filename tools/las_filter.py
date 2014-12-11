@@ -38,7 +38,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
+        self._insertFileInput()
 
     def show_(self):
         self.switchClippingMode()
