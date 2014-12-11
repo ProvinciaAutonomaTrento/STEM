@@ -38,8 +38,9 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
+        self._insertFileInput()
         self._insertSecondSingleInput()
+
         self.label2.setText(self.tr(name, "Input DTM"))
         self.label.setText(self.tr(name, "Input LAS file"))
 

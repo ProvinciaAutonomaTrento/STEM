@@ -31,7 +31,8 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
-from grass_stem import stats
+from grass_stem import stats, helpUrl
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -39,7 +40,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
+        self._insertFileInput()
         methods = ['all', 'first', 'last', 'mid']
         label = "Selezionare il ritorno desiderato"
         self._insertMethod(methods, label, 0)
