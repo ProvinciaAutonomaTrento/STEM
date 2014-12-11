@@ -54,11 +54,11 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
                                                      "Estrazione CHM":"las_removedtm" }]
                       }
         
-        for gr, modToolList in self.tools.iteritems():
+        for gr, modToolList in sorted(self.tools.iteritems()):
             groupItem = QTreeWidgetItem()
             groupItem.setText(0, gr)
             groupItem.setToolTip(0, gr)
-            for tool, module in modToolList[0].iteritems():
+            for tool, module in sorted(modToolList[0].iteritems()):
                 toolItem = QTreeWidgetItem()
                 toolItem.setText(0, tool)
                 toolItem.setToolTip(0, tool)
