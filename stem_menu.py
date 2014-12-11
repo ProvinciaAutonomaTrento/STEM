@@ -37,6 +37,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "tools"))
 
 from stem_base_dialogs import SettingsDialog
+from stem_toolbox import STEMToolbox
 
 
 class stem_menu:
@@ -55,6 +56,15 @@ class stem_menu:
         self.stem_menu = QMenu(QCoreApplication.translate("STEM", "STEM"))
         self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(),
                                                      self.stem_menu)
+        ## Toolbox
+        self.toolbox = STEMToolbox()
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.toolbox)
+        
+        self.toolboxAction = self.toolbox.toggleViewAction()
+        self.toolboxAction.setText(QCoreApplication.translate('STEM',
+                                   '&Toolbox'))
+        self.stem_menu.addAction(self.toolboxAction)
+        
         # Preprocessing Image Submenu
         self.preproc_menu = QMenu(QCoreApplication.translate("STEM",
                                   "&Pre-elaborazione immagini"))
