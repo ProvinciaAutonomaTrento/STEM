@@ -108,6 +108,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
         source = STEMUtils.getLayersSource(name)
+        nlayerchoose = STEMUtils.checkLayers(source)
         typ = STEMUtils.checkMultiRaster(source, self.layer_list2)
         coms = []
         outnames = []
@@ -117,8 +118,8 @@ class STEMToolsDialog(BaseDialog):
             name = cut
             source = cutsource
         tempin, tempout, gs = temporaryFilesGRASS(name)
-        if len(self.nlayerchoose) > 0:
-            gs.import_grass(source, tempin, typ, self.nlayerchoose)
+        if len(nlayerchoose) > 0:
+            gs.import_grass(source, tempin, typ, nlayerchoose)
         else:
             gs.import_grass(source, tempin, typ)
         if mask:
@@ -126,7 +127,7 @@ class STEMToolsDialog(BaseDialog):
         if self.BaseInputCombo.currentText() == 'filter':
             pass
         else:
-            for n in self.nlayerchoose:
+            for n in nlayerchoose:
                 out = '{name}_{lay}'.format(name=tempout, lay=n)
                 outnames.append(out)
                 com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
@@ -137,7 +138,7 @@ class STEMToolsDialog(BaseDialog):
                 coms.append(com)
                 self.saveCommand(com)
         gs.run_grass(coms)
-        if len(self.nlayerchoose) > 1:
+        if len(nlayerchoose) > 1:
             gs.create_group(outnames, tempout)
             gs.export_grass(tempout, self.TextOut.text(), typ)
         else:
