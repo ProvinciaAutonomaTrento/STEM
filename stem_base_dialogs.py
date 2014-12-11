@@ -41,19 +41,7 @@ import tempfile
 from functools import partial
 from gdal_functions import getNumSubset
 
-## temporary import
-from stem_utils import STEMUtils
-
-try:
-    import osgeo.gdal as gdal
-except ImportError:
-    try:
-        import gdal
-    except ImportError:
-        raise 'Python GDAL library not found, please install python-gdal'
-
 MSG_BOX_TITLE = "STEM Plugin Warning"
-
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
@@ -327,32 +315,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_output.insertLayout(posnum,
                                                 self.horizontalLayout_output2)
         self.LabelOut2.setText(self.tr("", label))
-
-    def AddLayersNumber(self):
-        layerName = self.BaseInput.currentText()
-        if not layerName:
-            return
-        else:
-            source = STEMUtils.getLayersSource(layerName)
-        gdalF = gdal.Open(source)
-        gdalBands = gdalF.RasterCount
-        gdalMeta = None
-        self.layer_list2.clear()
-        if gdalF.GetDriver().LongName == 'ENVI .hdr Labelled':
-            gdalMeta = gdalF.GetMetadata_Dict()
-        for n in range(1, gdalBands+1):
-            st = "Banda {i}".format(i=n)
-            if gdalMeta:
-                try:
-                    band = gdalMeta["Band_{i}".format(i=n)].split()
-                    st += " {mm} {nano}".format(mm=" ".join(band[2:5]),
-                                                nano=" ".join(band[-2:]))
-                except:
-                    pass
-            self.layer_list2.addItem(st)
-            model = self.layer_list2.model()
-            item = model.item(n-1)
-            item.setCheckState(Qt.Unchecked)
 
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)

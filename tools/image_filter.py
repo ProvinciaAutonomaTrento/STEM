@@ -45,8 +45,8 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
         self._insertLayerChooseCheckBox()
 
-        self.BaseInput.currentIndexChanged.connect(self.AddLayersNumber)
-        self.AddLayersNumber()
+        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
 
         # TODO add filter
         items = ['neighbors']
