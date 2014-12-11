@@ -31,6 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
+from base import _translate
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):

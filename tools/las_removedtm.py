@@ -39,10 +39,10 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
+        self._insertFileInput()
         self._insertSecondSingleInput()
         self.label2.setText(_translate("Dialog", "Input DTM", None))
-        self.label.setText(_translate("Dialog", "Input LAS file", None))
+        self.addLayerToComboBox(self.BaseInput2, 1)
 
     def show_(self):
         self.switchClippingMode()
