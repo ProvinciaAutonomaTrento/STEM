@@ -347,17 +347,17 @@ class BaseDialog(QDialog, Ui_Dialog):
     def _insertTextArea(self, label, posnum):
         """Function to add a text area"""
         self.horizontalLayout_textarea = QHBoxLayout()
-        self.horizontalLayout_textarea.setObjectName(_fromUtf8("horizontalLayout_textarea"))
+        self.horizontalLayout_textarea.setObjectName("horizontalLayout_textarea")
         self.LabelTextarea = QLabel()
         self.LabelTextarea.setWordWrap(True)
-        self.LabelTextarea.setObjectName(_fromUtf8("LabelOut"))
+        self.LabelTextarea.setObjectName("LabelOut")
         self.horizontalLayout_textarea.addWidget(self.LabelTextarea)
         self.TextArea = QTextEdit()
-        self.TextArea.setObjectName(_fromUtf8("TextArea"))
+        self.TextArea.setObjectName("TextArea")
         self.horizontalLayout_textarea.addWidget(self.TextArea)
         self.verticalLayout_options.insertLayout(posnum,
                                                 self.horizontalLayout_textarea)
-        self.LabelTextarea.setText(_translate("Dialog", label, None))
+        self.LabelTextarea.setText(self.tr("Dialog", label))
 
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
