@@ -1,36 +1,29 @@
 # -*- coding: utf-8 -*-
-# --------------------------------------------------------
-#    __init__ - MMQGIS init file
-#
-#    begin                : August 5, 2009
-#    copyright            : (c) 2009-2013 by Michael Minn
-#    email                : See www.michaelminn.com
-#
-#   MMQGIS is free software and is offered without guarantee
-#   or warranty. You can redistribute it and/or modify it 
-#   under the terms of version 2 of the GNU General Public 
-#   License (GPL v2) as published by the Free Software 
-#   Foundation (www.gnu.org).
-# --------------------------------------------------------
 
-def name():
-    return "STEM"
+"""
+***************************************************************************
+    image_segm.py
+    ---------------------
+    Date                 : August 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : luca.delucchi@fmach.it
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************
+"""
 
+__author__ = 'Luca Delucchi'
+__date__ = 'August 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
 
-def description():
-    return "Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino"
+# This will get replaced with a git SHA1 when you do a git archive
 
-
-def version():
-    return "0.1"
-
-
-def qgisMinimumVersion():
-    return "2.2"
-
-
-def authorName():
-    return "Luca Delucchi, "
+__revision__ = '$Format:%H$'
 
 
 def classFactory(iface):
