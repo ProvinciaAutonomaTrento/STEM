@@ -30,6 +30,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils
 from stem_functions import temporaryFilesGRASS
 
 class STEMToolsDialog(BaseDialog):
@@ -39,8 +40,8 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
-        self.addLayerToComboBox(self.BaseInput, 1)
-        self._insertSecondOutput("Goodness of fit", 1)
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+        self._insertSecondOutput("Goodness of fit", 0)
         self.connect(self.BrowseButton2, SIGNAL("clicked()"), self.BrowseDir)
         self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
         self._insertThresholdDouble(0.000, 1.000, 0.001, 1, 3)
