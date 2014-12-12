@@ -62,7 +62,7 @@ class stem_menu:
         
         self.toolboxAction = self.toolbox.toggleViewAction()
         self.toolboxAction.setText(QCoreApplication.translate('STEM',
-                                   '&Toolbox'))
+                                   '&STEM Toolbox'))
         self.stem_menu.addAction(self.toolboxAction)
         
         # Preprocessing Image Submenu

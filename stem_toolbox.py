@@ -29,11 +29,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.utils import iface
 
+import os
 from STEMToolbox import Ui_STEMToolBox
-
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             "tools"))
 
 class STEMToolbox(QDockWidget, Ui_STEMToolBox):
     def __init__(self):
@@ -41,6 +38,7 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         
+        ##           {"rootItem"                    :[{"toolName"                    :"module"}]}
         self.tools = {"Pre-elaborazione immagini"   :[{"Filtro riduzione del rumore":"image_filter",
                                                     "Correzione atmosferica":"image_corratmo",
                                                     "Segmentazione":"image_segm",
@@ -54,28 +52,38 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
                                                      "Estrazione CHM":"las_removedtm" }]
                       }
         
-        for gr, modToolList in sorted(self.tools.iteritems()):
-            groupItem = QTreeWidgetItem()
-            groupItem.setText(0, gr)
-            groupItem.setToolTip(0, gr)
-            for tool, module in sorted(modToolList[0].iteritems()):
-                toolItem = QTreeWidgetItem()
-                toolItem.setText(0, tool)
-                toolItem.setToolTip(0, tool)
-                groupItem.addChild(toolItem)
-            self.toolTree.addTopLevelItem(groupItem)
-            
+        self.populateTree()
         self.toolTree.doubleClicked.connect(self.executeTool)
 
     def executeTool(self):
         item = self.toolTree.currentItem()
-        if not item.parent():
-            return
-        toolName = item.text(0)
+        if isinstance(item, TreeToolItem):
+            toolName = item.text(0)
+            module = self.tools[item.parent().text(0)][0][toolName]
         
-        module = self.tools[item.parent().text(0)][0][toolName]
-        
-        globals()["toolModule"] = __import__(module)
-        dlg = toolModule.STEMToolsDialog
-        dlg(iface, toolName).exec_()
-        item = self.toolTree.currentItem()
+            globals()["toolModule"] = __import__(module)
+            dlg = toolModule.STEMToolsDialog
+            dlg(iface, toolName).exec_()
+
+    def populateTree(self):
+        self.toolTree.clear()
+        for gr, modToolList in self.tools.iteritems():
+            groupItem = QTreeWidgetItem()
+            groupItem.setText(0, gr)
+            groupItem.setToolTip(0, gr)
+            iconGroupItem = QIcon(os.path.dirname(__file__) + '/icons/rootItemTool_.svg')
+            groupItem.setIcon(0, iconGroupItem)
+            for tool, module in modToolList[0].iteritems():
+                toolItem = TreeToolItem(tool)
+                groupItem.addChild(toolItem)
+            
+            self.toolTree.addTopLevelItem(groupItem)
+            self.toolTree.sortItems(0, Qt.AscendingOrder)
+
+class TreeToolItem(QTreeWidgetItem):
+    def __init__(self, toolName):
+        QTreeWidgetItem.__init__(self)
+        iconToolItem = QIcon(os.path.dirname(__file__) + '/icons/itemTool.svg')
+        self.setIcon(0, iconToolItem)
+        self.setToolTip(0, toolName)
+        self.setText(0, toolName)
