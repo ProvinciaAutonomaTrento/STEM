@@ -1,9 +1,9 @@
 [general]
 name=STEM
-qgisMinimumVersion=2.2.0
+qgisMinimumVersion=2.0.0
 description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
 category=
-version=0.2.0
+version=0.3.0
 author=Luca Delucchi
 email=
 homepage=
@@ -11,7 +11,7 @@ homepage=
 repository=
 tracker=
 homepage=
-icon=
+icon=images/icon.svg
 
 changelog=
 experimental=True
