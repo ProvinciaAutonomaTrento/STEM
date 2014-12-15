@@ -29,8 +29,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -40,6 +41,8 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertFileInput()
         self._insertSecondSingleInput()
+        self.label2.setText(self.tr(name, "Input DTM"))
+        STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
 
         self.label2.setText(self.tr(name, "Input DTM"))
         self.label.setText(self.tr(name, "Input LAS file"))
