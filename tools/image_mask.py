@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
 
 class STEMToolsDialog(BaseDialog):
@@ -39,7 +39,7 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
-        self.addLayerToComboBox(self.BaseInput, 0)
+        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
 
         self.LabelOut.setText(self.tr(name, "Impostando la maschera "
                                      "tutte le successive operazioni "
