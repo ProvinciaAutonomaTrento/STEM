@@ -36,6 +36,7 @@ import subprocess
 import tempfile
 from functools import partial
 from gdal_functions import getNumSubset
+from stem_utils import STEMMessageHandler
 
 MSG_BOX_TITLE = "STEM Plugin Warning"
 
@@ -424,7 +425,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         pass
 
     def onRunServer(self):
-        QMessageBox.warning(self, "Warning", "Da Implementare")
+        STEMMessageHandler.warning("Esegui sul Server", "Opzione non ancora implementata")
         pass
 
     # stop the command execution
@@ -432,12 +433,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.enableRun(True)
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
-
-    # called if an error occurs when the command has not already finished,
-    # shows the occurred error message
-    def onError(self, error):
-        # function to return error
-        QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
 
     def onFinished(self, exitCode, status):
         """called when the command finished its execution, shows an error message if
@@ -478,7 +473,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file già presente." % mydir)
+            STEMMessageHandler.error("'{0}' file già presente.".format(mydir))
 
     def finished(self, load):
         outFn = self.getOutputFileName()
@@ -486,17 +481,17 @@ class BaseDialog(QDialog, Ui_Dialog):
             return
 
         if outFn == '':
-            QMessageBox.warning(self, "Warning", "No output file created.")
+            STEMMessageHandler.warning("Warning", "No output file created.")
             return
 
         fileInfo = QFileInfo(outFn)
         if fileInfo.exists():
             if load:
                 self.addLayerIntoCanvas(fileInfo)
-            QMessageBox.information(self, "Finished", "Processing completed.")
+            STEMMessageHandler.information("Finished", "Processing completed.")
         else:
             # QMessageBox.warning(self, self.tr( "Warning" ), self.tr( "%1 not created." ).arg( outFn ) )
-            QMessageBox.warning(self, "Warning", "%s not created." % outFn)
+            STEMMessageHandler.warning("Warning", "{0} not created.".format(outFn))
 
     def tr(self, context, text):
         if context == '':
@@ -562,7 +557,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file già presente." % mydir)
+            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def BrowseDir(self, line):
         """"""
@@ -573,11 +568,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file già presente." % mydir)
-
-    def onError(self, error):
-        """Function to return error"""
-        QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
+            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def _reject(self):
         pass

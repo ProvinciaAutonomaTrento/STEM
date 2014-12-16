@@ -31,7 +31,8 @@ from qgis.core import *
 from qgis.gui import *
 from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -63,19 +64,25 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
-    def onRun(self):
-        uLs = self.layer_list.currentText().split(',')
-        if len(uLs) != 4:
-            self.onError("Il numero di layer dev'essere uguale a quattro")
-        name = str(self.BaseInput.currentText())
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        method = str(self.methodInput.currentText())
-        source = self.getLayersSource(name)
-        com = ['i.pansharpen', 'red={name}.{l}'.format(name=tempin, l=uLs[0]),
-               'green={name}.{l}'.format(name=tempin, l=uLs[1]),
-               'blue={name}.{l}'.format(name=tempin, l=uLs[2]),
-               'base={name}'.format(name=tempout),
-               'pan={name}.{l}'.format(val=self.size.text(), l=uLs[3]),
-               'method={met}'.format(met=method)]
-        gs.run_grass(source, tempin, tempout, self.TextOut.text(),
-                     'raster', com)
+    def onRunLocal(self):
+        try:
+            uLs = self.layer_list.text().split(',')
+            if len(uLs) != 4:
+                STEMMessageHandler.information(None, "Il numero di layer dev'essere uguale a quattro")
+                return
+            name = str(self.BaseInput.currentText())
+            tempin, tempout, gs = temporaryFilesGRASS(name)
+            method = str(self.methodInput.currentText())
+            source = self.getLayersSource(name)
+            com = ['i.pansharpen', 'red={name}.{l}'.format(name=tempin, l=uLs[0]),
+                   'green={name}.{l}'.format(name=tempin, l=uLs[1]),
+                   'blue={name}.{l}'.format(name=tempin, l=uLs[2]),
+                   'base={name}'.format(name=tempout),
+                   'pan={name}.{l}'.format(val=self.size.text(), l=uLs[3]),
+                   'method={met}'.format(met=method)]
+            gs.run_grass(source, tempin, tempout, self.TextOut.text(),
+                         'raster', com)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

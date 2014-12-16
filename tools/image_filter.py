@@ -31,9 +31,9 @@ from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from stem_functions import temporaryFilesGRASS
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler
 from grass_stem import helpUrl
-
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -106,42 +106,48 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.show_(self)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
-        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list2)
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list2)
-        coms = []
-        outnames = []
-
-        cut, cutsource, mask = self.cutInput(name, source, typ)
-        if cut:
-            name = cut
-            source = cutsource
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        if len(nlayerchoose) > 0:
-            gs.import_grass(source, tempin, typ, nlayerchoose)
-        else:
-            gs.import_grass(source, tempin, typ)
-        if mask:
-            gs.check_mask(mask)
-        if self.BaseInputCombo.currentText() == 'filter':
-            pass
-        else:
-            for n in nlayerchoose:
-                out = '{name}_{lay}'.format(name=tempout, lay=n)
-                outnames.append(out)
-                com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
-                                                                  lay=n),
-                       'output={outname}'.format(outname=out),
-                       'size={val}'.format(val=self.Linedit.text()),
-                       'method={met}'.format(met=self.MethodInput.currentText())]
-                coms.append(com)
-                self.saveCommand(com)
-        gs.run_grass(coms)
-        if len(nlayerchoose) > 1:
-            gs.create_group(outnames, tempout)
-            gs.export_grass(tempout, self.TextOut.text(), typ)
-        else:
-            gs.export_grass(outnames[0], self.TextOut.text(), typ)
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list2)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list2)
+        
+            coms = []
+            outnames = []
+    
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+            if cut:
+                name = cut
+                source = cutsource
+            tempin, tempout, gs = temporaryFilesGRASS(name)
+            if len(nlayerchoose) > 0:
+                gs.import_grass(source, tempin, typ, nlayerchoose)
+            else:
+                gs.import_grass(source, tempin, typ)
+            if mask:
+                gs.check_mask(mask)
+            if self.BaseInputCombo.currentText() == 'filter':
+                pass
+            else:
+                for n in nlayerchoose:
+                    out = '{name}_{lay}'.format(name=tempout, lay=n)
+                    outnames.append(out)
+                    com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
+                                                                      lay=n),
+                           'output={outname}'.format(outname=out),
+                           'size={val}'.format(val=self.Linedit.text()),
+                           'method={met}'.format(met=self.MethodInput.currentText())]
+                    coms.append(com)
+                    self.saveCommand(com)
+            gs.run_grass(coms)
+            if len(nlayerchoose) > 1:
+                gs.create_group(outnames, tempout)
+                gs.export_grass(tempout, self.TextOut.text(), typ)
+            else:
+                gs.export_grass(outnames[0], self.TextOut.text(), typ)
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
