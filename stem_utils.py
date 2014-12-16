@@ -29,6 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
+from qgis.utils import iface
 
 from gdal_functions import getNumSubset
 try:
@@ -132,3 +133,86 @@ class STEMUtils:
             model = checkCombo.model()
             item = model.item(n-1)
             item.setCheckState(Qt.Unchecked)
+
+class STEMMessageHandler:
+    """
+    Handler of message notification via QgsMessageBar.
+    
+    STEMMessageHandler.[information, warning, critical, success](title, text, timeout)
+    STEMMessageHandler.[information, warning, critical, success](title, text)
+    STEMMessageHandler.error(message)
+    """
+
+    messageLevel = [QgsMessageBar.INFO,
+                    QgsMessageBar.WARNING,
+                    QgsMessageBar.CRITICAL]
+
+    ## SUCCESS was introduced in 2.7
+    ## if it throws an AttributeError INFO will be used
+    try:
+        messageLevel.append(QgsMessageBar.SUCCESS)
+    except:
+        pass
+    messageTime = iface.messageTimeout()
+
+    @staticmethod
+    def information(title="", text="", timeout=None):
+        level = STEMMessageHandler.messageLevel[0]
+        if timeout is None:
+            timeout = STEMMessageHandler.messageTime
+        STEMMessageHandler.messageBar(title, text, level, timeout)
+
+    @staticmethod
+    def warning(title="", text="", timeout=None):
+        level = STEMMessageHandler.messageLevel[1]
+        if timeout is None:
+            timeout = STEMMessageHandler.messageTime
+        STEMMessageHandler.messageBar(title, text, level, timeout)
+
+    @staticmethod
+    def critical(title="", text="", timeout=None):
+        level = STEMMessageHandler.messageLevel[2]
+        if timeout is None:
+            timeout = STEMMessageHandler.messageTime
+        STEMMessageHandler.messageBar(title, text, level, timeout)
+
+    @staticmethod
+    def success(title="", text="", timeout=None):
+        ## SUCCESS was introduced in 2.7
+        ## if it throws an AttributeError INFO will be used
+        try:
+            level = STEMMessageHandler.messageLevel[3]
+        except:
+            level = STEMMessageHandler.messageLevel[0]
+        if timeout is None:
+            timeout = STEMMessageHandler.messageTime
+        STEMMessageHandler.messageBar(title, text, level, timeout)
+
+    @staticmethod
+    def error(message):
+        ## TODO: add an action to message bar to trigger the Log Messages Viewer
+#         button = QToolButton()
+#         action = QAction(button)
+#         action.setText("Apri finestra dei logs")
+#         button.setCursor(Qt.PointingHandCursor)
+#         button.setStyleSheet("background-color: rgba(255, 255, 255, 0); color: black; "
+#                              "text-decoration: underline;")
+#         button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+#         button.addAction(action)
+#         button.setDefaultAction(action)
+#         level = STEMMessageHandler.messageLevel[1]
+#         messageBarItem = QgsMessageBarItem(u"Error", u"Un errore è avvenuto, controllare i messaggi di log", 
+#                                            button, level, 0, iface.messageBar())
+        
+#         iface.messageBar().pushItem(messageBarItem)
+        
+        STEMMessageHandler.warning("Errore", "Controllare i messaggi di log di QGIS", 0)
+        QgsMessageLog.logMessage(message, "STEM Plugin")
+        
+
+    @staticmethod
+    def messageBar(title, text, level, timeout):
+        if title:
+            iface.messageBar().pushMessage(title.decode('utf-8'), text.decode('utf-8'), level, timeout)
+        else:
+            iface.messageBar().pushMessage(text.decode('utf-8'), level, timeout)
