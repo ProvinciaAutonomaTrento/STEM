@@ -191,6 +191,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.label2.setText(self.tr("", "Dati di input"))
 
     def _insertLayerChoose(self):
+        # TODO da rimuovere
         """Function to add a LineEdit Widget for the layers list"""
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
@@ -208,7 +209,21 @@ class BaseDialog(QDialog, Ui_Dialog):
                                             " i layer"))
         self.label_layer.setText(self.tr("", "Inserire numero layers"))
 
-    def _insertLayerChooseCheckBox(self):
+    def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
+                                               "utilizzare cliccandoci sopra"):
+        self.horizontalLayout_layer = QHBoxLayout()
+        self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
+        self.label_layer = QLabel()
+        self.label_layer.setWordWrap(True)
+        self.label_layer.setObjectName("label_layer")
+        self.horizontalLayout_layer.addWidget(self.label_layer)
+        self.layer_list = CheckableComboBox()
+        self.layer_list.setObjectName("layer_list")
+        self.horizontalLayout_layer.addWidget(self.layer_list)
+        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
+        self.label_layer.setText(self.tr("", label))
+
+    def _insertLayerChooseCheckBox2(self, label):
         self.horizontalLayout_layer2 = QHBoxLayout()
         self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
@@ -218,10 +233,21 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.layer_list2 = CheckableComboBox()
         self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
-        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer2)
-        self.label_layer2.setText(self.tr("", "Selezionare le bande "
-                                             "da utilizzare cliccandoci sopra."))
+        self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer2)
+        self.label_layer2.setText(self.tr("", label))
 
+    def _insertLayerChooseCheckBox3(self, label):
+        self.horizontalLayout_layer3 = QHBoxLayout()
+        self.horizontalLayout_layer3.setObjectName("horizontalLayout_layer3")
+        self.label_layer3 = QLabel()
+        self.label_layer3.setWordWrap(True)
+        self.label_layer3.setObjectName("label_layer3")
+        self.horizontalLayout_layer3.addWidget(self.label_layer3)
+        self.layer_list3 = CheckableComboBox()
+        self.layer_list3.setObjectName("layer_list3")
+        self.horizontalLayout_layer3.addWidget(self.layer_list3)
+        self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer3)
+        self.label_layer3.setText(self.tr("", label))
 
     def _insertMethod(self, methods, label, posnum):
         """Function to add ComboBox Widget"""
@@ -269,13 +295,13 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.LabelThrei.setWordWrap(True)
         self.horizontalLayout_threi.addWidget(self.LabelThrei)
         self.thresholdi = QDoubleSpinBox()
-        self.thresholdi.setObjectName("thresholdd")
+        self.thresholdi.setObjectName("thresholdi")
         self.thresholdi.setRange(minn, maxx)
         self.thresholdi.setSingleStep(step)
         self.horizontalLayout_threi.addWidget(self.thresholdi)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_threi)
-        self.LabelThred.setText(self.tr("", label))
+        self.LabelThrei.setText(self.tr("", label))
 
     def _insertFirstLineEdit(self, label, posnum):
         """Function to add a LineEdit Widget"""
