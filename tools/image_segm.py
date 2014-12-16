@@ -51,7 +51,7 @@ class STEMToolsDialog(BaseDialog):
         self.connect(self.BrowseButton2, SIGNAL("clicked()"), self.BrowseDir)
         self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
 
-        self._insertThresholdDouble(0.000, 1.000, 0.001, 1, 3)
+        self._insertThresholdDouble(0.001, 1.000, 0.001, 1, 3)
 
         methods = ['euclidean', 'manhattan']
         label = "Seleziona il metodo di calcolo della similarità"
@@ -113,10 +113,12 @@ class STEMToolsDialog(BaseDialog):
 
         gs.run_grass(coms)
 
-        gs.export_grass(tempout, self.TextOut.text(), typ)
+        gs.export_grass(tempout, self.TextOut.text(), typ, False)
         if self.TextOut2.text():
             gs.export_grass('goodness_{name}'.format(name=tempout),
                             self.TextOut2.text(), typ)
+        else:
+            gs.removeMapset()
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
             if self.TextOut2.text():
