@@ -236,7 +236,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         [self.MethodInput.addItem(m) for m in methods]
         self.labelmethod.setText(self.tr("", label))
 
-    def _insertThresholdDouble(self, minn, maxx, step, posnum, deci=2):
+    def _insertThresholdDouble(self, minn, maxx, step, posnum, deci=2,
+                               label="Seleziona il threshold da utilizzare"):
         """Function to add SpinBox Widget for decimal number"""
         self.horizontalLayout_thred = QHBoxLayout()
         self.horizontalLayout_thred.setObjectName("horizontalLayout_thred")
@@ -251,9 +252,10 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_thred.addWidget(self.thresholdd)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_thred)
-        self.LabelThred.setText(self.tr("", "Seleziona il threshold da utilizzare"))
+        self.LabelThred.setText(self.tr("", label))
 
-    def _insertThresholdInteger(self, minn, maxx, step, posnum):
+    def _insertThresholdInteger(self, minn, maxx, step, posnum,
+                                label="Seleziona il threshold da utilizzare"):
         """Function to add SpinBox Widget for integer number"""
         self.horizontalLayout_threi = QHBoxLayout()
         self.horizontalLayout_threi.setObjectName("horizontalLayout_threi")
@@ -267,7 +269,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_threi.addWidget(self.thresholdi)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_threi)
-        self.LabelThred.setText(self.tr("", "Seleziona il threshold da utilizzare"))
+        self.LabelThred.setText(self.tr("", label))
 
     def _insertFirstLineEdit(self, label, posnum):
         """Function to add a LineEdit Widget"""
