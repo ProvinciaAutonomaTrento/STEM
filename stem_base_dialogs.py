@@ -520,15 +520,34 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def BrowseDir(self):
         """Function to create new file in a directory"""
-        mydir = QFileDialog.getSaveFileName(None, "Selezionare la cartella di"
-                                            " destinazione", "")
-        if not os.path.exists(mydir):
-            self.TextOut.setText(mydir)
-            return
-        else:
-            # TODO add overwrite option
-            STEMMessageHandler.error("'{0}' file già presente.".format(mydir))
+        fileName = QFileDialog.getSaveFileName(None, "Selezionare la cartella di"
+                                               " destinazione", "")
+        if fileName:                                    
+            try:
+                self.save(fileName)
+                self.TextOut.setText(fileName)
+            except (IOError, OSError), error:
+                STEMMessageHandler.error('The file <b>{0}</b> could not be saved. Errore: {1}'
+                                        .format(fileName, error.strerror))
+                                                 
 
+    def save(self, fileName=None):
+        if fileName:
+            self.path = fileName
+        if self.path is None:
+            self.path = QFileDialog().getSaveFileName(self,
+                                                      "",
+                                                      "",
+                                                      "Output file (*.tiff)")
+            # If the user didn't select a file, abort the save operation
+            if len(self.path) == 0:
+                self.path = None
+                return
+            STEMMessageHandler.success("File salvato correttamente.")
+        # Rename the original file, if it exists
+        path = unicode(self.path)
+        self.overwrite = QFileInfo(path).exists()
+    
     def finished(self, load):
         outFn = self.getOutputFileName()
         if outFn:

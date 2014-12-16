@@ -33,7 +33,7 @@ from stem_base_dialogs import BaseDialog
 from stem_functions import temporaryFilesGRASS
 from stem_utils import STEMUtils, STEMMessageHandler
 from grass_stem import helpUrl
-import traceback
+import os, traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -147,7 +147,17 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
     
-            gs.export_grass(tempout, self.TextOut.text(), typ)
+            if self.overwrite:
+                output = self.TextOut.text() + '.tmp'
+            else:
+                output = self.TextOut.text()
+            try:
+                gs.export_grass(tempout, output, typ)
+            except:
+                pass
+            os.remove(self.TextOut.text())
+            os.rename(output, self.TextOut.text())
+            
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
