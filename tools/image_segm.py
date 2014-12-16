@@ -87,8 +87,6 @@ class STEMToolsDialog(BaseDialog):
         size = str(self.Linedit.text())
         memory = str(self.Linedit2.text())
         coms = []
-        outnames = []
-        goodness = []
 
         cut, cutsource, mask = self.cutInput(name, source, typ)
 
@@ -109,17 +107,11 @@ class STEMToolsDialog(BaseDialog):
                'iter={val}'.format(val=itera)]
         if self.TextOut2.text():
             good = 'goodness_{name}'.format(name=tempout)
-            goodness.append(good)
             com.append('goodness={val}'.format(val=good))
         coms.append(com)
         self.saveCommand(com)
 
         gs.run_grass(coms)
-
-        if len(nlayerchoose) > 1:
-            gs.create_group(outnames, tempout)
-            if self.TextOut2.text():
-                gs.create_group(goodness, 'goodness_{name}'.format(name=tempout))
 
         gs.export_grass(tempout, self.TextOut.text(), typ)
         if self.TextOut2.text():
