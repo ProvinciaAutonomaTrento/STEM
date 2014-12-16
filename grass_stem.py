@@ -29,7 +29,6 @@ import os
 import sys
 import subprocess
 import itertools
-from PyQt4.QtCore import pyqtRemoveInputHook
 
 stats = ['n', 'min', 'max', 'range', 'sum', 'mean', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -140,19 +139,25 @@ class stemGRASS():
                 if 'MASK' not in rasts:
                     gcore.run_command('r.mask', vector=name)
 
-    def import_grass(self, inp, intemp, typ, nl=None):
+    def import_grass(self, inp, intemp, typ, nl):
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
-            if nl:
+            if len(nl) > 1:
                 runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
                                       'output={intemp}'.format(intemp=intemp),
                                       'band={bs}'.format(bs=','.join(nl))],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
-            else:
+            elif len(nl) == 1 and nl[0] == '1':
                 runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
                                       'output={intemp}'.format(intemp=intemp)],
+                                     stdin=PIPE, stdout=PIPE,
+                                     stderr=PIPE)
+            elif len(nl) == 1 and nl[0] != '1':
+                runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
+                                      'output={intemp}'.format(intemp=intemp),
+                                      'band={bs}'.format(bs=','.join(nl))],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
             out, err = runcom.communicate()
@@ -160,10 +165,15 @@ class stemGRASS():
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Errore eseguendo r.in.gdal {err}".format(err=err))
-            runcom = gcore.Popen(['g.region', 'rast={intemp}.{n}'.format(intemp=intemp,
-                                                                         n=max(nl))],
-                                 stdin=PIPE, stdout=PIPE,
-                                 stderr=PIPE)
+            if len(nl) > 1:
+                runcom = gcore.Popen(['g.region', 'rast={intemp}.{n}'.format(intemp=intemp,
+                                                                             n=max(nl))],
+                                     stdin=PIPE, stdout=PIPE,
+                                     stderr=PIPE)
+            else:
+                runcom = gcore.Popen(['g.region', 'rast={intemp}'.format(intemp=intemp)],
+                                     stdin=PIPE, stdout=PIPE,
+                                     stderr=PIPE)
             out, err = runcom.communicate()
             #  print out,err
             if runcom.returncode != 0:
@@ -186,7 +196,7 @@ class stemGRASS():
             raise Exception("Errore eseguendo GRASS: "
                             "Errore eseguendo i.group {err}".format(err=err))
 
-    def export_grass(self, outemp, finalout, typ):
+    def export_grass(self, outemp, finalout, typ, remove=True):
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
@@ -201,6 +211,8 @@ class stemGRASS():
             # gcore.run_command('r.out.gdal', input=outemp, output=finalout)
         elif typ == 'vector':
             gcore.run_command('v.out.ogr', input=outemp, output=finalout)
+        if remove:
+            self.removeMapset()
 
     def run_grass(self, comm):
         """Run a GRASS module"""
@@ -213,7 +225,7 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo il comando {err}".format(err=err))
 
-    def removeMaps(self):
+    def removeMapset(self):
         """Remove mapset with all the contained data"""
         from grass.script import try_rmdir
         try_rmdir(self.newmapset)
