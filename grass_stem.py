@@ -79,7 +79,7 @@ class stemGRASS():
         os.environ['GISDBASE'] = grassdatabase
         os.environ['PATH'] += os.pathsep + os.path.join(gisbase, 'extrabin')
 
-        mapset = 'stem_{pid}'.format(pid=pid)
+        self.mapset = 'stem_{pid}'.format(pid=pid)
         import grass.script.setup as gsetup
         locexist = os.path.join(grassdatabase, location)
         if not os.path.exists(locexist):
@@ -89,15 +89,15 @@ class stemGRASS():
             import grass.script.core as gcore
             gcore.create_location(grassdatabase, location, epsg=epsg)
 
-        self.newmapset = os.path.join(grassdatabase, location, mapset)
-        if not os.path.exists(self.newmapset):
-            os.mkdir(self.newmapset)
+        self.mapsetpath = os.path.join(grassdatabase, location, self.mapset)
+        if not os.path.exists(self.mapsetpath):
+            os.mkdir(self.mapsetpath)
         wind = readfile(os.path.join(grassdatabase, location, "PERMANENT",
                                      "DEFAULT_WIND"))
-        writefile(os.path.join(self.newmapset, "WIND"), wind)
+        writefile(os.path.join(self.mapsetpath, "WIND"), wind)
         ###########
         # launch session
-        gsetup.init(gisbase, grassdatabase, location, mapset)
+        gsetup.init(gisbase, grassdatabase, location, self.mapset)
         if 'GRASS_PROJSHARE' not in os.environ.keys():
             os.environ['GRASS_PROJSHARE'] = 'C:\OSGeo4W\share\proj'
 
@@ -172,8 +172,10 @@ class stemGRASS():
             gcore.run_command('v.in.ogr', input=inp, output=intemp)
             gcore.run_command('g.region', vect=intemp)
 
-    def create_group(self, maps, gname):
+    def create_group(self, maps, gname, base=False):
         import grass.script.core as gcore
+        if base:
+            maps = gcore.list_grouped('rast', pattern='{base}*'.format(base=maps))[self.mapset]
         runcom = gcore.Popen(['i.group', 'group={name}'.format(name=gname),
                               'subgroup={name}'.format(name=gname),
                               'input={maps}'.format(maps=','.join(maps))],
@@ -216,4 +218,4 @@ class stemGRASS():
     def removeMapset(self):
         """Remove mapset with all the contained data"""
         from grass.script import try_rmdir
-        try_rmdir(self.newmapset)
+        try_rmdir(self.mapsetpath)
