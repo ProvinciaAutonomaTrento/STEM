@@ -45,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         # TODO add filter
@@ -83,6 +83,9 @@ class STEMToolsDialog(BaseDialog):
 #        self.verticalLayout_options.insertLayout(4, self.horizontalLayout_filter)
 #        self.labelfilter.setText(self.tr(name, "Selezionare il file dei filtri"))
 
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+    
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'filter':
             self.LabelLinedit.setText(self.tr(name, self.lf))
