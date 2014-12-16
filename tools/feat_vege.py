@@ -29,8 +29,11 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils
+from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
+from stem_functions import temporaryFilesGRASS
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -39,14 +42,19 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
-        self._insertLayerChoose()
-        self.label_layer.setText(self.tr(name, "Inserire i numeri dei "
-                                        "layer da utilizzare, separati da"
-                                        " una virgola e partendo da 1."
-                                        " Il primo valore dev'essere la "
-                                        "banda dell'infrarosso mentre la "
-                                        "seconda dev'essere quella del "
-                                        "rosso"))
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+
+        self._insertLayerChooseCheckBox(label="Selezionare la banda per il canale rosso",
+                                        combo=False)
+        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+
+        self._insertLayerChooseCheckBox2(label="Selezionare la banda per il canale infrarosso",
+                                         combo=False)
+        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+
+        self.helpui.fillfromUrl(helpUrl('i.vi'))
 
     def show_(self):
         self.switchClippingMode()
@@ -57,20 +65,30 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
-        source = self.getLayersSource(name)
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        typ = self.checkMultiRaster()
-        cut = self.cutInput(name, source, 'raster')
+        source = STEMUtils.getLayersSource(name)
+
+        red = str(self.layer_list.currentIndex() + 1)
+        nir = str(self.layer_list2.currentIndex() + 1)
+        nlayers = [red, nir]
+
+        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+
+        cut, cutsource, mask = self.cutInput(name, source, typ)
+
         if cut:
             name = cut
-        if self.BaseInputCombo.currentText() == 'filter':
-            pass
-        else:
-            com = ['i.vi', 'input={name}'.format(name=tempin),
-                   'output={name}'.format(name=tempout), 'viname=ndvi',
-                   'nir={val}'.format(val=self.Linedit.text())]
+            source = cutsource
+        tempin, tempout, gs = temporaryFilesGRASS(name)
+        if mask:
+            gs.check_mask(mask)
+        gs.import_grass(source, tempin, typ, nlayers)
+        com = ['i.vi', 'red={name}.{l}'.format(name=tempin, l=red),
+               'nir={name}.{l}'.format(name=tempin, l=nir),
+               'output={name}'.format(name=tempout), 'viname=ndvi']
         self.saveCommand(com)
-        gs.run_grass(com, source, tempin, tempout, self.TextOut.text())
-        if self.AddLayerToCanvas.isChecked():
-            self.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+        gs.run_grass([com])
 
+#        pdb.set_trace()
+        gs.export_grass(tempout, self.TextOut.text(), typ, False)
+        if self.AddLayerToCanvas.isChecked():
+            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
