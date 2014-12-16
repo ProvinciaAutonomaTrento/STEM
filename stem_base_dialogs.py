@@ -210,44 +210,70 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.label_layer.setText(self.tr("", "Inserire numero layers"))
 
     def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
-                                               "utilizzare cliccandoci sopra"):
+                                               "utilizzare cliccandoci sopra",
+                                   combo=True):
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
         self.label_layer.setWordWrap(True)
         self.label_layer.setObjectName("label_layer")
         self.horizontalLayout_layer.addWidget(self.label_layer)
-        self.layer_list = CheckableComboBox()
+        if combo:
+            self.layer_list = CheckableComboBox()
+        else:
+            self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
         self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
-    def _insertLayerChooseCheckBox2(self, label):
+    def _insertLayerChooseCheckBox2(self, label, combo=True):
         self.horizontalLayout_layer2 = QHBoxLayout()
         self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
         self.label_layer2.setWordWrap(True)
         self.label_layer2.setObjectName("label_layer2")
         self.horizontalLayout_layer2.addWidget(self.label_layer2)
-        self.layer_list2 = CheckableComboBox()
+        if combo:
+            self.layer_list2 = CheckableComboBox()
+        else:
+            self.layer_list2 = QComboBox()
         self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
         self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer2)
         self.label_layer2.setText(self.tr("", label))
 
-    def _insertLayerChooseCheckBox3(self, label):
+    def _insertLayerChooseCheckBox3(self, label, combo=True):
         self.horizontalLayout_layer3 = QHBoxLayout()
         self.horizontalLayout_layer3.setObjectName("horizontalLayout_layer3")
         self.label_layer3 = QLabel()
         self.label_layer3.setWordWrap(True)
         self.label_layer3.setObjectName("label_layer3")
         self.horizontalLayout_layer3.addWidget(self.label_layer3)
-        self.layer_list3 = CheckableComboBox()
+        if combo:
+            self.layer_list3 = CheckableComboBox()
+        else:
+            self.layer_list3 = QComboBox()
         self.layer_list3.setObjectName("layer_list3")
         self.horizontalLayout_layer3.addWidget(self.layer_list3)
         self.verticalLayout_input.insertLayout(4, self.horizontalLayout_layer3)
         self.label_layer3.setText(self.tr("", label))
+
+    def _insertLayerChooseCheckBox4(self, label, pos=5, combo=True):
+        self.horizontalLayout_layer4 = QHBoxLayout()
+        self.horizontalLayout_layer4.setObjectName("horizontalLayout_layer4")
+        self.label_layer4 = QLabel()
+        self.label_layer4.setWordWrap(True)
+        self.label_layer4.setObjectName("label_layer4")
+        self.horizontalLayout_layer4.addWidget(self.label_layer4)
+        if combo:
+            self.layer_list4 = CheckableComboBox()
+        else:
+            self.layer_list4 = QComboBox()
+        self.layer_list4.setObjectName("layer_list4")
+        self.horizontalLayout_layer4.addWidget(self.layer_list4)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer4)
+        self.label_layer4.setText(self.tr("", label))
 
     def _insertMethod(self, methods, label, posnum):
         """Function to add ComboBox Widget"""
