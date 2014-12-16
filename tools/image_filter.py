@@ -43,10 +43,10 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
-        self._insertLayerChooseCheckBox()
 
+        self._insertLayerChooseCheckBox()
         self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         # TODO add filter
         items = ['neighbors']
@@ -108,31 +108,36 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
         source = STEMUtils.getLayersSource(name)
-        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list2)
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list2)
+        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
         coms = []
         outnames = []
-
         cut, cutsource, mask = self.cutInput(name, source, typ)
         if cut:
             name = cut
             source = cutsource
         tempin, tempout, gs = temporaryFilesGRASS(name)
-        if len(nlayerchoose) > 0:
-            gs.import_grass(source, tempin, typ, nlayerchoose)
-        else:
-            gs.import_grass(source, tempin, typ)
+        gs.import_grass(source, tempin, typ, nlayerchoose)
         if mask:
             gs.check_mask(mask)
         if self.BaseInputCombo.currentText() == 'filter':
             pass
         else:
-            for n in nlayerchoose:
-                out = '{name}_{lay}'.format(name=tempout, lay=n)
-                outnames.append(out)
-                com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
-                                                                  lay=n),
-                       'output={outname}'.format(outname=out),
+            if len(nlayerchoose) > 1:
+                for n in nlayerchoose:
+                    out = '{name}_{lay}'.format(name=tempout, lay=n)
+                    outnames.append(out)
+                    com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
+                                                                      lay=n),
+                           'output={outname}'.format(outname=out),
+                           'size={val}'.format(val=self.Linedit.text()),
+                           'method={met}'.format(met=self.MethodInput.currentText())]
+                    coms.append(com)
+                    self.saveCommand(com)
+            else:
+                outnames.append(tempout)
+                com = ['r.neighbors', 'input={name}'.format(name=tempin),
+                       'output={outname}'.format(outname=tempout),
                        'size={val}'.format(val=self.Linedit.text()),
                        'method={met}'.format(met=self.MethodInput.currentText())]
                 coms.append(com)
@@ -140,8 +145,7 @@ class STEMToolsDialog(BaseDialog):
         gs.run_grass(coms)
         if len(nlayerchoose) > 1:
             gs.create_group(outnames, tempout)
-            gs.export_grass(tempout, self.TextOut.text(), typ)
-        else:
-            gs.export_grass(outnames[0], self.TextOut.text(), typ)
+
+        gs.export_grass(tempout, self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
