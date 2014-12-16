@@ -31,6 +31,8 @@ from qgis.core import *
 from qgis.gui import *
 from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils
+from grass_stem import helpUrl
 
 
 class STEMToolsDialog(BaseDialog):
@@ -40,12 +42,20 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+
+        self._insertLayerChooseCheckBox()
+        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+
+
         methods = ['asm', 'contrast', 'corr', 'var', 'idm', 'sa', 'se', 'sv',
                    'entr', 'dv', 'de', 'moc1', 'moc2']
         label = "Metodo per calcolare la tessitura"
         self._insertMethod(methods, label, 0)
         label = "Dimensione della finestra mobile"
         self._insertFirstLineEdit(label, 1)
+        self.helpui.fillfromUrl(helpUrl('r.texture'))
 
     def show_(self):
         self.switchClippingMode()
@@ -56,17 +66,41 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
-        source = self.getLayersSource(name)
+        source = STEMUtils.getLayersSource(name)
+        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+        coms = []
+        outnames = []
+        cut, cutsource, mask = self.cutInput(name, source, typ)
+        if cut:
+            name = cut
+            source = cutsource
         tempin, tempout, gs = temporaryFilesGRASS(name)
-        typ = self.checkMultiRaster()
-        if self.BaseInputCombo.currentText() == 'filter':
-            pass
+        gs.import_grass(source, tempin, typ, nlayerchoose)
+        if mask:
+            gs.check_mask(mask)
+
+        if len(nlayerchoose) > 1:
+            for n in nlayerchoose:
+                out = '{name}_{lay}'.format(name=tempout, lay=n)
+                outnames.append(out)
+                com = ['r.texture', 'input={name}.{l}'.format(name=tempin, l=n),
+                       'output={name}'.format(name=out),
+                       'size={val}'.format(val=self.Linedit.text()),
+                       'method={met}'.format(met=self.MethodInput.currentText())]
+                coms.append(com)
+                self.saveCommand(com)
         else:
+            outnames.append(tempout)
             com = ['r.texture', 'input={name}'.format(name=tempin),
                    'output={name}'.format(name=tempout),
                    'size={val}'.format(val=self.Linedit.text()),
                    'method={met}'.format(met=self.MethodInput.currentText())]
-        self.saveCommand(com)
-        gs.run_grass(com, source, tempin, tempout, self.TextOut.text(), typ)
+            coms.append(com)
+            self.saveCommand(com)
+        gs.run_grass(coms)
+        gs.create_group(tempout, tempout, True)
+
+        gs.export_grass(tempout, self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
-            self.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
