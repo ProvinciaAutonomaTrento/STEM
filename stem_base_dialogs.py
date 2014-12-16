@@ -172,7 +172,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
 
-    def _insertSecondSingleInput(self):
+    def _insertSecondSingleInput(self, pos=1):
         """Function to add a second ComboBox Widget where insert a single
         input file"""
         self.horizontalLayout_input2 = QHBoxLayout()
@@ -184,7 +184,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BaseInput2.setEditable(True)
         self.BaseInput2.setObjectName("BaseInput2")
         self.horizontalLayout_input2.addWidget(self.BaseInput2)
-        self.verticalLayout_input.insertLayout(1, self.horizontalLayout_input2)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input2)
         self.label2.setText(self.tr("", "Dati di input"))
 
     def _insertLayerChoose(self):
@@ -243,7 +243,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.layer_list3 = CheckableComboBox()
         self.layer_list3.setObjectName("layer_list3")
         self.horizontalLayout_layer3.addWidget(self.layer_list3)
-        self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer3)
+        self.verticalLayout_input.insertLayout(4, self.horizontalLayout_layer3)
         self.label_layer3.setText(self.tr("", label))
 
     def _insertMethod(self, methods, label, posnum):
