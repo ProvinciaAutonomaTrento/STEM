@@ -33,7 +33,10 @@ from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
 import traceback
+<<<<<<< HEAD
 
+=======
+>>>>>>> d0b1616ce978d8f2aceba231e84513fc222ea936
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
