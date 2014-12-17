@@ -149,8 +149,15 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
                 
-            self.overwrite = QFileInfo(self.TextOut.text()).exists()
-            
+            if QFileInfo(self.TextOut.text()).exists():
+                res = QMessageBox.question(None, "", u"Esiste già un file con nome {0}. Sostituirlo?"
+                                           .format(QFileInfo(self.TextOut.text()).baseName), 
+                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel, QMessageBox.No)
+                
+                if res == QMessageBox.Cancel: return
+                if res:
+                    self.overwrite = True
+                
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
             
             if self.AddLayerToCanvas.isChecked():

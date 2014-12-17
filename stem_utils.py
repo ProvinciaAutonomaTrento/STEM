@@ -148,7 +148,6 @@ class STEMUtils:
         except:
             pass
         if overwrite:
-            os.rename(tmp, output)
             os.rename('{name}.aux.xml'.format(name=tmp),
                       '{name}.aux.xml'.format(name=output))
 
