@@ -32,6 +32,7 @@ from qgis.gui import *
 from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils
+from grass_stem import helpUrl
 
 
 class STEMToolsDialog(BaseDialog):
@@ -81,6 +82,7 @@ class STEMToolsDialog(BaseDialog):
 #        self.label_layer.setToolTip(tooltip)
 
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
+        self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
 
     def show_(self):
         self.switchClippingMode()

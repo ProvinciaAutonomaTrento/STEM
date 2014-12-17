@@ -132,3 +132,16 @@ class STEMUtils:
             model = checkCombo.model()
             item = model.item(n-1)
             item.setCheckState(Qt.Unchecked)
+
+    @staticmethod
+    def writeFile(text, name=False):
+        if name:
+            fs = open(name, 'w')
+        else:
+            import tempfile
+            f = tempfile.NamedTemporaryFile()
+            name = f.name
+            fs = f.file
+        fs.write(text)
+        fs.close()
+        return name
