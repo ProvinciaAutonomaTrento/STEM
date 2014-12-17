@@ -136,8 +136,8 @@ class STEMUtils:
             model = checkCombo.model()
             item = model.item(n-1)
             item.setCheckState(Qt.Unchecked)
-    
-    @staticmethod       
+
+    @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
         if overwrite:
             tmp = output + '.tmp'
@@ -149,8 +149,9 @@ class STEMUtils:
             pass
         if overwrite:
             os.rename(tmp, output)
-            os.remove(tmp)
-            
+            os.rename('{name}.aux.xml'.format(name=tmp),
+                      '{name}.aux.xml'.format(name=output))
+
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
                      epsg=None):
@@ -180,7 +181,7 @@ class STEMUtils:
 class STEMMessageHandler:
     """
     Handler of message notification via QgsMessageBar.
-    
+
     STEMMessageHandler.[information, warning, critical, success](title, text, timeout)
     STEMMessageHandler.[information, warning, critical, success](title, text)
     STEMMessageHandler.error(message)
@@ -244,14 +245,14 @@ class STEMMessageHandler:
 #         button.addAction(action)
 #         button.setDefaultAction(action)
 #         level = STEMMessageHandler.messageLevel[1]
-#         messageBarItem = QgsMessageBarItem(u"Error", u"Un errore è avvenuto, controllare i messaggi di log", 
+#         messageBarItem = QgsMessageBarItem(u"Error", u"Un errore è avvenuto, controllare i messaggi di log",
 #                                            button, level, 0, iface.messageBar())
-        
+
 #         iface.messageBar().pushItem(messageBarItem)
-        
+
         STEMMessageHandler.warning("Errore", "Controllare i messaggi di log di QGIS", 0)
         QgsMessageLog.logMessage(message, "STEM Plugin")
-        
+
 
     @staticmethod
     def messageBar(title, text, level, timeout):
