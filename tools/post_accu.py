@@ -29,10 +29,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_functions import temporaryFilesGRASS
-from stem_utils import STEMUtils
-from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
+from grass_stem import helpUrl
+from stem_utils import STEMUtils, STEMMessageHandler
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -52,8 +52,14 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
+
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
-        name2 = str(self.BaseInput2.currentText())
-        source2 = STEMUtils.getLayersSource(name2)
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            name2 = str(self.BaseInput2.currentText())
+            source2 = STEMUtils.getLayersSource(name2)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
