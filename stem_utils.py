@@ -259,3 +259,16 @@ class STEMMessageHandler:
             iface.messageBar().pushMessage(title.decode('utf-8'), text.decode('utf-8'), level, timeout)
         else:
             iface.messageBar().pushMessage(text.decode('utf-8'), level, timeout)
+
+    @staticmethod
+    def writeFile(text, name=False):
+        if name:
+            fs = open(name, 'w')
+        else:
+            import tempfile
+            f = tempfile.NamedTemporaryFile()
+            name = f.name
+            fs = f.file
+        fs.write(text)
+        fs.close()
+        return name
