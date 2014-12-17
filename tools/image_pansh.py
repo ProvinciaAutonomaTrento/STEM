@@ -93,6 +93,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
@@ -114,10 +115,6 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(name)
-    
-    #        pyqtRemoveInputHook()
-    #        import pdb
-    
             if name == namepan:
                 nlayers.append(pan)
                 gs.import_grass(source, tempin, typ, nlayers)
@@ -136,13 +133,12 @@ class STEMToolsDialog(BaseDialog):
                 com.append('pan={name}.{l}'.format(name=tempin, l=pan))
             else:
                 com.append('pan={name}'.format(name=namepan))
-    #        pdb.set_trace()
             coms.append(com)
             self.saveCommand(com)
             gs.run_grass(coms)
-    
-    #        pdb.set_trace()
-            gs.export_grass(tempout, self.TextOut.text(), typ, False)
+
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
