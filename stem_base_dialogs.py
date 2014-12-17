@@ -520,14 +520,13 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def BrowseDir(self):
         """Function to create new file in a directory"""
-        fileName = QFileDialog.getSaveFileName(None, "Selezionare la cartella di"
-                                               " destinazione", "")
+        fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
         if fileName:                                    
             try:
                 self.save(fileName)
                 self.TextOut.setText(fileName)
             except (IOError, OSError), error:
-                STEMMessageHandler.error('The file <b>{0}</b> could not be saved. Errore: {1}'
+                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'
                                         .format(fileName, error.strerror))
                                                  
 
