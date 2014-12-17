@@ -138,6 +138,19 @@ class STEMUtils:
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
+    def writeFile(text, name=False):
+        if name:
+            fs = open(name, 'w')
+        else:
+            import tempfile
+            f = tempfile.NamedTemporaryFile()
+            name = f.name
+            fs = f.file
+        fs.write(text)
+        fs.close()
+        return name
+
+    @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
         if overwrite:
             tmp = output + '.tmp'
@@ -148,6 +161,7 @@ class STEMUtils:
         except:
             pass
         if overwrite:
+            os.rename(tmp, output)
             os.rename('{name}.aux.xml'.format(name=tmp),
                       '{name}.aux.xml'.format(name=output))
 
@@ -259,16 +273,3 @@ class STEMMessageHandler:
             iface.messageBar().pushMessage(title.decode('utf-8'), text.decode('utf-8'), level, timeout)
         else:
             iface.messageBar().pushMessage(text.decode('utf-8'), level, timeout)
-
-    @staticmethod
-    def writeFile(text, name=False):
-        if name:
-            fs = open(name, 'w')
-        else:
-            import tempfile
-            f = tempfile.NamedTemporaryFile()
-            name = f.name
-            fs = f.file
-        fs.write(text)
-        fs.close()
-        return name
