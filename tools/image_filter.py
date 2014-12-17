@@ -148,7 +148,9 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-    
+                
+            self.overwrite = QFileInfo(self.TextOut.text()).exists()
+            
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
             
             if self.AddLayerToCanvas.isChecked():

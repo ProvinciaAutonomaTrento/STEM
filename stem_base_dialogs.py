@@ -436,9 +436,9 @@ class BaseDialog(QDialog, Ui_Dialog):
         if not bbox and not mask:
             return False, False, False
         if bbox and mask:
-            self.onError("Sono state impostate sia una maschera vettoriale "
-                         "sia una estensione di QGIS. Si prega di "
-                         "rimuoverne una delle due")
+            STEMMessageHandler.error("Sono state impostate sia una maschera vettoriale "
+                                     "sia una estensione di QGIS. Si prega di "
+                                     "rimuoverne una delle due")
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(tempfile.gettempdir(), outname)
         PIPE = subprocess.PIPE
