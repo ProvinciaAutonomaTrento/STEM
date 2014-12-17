@@ -29,7 +29,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_functions import temporaryFilesGRASS
+from stem_utils import STEMUtils
+from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
 
 class STEMToolsDialog(BaseDialog):
@@ -40,8 +42,9 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
         self._insertSecondSingleInput()
-        self.label2.setText(self.tr(name, "Input DTM"))
-        self.label.setText(self.tr(name, "Input LAS file"))
+        self.label2.setText(self.tr(name, "Input mappa training area"))
+        self.label.setText(self.tr(name, "Input mappa classificata"))
+        self.helpui.fillfromUrl(helpUrl('r.kappa'))
 
     def show_(self):
         self.switchClippingMode()
@@ -49,3 +52,8 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
+    def onRunLocal(self):
+        name = str(self.BaseInput.currentText())
+        source = STEMUtils.getLayersSource(name)
+        name2 = str(self.BaseInput2.currentText())
+        source2 = STEMUtils.getLayersSource(name2)
