@@ -84,7 +84,7 @@ class STEMToolsDialog(BaseDialog):
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-    
+
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'filter':
             self.LabelLinedit.setText(self.tr(name, self.lf))
@@ -108,6 +108,7 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.show_(self)
 
     def onRunLocal(self):
+        self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
@@ -148,11 +149,9 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-                
-            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
-                
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
