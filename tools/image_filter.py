@@ -30,7 +30,6 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_functions import temporaryFilesGRASS
 from stem_utils import STEMUtils, STEMMessageHandler
 from grass_stem import helpUrl
 import os, traceback
@@ -120,7 +119,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -150,16 +149,7 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
     
-            if self.overwrite:
-                output = self.TextOut.text() + '.tmp'
-            else:
-                output = self.TextOut.text()
-            try:
-                gs.export_grass(tempout, output, typ)
-            except:
-                pass
-            os.remove(self.TextOut.text())
-            os.rename(output, self.TextOut.text())
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
             
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
