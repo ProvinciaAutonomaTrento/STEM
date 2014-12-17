@@ -98,19 +98,19 @@ class STEMToolsDialog(BaseDialog):
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             namepan = str(self.BaseInput2.currentText())
-    
+
             red = str(self.layer_list.currentIndex() + 1)
             green = str(self.layer_list2.currentIndex() + 1)
             blu = str(self.layer_list3.currentIndex() + 1)
             pan = str(self.layer_list4.currentIndex() + 1)
             nlayers = [red, green, blu]
-    
+
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             method = str(self.MethodInput.currentText())
             coms = []
-    
+
             cut, cutsource, mask = self.cutInput(name, source, typ)
-    
+
             if cut:
                 name = cut
                 source = cutsource
@@ -138,7 +138,7 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:

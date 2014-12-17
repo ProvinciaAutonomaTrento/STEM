@@ -88,7 +88,7 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
         self.toolTree.setColumnCount(2)
         self.toolTree.setColumnHidden(1, True)
         self.toolTree.setAlternatingRowColors(True)
-        
+
         self.populateTree()
         self.toolTree.doubleClicked.connect(self.executeTool)
 
@@ -96,10 +96,10 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
         item = self.toolTree.currentItem()
         if isinstance(item, TreeToolItem):
             toolName = item.text(0)
-            module = TOOLS[(item.parent().text(1), 
+            module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
                                                         toolName)]
-            
+
             globals()["toolModule"] = __import__(module)
             dlg = toolModule.STEMToolsDialog(iface, toolName)
             dlg.exec_()
@@ -122,7 +122,7 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
             self.toolTree.addTopLevelItem(groupItem)
             self.toolTree.sortItems(1, Qt.AscendingOrder)
             self.toolTree.resizeColumnToContents(0)
-            
+
     def fillItem(self, item, value):
         ''' Will be removed'''
         #item.setExpanded(True)
@@ -136,14 +136,14 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
           for val in value:
             child = QTreeWidgetItem()
             item.addChild(child)
-            if type(val) is dict:      
+            if type(val) is dict:
               child.setText(0, '[dict]')
               self.fill_item(child, val)
             elif type(val) is list:
               child.setText(0, '[list]')
               self.fill_item(child, val)
             else:
-              child.setText(0, unicode(val))              
+              child.setText(0, unicode(val))
             child.setExpanded(True)
         else:
           child = QTreeWidgetItem()
@@ -157,7 +157,7 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
 
 class TreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
-        QTreeWidgetItem.__init__(self)        
+        QTreeWidgetItem.__init__(self)
         iconToolItem = QIcon(os.path.dirname(__file__) + '/images/itemTool.svg')
         self.setIcon(0, iconToolItem)
         self.setToolTip(0, toolName[1])

@@ -34,6 +34,7 @@ from stem_utils import STEMUtils, STEMMessageHandler
 from grass_stem import helpUrl
 import os, traceback
 
+
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
