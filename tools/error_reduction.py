@@ -94,7 +94,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 com = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
                        'value={val}'.format(val=self.Linedit.text())]
-    
+
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
                     out = '{name}_{lay}'.format(name=tempout, lay=n)
@@ -112,9 +112,9 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-    
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
