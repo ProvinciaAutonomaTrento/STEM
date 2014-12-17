@@ -173,7 +173,7 @@ class STEMUtils:
         pid = os.getpid()
         tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
         tempout = 'stem_output_{pid}'.format(pid=pid)
-        grassdatabase, location, grassbin, epsg = QGISettingsGRASS()
+        grassdatabase, location, grassbin, epsg = STEMUtils.QGISettingsGRASS()
         gs = stemGRASS(pid, grassdatabase, location, grassbin, epsg)
         return tempin, tempout, gs
 
