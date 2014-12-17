@@ -93,6 +93,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.inlayers = {}
         self.rect_str = None
         self.mask = None
+        self.overwrite = False
 
         self.helpui = helpDialog()
 
