@@ -31,8 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils
-from stem_functions import temporaryFilesGRASS
-
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -44,7 +43,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertSecondOutput("Goodness of fit", 1)
@@ -69,6 +68,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondLineEdit(lm, 4)
         self.Linedit2.setText('500')
         #self.BaseInputPan.currentIndexChanged.connect(self.operatorChanged)
+    
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def show_(self):
         self.switchClippingMode()
@@ -78,48 +80,56 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
-        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-        thre = str(self.thresholdd.value())
-        itera = str(self.thresholdi.value())
-        size = str(self.Linedit.text())
-        memory = str(self.Linedit2.text())
-        coms = []
-
-        cut, cutsource, mask = self.cutInput(name, source, typ)
-
-        if cut:
-            name = cut
-            source = cutsource
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        gs.import_grass(source, tempin, typ, nlayerchoose)
-        if mask:
-            gs.check_mask(mask)
-
-        com = ['i.segment', 'group={name}'.format(name=tempin),
-               'output={outname}'.format(outname=tempout),
-               'thres={val}'.format(val=thre),
-               'similarity={met}'.format(met=self.MethodInput.currentText()),
-               'minsize={val}'.format(val=size),
-               'memory={val}'.format(val=memory),
-               'iter={val}'.format(val=itera)]
-        if self.TextOut2.text():
-            good = 'goodness_{name}'.format(name=tempout)
-            com.append('goodness={val}'.format(val=good))
-        coms.append(com)
-        self.saveCommand(com)
-
-        gs.run_grass(coms)
-
-        gs.export_grass(tempout, self.TextOut.text(), typ, False)
-        if self.TextOut2.text():
-            gs.export_grass('goodness_{name}'.format(name=tempout),
-                            self.TextOut2.text(), typ)
-        else:
-            gs.removeMapset()
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            thre = str(self.thresholdd.value())
+            itera = str(self.thresholdi.value())
+            size = str(self.Linedit.text())
+            memory = str(self.Linedit2.text())
+            coms = []
+    
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+    
+            if cut:
+                name = cut
+                source = cutsource
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            gs.import_grass(source, tempin, typ, nlayerchoose)
+            if mask:
+                gs.check_mask(mask)
+    
+            com = ['i.segment', 'group={name}'.format(name=tempin),
+                   'output={outname}'.format(outname=tempout),
+                   'thres={val}'.format(val=thre),
+                   'similarity={met}'.format(met=self.MethodInput.currentText()),
+                   'minsize={val}'.format(val=size),
+                   'memory={val}'.format(val=memory),
+                   'iter={val}'.format(val=itera)]
             if self.TextOut2.text():
-                STEMUtils.addLayerIntoCanvas(self.TextOut2.text(), typ)
+                good = 'goodness_{name}'.format(name=tempout)
+                com.append('goodness={val}'.format(val=good))
+            coms.append(com)
+            self.saveCommand(com)
+    
+            gs.run_grass(coms)
+    
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            
+            if self.TextOut2.text():
+                STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut2.text(), 
+                                      'goodness_{name}'.format(name=tempout), typ)
+            else:
+                gs.removeMapset()
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+                if self.TextOut2.text():
+                    STEMUtils.addLayerIntoCanvas(self.TextOut2.text(), typ)
+        except:
+            error = traceback.format_exc()
+            self.onError(error)
+            return

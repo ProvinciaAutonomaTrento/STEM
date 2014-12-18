@@ -29,10 +29,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_functions import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils
 from grass_stem import helpUrl
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -46,23 +46,22 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertLayerChooseCheckBox(label="Selezionare la banda per il canale rosso",
                                         combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertLayerChooseCheckBox2(label="Selezionare la banda per il canale verde",
                                          combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
 
         self._insertLayerChooseCheckBox3(label="Selezionare la banda per il canale blu",
                                          combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
 
         self._insertSecondSingleInput(5)
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
         self._insertLayerChooseCheckBox4(label="Selezionare la banda con risoluzione migliore",
                                          combo=False, pos=6)
+        self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
 
 
@@ -83,6 +82,14 @@ class STEMToolsDialog(BaseDialog):
 
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
         self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
+    
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
+    
+    def indexChanged2(self):
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
 
     def show_(self):
         self.switchClippingMode()
@@ -92,54 +99,62 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
-        namepan = str(self.BaseInput2.currentText())
-
-        red = str(self.layer_list.currentIndex() + 1)
-        green = str(self.layer_list2.currentIndex() + 1)
-        blu = str(self.layer_list3.currentIndex() + 1)
-        pan = str(self.layer_list4.currentIndex() + 1)
-        nlayers = [red, green, blu]
-
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-        method = str(self.MethodInput.currentText())
-        coms = []
-
-        cut, cutsource, mask = self.cutInput(name, source, typ)
-
-        if cut:
-            name = cut
-            source = cutsource
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-
-#        pyqtRemoveInputHook()
-#        import pdb
-
-        if name == namepan:
-            nlayers.append(pan)
-            gs.import_grass(source, tempin, typ, nlayers)
-        else:
-            gs.import_grass(source, tempin, typ, nlayers)
-            sourcepan = STEMUtils.getLayersSource(namepan)
-            gs.import_grass(sourcepan, namepan, typ, [pan])
-        if mask:
-            gs.check_mask(mask)
-        com = ['i.pansharpen', 'red={name}.{l}'.format(name=tempin, l=red),
-               'green={name}.{l}'.format(name=tempin, l=green),
-               'blue={name}.{l}'.format(name=tempin, l=blu),
-               'output={name}'.format(name=tempout),
-               'method={met}'.format(met=method)]
-        if name == namepan:
-            com.append('pan={name}.{l}'.format(name=tempin, l=pan))
-        else:
-            com.append('pan={name}'.format(name=namepan))
-#        pdb.set_trace()
-        coms.append(com)
-        self.saveCommand(com)
-        gs.run_grass(coms)
-
-#        pdb.set_trace()
-        gs.export_grass(tempout, self.TextOut.text(), typ)
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            namepan = str(self.BaseInput2.currentText())
+    
+            red = str(self.layer_list.currentIndex() + 1)
+            green = str(self.layer_list2.currentIndex() + 1)
+            blu = str(self.layer_list3.currentIndex() + 1)
+            pan = str(self.layer_list4.currentIndex() + 1)
+            nlayers = [red, green, blu]
+    
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            method = str(self.MethodInput.currentText())
+            coms = []
+    
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+    
+            if cut:
+                name = cut
+                source = cutsource
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+    
+    #        pyqtRemoveInputHook()
+    #        import pdb
+    
+            if name == namepan:
+                nlayers.append(pan)
+                gs.import_grass(source, tempin, typ, nlayers)
+            else:
+                gs.import_grass(source, tempin, typ, nlayers)
+                sourcepan = STEMUtils.getLayersSource(namepan)
+                gs.import_grass(sourcepan, namepan, typ, [pan])
+            if mask:
+                gs.check_mask(mask)
+            com = ['i.pansharpen', 'red={name}.{l}'.format(name=tempin, l=red),
+                   'green={name}.{l}'.format(name=tempin, l=green),
+                   'blue={name}.{l}'.format(name=tempin, l=blu),
+                   'output={name}'.format(name=tempout),
+                   'method={met}'.format(met=method)]
+            if name == namepan:
+                com.append('pan={name}.{l}'.format(name=tempin, l=pan))
+            else:
+                com.append('pan={name}'.format(name=namepan))
+    #        pdb.set_trace()
+            coms.append(com)
+            self.saveCommand(com)
+            gs.run_grass(coms)
+    
+    #        pdb.set_trace()
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            self.onError(error)
+            return

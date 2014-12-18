@@ -32,8 +32,7 @@ from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from grass_stem import helpUrl
 from stem_utils import STEMUtils
-from stem_functions import temporaryFilesGRASS
-
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -45,7 +44,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         items = ['automatico', 'area', 'manuale']
@@ -67,6 +66,9 @@ class STEMToolsDialog(BaseDialog):
         self.LabelLinedit.setEnabled(False)
         self.Linedit.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.clump'))
+    
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'automatico':
@@ -96,49 +98,57 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
-        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-        coms = []
-        outnames = []
-        cut, cutsource, mask = self.cutInput(name, source, typ)
-        if cut:
-            name = cut
-            source = cutsource
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        gs.import_grass(source, tempin, typ, nlayerchoose)
-        if mask:
-            gs.check_mask(mask)
-        if self.BaseInputCombo.currentText() == 'automatico':
-            startcom = ['r.clump']
-        elif self.BaseInputCombo.currentText() == 'manuale':
-            fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
-            startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
-        else:
-            startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
-                        'value={val}'.format(val=self.Linedit.text())]
-
-        if len(nlayerchoose) > 1:
-            for n in nlayerchoose:
-                com = startcom[:]
-                out = '{name}_{lay}'.format(name=tempout, lay=n)
-                outnames.append(out)
-                com.extend(['input={name}.{lay}'.format(name=tempin, lay=n),
-                            'output={outname}'.format(outname=out)])
-                coms.append(com)
-                self.saveCommand(com)
-        else:
-            outnames.append(tempout)
-            startcom.extend(['input={name}'.format(name=tempin),
-                             'output={outname}'.format(outname=tempout)])
-            coms.append(startcom)
-            self.saveCommand(startcom)
-
-        gs.run_grass(coms)
-        if len(nlayerchoose) > 1:
-            gs.create_group(outnames, tempout)
-
-        gs.export_grass(tempout, self.TextOut.text(), typ)
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            coms = []
+            outnames = []
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+            if cut:
+                name = cut
+                source = cutsource
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            gs.import_grass(source, tempin, typ, nlayerchoose)
+            if mask:
+                gs.check_mask(mask)
+            if self.BaseInputCombo.currentText() == 'automatico':
+                startcom = ['r.clump']
+            elif self.BaseInputCombo.currentText() == 'manuale':
+                fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
+                startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
+            else:
+                startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
+                            'value={val}'.format(val=self.Linedit.text())]
+    
+            if len(nlayerchoose) > 1:
+                for n in nlayerchoose:
+                    com = startcom[:]
+                    out = '{name}_{lay}'.format(name=tempout, lay=n)
+                    outnames.append(out)
+                    com.extend(['input={name}.{lay}'.format(name=tempin, lay=n),
+                                'output={outname}'.format(outname=out)])
+                    coms.append(com)
+                    self.saveCommand(com)
+            else:
+                outnames.append(tempout)
+                startcom.extend(['input={name}'.format(name=tempin),
+                                 'output={outname}'.format(outname=tempout)])
+                coms.append(startcom)
+                self.saveCommand(startcom)
+    
+            gs.run_grass(coms)
+            if len(nlayerchoose) > 1:
+                gs.create_group(outnames, tempout)
+    
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            self.onError(error)
+            return

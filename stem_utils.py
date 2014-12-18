@@ -145,3 +145,56 @@ class STEMUtils:
         fs.write(text)
         fs.close()
         return name
+    
+    @staticmethod
+    def fileExists(fileName):
+        if QFileInfo(fileName).exists():
+            res = QMessageBox.question(None, "", u"Esiste già un file con nome {0}. Sostituirlo?"
+                                       .format(QFileInfo(fileName).baseName), 
+                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            
+            #if res == QMessageBox.Cancel: return
+            if res:
+                return True
+        return False
+
+    @staticmethod
+    def exportGRASS(gs, overwrite, output, tempout, typ):
+        if overwrite:
+            tmp = output + '.tmp'
+        else:
+            tmp = output
+        try:
+            gs.export_grass(tempout, tmp, typ)
+        except:
+            pass
+        if overwrite:
+            os.rename(tmp, output)
+            os.rename('{name}.aux.xml'.format(name=tmp),
+                      '{name}.aux.xml'.format(name=output))
+
+    @staticmethod
+    def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
+                     epsg=None):
+        """Read the QGIS's settings and obtain information for GRASS GIS"""
+        s = QSettings()
+        # query GRASS 7 itself for its GISBASE
+        # we assume that GRASS GIS' start script is available and in the PATH
+        if not grassbin:
+            grassbin = str(s.value("stem/grasspath", ""))
+        if not grassdatabase:
+            grassdatabase = str(s.value("stem/grassdata", ""))
+        if not location:
+            location = str(s.value("stem/grasslocation", ""))
+        if not epsg:
+            epsg = str(s.value("stem/epsgcode", ""))
+        return grassdatabase, location, grassbin, epsg
+
+    @staticmethod
+    def temporaryFilesGRASS(name):
+        pid = os.getpid()
+        tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
+        tempout = 'stem_output_{pid}'.format(pid=pid)
+        grassdatabase, location, grassbin, epsg = STEMUtils.QGISettingsGRASS()
+        gs = stemGRASS(pid, grassdatabase, location, grassbin, epsg)
+        return tempin, tempout, gs

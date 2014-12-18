@@ -32,8 +32,7 @@ from qgis.gui import *
 from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
 from grass_stem import stats, helpUrl
-from stem_functions import temporaryFilesGRASS
-import os
+import os, traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -70,19 +69,28 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit2.setEnabled(False)
 
     def onRunLocal(self):
-        source = str(self.TextIn.text())
-        name = os.path.basename(source).replace('.las', '')
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        method = str(self.MethodInput.currentText())
-        returnfilter = self.BaseInputCombo.currentText()
-        reso = self.Linedit.text()
-        perc = self.Linedit2.text()
-
-        if returnfilter == 'all':
-            returnfilter = None
-
-        gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                      resolution=reso, percentile=perc)
-        gs.export_grass(tempout, self.TextOut.text(), 'raster')
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            source = str(self.TextIn.text())
+            name = os.path.basename(source).replace('.las', '')
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            method = str(self.MethodInput.currentText())
+            returnfilter = self.BaseInputCombo.currentText()
+            reso = self.Linedit.text()
+            perc = self.Linedit2.text()
+    
+            if returnfilter == 'all':
+                returnfilter = None
+    
+            gs.las_import(source, tempout, method, returnpulse=returnfilter,
+                          resolution=reso, percentile=perc)
+            
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, 'raster')
+            
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+        except:
+            error = traceback.format_exc()
+            self.onError(error)
+            return
