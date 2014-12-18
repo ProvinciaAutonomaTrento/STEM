@@ -47,23 +47,22 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertLayerChooseCheckBox(label="Selezionare la banda per il canale rosso",
                                         combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertLayerChooseCheckBox2(label="Selezionare la banda per il canale verde",
                                          combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
 
         self._insertLayerChooseCheckBox3(label="Selezionare la banda per il canale blu",
                                          combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
 
         self._insertSecondSingleInput(5)
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
         self._insertLayerChooseCheckBox4(label="Selezionare la banda con risoluzione migliore",
                                          combo=False, pos=6)
+        self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
 
 
@@ -85,6 +84,14 @@ class STEMToolsDialog(BaseDialog):
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
         self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
 
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
+        
+    def indexChanged2(self):
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
+    
     def show_(self):
         self.switchClippingMode()
         self.show_(self)

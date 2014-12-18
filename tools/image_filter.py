@@ -109,7 +109,8 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.show_(self)
 
     def onRunLocal(self):
-        self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
