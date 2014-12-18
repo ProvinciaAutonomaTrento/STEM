@@ -31,6 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
+from gdal_functions import convertGDAL
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -41,6 +42,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertMultipleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
+        formats = ['GTIFF', 'ENVI']
+        self._insertFirstCombobox(formats, 'Formato di output', 0)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -49,4 +53,14 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
-        pid = os.getpid()
+        items = []
+        for index in xrange(self.BaseInput.count()):
+            items.append(self.BaseInput.item(index))
+        labels = [STEMUtils.getLayersSource(i.text()) for i in items]
+        outformat = str(self.BaseInputCombo.currentText())
+        pyqtRemoveInputHook()
+        import pdb; pdb.set_trace()
+        cgdal = convertGDAL(labels, self.TextOut.text(), outformat)
+        cgdal.write()
+        if self.AddLayerToCanvas.isChecked():
+            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')

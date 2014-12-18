@@ -34,6 +34,7 @@ from stem_utils import STEMUtils
 from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
 
+
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
@@ -52,8 +53,24 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
+
     def onRunLocal(self):
         name = str(self.BaseInput.currentText())
         source = STEMUtils.getLayersSource(name)
         name2 = str(self.BaseInput2.currentText())
         source2 = STEMUtils.getLayersSource(name2)
+        nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+        nlayerchoose2 = STEMUtils.checkLayers(source2, self.layer_list)
+        if len(nlayerchoose) != len(nlayerchoose2):
+            # TODO return error
+            print "selezionare lo stesso numero di bande"
+        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+        coms = []
+        outnames = []
+        cut, cutsource, mask = self.cutInput(name, source, typ)
+        if cut:
+            name = cut
+            source = cutsource
+        tempin, tempout, gs = temporaryFilesGRASS(name)
+
+        gs.import_grass(source, tempin, typ, nlayerchoose)
