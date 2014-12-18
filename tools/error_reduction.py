@@ -88,14 +88,15 @@ class STEMToolsDialog(BaseDialog):
         if mask:
             gs.check_mask(mask)
         if self.BaseInputCombo.currentText() == 'vicinanza':
-            com = ['r.neighbors', 'size={val}'.format(val=self.Linedit.text()),
-                   'method=mode']
+            startcom = ['r.neighbors', 'method=mode',
+                        'size={val}'.format(val=self.Linedit.text())]
         else:
-            com = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
-                   'value={val}'.format(val=self.Linedit.text())]
+            startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
+                        'value={val}'.format(val=self.Linedit.text())]
 
         if len(nlayerchoose) > 1:
             for n in nlayerchoose:
+                com = startcom[:]
                 out = '{name}_{lay}'.format(name=tempout, lay=n)
                 outnames.append(out)
                 com.extend(['input={name}.{lay}'.format(name=tempin, lay=n),
@@ -104,10 +105,11 @@ class STEMToolsDialog(BaseDialog):
                 self.saveCommand(com)
         else:
             outnames.append(tempout)
-            com.extend(['input={name}'.format(name=tempin),
-                        'output={outname}'.format(outname=tempout)])
-            coms.append(com)
-            self.saveCommand(com)
+            startcom.extend(['input={name}'.format(name=tempin),
+                             'output={outname}'.format(outname=tempout)])
+            coms.append(startcom)
+            self.saveCommand(startcom)
+
         gs.run_grass(coms)
         if len(nlayerchoose) > 1:
             gs.create_group(outnames, tempout)
