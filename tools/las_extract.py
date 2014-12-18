@@ -29,9 +29,11 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
 from grass_stem import stats, helpUrl
+from stem_functions import temporaryFilesGRASS
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -43,14 +45,14 @@ class STEMToolsDialog(BaseDialog):
         self._insertFileInput()
         methods = ['all', 'first', 'last', 'mid']
         label = "Selezionare il ritorno desiderato"
-        self._insertMethod(methods, label, 0)
+        self._insertFirstCombobox(methods, label, 0)
         label = "Selezionare il metodo statistico da utilizzare"
-        self._insertFirstCombobox(stats, label, 1)
+        self._insertMethod(stats, label, 1)
         label = "Risoluzione finale del raster"
         self._insertFirstLineEdit(label, 2)
         label = "Percentile"
         self._insertSecondLineEdit(label, 3)
-        self.BaseInputCombo.currentIndexChanged.connect(self.checkPercentile)
+        self.MethodInput.currentIndexChanged.connect(self.checkPercentile)
         self.LabelLinedit2.setEnabled(False)
         self.Linedit2.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.in.lidar'))
@@ -60,7 +62,7 @@ class STEMToolsDialog(BaseDialog):
         self.show_(self)
 
     def checkPercentile(self):
-        if self.BaseInputCombo.currentText() == 'percentile':
+        if self.MethodInput.currentText() == 'percentile':
             self.LabelLinedit2.setEnabled(True)
             self.Linedit2.setEnabled(True)
         else:
@@ -68,19 +70,19 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit2.setEnabled(False)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
+        source = str(self.TextIn.text())
+        name = os.path.basename(source).replace('.las', '')
         tempin, tempout, gs = temporaryFilesGRASS(name)
-        method = str(self.methodInput.currentText())
-        reso = self.Linedit.currentText()
-        perc = self.Linedit2.currentText()
-        layer = self.inlayers[name]
-        com = ['r.in.lidar', 'flags=eo',
-               'input={name}'.format(name=tempin),
-               'output={name}'.format(name=tempout),
-               'method={met}'.format(met=method)]
-        if reso:
-            com.append('resolution={res}'.format(res=reso))
-        if perc:
-            com.append('percentile={per}'.format(per=perc))
-        gs.run_grass(layer.source(), tempin, tempout, self.TextOut.text(),
-                     'raster', com)
+        method = str(self.MethodInput.currentText())
+        returnfilter = self.BaseInputCombo.currentText()
+        reso = self.Linedit.text()
+        perc = self.Linedit2.text()
+
+        if returnfilter == 'all':
+            returnfilter = None
+
+        gs.las_import(source, tempout, method, returnpulse=returnfilter,
+                      resolution=reso, percentile=perc)
+        gs.export_grass(tempout, self.TextOut.text(), 'raster')
+        if self.AddLayerToCanvas.isChecked():
+            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
