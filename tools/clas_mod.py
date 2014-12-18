@@ -96,6 +96,8 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
@@ -107,7 +109,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -119,7 +121,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
                             'value={val}'.format(val=self.Linedit.text())]
-    
+
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
                     com = startcom[:]
@@ -135,12 +137,13 @@ class STEMToolsDialog(BaseDialog):
                                  'output={outname}'.format(outname=tempout)])
                 coms.append(startcom)
                 self.saveCommand(startcom)
-    
+
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-    
-            gs.export_grass(tempout, self.TextOut.text(), typ)
+
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
