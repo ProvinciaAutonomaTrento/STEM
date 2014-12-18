@@ -119,6 +119,6 @@ class STEMToolsDialog(BaseDialog):
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
-                error = traceback.format_exc()
-                STEMMessageHandler.error(error)
-                return
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
