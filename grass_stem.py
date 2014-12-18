@@ -18,7 +18,7 @@ import sys
 import subprocess
 import itertools
 
-stats = ['n', 'min', 'max', 'range', 'sum', 'mean', 'stddev', 'variance',
+stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
 
 
@@ -203,6 +203,39 @@ class stemGRASS():
             gcore.run_command('v.out.ogr', input=outemp, output=finalout)
         if remove:
             self.removeMapset()
+
+    def las_import(self, inp, out, method, returnpulse=None, resolution=None,
+                   percentile=None):
+        """Import LAS file trhough r.in.lidar"""
+        import grass.script.core as gcore
+
+        outp = gcore.read_command('r.in.lidar', flags='go', input=inp,
+                                  output=out)
+        com = ['g.region']
+        com.extend(outp.split())
+        self.run_grass([com])
+        if resolution:
+            com2 = ['g.region', 'res={r}'.format(r=str(resolution)), '-a']
+        else:
+            actual_res = int(gcore.region()['nsres'])
+            com2 = ['g.region', 'res={r}'.format(r=str(actual_res)), '-a']
+        self.run_grass([com2])
+        try:
+            if returnpulse and percentile:
+                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
+                                  method=method, return_filter=returnpulse,
+                                  percent=percentile)
+            elif returnpulse and not percentile:
+                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
+                                  method=method, return_filter=returnpulse)
+            elif percentile and not returnpulse:
+                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
+                                  method=method, percent=percentile)
+            else:
+                gcore.run_command('r.in.lidar', flags='o', input=inp,
+                                  output=out, method=method)
+        except:
+            raise Exception("Errore eseguendo l'importazione del file LAS")
 
     def run_grass(self, comm):
         """Run a GRASS module"""
