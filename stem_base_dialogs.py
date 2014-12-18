@@ -85,7 +85,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.connect(self.buttonBox, SIGNAL("rejected()"), self._reject)
         self.connect(self.buttonBox, SIGNAL("accepted()"), self._accept)
         self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
-        self.connect(self.BrowseButton, SIGNAL("clicked()"), self.BrowseDir)
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
         self.setWindowTitle(title)
@@ -157,6 +158,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Selezionare file LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
+        self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
+                     partial(self.BrowseInFile, self.TextIn))
 
     def _insertSingleInput(self):
         """Function to add ComboBox Widget where insert a single input file"""
@@ -513,12 +516,24 @@ class BaseDialog(QDialog, Ui_Dialog):
 
         self.stop()
 
-    def BrowseDir(self):
+    def BrowseInFile(self, line, filt="LAS file (*.las)"):
+        """Function to create new file in a directory"""
+        mydir = QFileDialog.getOpenFileName(None, "Selezionare il file di"
+                                            " input", "", filt)
+        if os.path.exists(mydir):
+            line.setText(mydir)
+            return
+        else:
+            # TODO add overwrite option
+            self.onError("'%s' file non è presente." % mydir)
+
+
+    def BrowseDir(self, line):
         """Function to create new file in a directory"""
         mydir = QFileDialog.getSaveFileName(None, "Selezionare la cartella di"
                                             " destinazione", "")
         if not os.path.exists(mydir):
-            self.TextOut.setText(mydir)
+            line.setText(mydir)
             return
         else:
             # TODO add overwrite option
