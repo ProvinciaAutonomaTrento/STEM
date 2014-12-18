@@ -107,21 +107,22 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = temporaryFilesGRASS(name)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
             if self.BaseInputCombo.currentText() == 'automatico':
-                com = ['r.clump']
+                startcom = ['r.clump']
             elif self.BaseInputCombo.currentText() == 'manuale':
                 fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
-                com = ['r.reclass', 'rules={fn}'.format(fn=fname)]
+                startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
             else:
-                com = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
-                       'value={val}'.format(val=self.Linedit.text())]
-
+                startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
+                            'value={val}'.format(val=self.Linedit.text())]
+    
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
+                    com = startcom[:]
                     out = '{name}_{lay}'.format(name=tempout, lay=n)
                     outnames.append(out)
                     com.extend(['input={name}.{lay}'.format(name=tempin, lay=n),
@@ -130,16 +131,16 @@ class STEMToolsDialog(BaseDialog):
                     self.saveCommand(com)
             else:
                 outnames.append(tempout)
-                com.extend(['input={name}'.format(name=tempin),
-                            'output={outname}'.format(outname=tempout)])
-                coms.append(com)
-                self.saveCommand(com)
+                startcom.extend(['input={name}'.format(name=tempin),
+                                 'output={outname}'.format(outname=tempout)])
+                coms.append(startcom)
+                self.saveCommand(startcom)
+    
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-
+    
+            gs.export_grass(tempout, self.TextOut.text(), typ)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
