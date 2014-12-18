@@ -140,6 +140,6 @@ class STEMToolsDialog(BaseDialog):
         gs.run_grass(coms)
 
 #        pdb.set_trace()
-        gs.export_grass(tempout, self.TextOut.text(), typ, False)
+        gs.export_grass(tempout, self.TextOut.text(), typ)
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
