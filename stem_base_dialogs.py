@@ -531,7 +531,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file non è presente." % mydir)
+            STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
 
     def BrowseDir(self, line):
@@ -540,7 +540,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         if fileName:                                    
             try:
                 self.save(fileName)
-                self.TextOut.setText(fileName)
+                line.setText(fileName)
             except (IOError, OSError), error:
                 STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'
                                         .format(fileName, error.strerror))
