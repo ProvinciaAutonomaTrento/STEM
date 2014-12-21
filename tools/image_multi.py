@@ -58,8 +58,7 @@ class STEMToolsDialog(BaseDialog):
             items.append(self.BaseInput.item(index))
         labels = [STEMUtils.getLayersSource(i.text()) for i in items]
         outformat = str(self.BaseInputCombo.currentText())
-        pyqtRemoveInputHook()
-        import pdb; pdb.set_trace()
+
         cgdal = convertGDAL(labels, self.TextOut.text(), outformat)
         cgdal.write()
         if self.AddLayerToCanvas.isChecked():

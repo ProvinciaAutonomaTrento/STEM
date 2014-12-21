@@ -35,7 +35,6 @@ import sys
 import subprocess
 import tempfile
 from functools import partial
-from gdal_functions import getNumSubset
 from stem_utils import STEMMessageHandler
 
 MSG_BOX_TITLE = "STEM Plugin Warning"

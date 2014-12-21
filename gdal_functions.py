@@ -34,14 +34,6 @@ except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 
 
-def getNumSubset(name):
-    src_ds = gdal.Open(name)
-    if len(src_ds.GetSubDatasets()) != 0:
-        return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
-    else:
-        return [str(i) for i in range(1, src_ds.RasterCount + 1)]
-
-
 class convertGDAL:
     """A class to convert modis data from hdf to GDAL formats using GDAL
 

@@ -31,7 +31,6 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
 
-from gdal_functions import getNumSubset
 from grass_stem import stemGRASS
 import os
 
@@ -85,7 +84,7 @@ class STEMUtils:
 
     @staticmethod
     def checkMultiRaster(inmap, checkCombo=None, lineEdit=None):
-        nsub = getNumSubset(inmap)
+        nsub = STEMUtils.getNumSubset(inmap)
         nlayerchoose = STEMUtils.checkLayers(inmap, checkCombo, lineEdit)
         if nsub > 0 and nlayerchoose > 1:
             return 'image'
@@ -97,7 +96,7 @@ class STEMUtils:
         """Function to check if layers are choosen"""
         try:
             if lineEdit.text() == u'':
-                return getNumSubset(inmap)
+                return STEMUtils.getNumSubset(inmap)
             else:
                 return lineEdit.text().split(',')
         except:
@@ -107,7 +106,7 @@ class STEMUtils:
                 if item.checkState() == Qt.Checked:
                     itemlist.append(str(i + 1))
             if len(itemlist) == 0:
-                return getNumSubset(inmap)
+                return STEMUtils.getNumSubset(inmap)
             return itemlist
 
     @staticmethod
@@ -202,6 +201,14 @@ class STEMUtils:
         grassdatabase, location, grassbin, epsg = STEMUtils.QGISettingsGRASS()
         gs = stemGRASS(pid, grassdatabase, location, grassbin, epsg)
         return tempin, tempout, gs
+
+    @staticmethod
+    def getNumSubset(name):
+        src_ds = gdal.Open(name)
+        if len(src_ds.GetSubDatasets()) != 0:
+            return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
+        else:
+            return [str(i) for i in range(1, src_ds.RasterCount + 1)]
 
 class STEMMessageHandler:
     """
