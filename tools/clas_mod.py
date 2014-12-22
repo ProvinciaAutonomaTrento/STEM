@@ -45,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         items = ['automatico', 'area', 'manuale']
@@ -67,6 +67,9 @@ class STEMToolsDialog(BaseDialog):
         self.LabelLinedit.setEnabled(False)
         self.Linedit.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.clump'))
+        
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'automatico':
