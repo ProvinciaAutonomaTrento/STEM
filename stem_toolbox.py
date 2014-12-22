@@ -68,8 +68,8 @@ TOOLS = {("0","Pre-elaborazione immagini")
                                         ("1","Estrazione feature"):"" }],
         ("6","Stima di parametri")
                                         :[{("0","Selezione variabili"):"stim_selvar",
-                                        ("0","Stimatore lineare"):"stim_linear",
-                                        ("0","Support Vector Regression"):"stim_svr"}],
+                                        ("1","Stimatore lineare"):"stim_linear",
+                                        ("2","Support Vector Regression"):"stim_svr"}],
         ("7","Post-elaborazione stima")
                                         :[{("0","Aggregazione ad aree"):"post_aggraree",
                                         ("1","Metriche di accuratezza"):"post_accu",
