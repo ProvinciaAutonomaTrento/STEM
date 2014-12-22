@@ -152,8 +152,8 @@ class STEMUtils:
     @staticmethod
     def fileExists(fileName):
         if QFileInfo(fileName).exists():
-            res = QMessageBox.question(None, "", u"Esiste già un file con nome {0}. Sostituirlo?"
-                                       .format(QFileInfo(fileName).baseName), 
+            res = QMessageBox.question(None, "STEM Plugin", u"Esiste già un file con nome {0}. Sostituirlo?"
+                                       .format(QFileInfo(fileName).baseName()), 
                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             
             #if res == QMessageBox.Cancel: return
