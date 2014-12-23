@@ -31,7 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from grass_stem import helpUrl
-from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 
 
@@ -68,6 +68,8 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.clump'))
         
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
@@ -99,6 +101,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:

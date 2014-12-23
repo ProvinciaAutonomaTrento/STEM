@@ -30,7 +30,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 from grass_stem import helpUrl
 
@@ -83,6 +83,8 @@ class STEMToolsDialog(BaseDialog):
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
         self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
@@ -99,6 +101,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:

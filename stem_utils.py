@@ -32,7 +32,7 @@ from qgis.gui import *
 from qgis.utils import iface
 
 from grass_stem import stemGRASS
-import os
+import os, sys, inspect, re
 
 try:
     import osgeo.gdal as gdal
@@ -155,7 +155,7 @@ class STEMUtils:
             res = QMessageBox.question(None, "STEM Plugin", u"Esiste già un file con nome {0}. Sostituirlo?"
                                        .format(QFileInfo(fileName).baseName()), 
                                        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-            
+
             #if res == QMessageBox.Cancel: return
             if res:
                 return True
@@ -292,3 +292,81 @@ class STEMMessageHandler:
             iface.messageBar().pushMessage(title.decode('utf-8'), text.decode('utf-8'), level, timeout)
         else:
             iface.messageBar().pushMessage(text.decode('utf-8'), level, timeout)
+
+
+class STEMSettings:
+    """
+    Class to save and to restore settings to QSettings
+    
+    STEMSettings.saveWidgetsValue(ui, QSettings("STEM", "STEM"), toolName)
+    STEMSettings.restoreWidgetsValue(ui, QSettings("STEM", "STEM"), toolName)
+    """
+    s = QSettings("STEM", "STEM")
+
+    @staticmethod
+    def saveWidgetsValue(ui, tool=""):
+        if tool:
+            tool = re.sub(r"[^\w\s]", '', tool)
+            tool = re.sub(r"\s+", '_', tool)
+
+        for name, obj in inspect.getmembers(ui):
+            if isinstance(obj, QComboBox):
+                name   = obj.objectName()
+                index  = obj.currentIndex()
+                text   = obj.itemText(index)
+                STEMSettings.setValue(tool +"/"+ name, text)
+
+            if isinstance(obj, QLineEdit):
+                name = obj.objectName()
+                value = obj.text()
+                STEMSettings.setValue(tool +"/"+ name, value)
+
+            if isinstance(obj, QCheckBox):
+                name = obj.objectName()
+                state = obj.isChecked()
+                STEMSettings.setValue(tool +"/"+ name, state)
+
+    @staticmethod
+    def restoreWidgetsValue(ui, tool=""):
+        if tool:
+            tool = re.sub(r"[^\w\s]", '', tool)
+            tool = re.sub(r"\s+", '_', tool)
+
+        for name, obj in inspect.getmembers(ui):
+            if isinstance(obj, QComboBox):
+                index = obj.currentIndex()
+                #text   = obj.itemText(index)
+                name = obj.objectName()
+
+                value = STEMSettings.value(tool +"/"+ name, "", unicode)
+                if value == "":
+                    continue
+
+                index = obj.findText(value)
+                if index == -1:
+                    continue
+                    #obj.insertItems(0,[value])
+                    #index = obj.findText(value)
+                    #obj.setCurrentIndex(index)
+                else:
+                    obj.setCurrentIndex(index)
+
+            if isinstance(obj, QLineEdit):
+                name = obj.objectName()
+                value = STEMSettings.value(tool +"/"+ name, "", unicode)
+                if value:
+                    obj.setText(value)
+
+            if isinstance(obj, QCheckBox):
+                name = obj.objectName()
+                value = STEMSettings.value(tool +"/"+ name, True, bool)
+                if value != None:
+                    obj.setChecked(value)
+
+    @staticmethod           
+    def setValue(value, default=None):
+        return STEMSettings.s.setValue(value, default)
+    
+    @staticmethod
+    def value(value, default=None, type=None):
+        return STEMSettings.s.value(value, default, type=type)
