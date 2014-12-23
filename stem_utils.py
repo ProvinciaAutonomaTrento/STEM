@@ -364,9 +364,9 @@ class STEMSettings:
                     obj.setChecked(value)
 
     @staticmethod           
-    def setValue(value, default=None):
-        return STEMSettings.s.setValue(value, default)
+    def setValue(key, value):
+        return STEMSettings.s.setValue(key, value)
     
     @staticmethod
-    def value(value, default=None, type=None):
-        return STEMSettings.s.value(value, default, type=type)
+    def value(key, default=None, type=None):
+        return STEMSettings.s.value(key, default, type=type)
