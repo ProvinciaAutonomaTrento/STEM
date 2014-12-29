@@ -369,4 +369,10 @@ class STEMSettings:
     
     @staticmethod
     def value(key, default=None, type=None):
-        return STEMSettings.s.value(key, default, type=type)
+        if default and type:
+            return STEMSettings.s.value(key, default, type=type)
+        elif default and not type:
+            return STEMSettings.s.value(key, default)
+        else:
+            return STEMSettings.s.value(key)
+            
