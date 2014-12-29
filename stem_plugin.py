@@ -59,7 +59,8 @@ class STEMPlugin:
         self.toolboxAction.setText(QCoreApplication.translate('STEM', '&STEM Toolbox'))
         self.stemMenu.addAction(self.toolboxAction)
 
-        self.stemMenu.addAction("&Impostazioni", self.settings)
+        self.stemMenu.addAction(QIcon(os.path.dirname(__file__) + '/images/settings.svg'), 
+                                "&Impostazioni", self.settings)
 
     def unload(self):
         self.iface.mainWindow().menuBar().removeAction(self.stemMenu.menuAction())
