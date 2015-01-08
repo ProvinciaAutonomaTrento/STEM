@@ -30,9 +30,10 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler
 from grass_stem import helpUrl
 import traceback
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -44,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         items = ['vicinanza', 'area']
@@ -55,9 +56,6 @@ class STEMToolsDialog(BaseDialog):
         self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari"
         self.lf = "Inserire la dimensione minima da tenere in considerazione"
         self._insertFirstLineEdit(self.ln, 2)
-    
-    def indexChanged(self):
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'vicinanza':
@@ -98,7 +96,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
                             'value={val}'.format(val=self.Linedit.text())]
-    
+
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
                     com = startcom[:]
@@ -114,16 +112,16 @@ class STEMToolsDialog(BaseDialog):
                                  'output={outname}'.format(outname=tempout)])
                 coms.append(startcom)
                 self.saveCommand(startcom)
-    
+
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-    
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

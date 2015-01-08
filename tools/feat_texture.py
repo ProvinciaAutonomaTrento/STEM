@@ -56,7 +56,7 @@ class STEMToolsDialog(BaseDialog):
         label = "Dimensione della finestra mobile"
         self._insertFirstLineEdit(label, 1)
         self.helpui.fillfromUrl(helpUrl('r.texture'))
-    
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
@@ -104,6 +104,7 @@ class STEMToolsDialog(BaseDialog):
                        'method={met}'.format(met=self.MethodInput.currentText())]
                 coms.append(com)
                 self.saveCommand(com)
+
             gs.run_grass(coms)
             gs.create_group(tempout, tempout, True)
     

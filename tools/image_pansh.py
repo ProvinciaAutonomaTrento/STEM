@@ -30,9 +30,9 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
-from grass_stem import helpUrl
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
+from grass_stem import helpUrl
 
 
 class STEMToolsDialog(BaseDialog):
@@ -82,12 +82,14 @@ class STEMToolsDialog(BaseDialog):
 
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
         self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
-    
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
-    
+
     def indexChanged2(self):
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
 
@@ -99,33 +101,31 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             namepan = str(self.BaseInput2.currentText())
-    
+
             red = str(self.layer_list.currentIndex() + 1)
             green = str(self.layer_list2.currentIndex() + 1)
             blu = str(self.layer_list3.currentIndex() + 1)
             pan = str(self.layer_list4.currentIndex() + 1)
             nlayers = [red, green, blu]
-    
+
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             method = str(self.MethodInput.currentText())
             coms = []
-    
+
             cut, cutsource, mask = self.cutInput(name, source, typ)
-    
+
             if cut:
                 name = cut
                 source = cutsource
             tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
-    
-    #        pyqtRemoveInputHook()
-    #        import pdb
-    
+
             if name == namepan:
                 nlayers.append(pan)
                 gs.import_grass(source, tempin, typ, nlayers)
@@ -148,13 +148,12 @@ class STEMToolsDialog(BaseDialog):
             coms.append(com)
             self.saveCommand(com)
             gs.run_grass(coms)
-    
-    #        pdb.set_trace()
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

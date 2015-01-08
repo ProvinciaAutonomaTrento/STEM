@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
 """
 ***************************************************************************
-    image_segm.py
+    __init__.py
     ---------------------
     Date                 : August 2014
     Copyright            : (C) 2014 Luca Delucchi
@@ -27,5 +26,5 @@ __revision__ = '$Format:%H$'
 
 
 def classFactory(iface):
-    from stem_menu import stem_menu
-    return stem_menu(iface)
+    from stem_plugin import STEMPlugin
+    return STEMPlugin(iface)

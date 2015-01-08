@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Sep 16 11:50:27 2014
 
-@author: lucadelu
+"""
+***************************************************************************
+    grass_stem.py
+    ---------------------
+    Date                 : August 2014
+    Copyright            : (C) 2014 Luca Delucchi
+    Email                : luca.delucchi@fmach.it
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -12,6 +16,14 @@ Created on Tue Sep 16 11:50:27 2014
 *                                                                         *
 ***************************************************************************
 """
+
+__author__ = 'Luca Delucchi'
+__date__ = 'August 2014'
+__copyright__ = '(C) 2014 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
 
 import os
 import sys

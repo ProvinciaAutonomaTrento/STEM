@@ -35,7 +35,8 @@ import sys
 import subprocess
 import tempfile
 from functools import partial
-from gdal_functions import getNumSubset
+
+from stem_utils import STEMMessageHandler
 
 MSG_BOX_TITLE = "STEM Plugin Warning"
 
@@ -133,6 +134,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
         self.label.setObjectName("label")
+        self.label.setWordWrap(True)
         self.horizontalLayout_input.addWidget(self.label)
         self.BaseInput = QListWidget()
         self.BaseInput.setGeometry(QRect(10, 30, 341, 211))
@@ -147,8 +149,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_output2")
         self.label = QLabel()
-        self.label.setWordWrap(True)
         self.label.setObjectName("LabelOut")
+        self.label.setWordWrap(True)
         self.horizontalLayout_input.addWidget(self.label)
         self.TextIn = QLineEdit()
         self.TextIn.setObjectName("TextIn")
@@ -168,6 +170,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
         self.label.setObjectName("label")
+        self.label.setWordWrap(True)
         self.horizontalLayout_input.addWidget(self.label)
         self.BaseInput = QComboBox()
         self.BaseInput.setEditable(True)
@@ -183,6 +186,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_input2.setObjectName("horizontalLayout_input2")
         self.label2 = QLabel()
         self.label2.setObjectName("label2")
+        self.label2.setWordWrap(True)
         self.horizontalLayout_input2.addWidget(self.label2)
         self.BaseInput2 = QComboBox()
         self.BaseInput2.setEditable(True)
@@ -282,6 +286,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_method.setObjectName("horizontalLayout_method")
         self.labelmethod = QLabel()
         self.labelmethod.setObjectName("labelmethod")
+        self.labelmethod.setWordWrap(True)
         self.horizontalLayout_method.addWidget(self.labelmethod)
         self.MethodInput = QComboBox()
         self.MethodInput.setEnabled(True)
@@ -299,6 +304,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_thred.setObjectName("horizontalLayout_thred")
         self.LabelThred = QLabel()
         self.LabelThred.setObjectName("LabelThred")
+        self.LabelThred.setWordWrap(True)
         self.horizontalLayout_thred.addWidget(self.LabelThred)
         self.thresholdd = QDoubleSpinBox()
         self.thresholdd.setDecimals(deci)
@@ -317,6 +323,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_threi.setObjectName("horizontalLayout_threi")
         self.LabelThrei = QLabel()
         self.LabelThrei.setObjectName("LabelThrei")
+        self.LabelThrei.setWordWrap(True)
         self.horizontalLayout_threi.addWidget(self.LabelThrei)
         self.thresholdi = QDoubleSpinBox()
         self.thresholdi.setObjectName("thresholdi")
@@ -333,6 +340,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_linedit.setObjectName("horizontalLayout_linedit")
         self.LabelLinedit = QLabel()
         self.LabelLinedit.setObjectName("LabelLinedit")
+        self.LabelLinedit.setWordWrap(True)
         self.horizontalLayout_linedit.addWidget(self.LabelLinedit)
         self.Linedit = QLineEdit()
         self.Linedit.setObjectName("Linedit")
@@ -347,6 +355,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_linedit2.setObjectName("horizontalLayout_linedit2")
         self.LabelLinedit2 = QLabel()
         self.LabelLinedit2.setObjectName("LabelLinedit2")
+        self.LabelLinedit2.setWordWrap(True)
         self.horizontalLayout_linedit2.addWidget(self.LabelLinedit2)
         self.Linedit2 = QLineEdit()
         self.Linedit2.setObjectName("Linedit2")
@@ -361,6 +370,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_combo.setObjectName("horizontalLayout_combo")
         self.LabelCombo = QLabel()
         self.LabelCombo.setObjectName("LabelCombo")
+        self.LabelCombo.setWordWrap(True)
         self.horizontalLayout_combo.addWidget(self.LabelCombo)
         self.BaseInputCombo = QComboBox()
         self.BaseInputCombo.setEditable(True)
@@ -377,6 +387,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_output2.setObjectName("horizontalLayout_output2")
         self.LabelOut2 = QLabel()
         self.LabelOut2.setObjectName("LabelOut")
+        self.LabelOut2.setWordWrap(True)
         self.horizontalLayout_output2.addWidget(self.LabelOut2)
         self.TextOut2 = QLineEdit()
         self.TextOut2.setObjectName("TextOut2")
@@ -401,7 +412,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_textarea.addWidget(self.TextArea)
         self.verticalLayout_options.insertLayout(posnum,
                                                 self.horizontalLayout_textarea)
-        self.LabelTextarea.setText(self.tr("", label))
+        self.LabelTextarea.setText(self.tr("Dialog", label))
 
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
@@ -428,9 +439,9 @@ class BaseDialog(QDialog, Ui_Dialog):
         if not bbox and not mask:
             return False, False, False
         if bbox and mask:
-            self.onError("Sono state impostate sia una maschera vettoriale "
-                         "sia una estensione di QGIS. Si prega di "
-                         "rimuoverne una delle due")
+            STEMMessageHandler.error("Sono state impostate sia una maschera vettoriale "
+                                     "sia una estensione di QGIS. Si prega di "
+                                     "rimuoverne una delle due")
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(tempfile.gettempdir(), outname)
         PIPE = subprocess.PIPE
@@ -472,7 +483,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         pass
 
     def onRunServer(self):
-        QMessageBox.warning(self, "Warning", "Da Implementare")
+        STEMMessageHandler.warning("Esegui sul Server", "Opzione non ancora implementata")
         pass
 
     # stop the command execution
@@ -480,12 +491,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.enableRun(True)
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
-
-    # called if an error occurs when the command has not already finished,
-    # shows the occurred error message
-    def onError(self, error):
-        # function to return error
-        QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
 
     def onFinished(self, exitCode, status):
         """called when the command finished its execution, shows an error message if
@@ -526,8 +531,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file non è presente." % mydir)
-
+            STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def BrowseDir(self, line):
         """Function to create new file in a directory"""
@@ -537,9 +541,8 @@ class BaseDialog(QDialog, Ui_Dialog):
                 self.save(fileName)
                 line.setText(fileName)
             except (IOError, OSError), error:
-                self.onError(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'
-                             .format(fileName, error.strerror))
-                                                 
+                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'
+                                        .format(fileName, error.strerror))
 
     def save(self, fileName=None):
         if fileName:
@@ -553,10 +556,10 @@ class BaseDialog(QDialog, Ui_Dialog):
             if len(self.path) == 0:
                 self.path = None
                 return
+            STEMMessageHandler.success("File salvato correttamente.")
         # Rename the original file, if it exists
         path = unicode(self.path)
         self.overwrite = QFileInfo(path).exists()
-
 
     def finished(self, load):
         outFn = self.getOutputFileName()
@@ -564,17 +567,17 @@ class BaseDialog(QDialog, Ui_Dialog):
             return
 
         if outFn == '':
-            QMessageBox.warning(self, "Warning", "No output file created.")
+            STEMMessageHandler.warning("Warning", "No output file created.")
             return
 
         fileInfo = QFileInfo(outFn)
         if fileInfo.exists():
             if load:
                 self.addLayerIntoCanvas(fileInfo)
-            QMessageBox.information(self, "Finished", "Processing completed.")
+            STEMMessageHandler.information("Finished", "Processing completed.")
         else:
             # QMessageBox.warning(self, self.tr( "Warning" ), self.tr( "%1 not created." ).arg( outFn ) )
-            QMessageBox.warning(self, "Warning", "%s not created." % outFn)
+            STEMMessageHandler.warning("Warning", "{0} not created.".format(outFn))
 
     def tr(self, context, text):
         if context == '':
@@ -640,7 +643,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file già presente." % mydir)
+            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def BrowseDir(self, line):
         """"""
@@ -651,11 +654,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
             return
         else:
             # TODO add overwrite option
-            self.onError("'%s' file già presente." % mydir)
-
-    def onError(self, error):
-        """Function to return error"""
-        QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE, str(error))
+            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def _reject(self):
         pass

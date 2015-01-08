@@ -30,9 +30,9 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
-import traceback
+import os, traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -83,6 +83,8 @@ class STEMToolsDialog(BaseDialog):
 #        self.verticalLayout_options.insertLayout(4, self.horizontalLayout_filter)
 #        self.labelfilter.setText(self.tr(name, "Selezionare il file dei filtri"))
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
@@ -109,6 +111,7 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.show_(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
@@ -158,5 +161,5 @@ class STEMToolsDialog(BaseDialog):
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

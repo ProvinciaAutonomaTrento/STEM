@@ -31,8 +31,9 @@ from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from grass_stem import helpUrl
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -66,7 +67,9 @@ class STEMToolsDialog(BaseDialog):
         self.LabelLinedit.setEnabled(False)
         self.Linedit.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.clump'))
-    
+        
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
@@ -98,6 +101,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
@@ -123,7 +127,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
                             'value={val}'.format(val=self.Linedit.text())]
-    
+
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
                     com = startcom[:]
@@ -139,16 +143,16 @@ class STEMToolsDialog(BaseDialog):
                                  'output={outname}'.format(outname=tempout)])
                 coms.append(startcom)
                 self.saveCommand(startcom)
-    
+
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
-    
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

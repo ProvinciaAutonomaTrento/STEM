@@ -31,7 +31,7 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
-
+from stem_utils import STEMUtils
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -41,7 +41,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertFileInput()
         self._insertSecondSingleInput()
-        self.addLayerToComboBox(self.BaseInput2, 0)
+        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
 
     def show_(self):
         self.switchClippingMode()
