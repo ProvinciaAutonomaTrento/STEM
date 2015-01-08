@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
@@ -67,7 +65,7 @@ class STEMToolsDialog(BaseDialog):
         self.LabelLinedit.setEnabled(False)
         self.Linedit.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.clump'))
-        
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):

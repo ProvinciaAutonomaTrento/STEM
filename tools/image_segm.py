@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
@@ -47,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertSecondOutput("Goodness of fit", 1)
-        self.connect(self.BrowseButton2, SIGNAL("clicked()"), self.BrowseDir)
+        self.BrowseButton2.clicked.connect(self.BrowseDir)
         self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
 
         self._insertThresholdDouble(0.001, 1.000, 0.001, 1, 3)
@@ -68,7 +66,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondLineEdit(lm, 4)
         self.Linedit2.setText('500')
         #self.BaseInputPan.currentIndexChanged.connect(self.operatorChanged)
-    
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
@@ -92,9 +90,9 @@ class STEMToolsDialog(BaseDialog):
             size = str(self.Linedit.text())
             memory = str(self.Linedit2.text())
             coms = []
-    
+
             cut, cutsource, mask = self.cutInput(name, source, typ)
-    
+
             if cut:
                 name = cut
                 source = cutsource
@@ -102,7 +100,7 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
-    
+
             com = ['i.segment', 'group={name}'.format(name=tempin),
                    'output={outname}'.format(outname=tempout),
                    'thres={val}'.format(val=thre),
@@ -115,13 +113,13 @@ class STEMToolsDialog(BaseDialog):
                 com.append('goodness={val}'.format(val=good))
             coms.append(com)
             self.saveCommand(com)
-    
+
             gs.run_grass(coms)
-    
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.TextOut2.text():
-                STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut2.text(), 
+                STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut2.text(),
                                       'goodness_{name}'.format(name=tempout), typ)
             else:
                 gs.removeMapset()

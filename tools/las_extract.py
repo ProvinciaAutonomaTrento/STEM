@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_utils import STEMUtils
@@ -79,15 +77,15 @@ class STEMToolsDialog(BaseDialog):
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
             perc = self.Linedit2.text()
-    
+
             if returnfilter == 'all':
                 returnfilter = None
-    
+
             gs.las_import(source, tempout, method, returnpulse=returnfilter,
                           resolution=reso, percentile=perc)
-            
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, 'raster')
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
         except:

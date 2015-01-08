@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
@@ -73,7 +71,7 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(name)
-    
+
             gs.import_grass(source, tempin, typ, nlayerchoose)
         except:
             error = traceback.format_exc()

@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
@@ -85,7 +83,7 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
-    
+
             if len(nlayerchoose) > 1:
                 for n in nlayerchoose:
                     out = '{name}_{lay}'.format(name=tempout, lay=n)
@@ -107,9 +105,9 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass(coms)
             gs.create_group(tempout, tempout, True)
-    
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
-            
+
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
