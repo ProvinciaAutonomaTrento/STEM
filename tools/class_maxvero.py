@@ -32,13 +32,25 @@ from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
 
+
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
         self.iface = iface
-        
+
         self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+
+        self._insertLayerChooseCheckBox()
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+
+        self._insertSecondSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def show_(self):
         self.switchClippingMode()
@@ -47,6 +59,23 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
-    def run(self):
-        QMessageBox.information(self, "Run", "Dentro run maxvero")
-        pass
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            coms = []
+            outnames = []
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+            if cut:
+                name = cut
+                source = cutsource
+            # TODO finish
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
