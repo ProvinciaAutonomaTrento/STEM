@@ -31,6 +31,8 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -39,6 +41,15 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
+
+        label = "Seleziona la colonna da considerare per le statistiche"
+        self._insertFirstCombobox(label, 0)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+
+    def indexChanged(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
 
     def show_(self):
         self.switchClippingMode()
@@ -46,3 +57,20 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
+
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+
+
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

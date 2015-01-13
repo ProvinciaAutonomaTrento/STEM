@@ -49,7 +49,7 @@ class STEMToolsDialog(BaseDialog):
         # TODO add filter
         items = ['neighbors']
         label = "Seleziona l'algortimo da utilizzare"
-        self._insertFirstCombobox(items, label, 1)
+        self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
 
         methods = ['average', 'median', 'mode', 'minimum', 'maximum', 'range',

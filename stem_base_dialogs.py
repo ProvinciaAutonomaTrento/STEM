@@ -164,7 +164,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.BrowseInFile, self.TextIn))
 
-    def _insertSingleInput(self):
+    def _insertSingleInput(self, label="Dati di input"):
         """Function to add ComboBox Widget where insert a single input file"""
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
@@ -177,9 +177,9 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BaseInput.setObjectName("BaseInput")
         self.horizontalLayout_input.addWidget(self.BaseInput)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
-        self.label.setText(self.tr("", "Dati di input"))
+        self.label.setText(self.tr("", label))
 
-    def _insertSecondSingleInput(self, pos=1):
+    def _insertSecondSingleInput(self, pos=1, label="Dati di input"):
         """Function to add a second ComboBox Widget where insert a single
         input file"""
         self.horizontalLayout_input2 = QHBoxLayout()
@@ -193,7 +193,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BaseInput2.setObjectName("BaseInput2")
         self.horizontalLayout_input2.addWidget(self.BaseInput2)
         self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input2)
-        self.label2.setText(self.tr("", "Dati di input"))
+        self.label2.setText(self.tr("", label))
 
     def _insertLayerChoose(self):
         # TODO da rimuovere
@@ -364,7 +364,7 @@ class BaseDialog(QDialog, Ui_Dialog):
                                                  self.horizontalLayout_linedit2)
         self.LabelLinedit2.setText(self.tr("", label))
 
-    def _insertFirstCombobox(self, items, label, posnum):
+    def _insertFirstCombobox(self, label, posnum, items=None):
         """Function to add a ComboBox Widget"""
         self.horizontalLayout_combo = QHBoxLayout()
         self.horizontalLayout_combo.setObjectName("horizontalLayout_combo")
@@ -378,7 +378,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.horizontalLayout_combo.addWidget(self.BaseInputCombo)
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_combo)
-        [self.BaseInputCombo.addItem(m) for m in items]
+        if items:
+            [self.BaseInputCombo.addItem(m) for m in items]
         self.LabelCombo.setText(self.tr("", label))
 
     def _insertSecondOutput(self, label, posnum):
@@ -536,7 +537,7 @@ class BaseDialog(QDialog, Ui_Dialog):
     def BrowseDir(self, line):
         """Function to create new file in a directory"""
         fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
-        if fileName:                                    
+        if fileName:
             try:
                 self.save(fileName)
                 line.setText(fileName)

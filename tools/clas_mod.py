@@ -48,7 +48,7 @@ class STEMToolsDialog(BaseDialog):
 
         items = ['automatico', 'area', 'manuale']
         label = "Seleziona il metodo da utilizzare"
-        self._insertFirstCombobox(items, label, 1)
+        self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
         label2 = "Inserire la dimensione minima da tenere in considerazione"
         self._insertFirstLineEdit(label2, 2)

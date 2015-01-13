@@ -41,7 +41,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         formats = ['GTIFF', 'ENVI']
-        self._insertFirstCombobox(formats, 'Formato di output', 0)
+        self._insertFirstCombobox('Formato di output', 0, formats)
 
     def show_(self):
         self.switchClippingMode()

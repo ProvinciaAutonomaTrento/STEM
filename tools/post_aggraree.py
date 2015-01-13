@@ -31,6 +31,8 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -38,14 +40,72 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
-        self._insertSecondSingleInput()
-        self.label2.setText(self.tr(name, "Input DTM"))
-        self.label.setText(self.tr(name, "Input LAS file"))
+        self._insertSingleInput("Dati di input (vettoriale di punti)")
+        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
+
+        self._insertSecondSingleInput(label="Dati di input (vettoriale di aree)")
+        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+
+        label = "Seleziona la colonna da considerare per le statistiche"
+        self._insertFirstCombobox(label, 0)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+
+        methods = ['sum', 'average', 'median', 'mode', 'minimum', 'min_cat',
+                   'maximum', 'max_cat', 'range', 'stddev', 'variance',
+                   'diversity']
+        lmet = "Method for aggregate statistics"
+        self._insertMethod(methods, lmet, 1)
+
+    def indexChanged(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
 
     def show_(self):
         self.switchClippingMode()
-        BaseDialog.show_(self)
+        self.show_(self)
 
     def onClosing(self):
-        BaseDialog.onClosing(self)
+        self.onClosing(self)
+
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+            name2 = str(self.BaseInput.currentText())
+            source2 = STEMUtils.getLayersSource(name2)
+            coms = []
+            cut, cutsource, mask = self.cutInput(name, source, typ)
+            cut2, cutsource2, mask = self.cutInput(name2, source2, typ)
+            if cut:
+                name = cut
+                source = cutsource
+            if cut2:
+                name2 = cut2
+                source2 = cutsource2
+
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            pid = tempin.split('_')[2]
+            gs.import_grass(source, tempin, typ)
+            tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
+            gs.import_grass(source2, tempin2, typ)
+            if mask:
+                gs.check_mask(mask)
+            com = ['v.vect.stats', 'points={m}'.format(m=tempin),
+                   'areas={n}'.format(n=tempin2),
+                   'count_column=count_{p}'.format(p=pid),
+                   'stats_column=stats_{p}'.format(p=pid),
+                   'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
+            self.saveCommand(com)
+            gs.run_grass([com])
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
+
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

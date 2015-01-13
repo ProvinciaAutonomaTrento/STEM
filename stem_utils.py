@@ -42,6 +42,7 @@ except ImportError:
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 
+
 class STEMUtils:
 
     registry = QgsMapLayerRegistry.instance()
@@ -54,26 +55,35 @@ class STEMUtils:
         layermap = STEMUtils.registry.mapLayers()
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
-                layerlist.append( layer.name() )
+                layerlist.append(layer.name())
 
         combo.addItems(layerlist)
 
     @staticmethod
-    def getLayersSource(layerName):
+    def getLayer(layerName):
         layermap = STEMUtils.registry.mapLayers()
 
         for name, layer in layermap.iteritems():
             if layer.name() == layerName:
                 if layer.isValid():
-                    return layer.source()
+                    return layer
                 else:
                     return None
+
+    @staticmethod
+    def getLayersSource(layerName):
+        layer = STEMUtils.getLayer(layerName)
+
+        if layer:
+            return layer.source()
+        else:
+            return None
 
     @staticmethod
     def addLayerIntoCanvas(filename, typ):
         """Add the output in the QGIS canvas"""
         layerName = QFileInfo(filename).baseName()
-        if typ == 'raster' or typ=='image':
+        if typ == 'raster' or typ == 'image':
             layer = QgsRasterLayer(filename, layerName)
         elif typ == 'vector':
             layer = QgsVectorLayer(filename, layerName, 'ogr')
@@ -137,6 +147,19 @@ class STEMUtils:
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
+    def addColumnsName(combo, checkCombo):
+        layerName = combo.currentText()
+        cols = []
+        if not layerName:
+            return
+        else:
+            layer = STEMUtils.getLayer(layerName)
+            data = layer.dataProvider()
+            fields = data.fields()
+            [cols.append(i.name()) for i in fields]
+            checkCombo.addItems(cols)
+
+    @staticmethod
     def writeFile(text, name=False):
         if name:
             fs = open(name, 'w')
@@ -152,11 +175,11 @@ class STEMUtils:
     @staticmethod
     def fileExists(fileName):
         if QFileInfo(fileName).exists():
-            res = QMessageBox.question(None, "STEM Plugin", u"Esiste già un file con nome {0}. Sostituirlo?"
-                                       .format(QFileInfo(fileName).baseName()), 
-                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            res = QMessageBox.question(None, "STEM Plugin", u"Esiste già un "
+                                       "file con nome {0}. Sostituirlo?".format(QFileInfo(fileName).baseName()),
+                                       QMessageBox.Yes | QMessageBox.No,
+                                       QMessageBox.No)
 
-            #if res == QMessageBox.Cancel: return
             if res:
                 return True
         return False
@@ -297,7 +320,7 @@ class STEMMessageHandler:
 class STEMSettings:
     """
     Class to save and to restore settings to QSettings
-    
+
     STEMSettings.saveWidgetsValue(ui, QSettings("STEM", "STEM"), toolName)
     STEMSettings.restoreWidgetsValue(ui, QSettings("STEM", "STEM"), toolName)
     """
@@ -363,10 +386,10 @@ class STEMSettings:
                 if value != None:
                     obj.setChecked(value)
 
-    @staticmethod           
+    @staticmethod
     def setValue(key, value):
         return STEMSettings.s.setValue(key, value)
-    
+
     @staticmethod
     def value(key, default=None, type=None):
         if default and type:
@@ -375,4 +398,4 @@ class STEMSettings:
             return STEMSettings.s.value(key, default)
         else:
             return STEMSettings.s.value(key)
-            
+

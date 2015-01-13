@@ -42,7 +42,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFileInput()
         methods = ['all', 'first', 'last', 'mid']
         label = "Selezionare il ritorno desiderato"
-        self._insertFirstCombobox(methods, label, 0)
+        self._insertFirstCombobox(label, 0, methods)
         label = "Selezionare il metodo statistico da utilizzare"
         self._insertMethod(stats, label, 1)
         label = "Risoluzione finale del raster"

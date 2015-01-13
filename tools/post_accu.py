@@ -60,8 +60,7 @@ class STEMToolsDialog(BaseDialog):
             source2 = STEMUtils.getLayersSource(name2)
             nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
             nlayerchoose2 = STEMUtils.checkLayers(source2, self.layer_list)
-            if len(nlayerchoose) != len(nlayerchoose2):
-                # TODO return error
+            if len(nlayerchoose) != len(nlayerchoose2) and len(nlayerchoose) != 1:
                 print "selezionare lo stesso numero di bande"
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             coms = []
@@ -70,7 +69,9 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name)
+            pid = tempin.split('_')[2]
+            gs.import_grass(source, tempin, typ)
+            tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
 
             gs.import_grass(source, tempin, typ, nlayerchoose)
         except:

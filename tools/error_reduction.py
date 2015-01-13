@@ -48,7 +48,7 @@ class STEMToolsDialog(BaseDialog):
 
         items = ['vicinanza', 'area']
         label = "Seleziona il metodo da utilizzare"
-        self._insertFirstCombobox(items, label, 1)
+        self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
 
         self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari"
