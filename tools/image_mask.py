@@ -32,7 +32,9 @@ from qgis.gui import *
 from stem_utils import STEMUtils, STEMSettings
 from stem_base_dialogs import BaseDialog
 
+
 class STEMToolsDialog(BaseDialog):
+
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
@@ -42,9 +44,9 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
 
         self.LabelOut.setText(self.tr(name, "Impostando la maschera "
-                                     "tutte le successive operazioni "
-                                     "verranno effettuate all'interno "
-                                     "della mappa selezionata"))
+                                            "tutte le successive operazioni "
+                                            "verranno effettuate all'interno "
+                                            "della mappa selezionata"))
         self.TextOut.hide()
         self.BrowseButton.hide()
         self.AddLayerToCanvas.setText(self.tr(name, "Rimuovi la maschera"))
@@ -52,6 +54,8 @@ class STEMToolsDialog(BaseDialog):
         self.LocalCheck.hide()
         self.MultiBand.hide()
         self.QGISextent.hide()
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
         self.switchClippingMode()
@@ -61,6 +65,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def _accept(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if self.AddLayerToCanvas.isChecked():
             STEMSettings.setValue("mask", "")
         else:
