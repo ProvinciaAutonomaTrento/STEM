@@ -36,9 +36,10 @@ import subprocess
 import tempfile
 from functools import partial
 
-from stem_utils import STEMMessageHandler
+from stem_utils import (STEMMessageHandler,
+                        STEMSettings)
 
-MSG_BOX_TITLE = "STEM Plugin Warning"
+MSG_BOX_TITLE = "STEM Plugin"
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
@@ -434,8 +435,7 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def cutInput(self, inp, source, typ):
         self.mapDisplay(inp, typ)
-        s = QSettings()
-        mask = s.value("stem/mask", "")
+        mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
         if not bbox and not mask:
             return False, False, False
@@ -617,14 +617,13 @@ class SettingsDialog(QDialog, Setting_Dialog):
 
     def _onLoad(self):
         """Load the parameters from the settings"""
-        s = QSettings()
-        self.lineEdit_grass.setText(s.value("stem/grasspath", ""))
-        self.lineEdit_grassdata.setText(s.value("stem/grassdata", ""))
-        self.lineEdit_grasslocation.setText(s.value("stem/grasslocation", ""))
-        self.lineEdit_liblas.setText(s.value("stem/liblaspath", ""))
-        self.lineEdit_gdal.setText(s.value("stem/gdalpath", ""))
-        self.lineEdit_pdal.setText(s.value("stem/pdalpath", ""))
-        self.epsg.setText(s.value("stem/epsgcode", ""))
+        self.lineEdit_grass.setText(STEMSettings.value("grasspath", ""))
+        self.lineEdit_grassdata.setText(STEMSettings.value("grassdata", ""))
+        self.lineEdit_grasslocation.setText(STEMSettings.value("grasslocation", ""))
+        self.lineEdit_liblas.setText(STEMSettings.value("liblaspath", ""))
+        self.lineEdit_gdal.setText(STEMSettings.value("gdalpath", ""))
+        self.lineEdit_pdal.setText(STEMSettings.value("pdalpath", ""))
+        self.epsg.setText(STEMSettings.value("epsgcode", ""))
         if sys.platform != 'win32':
             self.pushButton_proj.setEnabled(False)
             self.lineEdit_proj.setEnabled(False)
@@ -662,29 +661,26 @@ class SettingsDialog(QDialog, Setting_Dialog):
 
     def _save(self):
         """Save all the keys/values related to stem to a file"""
-        s = QSettings()
-        keys = [a for a in s.allKeys() if a.find('stem/') != -1]
+        keys = [a for a in STEMSettings.allKeys()]
         # TODO maybe add the possibility to choose where save the file
         import tempfile
         f = tempfile.NamedTemporaryFile(delete=False)
         for k in keys:
-            line = "{key}:  {value}\n".format(key=k.split('/')[1],
-                                              value=s.value(k, ""))
+            line = "{key}:  {value}\n".format(key=k,
+                                              value=STEMSettings.value(k, ""))
             f.write(line)
         f.close()
-        QMessageBox.warning(self.iface.mainWindow(), MSG_BOX_TITLE,
-                            str("Impostazioni salvate nel file " + f.name))
+        STEMMessageHandler.information(MSG_BOX_TITLE, 'Impostazioni salvate nel file {0}'.format(f.name))
 
     def _accept(self):
-        """Save the variable in QGIS Settings"""
-        s = QSettings()
-        s.setValue("stem/grasspath", self.lineEdit_grass.text())
-        s.setValue("stem/grassdata", self.lineEdit_grassdata.text())
-        s.setValue("stem/grasslocation", self.lineEdit_grasslocation.text())
-        s.setValue("stem/liblaspath",  self.lineEdit_liblas.text())
-        s.setValue("stem/gdalpath", self.lineEdit_gdal.text())
-        s.setValue("stem/pdalpath", self.lineEdit_pdal.text())
-        s.setValue("stem/epsgcode", self.epsg.text())
+        """Save the variable in STEM Settings"""
+        STEMSettings.setValue("grasspath", self.lineEdit_grass.text())
+        STEMSettings.setValue("grassdata", self.lineEdit_grassdata.text())
+        STEMSettings.setValue("grasslocation", self.lineEdit_grasslocation.text())
+        STEMSettings.setValue("liblaspath",  self.lineEdit_liblas.text())
+        STEMSettings.setValue("gdalpath", self.lineEdit_gdal.text())
+        STEMSettings.setValue("pdalpath", self.lineEdit_pdal.text())
+        STEMSettings.setValue("epsgcode", self.epsg.text())
 
 
 class helpDialog(QDialog, Help_Dialog):
