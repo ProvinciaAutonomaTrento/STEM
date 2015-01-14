@@ -35,11 +35,11 @@ from STEMToolbox import Ui_STEMToolBox
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
 TOOLS = {("0","Pre-elaborazione immagini")
                                         :[{("0","Filtro riduzione del rumore"):"image_filter",
-                                        ("1","Correzione atmosferica"):"image_corratmo",
-                                        ("2","Segmentazione"):"image_segm",
-                                        ("3","Pansharpening"):"image_pansh",
-                                        ("4","Maschera"):"image_mask",
-                                        ("5","Accatastamento"):"image_multi"}],
+#                                        ("1","Correzione atmosferica"):"image_corratmo",
+                                        ("1","Segmentazione"):"image_segm",
+                                        ("2","Pansharpening"):"image_pansh",
+                                        ("3","Maschera"):"image_mask",
+                                        ("4","Accatastamento"):"image_multi"}],
         ("1","Pre-elaborazioni LIDAR")
                                         :[{("0","Filtraggio file LAS"):"las_filter",
                                         ("1","Unione file LAS"):"las_union",
