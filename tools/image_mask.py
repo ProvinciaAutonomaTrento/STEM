@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMSettings
 from stem_base_dialogs import BaseDialog
 
 class STEMToolsDialog(BaseDialog):
@@ -61,10 +61,9 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def _accept(self):
-        s = QSettings()
         if self.AddLayerToCanvas.isChecked():
-            s.setValue("stem/mask", "")
+            STEMSettings.setValue("mask", "")
         else:
             name = str(self.BaseInput.currentText())
             source = self.getLayersSource(name)
-            s.setValue("stem/mask", source)
+            STEMSettings.setValue("mask", source)

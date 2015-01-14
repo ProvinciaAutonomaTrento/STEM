@@ -399,3 +399,7 @@ class STEMSettings:
         else:
             return STEMSettings.s.value(key)
 
+    @staticmethod
+    def allKeys():
+        return STEMSettings.s.allKeys()
+
