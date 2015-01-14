@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
 import traceback
 
@@ -46,7 +46,6 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
-
         methods = ['asm', 'contrast', 'corr', 'var', 'idm', 'sa', 'se', 'sv',
                    'entr', 'dv', 'de', 'moc1', 'moc2']
         label = "Metodo per calcolare la tessitura"
@@ -54,6 +53,8 @@ class STEMToolsDialog(BaseDialog):
         label = "Dimensione della finestra mobile"
         self._insertFirstLineEdit(label, 1)
         self.helpui.fillfromUrl(helpUrl('r.texture'))
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
@@ -66,6 +67,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
@@ -112,5 +114,5 @@ class STEMToolsDialog(BaseDialog):
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

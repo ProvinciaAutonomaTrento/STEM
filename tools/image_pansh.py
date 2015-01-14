@@ -62,7 +62,6 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
 
-
         methods = ['brovey', 'ihs', 'pca']
         self._insertMethod(methods, "Seleziona tipo di Pansharpening", 0)
 
@@ -147,7 +146,8 @@ class STEMToolsDialog(BaseDialog):
             self.saveCommand(com)
             gs.run_grass(coms)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

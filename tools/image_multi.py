@@ -43,6 +43,8 @@ class STEMToolsDialog(BaseDialog):
         formats = ['GTIFF', 'ENVI']
         self._insertFirstCombobox('Formato di output', 0, formats)
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -51,6 +53,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         items = []
         for index in xrange(self.BaseInput.count()):
             items.append(self.BaseInput.item(index))

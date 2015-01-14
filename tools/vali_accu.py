@@ -50,6 +50,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 

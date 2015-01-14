@@ -27,13 +27,14 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMSettings
 from stem_base_dialogs import BaseDialog
 from grass_stem import stats, helpUrl
 import os, traceback
 
 
 class STEMToolsDialog(BaseDialog):
+
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
@@ -54,6 +55,8 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit2.setEnabled(False)
         self.helpui.fillfromUrl(helpUrl('r.in.lidar'))
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -67,6 +70,7 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit2.setEnabled(False)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
@@ -81,14 +85,16 @@ class STEMToolsDialog(BaseDialog):
             if returnfilter == 'all':
                 returnfilter = None
 
+            # TODO save parameter of import
             gs.las_import(source, tempout, method, returnpulse=returnfilter,
                           resolution=reso, percentile=perc)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, 'raster')
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, 'raster')
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
         except:
             error = traceback.format_exc()
-            self.onError(error)
+            STEMMessageHandler.error(error)
             return

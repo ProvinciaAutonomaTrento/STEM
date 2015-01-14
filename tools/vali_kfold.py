@@ -31,8 +31,11 @@ from qgis.core import *
 from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+
 
 class STEMToolsDialog(BaseDialog):
+
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
@@ -40,9 +43,14 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
 
     def onClosing(self):
         self.onClosing(self)
+
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)

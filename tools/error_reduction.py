@@ -55,6 +55,8 @@ class STEMToolsDialog(BaseDialog):
         self.lf = "Inserire la dimensione minima da tenere in considerazione"
         self._insertFirstLineEdit(self.ln, 2)
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'vicinanza':
             self.LabelLinedit.setText(self.tr(self.toolName, self.ln))
@@ -71,6 +73,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:

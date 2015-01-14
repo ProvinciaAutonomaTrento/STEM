@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
 from stem_functions import temporaryFilesGRASS
@@ -56,6 +56,8 @@ class STEMToolsDialog(BaseDialog):
 
         self.helpui.fillfromUrl(helpUrl('i.vi'))
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -64,31 +66,38 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
-        name = str(self.BaseInput.currentText())
-        source = STEMUtils.getLayersSource(name)
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
 
-        red = str(self.layer_list.currentIndex() + 1)
-        nir = str(self.layer_list2.currentIndex() + 1)
-        nlayers = [red, nir]
+            red = str(self.layer_list.currentIndex() + 1)
+            nir = str(self.layer_list2.currentIndex() + 1)
+            nlayers = [red, nir]
 
-        typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
 
-        cut, cutsource, mask = self.cutInput(name, source, typ)
+            cut, cutsource, mask = self.cutInput(name, source, typ)
 
-        if cut:
-            name = cut
-            source = cutsource
-        tempin, tempout, gs = temporaryFilesGRASS(name)
-        if mask:
-            gs.check_mask(mask)
-        gs.import_grass(source, tempin, typ, nlayers)
-        com = ['i.vi', 'red={name}.{l}'.format(name=tempin, l=red),
-               'nir={name}.{l}'.format(name=tempin, l=nir),
-               'output={name}'.format(name=tempout), 'viname=ndvi']
-        self.saveCommand(com)
-        gs.run_grass([com])
+            if cut:
+                name = cut
+                source = cutsource
+            tempin, tempout, gs = temporaryFilesGRASS(name)
+            if mask:
+                gs.check_mask(mask)
+            gs.import_grass(source, tempin, typ, nlayers)
+            com = ['i.vi', 'red={name}.{l}'.format(name=tempin, l=red),
+                   'nir={name}.{l}'.format(name=tempin, l=nir),
+                   'output={name}'.format(name=tempout), 'viname=ndvi']
+            self.saveCommand(com)
+            gs.run_grass([com])
 
-#        pdb.set_trace()
-        gs.export_grass(tempout, self.TextOut.text(), typ, False)
-        if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+            gs.export_grass(tempout, self.TextOut.text(), typ, False)
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
 
 
@@ -47,9 +47,14 @@ class STEMToolsDialog(BaseDialog):
         self.label2.setText(self.tr(name, "Input DTM"))
         self.label.setText(self.tr(name, "Input LAS file"))
 
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
 
     def onClosing(self):
         self.onClosing(self)
+
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)

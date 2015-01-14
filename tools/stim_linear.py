@@ -35,6 +35,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 
 
 class STEMToolsDialog(BaseDialog):
+
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
@@ -47,6 +48,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(label, 0)
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
         STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
@@ -66,7 +69,6 @@ class STEMToolsDialog(BaseDialog):
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             cut, cutsource, mask = self.cutInput(name, source, typ)
-
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

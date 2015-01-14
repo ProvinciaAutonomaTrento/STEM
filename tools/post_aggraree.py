@@ -57,6 +57,10 @@ class STEMToolsDialog(BaseDialog):
         lmet = "Method for aggregate statistics"
         self._insertMethod(methods, lmet, 1)
 
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4)
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+
     def indexChanged(self):
         STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
 
@@ -76,7 +80,6 @@ class STEMToolsDialog(BaseDialog):
             source = STEMUtils.getLayersSource(name)
             name2 = str(self.BaseInput.currentText())
             source2 = STEMUtils.getLayersSource(name2)
-            coms = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
             cut2, cutsource2, mask = self.cutInput(name2, source2, typ)
             if cut:
