@@ -80,6 +80,15 @@ class STEMUtils:
             return None
 
     @staticmethod
+    def getLayersType(layerName):
+        layer = STEMUtils.getLayer(layerName)
+
+        if layer:
+            return layer.type()
+        else:
+            return None
+
+    @staticmethod
     def addLayerIntoCanvas(filename, typ):
         """Add the output in the QGIS canvas"""
         layerName = QFileInfo(filename).baseName()
