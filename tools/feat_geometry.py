@@ -29,8 +29,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
 from stem_base_dialogs import BaseDialog
+import traceback
+import numpy
 
 
 class STEMToolsDialog(BaseDialog):
@@ -58,6 +60,21 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChooseCheckBox4(label="Selezionare la banda per il canale infrarosso",
                                          combo=False)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4)
+
+        self._insertThresholdDouble(0.1, 1.00, 0.1, 1, 1,
+                                    "Selezionare il threshold minimo")
+        self._insertSecondThresholdDouble(0.1, 1.00, 0.1, 2, 1,
+                                          "Selezionare il threshold massimo")
+
+        self.thresholdd2.setValue(0.7)
+
+        ln = "Selezionare il valore incrementale del threshold"
+        self._insertFirstLineEdit(ln, 3)
+        self.Linedit.setText('0.1')
+
+        lm = "Inserire il valore di memoria da utilizzare in MB"
+        self._insertSecondLineEdit(lm, 4)
+        self.Linedit2.setText('500')
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -89,7 +106,6 @@ class STEMToolsDialog(BaseDialog):
             nlayers = [red, green, blu, pan]
 
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-            method = str(self.MethodInput.currentText())
             coms = []
 
             cut, cutsource, mask = self.cutInput(name, source, typ)
@@ -103,3 +119,34 @@ class STEMToolsDialog(BaseDialog):
 
             if mask:
                 gs.check_mask(mask)
+
+            minthre = self.thresholdd.value()
+            step = float(self.Linedit.text())
+            maxthre = self.thresholdd.value() + step
+            memory = str(self.Linedit2.text())
+
+            outputs = []
+            for i in numpy.arange(minthre, maxthre, step):
+                output = '{outname}_{thre}'.format(outname=tempout, thre=i)
+                outputs.append(output)
+                com = ['i.segment', '-d', 'group={name}'.format(name=tempin),
+                       'output={out}'.format(out=output),
+                       'thres={val}'.format(val=i),
+                       'similarity=euclidean', 'minsize=1', 'iter=20',
+                       'memory={val}'.format(val=memory)]
+                coms.append(com)
+                self.saveCommand(com)
+
+            gs.run_grass(coms)
+
+            gs.create_group(outputs, tempout)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
+            gs.removeMapset()
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 
@@ -57,8 +57,6 @@ class STEMToolsDialog(BaseDialog):
         lmet = "Method for aggregate statistics"
         self._insertMethod(methods, lmet, 1)
 
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4)
-
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
@@ -76,6 +74,7 @@ class STEMToolsDialog(BaseDialog):
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
+            typ = 'vector'
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             name2 = str(self.BaseInput.currentText())
