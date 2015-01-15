@@ -318,6 +318,25 @@ class BaseDialog(QDialog, Ui_Dialog):
                                                  self.horizontalLayout_thred)
         self.LabelThred.setText(self.tr("", label))
 
+    def _insertSecondThresholdDouble(self, minn, maxx, step, posnum, deci=2,
+                                     label="Seleziona il threshold da utilizzare"):
+        """Function to add SpinBox Widget for decimal number"""
+        self.horizontalLayout_thred2 = QHBoxLayout()
+        self.horizontalLayout_thred2.setObjectName("horizontalLayout_thred2")
+        self.LabelThred2 = QLabel()
+        self.LabelThred2.setObjectName("LabelThred2")
+        self.LabelThred2.setWordWrap(True)
+        self.horizontalLayout_thred2.addWidget(self.LabelThred2)
+        self.thresholdd2 = QDoubleSpinBox()
+        self.thresholdd2.setDecimals(deci)
+        self.thresholdd2.setObjectName("thresholdd")
+        self.thresholdd2.setRange(minn, maxx)
+        self.thresholdd2.setSingleStep(step)
+        self.horizontalLayout_thred2.addWidget(self.thresholdd2)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_thred2)
+        self.LabelThred2.setText(self.tr("", label))
+
     def _insertThresholdInteger(self, minn, maxx, step, posnum,
                                 label="Seleziona il threshold da utilizzare"):
         """Function to add SpinBox Widget for integer number"""
@@ -433,7 +452,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         _path = QgsApplication.qgisSettingsDirPath() + "stem_command_history.txt"
         try:
             hFile = codecs.open(_path, 'w', encoding='utf-8')
-            hFile.write(command + '\n')
+            hFile.write(" ".join(command) + '\n')
         except:
             raise
         hFile.close()
@@ -469,7 +488,7 @@ class BaseDialog(QDialog, Ui_Dialog):
                 com.append('-clipsrc {bbox}'.format(bbox=mask))
             else:
                 return False, False, False
-            com.append(out, source)
+            com.extend([out, source])
 
         runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         log, err = runcom.communicate()
