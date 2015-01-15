@@ -34,6 +34,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import codecs
 from functools import partial
 
 from stem_utils import (STEMMessageHandler,
@@ -428,10 +429,14 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(enable)
 
     def saveCommand(self, command):
-        """Save the command in Qsetting"""
-        s = QSettings()
-        s.setValue("stem/{com}".format(com=self.toolName.replace(' ', '_')),
-                   " ".join(command))
+        """Save the command history to file"""
+        _path = QgsApplication.qgisSettingsDirPath() + "stem_command_history.txt"
+        try:
+            hFile = codecs.open(_path, 'w', encoding='utf-8')
+            hFile.write(command + '\n')
+        except:
+            raise
+        hFile.close()
 
     def cutInput(self, inp, source, typ):
         self.mapDisplay(inp, typ)
