@@ -122,7 +122,7 @@ class STEMToolsDialog(BaseDialog):
 
             minthre = self.thresholdd.value()
             step = float(self.Linedit.text())
-            maxthre = self.thresholdd.value() + step
+            maxthre = self.thresholdd2.value()
             memory = str(self.Linedit2.text())
 
             outputs = []
