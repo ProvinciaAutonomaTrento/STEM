@@ -33,6 +33,25 @@ except ImportError:
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 
+try:
+    import osgeo.ogr as ogr
+except ImportError:
+    try:
+        import ogr
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
+
+
+class infoOGR:
+    """A class to work with vector data"""
+    def __init__(self, iname):
+        self.inp = ogr.Open(iname)
+        self.lay0 = self.inp.GetLayer(0)
+
+    def getType(self):
+        return self.lay0.GetGeomType()
+
+
 class convertGDAL:
     """A class to convert modis data from hdf to GDAL formats using GDAL
 
