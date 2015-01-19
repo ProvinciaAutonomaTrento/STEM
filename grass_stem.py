@@ -55,6 +55,7 @@ def writefile(path, s):
 
 PIPE = subprocess.PIPE
 
+
 class stemGRASS():
 
     def __init__(self, pid, grassdatabase, location, grassbin, epsg):
@@ -139,7 +140,7 @@ class stemGRASS():
                 if 'MASK' not in rasts:
                     gcore.run_command('r.mask', vector=name)
 
-    def import_grass(self, inp, intemp, typ, nl):
+    def import_grass(self, inp, intemp, typ, nl=None):
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
@@ -149,12 +150,12 @@ class stemGRASS():
                                       'band={bs}'.format(bs=','.join(nl))],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
-            elif len(nl) == 1 and nl[0] == '1':
+            elif len(nl) == 1 and str(nl[0]) == '1':
                 runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
                                       'output={intemp}'.format(intemp=intemp)],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
-            elif len(nl) == 1 and nl[0] != '1':
+            elif len(nl) == 1 and str(nl[0]) != '1':
                 runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
                                       'output={intemp}'.format(intemp=intemp),
                                       'band={bs}'.format(bs=','.join(nl))],
@@ -183,6 +184,21 @@ class stemGRASS():
         elif typ == 'vector':
             gcore.run_command('v.in.ogr', input=inp, output=intemp)
             gcore.run_command('g.region', vect=intemp)
+
+    def vtorast(self, inp, column=None):
+        import grass.script.core as gcore
+        command = ['v.to.rast', 'input={name}'.format(name=inp),
+                   'output={name}'.format(name=inp)]
+        if column:
+            command.extend(['use=attr', 'attribute_column={col}'.format(col=column)])
+        else:
+            command.append('use=val')
+        runcom = gcore.Popen(command)
+        out, err = runcom.communicate()
+        #  print out,err
+        if runcom.returncode != 0:
+            raise Exception("Errore eseguendo GRASS: "
+                            "Errore eseguendo v.to.rast {err}".format(err=err))
 
     def create_group(self, maps, gname, base=False):
         import grass.script.core as gcore
