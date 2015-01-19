@@ -50,9 +50,10 @@ class STEMUtils:
     registry = QgsMapLayerRegistry.instance()
 
     @staticmethod
-    def addLayerToComboBox(combo, typ):
+    def addLayerToComboBox(combo, typ, clear=True):
         """Add layers to input files list"""
-        combo.clear()
+        if clear:
+            combo.clear()
         layerlist = []
         layermap = STEMUtils.registry.mapLayers()
         for name, layer in layermap.iteritems():
