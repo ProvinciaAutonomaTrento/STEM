@@ -30,6 +30,8 @@ from qgis.gui import *
 from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
 from gdal_functions import convertGDAL
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):

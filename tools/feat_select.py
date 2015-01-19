@@ -29,8 +29,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -38,7 +39,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
+        self._insertFileInput()
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
