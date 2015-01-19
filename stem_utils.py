@@ -32,7 +32,9 @@ from qgis.gui import *
 from qgis.utils import iface
 
 from grass_stem import stemGRASS
-import os, sys, inspect, re
+import os
+import inspect
+import re
 
 try:
     import osgeo.gdal as gdal
@@ -162,6 +164,7 @@ class STEMUtils:
         if not layerName:
             return
         else:
+            checkCombo.clear()
             layer = STEMUtils.getLayer(layerName)
             data = layer.dataProvider()
             fields = data.fields()
@@ -213,7 +216,7 @@ class STEMUtils:
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
-                     epsg=None):
+                         epsg=None):
         """Read the QGIS's settings and obtain information for GRASS GIS"""
         s = QSettings()
         # query GRASS 7 itself for its GISBASE
@@ -244,6 +247,7 @@ class STEMUtils:
             return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
         else:
             return [str(i) for i in range(1, src_ds.RasterCount + 1)]
+
 
 class STEMMessageHandler:
     """
@@ -317,16 +321,19 @@ class STEMMessageHandler:
 
 #         iface.messageBar().pushItem(messageBarItem)
 
-        STEMMessageHandler.warning("Errore", "Controllare i messaggi di log di QGIS", 0)
+        STEMMessageHandler.warning("Errore",
+                                   "Controllare i messaggi di log di QGIS", 0)
         QgsMessageLog.logMessage(message, "STEM Plugin")
-
 
     @staticmethod
     def messageBar(title, text, level, timeout):
         if title:
-            iface.messageBar().pushMessage(title.decode('utf-8'), text.decode('utf-8'), level, timeout)
+            iface.messageBar().pushMessage(title.decode('utf-8'),
+                                           text.decode('utf-8'), level,
+                                           timeout)
         else:
-            iface.messageBar().pushMessage(text.decode('utf-8'), level, timeout)
+            iface.messageBar().pushMessage(text.decode('utf-8'), level,
+                                           timeout)
 
 
 class STEMSettings:
@@ -346,20 +353,20 @@ class STEMSettings:
 
         for name, obj in inspect.getmembers(ui):
             if isinstance(obj, QComboBox):
-                name   = obj.objectName()
-                index  = obj.currentIndex()
-                text   = obj.itemText(index)
-                STEMSettings.setValue(tool +"/"+ name, text)
+                name = obj.objectName()
+                index = obj.currentIndex()
+                text = obj.itemText(index)
+                STEMSettings.setValue(tool + "/" + name, text)
 
             if isinstance(obj, QLineEdit):
                 name = obj.objectName()
                 value = obj.text()
-                STEMSettings.setValue(tool +"/"+ name, value)
+                STEMSettings.setValue(tool + "/" + name, value)
 
             if isinstance(obj, QCheckBox):
                 name = obj.objectName()
                 state = obj.isChecked()
-                STEMSettings.setValue(tool +"/"+ name, state)
+                STEMSettings.setValue(tool + "/" + name, state)
 
     @staticmethod
     def restoreWidgetsValue(ui, tool=""):
@@ -373,7 +380,7 @@ class STEMSettings:
                 #text   = obj.itemText(index)
                 name = obj.objectName()
 
-                value = STEMSettings.value(tool +"/"+ name, "", unicode)
+                value = STEMSettings.value(tool + "/" + name, "", unicode)
                 if value == "":
                     continue
 
@@ -388,14 +395,14 @@ class STEMSettings:
 
             if isinstance(obj, QLineEdit):
                 name = obj.objectName()
-                value = STEMSettings.value(tool +"/"+ name, "", unicode)
+                value = STEMSettings.value(tool + "/" + name, "", unicode)
                 if value:
                     obj.setText(value)
 
             if isinstance(obj, QCheckBox):
                 name = obj.objectName()
-                value = STEMSettings.value(tool +"/"+ name, True, bool)
-                if value != None:
+                value = STEMSettings.value(tool + "/" + name, True, bool)
+                if value is not None:
                     obj.setChecked(value)
 
     @staticmethod
@@ -414,4 +421,3 @@ class STEMSettings:
     @staticmethod
     def allKeys():
         return STEMSettings.s.allKeys()
-
