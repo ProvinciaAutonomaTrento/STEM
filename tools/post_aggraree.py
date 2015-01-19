@@ -32,6 +32,7 @@ from qgis.gui import *
 import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from gdal_functions import infoOGR
 
 
 class STEMToolsDialog(BaseDialog):
@@ -40,7 +41,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput("Dati di input (vettoriale di punti)")
+        self._insertSingleInput("Dati di input (vettoriale di punti o aree)")
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
 
         self._insertSecondSingleInput(label="Dati di input (vettoriale di aree)")
@@ -77,7 +78,16 @@ class STEMToolsDialog(BaseDialog):
             typ = 'vector'
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            name2 = str(self.BaseInput.currentText())
+            infoname = infoOGR(source)
+            if infoname.getType() in [1, 4, -2147483647, -2147483644]:
+                geotype = 'point'
+            elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
+                geotype = 'centroid'
+            else:
+                error = "Geometry type non supported"
+                STEMMessageHandler.error(error)
+                return
+            name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
             cut, cutsource, mask = self.cutInput(name, source, typ)
             cut2, cutsource2, mask = self.cutInput(name2, source2, typ)
@@ -90,20 +100,22 @@ class STEMToolsDialog(BaseDialog):
 
             tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
             pid = tempin.split('_')[2]
+
             gs.import_grass(source, tempin, typ)
-            tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
+            tempin2 = 'stem_{name}_{pid}'.format(name=name2, pid=pid)
             gs.import_grass(source2, tempin2, typ)
             if mask:
                 gs.check_mask(mask)
             com = ['v.vect.stats', 'points={m}'.format(m=tempin),
-                   'areas={n}'.format(n=tempin2),
+                   'areas={n}'.format(n=tempin2), 'type={t}'.format(t=geotype),
                    'count_column=count_{p}'.format(p=pid),
                    'stats_column=stats_{p}'.format(p=pid),
+                   'method={m}'.format(m=self.MethodInput.currentText()),
                    'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
             self.saveCommand(com)
             gs.run_grass([com])
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+                                  tempin2, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
