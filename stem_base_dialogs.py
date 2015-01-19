@@ -42,6 +42,7 @@ from stem_utils import (STEMMessageHandler,
 
 MSG_BOX_TITLE = "STEM Plugin"
 
+
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
     joined = ''
@@ -517,36 +518,6 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
 
-    def onFinished(self, exitCode, status):
-        """called when the command finished its execution, shows an error message if
-        there's one and, if required, load the output file in canvas"""
-        if status == QProcess.CrashExit:
-            self.stop()
-            return
-
-        # show the error message if there's one, otherwise show the process
-        # output message
-        msg = str(self.process.readAllStandardError())
-        if msg == '':
-            outMessages = str(self.process.readAllStandardOutput()).splitlines()
-
-            # make sure to not show the help
-            for m in outMessages:
-                m = string.strip(m)
-                if m == '':
-                    continue
-
-                if msg:
-                    msg += "\n"
-                msg += m
-
-        QErrorMessage(self).showMessage(msg.replace("\n", "<br>"))
-
-        if exitCode == 0:
-            self.emit(SIGNAL("finished(bool)"), self.loadCheckBox.isChecked())
-
-        self.stop()
-
     def BrowseInFile(self, line, filt="LAS file (*.las)"):
         """Function to create new file in a directory"""
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file di"
@@ -566,8 +537,8 @@ class BaseDialog(QDialog, Ui_Dialog):
                 self.save(fileName)
                 line.setText(fileName)
             except (IOError, OSError), error:
-                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'
-                                        .format(fileName, error.strerror))
+                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere '
+                                         'salvato. Errore: {1}'.format(fileName, error.strerror))
 
     def save(self, fileName=None):
         if fileName:
@@ -586,28 +557,19 @@ class BaseDialog(QDialog, Ui_Dialog):
         path = unicode(self.path)
         self.overwrite = QFileInfo(path).exists()
 
-    def finished(self, load):
-        outFn = self.getOutputFileName()
-        if outFn:
-            return
-
-        if outFn == '':
-            STEMMessageHandler.warning("Warning", "No output file created.")
-            return
-
+    def finished(self, outFn):
         fileInfo = QFileInfo(outFn)
         if fileInfo.exists():
-            if load:
-                self.addLayerIntoCanvas(fileInfo)
-            STEMMessageHandler.information("Finished", "Processing completed.")
+            STEMMessageHandler.information("Finished", "Processing completed, "
+                                           "the output file is {path}".format(path=outFn))
         else:
-            # QMessageBox.warning(self, self.tr( "Warning" ), self.tr( "%1 not created." ).arg( outFn ) )
             STEMMessageHandler.warning("Warning", "{0} not created.".format(outFn))
 
     def tr(self, context, text):
         if context == '':
             context = 'STEM'
         return QCoreApplication.translate(context, text.decode('utf-8'))
+
 
 class SettingsDialog(QDialog, Setting_Dialog):
 
@@ -660,7 +622,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
                 self.lineEdit_proj.setText('C:\OSGeo4W\share\proj')
 
     def BrowseBin(self, line):
-        mydir = QFileDialog.getOpenFileName(None, "Selezionare l'eseguibile desiderato",
+        mydir = QFileDialog.getOpenFileName(None, "Selezionare il file desiderato",
                                             "")
         if os.path.exists(mydir):
             line.setText(mydir)
@@ -671,7 +633,7 @@ class SettingsDialog(QDialog, Setting_Dialog):
 
     def BrowseDir(self, line):
         """"""
-        mydir = QFileDialog.getExistingDirectory(None, "Selezionare l'eseguibile desiderato",
+        mydir = QFileDialog.getExistingDirectory(None, "Selezionare il percorso desiderato",
                                                  "")
         if os.path.exists(mydir):
             line.setText(mydir)
