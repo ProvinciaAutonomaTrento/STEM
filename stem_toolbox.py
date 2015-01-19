@@ -33,7 +33,7 @@ import os
 from STEMToolbox import Ui_STEMToolBox
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
-TOOLS = {("0","Pre-elaborazione immagini")
+TOOLS = {("0", "Pre-elaborazione immagini")
                                         :[{("0","Filtro riduzione del rumore"):"image_filter",
 #                                        ("1","Correzione atmosferica"):"image_corratmo",
                                         ("1","Segmentazione"):"image_segm",
@@ -51,7 +51,8 @@ TOOLS = {("0","Pre-elaborazione immagini")
                                         :[{("0","Feature di tessitura"):"feat_texture",
                                         ("1","Feature geometriche"):"feat_geometry",
                                         ("2","Indici di vegetazione"):"feat_vege",
-                                        ("3","Selezione feature"):"feat_select"}],
+                                        ("3","Selezione feature"):"feat_select",
+                                        ("4","Delimitazione chiome"):"feat_delin"}],
         ("3","Classificazione supervisionata")
                                         :[{("0","Support Vector Machines"):"class_svm",
                                         ("1","Minima distanza"):"class_mindist",
@@ -59,22 +60,20 @@ TOOLS = {("0","Pre-elaborazione immagini")
                                         ("3","Spectral Angle Mapper"):"class_sap"}],
         ("4","Post-classificazione")
                                         :[{("0","Attribuzione/modifica classi tematiche"):"clas_mod",
-                                        ("1","Riduzione degli errori"):"error_reduction",
-                                        ("2","Statistiche"):"vali_stats",
-                                        ("3","Metriche di accuratezza"):"vali_accu",
-                                        ("4","K-fold cross validation"):"vali_kfold"}],
-        ("5","Estrazione feature dalle chiome")
-                                        :[{("0","Delineazione chiome"):"feat_delin",
-                                        ("1","Estrazione feature"):"" }],
-        ("6","Stima di parametri")
+                                        ("1","Riduzione degli errori"):"error_reduction"}],
+#        ("5","Estrazione feature dalle chiome")
+#                                        :[{("0","Delineazione chiome"):"feat_delin",
+#                                        ("1","Estrazione feature"):"" }],
+        ("5","Stima di parametri")
                                         :[{("0","Selezione variabili"):"stim_selvar",
                                         ("1","Stimatore lineare"):"stim_linear",
                                         ("2","Support Vector Regression"):"stim_svr"}],
-        ("7","Post-elaborazione stima")
+        ("6","Post-elaborazione stima")
                                         :[{("0","Aggregazione ad aree"):"post_aggraree",
                                         ("1","Metriche di accuratezza"):"post_accu",
-                                        ("2","K-fold cross validation"):"post_kfold"}],
-        ("8","Struttura bosco")
+                                        ("2","K-fold cross validation"):"post_kfold",
+                                        ("3","Statistiche"):"post_stats"}],
+        ("7","Struttura bosco")
                                         :[{("0","Struttura bosco"):"bosco"}]
 }
 
