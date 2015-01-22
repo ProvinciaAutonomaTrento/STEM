@@ -72,6 +72,8 @@ class convertGDAL:
         self._checkPara()
         self.output = self.driver.Create(output, self.xsize, self.ysize,
                                          len(self.in_names), self.bandtype)
+        self.output.SetProjection(self.proj)
+        self.output.SetGeoTransform(self.geotrasf)
 
     def _names_to_fileinfos(self):
         """Translate a list of GDAL filenames, into file_info objects.
@@ -100,8 +102,6 @@ class convertGDAL:
         for f in range(len(self.file_infos)):
             fi = self.file_infos[f]
             fi.copy_into(self.output, f + 1)
-        self.output.SetProjection(self.proj)
-        self.output.SetGeoTransform(self.geotrasf)
         self.output = None
 
 
@@ -121,10 +121,15 @@ def raster_copy(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
     s_band = s_fh.GetRasterBand(s_band_n)
     t_band = t_fh.GetRasterBand(t_band_n)
 
-    data = s_band.ReadRaster(s_xoff, s_yoff, s_xsize, s_ysize,
-                             t_xsize, t_ysize, t_band.DataType)
-    t_band.WriteRaster(t_xoff, t_yoff, t_xsize, t_ysize, data, t_xsize,
-                       t_ysize, t_band.DataType)
+#    data = s_band.ReadRaster(s_xoff, s_yoff, s_xsize, s_ysize,
+#                             t_xsize, t_ysize, t_band.DataType)
+#
+#    t_band.WriteRaster(t_xoff, t_yoff, t_xsize, t_ysize, data, t_xsize,
+#                       t_ysize, t_band.DataType)
+
+    data_src = s_band.ReadAsArray(s_xoff, s_yoff, s_xsize, s_ysize,
+                                  t_xsize, t_ysize)
+    t_band.WriteArray(data_src, t_xoff, t_yoff)
 
     return 0
 
