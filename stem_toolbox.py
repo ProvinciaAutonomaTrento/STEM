@@ -60,7 +60,7 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         ("3","Spectral Angle Mapper"):"class_sap"}],
         ("4","Post-classificazione")
                                         :[{("0","Attribuzione/modifica classi tematiche"):"clas_mod",
-                                        ("1","Riduzione degli errori"):"error_reduction"}],
+                                        ("1","Filtro maggioranza"):"error_reduction"}],
 #        ("5","Estrazione feature dalle chiome")
 #                                        :[{("0","Delineazione chiome"):"feat_delin",
 #                                        ("1","Estrazione feature"):"" }],
