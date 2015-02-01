@@ -307,23 +307,23 @@ class STEMMessageHandler:
     @staticmethod
     def error(message):
         ## TODO: add an action to message bar to trigger the Log Messages Viewer
-#         button = QToolButton()
-#         action = QAction(button)
-#         action.setText("Apri finestra dei logs")
-#         button.setCursor(Qt.PointingHandCursor)
-#         button.setStyleSheet("background-color: rgba(255, 255, 255, 0); color: black; "
-#                              "text-decoration: underline;")
-#         button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
-#         button.addAction(action)
-#         button.setDefaultAction(action)
-#         level = STEMMessageHandler.messageLevel[1]
-#         messageBarItem = QgsMessageBarItem(u"Error", u"Un errore è avvenuto, controllare i messaggi di log",
-#                                            button, level, 0, iface.messageBar())
+        # button = QToolButton()
+        # action = QAction(button)
+        # action.setText("Apri finestra dei logs")
+        # button.setCursor(Qt.PointingHandCursor)
+        # button.setStyleSheet("background-color: rgba(255, 255, 255, 0); color: black; "
+        #                   "text-decoration: underline;")
+        # button.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        # button.addAction(action)
+        # button.setDefaultAction(action)
+        # level = STEMMessageHandler.messageLevel[1]
+        # messageBarItem = QgsMessageBarItem(u"Error", u"Un errore è avvenuto, controllare i messaggi di log",
+        #                                 button, level, 0, iface.messageBar())
+        #
+        # iface.messageBar().pushItem(messageBarItem)
 
-#         iface.messageBar().pushItem(messageBarItem)
-
-        STEMMessageHandler.warning("Errore",
-                                   "Controllare i messaggi di log di QGIS", 0)
+        STEMMessageHandler.warning("STEM",
+                                   "Errore! Controllare i messaggi di log di QGIS", 0)
         QgsMessageLog.logMessage(message, "STEM Plugin")
 
     @staticmethod
