@@ -122,38 +122,6 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
             self.toolTree.sortItems(1, Qt.AscendingOrder)
             self.toolTree.resizeColumnToContents(0)
 
-    def fillItem(self, item, value):
-        ''' Will be removed'''
-        #item.setExpanded(True)
-        if type(value) is dict:
-          for key, val in sorted(value.iteritems()):
-            child = QTreeWidgetItem()
-            child.setText(0, unicode(key))
-            item.addChild(child)
-            self.fill_item(child, val)
-        elif type(value) is list:
-          for val in value:
-            child = QTreeWidgetItem()
-            item.addChild(child)
-            if type(val) is dict:
-              child.setText(0, '[dict]')
-              self.fill_item(child, val)
-            elif type(val) is list:
-              child.setText(0, '[list]')
-              self.fill_item(child, val)
-            else:
-              child.setText(0, unicode(val))
-            child.setExpanded(True)
-        else:
-          child = QTreeWidgetItem()
-          child.setText(0, unicode(value))
-          item.addChild(child)
-
-    def fillWidget(self, widget, value):
-        ''' Will be removed'''
-        widget.clear()
-        self.fill_item(widget.invisibleRootItem(), value)
-
 class TreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
