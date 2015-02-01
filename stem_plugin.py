@@ -46,10 +46,11 @@ class STEMPlugin:
         self.stemMenu = None
 
     def initGui(self):
-        #insert into top-level menu
-        self.stemMenu = QMenu(QCoreApplication.translate("STEM", "S&TEM"))
-        self.iface.mainWindow().menuBar().insertMenu(self.iface.firstRightStandardMenu().menuAction(),
-                                                     self.stemMenu)
+        # insert into top-level menu
+        menuBar = self.iface.mainWindow().menuBar()
+        self.stemMenu = QMenu(menuBar)
+        self.stemMenu.setTitle(QCoreApplication.translate("STEM", "S&TEM"))
+
         ## Toolbox
         self.toolbox = STEMToolbox()
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.toolbox)
@@ -59,11 +60,14 @@ class STEMPlugin:
         self.toolboxAction.setText(QCoreApplication.translate('STEM', '&STEM Toolbox'))
         self.stemMenu.addAction(self.toolboxAction)
 
-        self.stemMenu.addAction(QIcon(os.path.dirname(__file__) + '/images/settings.svg'), 
+        self.stemMenu.addAction(QIcon(os.path.dirname(__file__) + '/images/settings.svg'),
                                 "&Impostazioni", self.settings)
 
+        menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.stemMenu)
+
     def unload(self):
-        self.iface.mainWindow().menuBar().removeAction(self.stemMenu.menuAction())
+        self.toolbox.setVisible(False)
+        self.stemMenu.deleteLater()
 
     def settings(self):
         dialog = SettingsDialog(self.iface.mainWindow(), self.iface)
