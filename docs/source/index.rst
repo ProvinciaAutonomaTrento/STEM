@@ -8,8 +8,21 @@ Welcome to Documentazione STEM's documentation!
 
 Contents:
 
-.. toctree::
-   :maxdepth: 2
+.. only:: latex
+
+  .. toctree::
+    :maxdepth: 2
+
+    general
+    tools/*
+
+.. only:: html
+
+  .. toctree::
+    :hidden:
+
+    general
+    tools/*
 
 
 
