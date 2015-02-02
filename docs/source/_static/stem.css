@@ -1,0 +1,15 @@
+body {
+    min-width: 20em;
+    max-width: 50em;
+}
+div.topnav p {
+    text-align: left;
+}
+
+div.bottomnav p {
+    text-align: left;
+}
+
+div.footer {
+    text-align: left;
+}
