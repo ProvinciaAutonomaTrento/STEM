@@ -6,14 +6,20 @@
 Documentazione STEM
 ===============================================
 
-Contenuti:
+.. only:: html
+
+  Contenuti:
 
 
-  .. toctree::
-    :maxdepth: 2
-    :glob:
+.. toctree::
+  :maxdepth: 1
+  :glob:
 
-    general
-    tools/*
+  general
+  tools/*
 
+.. only:: latex
 
+  .. raw:: latex
+
+    \newpage % hard pagebreak at exactly this position

@@ -192,7 +192,7 @@ latex_elements = {
 'pointsize': '10pt',
 
 'classoptions': ',oneside',
-'babel': '\\usepackage[italian]{babel}'
+'babel': '\\usepackage{babel}[italian]'
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
 }
@@ -201,8 +201,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'DocumentazioneSTEM.tex', u'Documentazione STEM Documentation',
-   u'Luca Delucchi, Michele Dalponte, Francesco Nex', 'manual'),
+  ('index', 'DocumentazioneSTEM.tex', u'Documentazione STEM',
+   u'Luca Delucchi, Michele Dalponte, Francesco Nex', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

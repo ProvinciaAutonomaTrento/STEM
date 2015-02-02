@@ -14,7 +14,6 @@ Input
 **Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS.
 Selezionare i raster da accatastare.
 
-
 Parametri
 ------------
 
@@ -28,3 +27,8 @@ Output
 
 **Risultato**: inserire percorso e nome del file di output.
 
+.. only:: latex
+
+  .. raw:: latex
+
+    \newpage % hard pagebreak at exactly this position
