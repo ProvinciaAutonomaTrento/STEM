@@ -45,7 +45,6 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
 
         self.label2.setText(self.tr(name, "Input DTM"))
-        self.label.setText(self.tr(name, "Input LAS file"))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
