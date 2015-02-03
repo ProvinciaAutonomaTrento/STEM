@@ -76,10 +76,10 @@ def empty_rast(newrast_file, rast, format=None,
     return nrast
 
 
-def vect2rast(vect_file, rast_file, asrast, column, format='GTiff',
+def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
               datatype=gdal.GDT_Int32, nodata=-9999):
     """Transform a vector file to a raster map"""
-    vect = ogr.Open(vect_file)
+    vect = ogr.Open(vector_file)
     rast = empty_rast(rast_file, asrast, format=format,
                       datatype=datatype, nodata=-nodata)
     gdal.RasterizeLayer(rast, [1], vect.GetLayer(), burn_values=[1],
@@ -175,7 +175,7 @@ def test_model(model, X, y,
     return vals
 
 
-def find_best(models, strategy='mean'):
+def find_best(models, strategy=np.mean):
     """Return a tuple with the order of the best model and a dictionary with
     the models parameters.
 
@@ -185,10 +185,9 @@ def find_best(models, strategy='mean'):
     ([(score0, key0), (score1, key1), ...], {key0: Model0, key1: Model1})
     """
     mods = {m.__name__: 0. for m in set(model['model'] for model in models)}
-    func = getattr(np, strategy)
     best = {}
     for m in models:
-        val = func(m['scores'])
+        val = strategy(m['scores'])
         mkey = m['model'].__name__
         if mods[mkey] < val:
             mods[mkey] = val
@@ -215,17 +214,13 @@ def read_chunks(rast, nchunks, chunkrows):
 
 def write_chunk(band, data, yoff, xsize, ysize):
     """Write data chunk to a raster map."""
-    import ipdb; ipdb.set_trace()
-    if band.WriteRaster(0,   yoff, xsize, ysize,
-                        data.reshape((ysize, xsize)).tostring(),
-                        xsize, ysize):
+    if band.WriteArray(data.reshape((ysize, xsize)), 0,   yoff):
         raise WriteError("Not able to write the chunk!")
     band.FlushCache()
 
 
 #def write_chunk(band, chunk, nchunks, chunkrows, data):
 #    """Write data chunk to a raster map."""
-#    import ipdb; ipdb.set_trace()
 #    #                   xoff yoff               xsize       ysize
 #    if band.WriteRaster(0,   chunk * chunkrows, band.XSize, chunkrows,
 #                        data.reshape((chunkrows, band.XSize)).tostring(),
@@ -235,7 +230,7 @@ def write_chunk(band, data, yoff, xsize, ysize):
 
 
 
-def extract_training(raster_file, shape_file, column, csv_file,
+def extract_training(raster_file, vector_file, column, csv_file,
                      delimiter=' ', nodata=None, dtype=np.uint32):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
@@ -264,7 +259,10 @@ def extract_training(raster_file, shape_file, column, csv_file,
     nodata = band.GetNoDataValue() if nodata is None else nodata
     tmp_file = os.path.join(tempfile.gettempdir(),
                             'tmprast%d' % random.randint(1000, 9999))
-    trst = vect2rast(shape_file, tmp_file, rast, column, nodata=nodata)
+    # vect_file, rast_file, asrast, column, format='GTiff',
+    #              datatype=gdal.GDT_Int32, nodata=-9999
+    trst = vect2rast(vector_file=vector_file, rast_file=tmp_file, asrast=rast,
+                     column=column, nodata=nodata)
     arr = trst.ReadAsArray()
     if (arr == nodata).all():
         raise TypeError("No training pixels found! all pixels are null!")
@@ -281,7 +279,7 @@ def extract_training(raster_file, shape_file, column, csv_file,
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
     os.remove(tmp_file)
     gc.collect()  # force to free memory of unreferenced objects
-    return data[:, :-1], data[:, -1]  # X, y
+    return data[:, :-1].astype(float), data[:, -1]  # X, y
 
 
 def run_model(model, data):
@@ -324,12 +322,12 @@ def apply_models(input_file, output_file, models, X, y, transformations):
         model['mod'].fit(X, y)
         model['training_time'] = time.time() - start
         print("trained: %s [%.2fs]" % (model['name'], model['training_time']))
-        model['out'] = empty_rast(output_file % model['name'], rast)
+        model['out'] = empty_rast(output_file.format(model['name']), rast)
         model['band'] = model['out'].GetRasterBand(1)
         model['execution_time'] = 0.
 
     # compute the number of chunks
-    nchunks = rysize // brows + 1
+    nchunks = rysize // brows + (1 if rysize % brows else 0)
     print('number of chunks: %d' % nchunks)
     # TODO: fix read_chunks to read and use only the selected features and not
     # all bands
@@ -347,6 +345,211 @@ def apply_models(input_file, output_file, models, X, y, transformations):
                         run_model(model, data).astype(dtype=np.uint32),
                         yoff, rxsize, ysize)
             gc.collect()  # force to free memory of unreferenced objects
+
+
+class MLToolBox(object):
+    def __init__(self, *args, **kwargs):
+        """The MLToolBox class can be instantiate without any argument,
+        however if the argument are given then they are set using the
+        ``set_params`` method.
+        """
+        self._trans = []
+
+        # set values
+        self.set_params(*args, **kwargs)
+
+    def set_params(self, raster_file=None, vector_file=None, column=None,
+                   output_file='{0}', models=None, scoring=None,
+                   n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
+                   scaler=None, fselector=None, decomposer=None):
+        """Method to set class attributes, the attributes are:
+
+        Parameters
+        ----------
+
+        raster_file : str, raster input file/path
+            Raster file with the pixel bands to be classified.
+        vector_file : str, vector input file/path
+            Vector input file with the training areas to train the model.
+        column: str, column name
+            Column name with the data that will be used to train the models.
+        output_file : output file/path
+            Output file where the model results are stored.
+        models : list of dictionaries
+            List of dictionaries containing the models that will be tested.
+        scoring : str or callable
+            Scoring function that we want to use during the cross-validation.
+        n_folds : int, default=5
+            Number of folds that will be used during the cross-validation.
+        n_jobs : int or None, default=1
+            Number of processors that will be used during the cross-validation.
+        best_strategy: function, default: mean
+            Function to select the best model mased on the cross-validated
+            scores, models wiht higher values is selected.
+        scaler : Instance with fit and transform methods
+            Instance that scale the data-set before apply the model.
+        fselector : Instance with fit and transform methods
+            Instance that select the most relevant features in the data-set
+            before apply the model.
+        decompoer : Instance with fit and transform methods
+            Instance for the decomposition of the data-set before apply the
+            model.
+        """
+        self.raster = raster_file
+        self.vector = vector_file
+        self.output = '{0}'
+        self.column = column
+        self.models = models
+        self.scoring = scoring
+        self.n_folds = n_folds
+        self.n_jobs = n_jobs
+        self.n_best = n_best
+        self.scaler = scaler
+        self.fselector = fselector
+        self.decomposer = decomposer
+
+    def get_params(self):
+        pass
+
+    def extract_training(self, raster_file=None, vector_file=None, column=None,
+                         csv_file=None, delimiter=' ', nodata=None,
+                         dtype=np.uint32):
+        """Return the data and classes array for the training, and save them on
+        self.X and self.y, see: ``extract_training`` function for more detail
+        on the parameters.
+
+        raster_file, shape_file, column, csv_file,
+                     delimiter=' ', nodata=None, dtype=np.uint32
+        """
+        self.raster = self.raster if raster_file is None else raster_file
+        self.vector = self.vector if vector_file is None else vector_file
+        self.column = self.column if column is None else column
+        self.training_csv = self.training_csv if csv_file is None else csv_file
+        self.X, self.y = extract_training(raster_file=self.raster,
+                                          vector_file=self.vector,
+                                          column=self.column,
+                                          csv_file=self.training_csv,
+                                          delimiter=delimiter, nodata=nodata,
+                                          dtype=dtype)
+        return self.X, self.y
+
+    def transform(self, X=None, y=None,
+                  scaler=None, fselector=None,  decomposer=None, trans=None,
+                  fscolumns=None, fsfile=None):
+        """Transform a data-set scaling values, reducing the number of
+        features and appling decomposition.
+
+        Parameters
+        -----------
+
+        X : array
+            Float 2D array with the data to be transformed
+        y : array
+            Array with the target values or classes
+        scaler : instance
+            Object with methods: ``fit`` and ``transform``.
+        fselector : instance
+            Object with methods: ``fit`` and ``transform``.
+        decomposer : instance
+            Object with methods: ``fit`` and ``transform``.
+        trans : list of instances
+            List of transformer instances that will be applied in
+            sequence.
+        fscolumns : boolean array
+            Boolean array with the data column that will be selected.
+        fsfile : path
+            Path where to save the boolean array selected by the feature
+            selection process.
+
+        Example
+        --------
+
+        >>> mltb = MLToolBox()
+        >>> scaler = StandardScaler(with_mean=True, with_std=True)
+        >>> # instantiate some feature selector:
+        >>> ssf = SSF(strategy=getattr(np, args.SSF_strategy))
+        >>> rfecv = RFECV(estimator=SVC(), cv=cv)
+        >>> lsvc = LinearSVC(C=0.01, penalty="l1", dual=False)
+        >>> etree = ExtraTreesClassifier(n_estimators=250, random_state=0)
+        >>> # instantiate some decomposition
+        >>> pca = PCA(n_components=10)
+        >>> # now transform
+        >>> Xtrans = mltb.transform(X, scaler=scaler, fselector=ssf, pca=pca)
+        """
+        self.X = self.X if X is None else X
+        self.y = self.y if y is None else y
+        Xt = self.X
+        if trans is None:
+            self.scaler = scaler if scaler else self.scaler
+            if self.scaler is not None:
+                self._trans.append(self.scaler)
+            self.fselector = fselector if fselector else self.fselector
+            if self.fselector is not None:
+                if fscolumns is None:
+                    self._trans.append(self.fselector)
+                else:
+                    Xt = Xt[:, fscolumns]
+            self.decomposer = decomposer if decomposer else self.decomposer
+            if decomposer is not None:
+                self._trans.append(self.decomposer)
+
+        for trans in self._trans:
+            trans.fit(Xt, self.y)
+            Xt = trans.transform(Xt)
+            if fsfile is not None:
+                try:
+                    np.savetxt(fsfile, trans.support_)
+                except AttributeError:
+                    pass
+        #if fselector is not None and fsfile is not None and done is False:
+        #    raise
+        self.Xt = Xt
+        return Xt
+
+    def test(self, models=None, X=None, y=None, scoring=None,
+             n_folds=None, n_jobs=None, cv=None):
+        """Return a numpy array with the scoring results for each model."""
+        X = (self.Xt if self.Xt is not None else self.X) if X is None else X
+        self.y = self.y if y is None else y
+        self.scoring = self.scoring if scoring is None else scoring
+        self.models = self.models if models is None else models
+        self.cv = get_cv(self.y, n_folds=self.n_folds)
+        res = np.array([test_model(mod, X, self.y, self.cv, n_jobs=self.n_jobs,
+                                   scoring=self.scoring)
+                        for mod in self.models])
+        return res
+
+    def select_best(self, n_best=1, best=None, order=None):
+        """Return a dictionary with ``{key: model}``, for only the best
+        N models.
+        """
+        n_best = self.n_best if n_best is None else n_best
+        best = self.best if best is None else best
+        order = self.order if order is None else order
+        best_mods = [k[1] for k in (order[:n_best]
+                     if n_best > 0 or n_best < len(order) else order)]
+        return [self.best[b] for b in best_mods]
+
+    def find_best(self, models=None, strategy=np.mean):
+        """Return a list of tuple ``(score, key)`` and a dictionary
+        with ``{key: model}``.
+        """
+        self.models = self.models if models is None else models
+        self.order, self.best = find_best(models, strategy=strategy)
+        return self.order, self.best
+
+    def execute(self, raster_file=None, output_file=None,
+                best=None, X=None, y=None, trans=None):
+        """Apply the best method or the list of model selected to the input
+        raster map."""
+        self.raster = self.raster if raster_file is None else raster_file
+        self.output = self.output if output_file is None else output_file
+        best = self.select_best() if best is None else best
+        self._trans = self._trans if trans is None else trans
+        X = (self.Xt if self.Xt is not None else self.X) if X is None else X
+        self.y = self.y if y is None else y
+        apply_models(self.raster, self.output, best,
+                     X, self.y, self._trans)
 
 
 if __name__ == "__main__":
@@ -414,10 +617,10 @@ if __name__ == "__main__":
     parser.add_argument('--o', '--overwrite', action='store_true',
                         dest='overwrite', default=False,
                         help='overwrite')
-    parser.add_argument('-b', '--best', type=int,
-                        dest='best', default=1,
+    parser.add_argument('-b', '--n-best', type=int,
+                        dest='n_best', default=1,
                         help='Number of best model to apply on the raster.')
-    parser.add_argument('-bs', '--best-strategy', default='min',
+    parser.add_argument('-bs', '--best-strategy', default='mean',
                         dest='best_strategy', choices=['min', 'mean', 'median'],
                         help='Strategy to use to select the best classifier.')
     parser.add_argument('-bp', '--best-pickle',
@@ -425,10 +628,10 @@ if __name__ == "__main__":
                         dest='best_pickle', type=str,
                         help='All the best models are saved and serialized '
                              'using python pickle.')
-    parser.add_argument('-f', '--n-folds', type=int, dest='n_folds',
+    parser.add_argument('-nf', '--n-folds', type=int, dest='n_folds',
                         default=5, help='Number of folds that we want to use'
                                         ' to cross validate the dataset.')
-    parser.add_argument('-j', '--n-jobs', type=int, dest='n_jobs',
+    parser.add_argument('-nj', '--n-jobs', type=int, dest='n_jobs',
                         default=1, help='Number of jobs that we want to use'
                                         ' during the cross validations.')
     parser.add_argument('-s', '--scale', type=bool, nargs=2, dest='scale',
@@ -437,11 +640,13 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--pca', type=pca_components, dest='pca',
                         metavar='n_components', default=NONE, nargs='?',
                         help='See PCA n_componets documentation')
-    parser.add_argument('-u', '--feature-selection', default='RFECV',
+    parser.add_argument('-f', '--feature-selection', default='RFECV',
                         dest='fs', help='Feature selection',
                         choices=['SSF', 'RFECV', 'LinearSVC',
                                  'ExtraTreesClassifier'], )
-    parser.add_argument('-y', '--SSF-strategy', default='min',
+    parser.add_argument('-ff', '--feature-selection', default=None,
+                        dest='ff', help='File with the Feature selected.')
+    parser.add_argument('-fs', '--SSF-strategy', default='min',
                         dest='SSF_strategy', choices=['min', 'mean', 'median'],
                         help='Sequential Forward Floating Feature Selection'
                              ' (SSF) strategy to select the best.')
@@ -460,58 +665,6 @@ if __name__ == "__main__":
         cmd.write(' '.join(sys.argv) + '\n')
 
     # -----------------------------------------------------------------------
-    # Extract training samples
-    trnpath = os.path.join(args.odir, args.csvtraining)
-    if (not os.path.exists(trnpath) or args.overwrite):
-        X, y = extract_training(args.raster, args.vector, args.column,
-                                trnpath, delimiter=';',
-                                nodata=0, dtype=np.uint32)
-    else:
-        dt = np.loadtxt(trnpath, delimiter=';', skiprows=1)
-        X, y = dt[:, :-1], dt[:, -1]
-    cv = get_cv(y, n_folds=args.n_folds)
-    X = X.astype(float)
-
-    fselect = {
-               # Sequential Forward Floating Feature Selection
-               # with Jeffries-Matusita Distance
-               'SSF': SSF(strategy=getattr(np, args.SSF_strategy)),
-               # Recursive Feature Elimination and Cross-Validated (RFECV)
-               'RFECV': RFECV(estimator=SVC(), cv=cv),
-               # Linear Support Vector Classification
-               'LinearSVC': LinearSVC(C=0.01, penalty="l1", dual=False),
-               # Tree-based feature selection
-               'ExtraTreesClassifier': ExtraTreesClassifier(n_estimators=250,
-                                                            random_state=0)
-               }
-
-    # -----------------------------------------------------------------------
-    # Transform the input data
-    TRANSFORM = []
-    if args.scale:
-        wm, ws = args.scale
-        scaler = StandardScaler(with_mean=wm, with_std=ws)
-        print('Scale using:', scaler)
-        X = scaler.fit_transform(X, y)
-        TRANSFORM.append(scaler)
-
-    # -----------------------------------------------------------------------
-    # Feature selection
-    if args.fs:
-        print('Feature selection:', fselect[args.fs])
-        fselect[args.fs].fit(X, y)
-        X = fselect[args.fs].transform(X)
-        TRANSFORM.append(fselect[args.fs])
-
-    # -----------------------------------------------------------------------
-    # Decompose
-    if args.pca != NONE:
-        pca = PCA(n_components=args.pca)
-        print('Decompose using:', pca)
-        X = pca.fit_transform(X, y)
-        TRANSFORM.append(pca)
-
-    # -----------------------------------------------------------------------
     # Get Models
     models = getattr(args.models, args.listname)
     # write indexes
@@ -522,35 +675,89 @@ if __name__ == "__main__":
     if args.imod:
         models = [models[i] for i in args.imod]
 
+    # =======================================================================
+    # Instantiate the class
+    mltb = MLToolBox(raster_file=args.raster, vector_file=args.vector,
+                     column=args.column, models=models, scoring=args.scoring,
+                     n_folds=args.n_folds, n_jobs=args.n_jobs,
+                     n_best=args.n_best,
+                     best_strategy=getattr(np, args.best_strategy),
+                     scaler=None, fselector=None, decomposer=None)
+
+    # -----------------------------------------------------------------------
+    # Extract training samples
+    trnpath = os.path.join(args.odir, args.csvtraining)
+    if (not os.path.exists(trnpath) or args.overwrite):
+        X, y = mltb.extract_training(csv_file=trnpath, delimiter=';',
+                                     nodata=0, dtype=np.uint32)
+    else:
+        dt = np.loadtxt(trnpath, delimiter=';', skiprows=1)
+        X, y = dt[:, :-1], dt[:, -1]
+    X = X.astype(float)
+
+    fselect = {
+           # Sequential Forward Floating Feature Selection
+           # with Jeffries-Matusita Distance
+           'SSF': SSF(strategy=getattr(np, args.SSF_strategy)),
+           # Recursive Feature Elimination and Cross-Validated (RFECV)
+           'RFECV': RFECV(estimator=SVC(), cv=get_cv(y, args.n_folds)),
+           # Linear Support Vector Classification
+           'LinearSVC': LinearSVC(C=0.01, penalty="l1", dual=False),
+           # Tree-based feature selection
+           'ExtraTreesClassifier': ExtraTreesClassifier(n_estimators=250,
+                                                        random_state=0)
+           }
+
+    # -----------------------------------------------------------------------
+    # Scale
+    scaler = None
+    if args.scale:
+        wm, ws = args.scale
+        scaler = StandardScaler(with_mean=wm, with_std=ws)
+
+    # -----------------------------------------------------------------------
+    # Feature selector
+    fselector = None
+    fscolumns = None
+    if args.fs:
+        if args.ff:
+            fspath = os.path.join(args.odir, args.ff)
+            if (os.path.exists(fspath) and not args.overwrite):
+                fscolumns = np.loadtxt(fspath)
+        fselector = fselect[args.fs]
+
+    # -----------------------------------------------------------------------
+    # Decomposer
+    decomposer = PCA(n_components=args.pca) if args.pca != NONE else None
+
+    # -----------------------------------------------------------------------
+    # Transform the input data
+    mltb.transform(X=X, y=y,
+                   scaler=scaler, fselector=fselector, decomposer=decomposer,
+                   fscolumns=fscolumns, fsfile=args.ff)
+
     # -----------------------------------------------------------------------
     # test Models
     respath = os.path.join(args.odir, args.csvresults)
     bpkpath = os.path.join(args.odir, args.best_pickle)
     if (not os.path.exists(respath) or args.overwrite):
-        sep = ';'
-        res = np.array([test_model(mod, X, y, cv, n_jobs=args.n_jobs,
-                                   scoring=args.scoring) for mod in models])
+        res = mltb.test()
+        sep=';'
         np.savetxt(respath, res, delimiter=sep, fmt='%s',
                    header=sep.join(['id', 'name', 'mean', 'max', 'min',
                                     'std', 'time']))
-        order, best = find_best(models, strategy=args.best_strategy)
+        mltb.find_best(models, strategy=args.best_strategy)
+        best = mltb.select_best()
         with open(bpkpath, 'w') as bpkl:
             pkl.dump(best, bpkl)
     else:
         with open(bpkpath, 'r') as bpkl:
             best = pkl.load(bpkl)
-        best = [best[k] for k in best]
-        order, best = find_best(best, strategy=args.best_strategy)
+        #models = [best[k] for k in best]
+        order, models = mltb.find_best(models=best)
+        best = mltb.select_best(best=models)
 
     # -----------------------------------------------------------------------
     # execute Models and save the output raster map
     if args.execute:
-        n = int(args.best)
-        best_mods = [k[1] for k in (order[:n]
-                     if n > 0 or n < len(order) else order)]
-        import ipdb; ipdb.set_trace()
-        apply_models(args.raster, args.rname, [best[b] for b in best_mods],
-                     X, y, TRANSFORM)
-
-
-
+        mltb.execute(best=best)
