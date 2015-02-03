@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'base.ui'
+# Form implementation generated from reading ui file 'ui/base.ui'
 #
-# Created: Fri Dec 19 00:21:35 2014
-#      by: PyQt4 UI code generator 4.9.3
+# Created: Mon Feb  2 11:31:15 2015
+#      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -25,7 +34,7 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 684, 512))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 694, 526))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.gridLayout_8 = QtGui.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_8.setMargin(3)
@@ -80,25 +89,22 @@ class Ui_Dialog(object):
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.gridLayout_3 = QtGui.QGridLayout()
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        self.LocalCheck = QtGui.QCheckBox(self.groupBox)
-        self.LocalCheck.setMaximumSize(QtCore.QSize(16777215, 30))
-        self.LocalCheck.setChecked(True)
-        self.LocalCheck.setObjectName(_fromUtf8("LocalCheck"))
-        self.gridLayout_3.addWidget(self.LocalCheck, 0, 0, 1, 1)
         self.AddLayerToCanvas = QtGui.QCheckBox(self.groupBox)
         self.AddLayerToCanvas.setMaximumSize(QtCore.QSize(16777215, 30))
         self.AddLayerToCanvas.setChecked(True)
         self.AddLayerToCanvas.setObjectName(_fromUtf8("AddLayerToCanvas"))
-        self.gridLayout_3.addWidget(self.AddLayerToCanvas, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.AddLayerToCanvas, 1, 3, 1, 1)
+        self.QGISextent = QtGui.QCheckBox(self.groupBox)
+        self.QGISextent.setObjectName(_fromUtf8("QGISextent"))
+        self.gridLayout_3.addWidget(self.QGISextent, 1, 1, 1, 1)
+        self.LocalCheck = QtGui.QCheckBox(self.groupBox)
+        self.LocalCheck.setMaximumSize(QtCore.QSize(16777215, 30))
+        self.LocalCheck.setChecked(True)
+        self.LocalCheck.setObjectName(_fromUtf8("LocalCheck"))
+        self.gridLayout_3.addWidget(self.LocalCheck, 1, 2, 1, 1)
         self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.MultiBand = QtGui.QCheckBox(self.groupBox)
-        self.MultiBand.setObjectName(_fromUtf8("MultiBand"))
-        self.horizontalLayout_2.addWidget(self.MultiBand)
-        self.QGISextent = QtGui.QCheckBox(self.groupBox)
-        self.QGISextent.setObjectName(_fromUtf8("QGISextent"))
-        self.horizontalLayout_2.addWidget(self.QGISextent)
         self.gridLayout_2.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
         self.gridLayout_4.addLayout(self.gridLayout_2, 0, 0, 1, 1)
         self.verticalLayout.addWidget(self.groupBox)
@@ -117,16 +123,15 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "STEM", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("Dialog", "Input", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("Dialog", "Parametri", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_4.setTitle(QtGui.QApplication.translate("Dialog", "Output", None, QtGui.QApplication.UnicodeUTF8))
-        self.LabelOut.setText(QtGui.QApplication.translate("Dialog", "Risultato", None, QtGui.QApplication.UnicodeUTF8))
-        self.BrowseButton.setText(QtGui.QApplication.translate("Dialog", "Sfoglia", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Opzioni", None, QtGui.QApplication.UnicodeUTF8))
-        self.LocalCheck.setText(QtGui.QApplication.translate("Dialog", "Esegui localmente", None, QtGui.QApplication.UnicodeUTF8))
-        self.AddLayerToCanvas.setText(QtGui.QApplication.translate("Dialog", "Aggiungi risultato sulla mappa", None, QtGui.QApplication.UnicodeUTF8))
-        self.MultiBand.setText(QtGui.QApplication.translate("Dialog", " Raster multibanda", None, QtGui.QApplication.UnicodeUTF8))
-        self.QGISextent.setText(QtGui.QApplication.translate("Dialog", "Utilizza estensione QGIS", None, QtGui.QApplication.UnicodeUTF8))
+        Dialog.setWindowTitle(_translate("Dialog", "STEM", None))
+        self.groupBox_3.setTitle(_translate("Dialog", "Input", None))
+        self.groupBox_2.setTitle(_translate("Dialog", "Parametri", None))
+        self.groupBox_4.setTitle(_translate("Dialog", "Output", None))
+        self.LabelOut.setText(_translate("Dialog", "Risultato", None))
+        self.BrowseButton.setText(_translate("Dialog", "Sfoglia", None))
+        self.groupBox.setTitle(_translate("Dialog", "Opzioni", None))
+        self.AddLayerToCanvas.setText(_translate("Dialog", "Aggiungi risultato sulla mappa", None))
+        self.QGISextent.setText(_translate("Dialog", "Utilizza estensione QGIS", None))
+        self.LocalCheck.setText(_translate("Dialog", "Esegui localmente", None))
 
 from qgis.gui import QgsCollapsibleGroupBox

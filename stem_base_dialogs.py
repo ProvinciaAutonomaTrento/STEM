@@ -93,7 +93,8 @@ class BaseDialog(QDialog, Ui_Dialog):
                      partial(self.BrowseDir, self.TextOut))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
-        self.setWindowTitle(title)
+        self.toolname = title
+        self.setWindowTitle(self.toolname)
         self.inlayers = {}
         self.rect_str = None
         self.mask = None
@@ -569,6 +570,13 @@ class BaseDialog(QDialog, Ui_Dialog):
         if context == '':
             context = 'STEM'
         return QCoreApplication.translate(context, text.decode('utf-8'))
+
+    def SphinxUrl(self):
+        filename = "{tool}.html".format(tool=self.toolname.lower().replace(" ",
+                                                                          "_"))
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
+                            'build', 'html', 'tools', filename)
+        return "file://{p}".format(p=path)
 
 
 class SettingsDialog(QDialog, Setting_Dialog):
