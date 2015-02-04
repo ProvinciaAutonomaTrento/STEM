@@ -1,7 +1,7 @@
 Accatastamento
 ================================
 
-Il modulo esegue l'accatastamento di diverse immagini.
+Il modulo esegue l'accatastamento di diverse immagini. Usare questo modulo per creare un nuovo raster multibanda a partire da più file mono o multibanda avnti estensione, proiezione e dimensioni uguali. L'output sarà un nuovo file multibanda.
 
 .. only:: latex
 
@@ -17,15 +17,15 @@ Selezionare i raster da accatastare.
 Parametri
 ------------
 
-**Formato di output**: il formato per l'output del comando
+**Formato di output**: selezionare il formato per l'output del comando
 
-  * *ENVI*: formato compatibile con il software ENVI.
+  * *ENVI*: formato ENVI (file binario + header).
   * *GTIFF*: formato GeoTiff.
 
 Output
 ------------
 
-**Risultato**: inserire percorso e nome del file di output.
+**Risultato**: inserire il percorso e il nome del file di output.
 
 .. only:: latex
 
