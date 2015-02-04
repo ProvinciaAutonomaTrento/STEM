@@ -52,7 +52,6 @@ class STEMToolsDialog(BaseDialog):
         self.AddLayerToCanvas.setText(self.tr(name, "Rimuovi la maschera"))
         self.AddLayerToCanvas.setChecked(False)
         self.LocalCheck.hide()
-        self.MultiBand.hide()
         self.QGISextent.hide()
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
