@@ -35,6 +35,7 @@ from grass_stem import stemGRASS
 import os
 import inspect
 import re
+import tempfile
 
 try:
     import osgeo.gdal as gdal
@@ -177,7 +178,6 @@ class STEMUtils:
         if name:
             fs = open(name, 'w')
         else:
-            import tempfile
             f = tempfile.NamedTemporaryFile()
             name = f.name
             fs = f.file
@@ -201,7 +201,6 @@ class STEMUtils:
     def exportGRASS(gs, overwrite, output, tempout, typ):
         if typ == 'vector' and overwrite:
             import shutil
-            import tempfile
 
             newdir = os.path.join(tempfile.gettempdir(), "shpdir")
             if not os.path.exists(newdir):
