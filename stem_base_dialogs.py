@@ -468,6 +468,21 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.LabelCheckbox2.setText(self.tr("Dialog", label))
         self.checkbox2.setChecked(state)
 
+    def _insertThirdCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox3 = QHBoxLayout()
+        self.horizontalLayout_checkbox3.setObjectName("horizontalLayout_checkbox3")
+        self.LabelCheckbox3 = QLabel()
+        self.LabelCheckbox3.setWordWrap(True)
+        self.LabelCheckbox3.setObjectName("LabelCheckbox3")
+        self.horizontalLayout_checkbox3.addWidget(self.LabelCheckbox3)
+        self.checkbox3 = QCheckBox()
+        self.checkbox3.setObjectName("checkbox3")
+        self.horizontalLayout_checkbox3.addWidget(self.checkbox3)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox3)
+        self.LabelCheckbox3.setText(self.tr("Dialog", label))
+        self.checkbox3.setChecked(state)
+
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
 
