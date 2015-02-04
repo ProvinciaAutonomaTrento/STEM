@@ -1,7 +1,7 @@
 Accatastamento
 ================================
 
-Il modulo esegue l'accatastamento di diverse immagini. Usare questo modulo per creare un nuovo raster multibanda a partire da più file mono o multibanda avnti estensione, proiezione e dimensioni uguali. L'output sarà un nuovo file multibanda.
+Il modulo esegue l'accatastamento di diverse immagini raster. Usare questo modulo per creare un nuovo raster multibanda a partire da più file mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda.
 
 .. only:: latex
 
