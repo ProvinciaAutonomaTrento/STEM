@@ -5,7 +5,7 @@ Il modulo esegue l'accatastamento di diverse immagini.
 
 .. only:: latex
 
-  .. image:: ../_static/accatastamento.png
+  .. image:: ../_static/tool_images/accatastamento.png
 
 
 Input
