@@ -687,7 +687,7 @@ if __name__ == "__main__":
                         dest='fs', help='Feature selection',
                         choices=['SSF', 'RFECV', 'LinearSVC',
                                  'ExtraTreesClassifier'], )
-    parser.add_argument('-ff', '--feature-selection', default=None,
+    parser.add_argument('-ff', '--feature-selection-file', default=None,
                         dest='ff', help='File with the Feature selected.')
     parser.add_argument('-fs', '--SSF-strategy', default='min',
                         dest='SSF_strategy', choices=['min', 'mean', 'median'],
