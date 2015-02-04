@@ -57,11 +57,19 @@ class STEMToolsDialog(BaseDialog):
                    'interspersion', 'quart1', 'quart3', 'perc90', 'quantile']
 
         lm = "Selezionare il metodo per il neighbors"
-        self._insertMethod(methods, lm, 3)
+        self._insertMethod(methods, lm, 2)
 
         self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari"
         self.lf = "Numero di ripetizioni del filtro"
-        self._insertFirstLineEdit(self.ln, 2)
+        self._insertFirstLineEdit(self.ln, 3)
+
+        self.lq = "Valore del quantile (compreso tra 0.0 e 1.0)"
+        self._insertSecondLineEdit(self.lq, 4)
+        self.LabelLinedit2.setEnabled(False)
+        self.Linedit2.setEnabled(False)
+        self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+
+        self._insertCheckbox('Usa Neighborhood circolare', 4)
 
         self.helpui.fillfromUrl(helpUrl('r.neighbors'))
 #        self.horizontalLayout_filter = QHBoxLayout()
@@ -104,6 +112,14 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonFilter.setEnabled(False)
             self.helpui.fillfromUrl(helpUrl('r.neighbors'))
 
+    def methodChanged(self):
+        if self.MethodInput.currentText() == 'quantile':
+            self.LabelLinedit2.setEnabled(True)
+            self.Linedit2.setEnabled(True)
+        else:
+            self.LabelLinedit2.setEnabled(False)
+            self.Linedit2.setEnabled(False)
+
     def show_(self):
         self.switchClippingMode()
         BaseDialog.show_(self)
@@ -117,6 +133,7 @@ class STEMToolsDialog(BaseDialog):
             source = STEMUtils.getLayersSource(name)
             nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            method = self.MethodInput.currentText()
             coms = []
             outnames = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
@@ -138,7 +155,11 @@ class STEMToolsDialog(BaseDialog):
                                                                           lay=n),
                                'output={outname}'.format(outname=out),
                                'size={val}'.format(val=self.Linedit.text()),
-                               'method={met}'.format(met=self.MethodInput.currentText())]
+                               'method={met}'.format(met=method)]
+                        if method == 'quantile':
+                            com.append('quantile={val}'.format(val=self.Linedit2.text()))
+                        if self.checkbox.isChecked():
+                            com.append('-c')
                         coms.append(com)
                         self.saveCommand(com)
                 else:
@@ -146,7 +167,11 @@ class STEMToolsDialog(BaseDialog):
                     com = ['r.neighbors', 'input={name}'.format(name=tempin),
                            'output={outname}'.format(outname=tempout),
                            'size={val}'.format(val=self.Linedit.text()),
-                           'method={met}'.format(met=self.MethodInput.currentText())]
+                           'method={met}'.format(met=method)]
+                    if method == 'quantile':
+                        com.append('quantile={val}'.format(val=self.Linedit2.text()))
+                    if self.checkbox.isChecked():
+                        com.append('-c')
                     coms.append(com)
                     self.saveCommand(com)
             gs.run_grass(coms)
