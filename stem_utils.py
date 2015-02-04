@@ -199,21 +199,46 @@ class STEMUtils:
 
     @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
-        if overwrite:
-            tmp = output + '.tmp'
-        else:
-            tmp = output
-        try:
-            gs.export_grass(tempout, tmp, typ)
-        except:
-            pass
-        if overwrite:
-            os.rename(tmp, output)
+        if typ == 'vector' and overwrite:
+            import shutil
+            import tempfile
+
+            newdir = os.path.join(tempfile.gettempdir(), "shpdir")
+            if not os.path.exists(newdir):
+                os.mkdir(newdir)
+            original_dir = os.path.dirname(output)
+            original_basename = os.path.basename(output)
+            tmp = os.path.join(newdir, original_basename)
             try:
-                os.rename('{name}.aux.xml'.format(name=tmp),
-                          '{name}.aux.xml'.format(name=output))
+                gs.export_grass(tempout, tmp, typ)
+                saved = True
+            except:
+                return
+            if saved:
+                files = os.listdir(newdir)
+                for f in files:
+                    try:
+                        p = os.path.join(newdir, f)
+                        shutil.copy(p, original_dir)
+                    except:
+                        return
+            shutil.rmtree(newdir)
+        else:
+            if overwrite:
+                tmp = output + '.tmp'
+            else:
+                tmp = output
+            try:
+                gs.export_grass(tempout, tmp, typ)
             except:
                 pass
+            if overwrite:
+                os.rename(tmp, output)
+                try:
+                    os.rename('{name}.aux.xml'.format(name=tmp),
+                              '{name}.aux.xml'.format(name=output))
+                except:
+                    pass
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
