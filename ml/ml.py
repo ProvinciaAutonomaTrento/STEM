@@ -156,10 +156,11 @@ def get_cv(y, n_folds=5):
             if n_folds > 0 else LeaveOneOut(len(y)))
 
 
-def test_model(model, X, y,
-               cv=None, n_folds=5, n_jobs=5, scoring='accuracy', verbose=0,
-               fmt=("%03d %s mean: %.3f, max: %.3f, min: %.3f, "
-                    "std: %.3f, required: %.1fs")):
+def cross_val_model(model, X, y,
+                    cv=None, n_folds=5, n_jobs=5, scoring='accuracy',
+                    verbose=0,
+                    fmt=("%03d %s mean: %.3f, max: %.3f, min: %.3f, "
+                         "std: %.3f, required: %.1fs")):
     cv = get_cv(y, n_folds) if cv is None else cv
 
     start = time.time()
@@ -231,7 +232,7 @@ def write_chunk(band, data, yoff, xsize, ysize):
 
 
 def extract_training(raster_file, vector_file, column, csv_file,
-                     delimiter=' ', nodata=None, dtype=np.uint32):
+                     delimiter=';', nodata=None, dtype=np.uint32):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
 
@@ -244,7 +245,7 @@ def extract_training(raster_file, vector_file, column, csv_file,
     :type model: str
     :param csv_file: csv file name/path
     :type csv_file: path
-    :param delimiter: the csv delimiter, default is space
+    :param delimiter: the csv delimiter, default is ;
     :type csv_file: str
     :param nodata: value of nodata category, default: None
     :type nodata: numeric
@@ -412,7 +413,7 @@ class MLToolBox(object):
         pass
 
     def extract_training(self, raster_file=None, vector_file=None, column=None,
-                         csv_file=None, delimiter=' ', nodata=None,
+                         csv_file=None, delimiter=';', nodata=None,
                          dtype=np.uint32):
         """Return the data and classes array for the training, and save them on
         self.X and self.y, see: ``extract_training`` function for more detail
@@ -429,7 +430,7 @@ class MLToolBox(object):
             Column name containing the values/classes.
         csv_file: path,
             CSV file name containing the data and the training values.
-        delimiter: str, default=' '
+        delimiter: str, default=';'
             Delimiter that will be used when savint to CSV.
         nodata: numeric
             Value to use for nodata
@@ -521,8 +522,8 @@ class MLToolBox(object):
         self.Xt = Xt
         return Xt
 
-    def test(self, models=None, X=None, y=None, scoring=None,
-             n_folds=None, n_jobs=None, cv=None):
+    def cross_validation(self, models=None, X=None, y=None, scoring=None,
+                         n_folds=None, n_jobs=None, cv=None):
         """Return a numpy array with the scoring results for each model.
 
         Parameters
@@ -557,8 +558,9 @@ class MLToolBox(object):
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
         self.cv = cv if cv else get_cv(self.y, n_folds=self.n_folds)
-        res = np.array([test_model(mod, X, self.y, self.cv, n_jobs=self.n_jobs,
-                                   scoring=self.scoring)
+        res = np.array([cross_val_model(mod, X, self.y, self.cv,
+                                        n_jobs=self.n_jobs,
+                                        scoring=self.scoring)
                         for mod in self.models])
         return res
 
@@ -620,6 +622,9 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--csv-results', type=str, dest='csvresults',
                         default='results.csv',
                         help='Name of the CSV file with the models results.')
+    parser.add_argument('-d', '--csv-delimiter', type=str, dest='csvdelimiter',
+                        default=';',
+                        help='CSV delimiter.')
     parser.add_argument('-m', '--models', type=importable,
                         dest='models', default='classifiers.py',
                         help='A python file containing a list of dictionary'
@@ -693,6 +698,17 @@ if __name__ == "__main__":
                         dest='SSF_strategy', choices=['min', 'mean', 'median'],
                         help='Sequential Forward Floating Feature Selection'
                              ' (SSF) strategy to select the best.')
+    parser.add_argument('-tr', '--test-raster', type=str, default=None,
+                        dest='traster',
+                        help='Multi/Hyper spectral raster file supported by'
+                             ' GDAL')
+    parser.add_argument('-tv', '--test-vector', type=str, default=None,
+                        dest='tvector',
+                        help='Training vector format supported by OGR')
+    parser.add_argument('-tc', '--test-column', type=str, default=None,
+                        dest='tcolumn',
+                        help='Column name with the values/classes'
+                             ' used as training')
     parser.add_argument('-l', '--labels', type=pca_components, dest='labels',
                         metavar='LABEL', default=None, nargs='+',
                         help='Label tag')
@@ -784,11 +800,10 @@ if __name__ == "__main__":
     respath = os.path.join(args.odir, args.csvresults)
     bpkpath = os.path.join(args.odir, args.best_pickle)
     if (not os.path.exists(respath) or args.overwrite):
-        res = mltb.test()
-        sep=';'
-        np.savetxt(respath, res, delimiter=sep, fmt='%s',
-                   header=sep.join(['id', 'name', 'mean', 'max', 'min',
-                                    'std', 'time']))
+        res = mltb.cross_validation()
+        np.savetxt(respath, res, delimiter=args.csvdelimiter, fmt='%s',
+                   header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
+                                                  'min', 'std', 'time']))
         mltb.find_best(models, strategy=args.best_strategy)
         best = mltb.select_best()
         with open(bpkpath, 'w') as bpkl:
