@@ -219,17 +219,17 @@ class STEMUtils:
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
                          epsg=None):
         """Read the QGIS's settings and obtain information for GRASS GIS"""
-        s = QSettings()
         # query GRASS 7 itself for its GISBASE
         # we assume that GRASS GIS' start script is available and in the PATH
         if not grassbin:
-            grassbin = str(s.value("stem/grasspath", ""))
+            grassbin = str(STEMSettings.value("grasspath", ""))
         if not grassdatabase:
-            grassdatabase = str(s.value("stem/grassdata", ""))
+            grassdatabase = str(STEMSettings.value("grassdata", ""))
         if not location:
-            location = str(s.value("stem/grasslocation", ""))
+            location = str(STEMSettings.value("grasslocation", ""))
         if not epsg:
-            epsg = str(s.value("stem/epsgcode", ""))
+            epsg = str(STEMSettings.value("epsgcode", ""))
+
         return grassdatabase, location, grassbin, epsg
 
     @staticmethod
