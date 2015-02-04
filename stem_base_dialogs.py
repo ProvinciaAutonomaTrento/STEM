@@ -148,14 +148,14 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
 
-    def _insertFileInput(self):
+    def _insertFileInput(self, pos=0):
         """Function to add a second output"""
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_output2")
-        self.label = QLabel()
-        self.label.setObjectName("LabelOut")
-        self.label.setWordWrap(True)
-        self.horizontalLayout_input.addWidget(self.label)
+        self.labelF = QLabel()
+        self.labelF.setObjectName("LabelOut")
+        self.labelF.setWordWrap(True)
+        self.horizontalLayout_input.addWidget(self.labelF)
         self.TextIn = QLineEdit()
         self.TextIn.setObjectName("TextIn")
         self.horizontalLayout_input.addWidget(self.TextIn)
@@ -163,7 +163,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
-        self.label.setText(self.tr("", "Selezionare file LAS di input"))
+        self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.BrowseInFile, self.TextIn))
@@ -207,16 +207,16 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.label_layer = QLabel()
         self.label_layer.setObjectName("label_layer")
         self.horizontalLayout_layer.addWidget(self.label_layer)
-        self.layer_list = QLineEdit()
+        self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
         self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
-        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
-                                            "layer da utilizzare, separati da\n"
-                                            " una virgola e partendo da 1 (se\n"
-                                            " lasciato vuoto considererà tutti"
-                                            " i layer"))
-        self.label_layer.setText(self.tr("", "Inserire numero layers"))
+#        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
+#                                            "layer da utilizzare, separati da\n"
+#                                            " una virgola e partendo da 1 (se\n"
+#                                            " lasciato vuoto considererà tutti"
+#                                            " i layer"))
+        self.label_layer.setText(self.tr("", "Selezionare una sola banda"))
 
     def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
                                                "utilizzare cliccandoci sopra",
@@ -437,6 +437,36 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_options.insertLayout(posnum,
                                                 self.horizontalLayout_textarea)
         self.LabelTextarea.setText(self.tr("Dialog", label))
+
+    def _insertCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox = QHBoxLayout()
+        self.horizontalLayout_checkbox.setObjectName("horizontalLayout_checkbox")
+        self.LabelCheckbox = QLabel()
+        self.LabelCheckbox.setWordWrap(True)
+        self.LabelCheckbox.setObjectName("LabelCheckbox")
+        self.horizontalLayout_checkbox.addWidget(self.LabelCheckbox)
+        self.checkbox = QCheckBox()
+        self.checkbox.setObjectName("checkbox")
+        self.horizontalLayout_checkbox.addWidget(self.checkbox)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox)
+        self.LabelCheckbox.setText(self.tr("Dialog", label))
+        self.checkbox.setChecked(state)
+
+    def _insertSecondCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox2 = QHBoxLayout()
+        self.horizontalLayout_checkbox2.setObjectName("horizontalLayout_checkbox2")
+        self.LabelCheckbox2 = QLabel()
+        self.LabelCheckbox2.setWordWrap(True)
+        self.LabelCheckbox2.setObjectName("LabelCheckbox2")
+        self.horizontalLayout_checkbox2.addWidget(self.LabelCheckbox2)
+        self.checkbox2 = QCheckBox()
+        self.checkbox2.setObjectName("checkbox2")
+        self.horizontalLayout_checkbox2.addWidget(self.checkbox2)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox2)
+        self.LabelCheckbox2.setText(self.tr("Dialog", label))
+        self.checkbox2.setChecked(state)
 
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
