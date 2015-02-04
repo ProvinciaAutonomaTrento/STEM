@@ -39,7 +39,8 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         ("1","Segmentazione"):"image_segm",
                                         ("2","Pansharpening"):"image_pansh",
                                         ("3","Maschera"):"image_mask",
-                                        ("4","Accatastamento"):"image_multi"}],
+                                        ("4","Accatastamento"):"image_multi",
+                                        ("5","Correzione atmosferica"):"image_atmo"}],
         ("1","Pre-elaborazioni LIDAR")
                                         :[{("0","Filtraggio file LAS"):"las_filter",
                                         ("1","Unione file LAS"):"las_union",
