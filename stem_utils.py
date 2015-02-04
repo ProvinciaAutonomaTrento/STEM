@@ -399,6 +399,9 @@ class STEMSettings:
             tool = re.sub(r"[^\w\s]", '', tool)
             tool = re.sub(r"\s+", '_', tool)
 
+        if not tool in STEMSettings.s.childGroups():
+            return
+
         for name, obj in inspect.getmembers(ui):
             if isinstance(obj, QComboBox):
                 index = obj.currentIndex()
