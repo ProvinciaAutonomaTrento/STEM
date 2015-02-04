@@ -38,7 +38,11 @@ Parametri
   * *perc90*: 90esimo percentile dei pixel dell'intorno (neighbors);
   * *quantile*: n-esimo quartile dei pixel dell'intorno (neighbors).
 
-**Dimensione del neighbors**: valore numerico dispari indicativo della dimensione della finestra mobile del filtro.
+**Valore del quantile**: valore tra 0 e 1 indicante in quantile da calcolare. Opzione attiva solos e si selezione "quantile" come metodo per il neighbor.
+  
+**Dimensione del neighborhood**: valore numerico dispari indicativo della dimensione della finestra mobile del filtro. Il valore deve essere dispari.
+
+**Usa Neighborhood circolare**: se selzionato veine usata uan finestra mobile circolare anzichè quadrata.
 
 Output
 ------------
