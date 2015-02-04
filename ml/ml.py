@@ -418,8 +418,23 @@ class MLToolBox(object):
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
 
-        raster_file, shape_file, column, csv_file,
-                     delimiter=' ', nodata=None, dtype=np.uint32
+        Parameters
+        ----------
+
+        raster_file: path
+            Raster file name/path used to extract the training values.
+        vector_file: path
+            Vector file name/path used to assign a valeu/class for the rainign.
+        column: str
+            Column name containing the values/classes.
+        csv_file: path,
+            CSV file name containing the data and the training values.
+        delimiter: str, default=' '
+            Delimiter that will be used when savint to CSV.
+        nodata: numeric
+            Value to use for nodata
+        dtype: numpy dtype
+            Type of the raster map
         """
         self.raster = self.raster if raster_file is None else raster_file
         self.vector = self.vector if vector_file is None else vector_file
@@ -508,12 +523,40 @@ class MLToolBox(object):
 
     def test(self, models=None, X=None, y=None, scoring=None,
              n_folds=None, n_jobs=None, cv=None):
-        """Return a numpy array with the scoring results for each model."""
+        """Return a numpy array with the scoring results for each model.
+
+        Parameters
+        ----------
+
+        models: list of dictionaries
+            List of dictionaries, see classifiers.py and regressors.py file
+            for examples.
+        X: 2D array
+            It is a 2D array with the data.
+        y: 1D array
+            It is a 1D array with the values/classes used to assess the
+            performance of the model.
+        scoring: str or function
+            It is a string to select the scoring functions, valid string for
+            the cross-validation are:
+            ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
+            ``adjusted_rand_score``, ``mean_absolute_error``,
+            ``mean_squared_error``, ``r2``
+        n_folds: int
+            Number of folds that will be used during the cross-validation. If
+            n_folds < 0 Leave One Out method is used.
+        n_jobs: int
+            Number of processors used for the cross-validation
+        cv:
+            Cross-Validation instance.
+        """
         X = (self.Xt if self.Xt is not None else self.X) if X is None else X
         self.y = self.y if y is None else y
         self.scoring = self.scoring if scoring is None else scoring
         self.models = self.models if models is None else models
-        self.cv = get_cv(self.y, n_folds=self.n_folds)
+        self.n_folds = n_folds if n_folds else self.n_folds
+        self.n_jobs = n_jobs if n_jobs else self.n_jobs
+        self.cv = cv if cv else get_cv(self.y, n_folds=self.n_folds)
         res = np.array([test_model(mod, X, self.y, self.cv, n_jobs=self.n_jobs,
                                    scoring=self.scoring)
                         for mod in self.models])
