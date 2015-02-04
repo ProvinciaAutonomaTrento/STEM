@@ -645,11 +645,11 @@ class SettingsDialog(QDialog, Setting_Dialog):
         self.connect(self.pushButton_grassdata, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_grassdata))
         self.connect(self.pushButton_gdal, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_gdal))
+                     partial(self.BrowseDir, self.lineEdit_gdal))
         self.connect(self.pushButton_liblas, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_liblas))
+                     partial(self.BrowseDir, self.lineEdit_liblas))
         self.connect(self.pushButton_pdal, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_pdal))
+                     partial(self.BrowseDir, self.lineEdit_pdal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
