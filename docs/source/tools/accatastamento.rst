@@ -1,7 +1,7 @@
 Accatastamento
 ================================
 
-Il modulo esegue l'accatastamento di diverse immagini raster. Usare questo modulo per creare un nuovo raster multibanda a partire da più file mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda.
+Il modulo crea un nuovo raster multibanda a partire da più file mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda.
 
 .. only:: latex
 
@@ -11,8 +11,7 @@ Il modulo esegue l'accatastamento di diverse immagini raster. Usare questo modul
 Input
 ------------
 
-**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS.
-Selezionare i raster da accatastare.
+**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare i raster da accatastare.
 
 Parametri
 ------------
