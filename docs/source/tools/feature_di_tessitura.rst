@@ -36,7 +36,7 @@ Parametri
 	* *Correlazione (COR)*: questa misura analizza la dipendenza lineare dei livelli di grigio di pixel adiacenti. Tipicamente alto quando la scala della trama locale è maggiore della distanza.
 	* *Misure di informazione di correlazione (MOC)*.
 	* *Coefficiente di correlazione massimo (MC)*.
-	
+
 **Dimensione della finestra mobile**: dimensione della finestra mobile su cui sono calcolate le feature di tessitura.
 
 Output
