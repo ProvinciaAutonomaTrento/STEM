@@ -59,7 +59,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertThresholdInteger(1, 100000, 1, 3, li)
         self.thresholdi.setValue(20)
 
-        ln = "Selezionare il numero minimo di celle in un segmento"
+        ln = "Selezionare il numero minimo di pixel in un segmento"
         self._insertFirstLineEdit(ln, 3)
         self.Linedit.setText('1')
 

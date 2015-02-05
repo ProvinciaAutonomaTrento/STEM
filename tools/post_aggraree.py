@@ -52,10 +52,9 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
 
-        methods = ['sum', 'average', 'median', 'mode', 'minimum', 'min_cat',
-                   'maximum', 'max_cat', 'range', 'stddev', 'variance',
-                   'diversity']
-        lmet = "Method for aggregate statistics"
+        methods = ['sum', 'average', 'median', 'mode', 'minimum',
+                   'maximum', 'range', 'stddev', 'variance']
+        lmet = "Metodo statistico di aggregazione"
         self._insertMethod(methods, lmet, 1)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -84,7 +83,7 @@ class STEMToolsDialog(BaseDialog):
             elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
                 geotype = 'centroid'
             else:
-                error = "Geometry type non supported"
+                error = "Geometria non supportata"
                 STEMMessageHandler.error(error)
                 return
             name2 = str(self.BaseInput2.currentText())
