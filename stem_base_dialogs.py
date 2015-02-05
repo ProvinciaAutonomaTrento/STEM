@@ -213,13 +213,13 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BrowseButtonInOpt = QPushButton()
         self.BrowseButtonInOpt.setObjectName("BrowseButtonIn")
         self.horizontalLayout_inputopt.addWidget(self.BrowseButtonInOpt)
-        self.verticalLayout_options.insertLayout(0, self.horizontalLayout_inputopt)
+        self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputopt)
         self.labelFO.setText(self.tr("", label))
         self.BrowseButtonInOpt.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonInOpt, SIGNAL("clicked()"),
                      partial(self.BrowseInFile, self.TextInOpt))
 
-    def _insertLayerChoose(self):
+    def _insertLayerChoose(self, pos=2):
         # TODO da rimuovere
         """Function to add a LineEdit Widget for the layers list"""
         self.horizontalLayout_layer = QHBoxLayout()
@@ -230,7 +230,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
-        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
 #        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
 #                                            "layer da utilizzare, separati da\n"
 #                                            " una virgola e partendo da 1 (se\n"
@@ -240,7 +240,7 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
                                                "utilizzare cliccandoci sopra",
-                                   combo=True):
+                                   combo=True, pos=2):
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
@@ -253,7 +253,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
-        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
     def _insertLayerChooseCheckBox2(self, label, combo=True):
@@ -535,7 +535,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BaseInputOpt.setObjectName("BaseInputOpt")
         self.horizontalLayout_inputOpt.addWidget(self.BaseInputOpt)
         self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputOpt)
-        self.label.setText(self.tr("", label))
+        self.labelOpt.setText(self.tr("", label))
 
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
@@ -673,7 +673,7 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def SphinxUrl(self):
         filename = "{tool}.html".format(tool=self.toolname.lower().replace(" ",
-                                                                          "_"))
+                                                                           "_"))
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
                             'build', 'html', 'tools', filename)
         return "file://{p}".format(p=path)
