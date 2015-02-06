@@ -594,8 +594,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         log, err = runcom.communicate()
         if runcom.returncode != 0:
-            raise Exception("Errore eseguendo il ritaglio del file di input: "
-                            "Errore eseguendo il comando {err}".format(err=err))
+            STEMMessageHandler.error("Errore eseguendo il ritaglio del file di input: "
+                                     "Errore eseguendo il comando {err}".format(err=err))
 
         return outname.strip(), out, mask
 
@@ -782,9 +782,14 @@ class helpDialog(QDialog, Help_Dialog):
         QDialog.__init__(self, parent)
         """Set up the help user interface"""
         self.dialog = Help_Dialog
-        #self.iface = iface
         self.setupUi(self)
 
     def fillfromUrl(self, url):
         """Load a url in the Help window"""
-        self.webView.load(QUrl(url))
+        if url.startswith('http://'):
+            self.webView.load(QUrl(url))
+        elif os.path.exists(url):
+            stream = QFile(url)
+            if stream.open(QFile.ReadOnly):
+                self.webView.setHtml(QString.fromUtf8(stream.readAll()))
+                stream.close()
