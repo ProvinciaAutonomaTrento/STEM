@@ -75,7 +75,9 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         ("2","K-fold cross validation"):"post_kfold",
                                         ("3","Statistiche"):"post_stats"}],
         ("7","Struttura bosco")
-                                        :[{("0","Struttura bosco"):"bosco"}]
+                                        :[{("0","Struttura bosco"):"bosco"}],
+        ("8","QGIS Tool")
+                                        :[{("0","Raster:Georeferenziatore"):"&Georef"}]
 }
 
 class STEMToolbox(QDockWidget, Ui_STEMToolBox):
@@ -94,12 +96,28 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
 
     def executeTool(self):
         item = self.toolTree.currentItem()
+        if isinstance(item, QGISTreeToolItem):
+            toolName = TOOLS[(item.parent().text(1),
+                            item.parent().text(0))][0].keys()[0][1]
+            module = TOOLS[(item.parent().text(1),
+                            item.parent().text(0))][0][(item.text(1),
+                                                       toolName)]
+            if toolName.split(":")[0] == "Raster":
+                items = iface.rasterMenu()
+            elif toolName.split(":")[0] in ["Vector", "Vettore"]:
+                items = iface.vectorMenu()
+            for firstact in items.actions():
+                if firstact.text().startswith(module):
+                    secondact = firstact
+                    for act in secondact.menu().actions():
+                        if act.text().startswith(module):
+                            act.trigger()
+
         if isinstance(item, TreeToolItem):
             toolName = item.text(0)
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
-                                                        toolName)]
-
+                                                       toolName)]
             globals()["toolModule"] = __import__(module)
             dlg = toolModule.STEMToolsDialog(iface, toolName)
             dlg.exec_()
@@ -114,7 +132,10 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
             iconGroupItem = QIcon(os.path.dirname(__file__) + '/images/rootItemTool.svg')
             groupItem.setIcon(0, iconGroupItem)
             for tool, module in modToolList[0].iteritems():
-                toolItem = TreeToolItem(tool)
+                if module.startswith("&"):
+                    toolItem = QGISTreeToolItem(tool)
+                else:
+                    toolItem = TreeToolItem(tool)
                 if not module:
                     toolItem.setDisabled(True)
                 groupItem.addChild(toolItem)
@@ -130,4 +151,13 @@ class TreeToolItem(QTreeWidgetItem):
         self.setIcon(0, iconToolItem)
         self.setToolTip(0, toolName[1])
         self.setText(0, toolName[1])
+        self.setText(1, toolName[0])
+
+class QGISTreeToolItem(QTreeWidgetItem):
+    def __init__(self, toolName):
+        QTreeWidgetItem.__init__(self)
+        iconToolItem = QIcon(os.path.dirname(__file__) + '/images/qgis.png')
+        self.setIcon(0, iconToolItem)
+        self.setToolTip(0, toolName[1].split(":")[1])
+        self.setText(0, toolName[1].split(":")[1])
         self.setText(1, toolName[0])
