@@ -31,7 +31,7 @@ from PyQt4 import uic
 from qgis.utils import iface
 import os
 
-toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'STEMToolbox.ui'))[0]
+toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'toolbox.ui'))[0]
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
 TOOLS = {("0", "Pre-elaborazione immagini")
