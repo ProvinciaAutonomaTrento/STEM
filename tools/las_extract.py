@@ -48,8 +48,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(stats, label, 1)
         label = "Risoluzione finale del raster"
         self._insertFirstLineEdit(label, 2)
-        label = "Percentile"
-        self._insertSecondLineEdit(label, 3)
+        self.labelMethod = "Percentile"
+        self._insertSecondLineEdit(self.labelMethod, 3)
         self.MethodInput.currentIndexChanged.connect(self.checkPercentile)
         self.LabelLinedit2.setEnabled(False)
         self.Linedit2.setEnabled(False)
@@ -63,6 +63,11 @@ class STEMToolsDialog(BaseDialog):
 
     def checkPercentile(self):
         if self.MethodInput.currentText() == 'percentile':
+            self.LabelLinedit.setText(self.tr("", self.labelMethod))
+            self.LabelLinedit2.setEnabled(True)
+            self.Linedit2.setEnabled(True)
+        elif self.MethodInput.currentText() == 'trimmean':
+            self.LabelLinedit.setText(self.tr("", "Valore del trim"))
             self.LabelLinedit2.setEnabled(True)
             self.Linedit2.setEnabled(True)
         else:
@@ -86,8 +91,15 @@ class STEMToolsDialog(BaseDialog):
                 returnfilter = None
 
             # TODO save parameter of import
-            gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                          resolution=reso, percentile=perc)
+            if method == 'percentile':
+                gs.las_import(source, tempout, method, returnpulse=returnfilter,
+                              resolution=reso, percentile=perc)
+            elif method == 'trimmean':
+                gs.las_import(source, tempout, method, returnpulse=returnfilter,
+                              resolution=reso, trim=perc)
+            else:
+                gs.las_import(source, tempout, method, returnpulse=returnfilter,
+                              resolution=reso)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
                                   tempout, 'raster')

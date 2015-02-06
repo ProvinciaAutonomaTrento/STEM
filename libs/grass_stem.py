@@ -233,7 +233,7 @@ class stemGRASS():
             self.removeMapset()
 
     def las_import(self, inp, out, method, returnpulse=None, resolution=None,
-                   percentile=None):
+                   percentile=None, trim=None):
         """Import LAS file trhough r.in.lidar"""
         import grass.script.core as gcore
 
@@ -253,12 +253,19 @@ class stemGRASS():
                 gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
                                   method=method, return_filter=returnpulse,
                                   percent=percentile)
-            elif returnpulse and not percentile:
+            elif returnpulse and trim:
                 gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, return_filter=returnpulse)
+                                  method=method, return_filter=returnpulse,
+                                  trim=trim)
             elif percentile and not returnpulse:
                 gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
                                   method=method, percent=percentile)
+            elif trim and not returnpulse:
+                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
+                                  method=method, trim=trim)
+            elif returnpulse and not (percentile or trim):
+                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
+                                  method=method, return_filter=returnpulse)
             else:
                 gcore.run_command('r.in.lidar', flags='o', input=inp,
                                   output=out, method=method)
