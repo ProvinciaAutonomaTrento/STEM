@@ -47,6 +47,8 @@ class STEMToolsDialog(BaseDialog):
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
+        self.helpui.fillfromUrl(self.SphinxUrl())
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -61,7 +63,10 @@ class STEMToolsDialog(BaseDialog):
             items.append(self.BaseInput.item(index))
         labels = [STEMUtils.getLayersSource(i.text()) for i in items]
         outformat = str(self.BaseInputCombo.currentText())
-
+        cut, cutsource = self.cutInputMulti(items, labels, 'raster')
+        if cut:
+                items = cut
+                labels = cutsource
         cgdal = convertGDAL(labels, self.TextOut.text(), outformat)
         cgdal.write()
         if self.AddLayerToCanvas.isChecked():

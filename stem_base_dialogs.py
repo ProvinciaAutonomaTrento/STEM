@@ -600,6 +600,20 @@ class BaseDialog(QDialog, Ui_Dialog):
 
         return outname.strip(), out, mask
 
+    def cutInputMulti(self, inp, source, typ):
+        if len(inp) != len(source):
+            STEMMessageHandler.error("Errore durante il ritaglio di più immagini")
+        newinp = []
+        newsource = []
+        for n in range(len(inp)):
+            newn, news, newm = self.cutInput(inp[n], source[n], typ)
+            if not newn:
+                return False, False
+            else:
+                newinp.append(newn)
+                newsource.append(news)
+        return newinp, newsource
+
     def mapDisplay(self, source, typ):
         render = self.iface.mapCanvas()
         rect = render.extent()
