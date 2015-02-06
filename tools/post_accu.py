@@ -28,8 +28,8 @@ __revision__ = '$Format:%H$'
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from grass_stem import helpUrl
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from grass_stem import helpUrl
 import traceback
 
 
