@@ -32,8 +32,7 @@ from qgis.gui import *
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
-from stem_functions import temporaryFilesGRASS
-
+from stem_utils import STEMUtils
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -84,7 +83,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
             if mask:
                 gs.check_mask(mask)
             gs.import_grass(source, tempin, typ, nlayers)
