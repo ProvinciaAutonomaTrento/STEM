@@ -27,10 +27,11 @@ __revision__ = '$Format:%H$'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import uic
 from qgis.utils import iface
-
 import os
-from STEMToolbox import Ui_STEMToolBox
+
+toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'STEMToolbox.ui'))[0]
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
 TOOLS = {("0", "Pre-elaborazione immagini")
@@ -80,7 +81,7 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         :[{("0","Raster:Georeferenziatore"):"&Georef"}]
 }
 
-class STEMToolbox(QDockWidget, Ui_STEMToolBox):
+class STEMToolbox(QDockWidget, toolboxDockWidget):
     def __init__(self):
         QDockWidget.__init__(self, None)
         self.setupUi(self)

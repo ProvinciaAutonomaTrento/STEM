@@ -23,12 +23,10 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import uic
 from qgis.core import *
 from qgis.gui import *
 
-from base import Ui_Dialog
-from help_ui import Ui_Dialog as Help_Dialog
-from settings_ui import Ui_Dialog as Setting_Dialog
 
 import os
 import sys
@@ -43,6 +41,9 @@ from stem_utils import (STEMMessageHandler,
 
 MSG_BOX_TITLE = "STEM Plugin"
 
+baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
+helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
+settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
@@ -70,11 +71,11 @@ class CheckableComboBox(QComboBox):
             item.setCheckState(Qt.Checked)
 
 
-class BaseDialog(QDialog, Ui_Dialog):
+class BaseDialog(QDialog, baseDialog):
 
     def __init__(self, title, parent=None):
         QDialog.__init__(self, parent)
-        self.dialog = Ui_Dialog
+        self.dialog = baseDialog
         self.setAttribute(Qt.WA_DeleteOnClose)
 
         self.process = QProcess(self)
@@ -698,11 +699,11 @@ class BaseDialog(QDialog, Ui_Dialog):
             return "file:///{p}".format(p=path)
 
 
-class SettingsDialog(QDialog, Setting_Dialog):
+class SettingsDialog(QDialog, settingsDialog):
 
     def __init__(self, parent, iface):
         QDialog.__init__(self, parent)
-        self.dialog = Setting_Dialog
+        self.dialog = settingsDialog
         self.iface = iface
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -796,11 +797,11 @@ class SettingsDialog(QDialog, Setting_Dialog):
         STEMSettings.setValue("epsgcode", self.epsg.text())
 
 
-class helpDialog(QDialog, Help_Dialog):
+class helpDialog(QDialog, helpDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         """Set up the help user interface"""
-        self.dialog = Help_Dialog
+        self.dialog = helpDialog
         self.setupUi(self)
 
     def fillfromUrl(self, url):
