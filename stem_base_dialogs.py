@@ -35,6 +35,7 @@ import sys
 import subprocess
 import tempfile
 import codecs
+import platform
 from functools import partial
 
 from stem_utils import (STEMMessageHandler,
@@ -676,7 +677,11 @@ class BaseDialog(QDialog, Ui_Dialog):
                                                                            "_"))
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
                             'build', 'html', 'tools', filename)
-        return "file://{p}".format(p=path)
+        if platform.system().startswith('linux') or platform.system().startswith('darwin'):
+            return "file://{p}".format(p=path)
+        else:
+            path = path.replace("\\", "/")
+            return "file:///{p}".format(p=path)
 
 
 class SettingsDialog(QDialog, Setting_Dialog):
@@ -786,10 +791,4 @@ class helpDialog(QDialog, Help_Dialog):
 
     def fillfromUrl(self, url):
         """Load a url in the Help window"""
-        if url.startswith('http://'):
-            self.webView.load(QUrl(url))
-        elif os.path.exists(url):
-            stream = QFile(url)
-            if stream.open(QFile.ReadOnly):
-                self.webView.setHtml(QString.fromUtf8(stream.readAll()))
-                stream.close()
+        self.webView.load(QUrl(url))
