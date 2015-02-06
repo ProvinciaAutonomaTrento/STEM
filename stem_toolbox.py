@@ -87,8 +87,9 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
 
         #self.fill_widget(self.toolTree, TOOLS)
-        self.toolTree.setColumnCount(2)
+        self.toolTree.setColumnCount(3)
         self.toolTree.setColumnHidden(1, True)
+        self.toolTree.setColumnHidden(2, True)
         self.toolTree.setAlternatingRowColors(True)
 
         self.populateTree()
@@ -97,8 +98,7 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
     def executeTool(self):
         item = self.toolTree.currentItem()
         if isinstance(item, QGISTreeToolItem):
-            toolName = TOOLS[(item.parent().text(1),
-                            item.parent().text(0))][0].keys()[0][1]
+            toolName = ':'.join([item.text(2), item.text(0)])
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
                                                        toolName)]
@@ -107,10 +107,10 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
             elif toolName.split(":")[0] in ["Vector", "Vettore"]:
                 items = iface.vectorMenu()
             for firstact in items.actions():
-                if firstact.text().startswith(module):
+                if firstact.text().find("&" + toolName.split(":")[1][:6]) != -1:
                     secondact = firstact
                     for act in secondact.menu().actions():
-                        if act.text().startswith(module):
+                        if act.text().find(module[1:]) != -1:
                             act.trigger()
 
         if isinstance(item, TreeToolItem):
@@ -161,3 +161,4 @@ class QGISTreeToolItem(QTreeWidgetItem):
         self.setToolTip(0, toolName[1].split(":")[1])
         self.setText(0, toolName[1].split(":")[1])
         self.setText(1, toolName[0])
+        self.setText(2, toolName[1].split(":")[0])
