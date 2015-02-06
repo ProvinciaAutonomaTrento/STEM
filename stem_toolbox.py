@@ -142,7 +142,6 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
 
             self.toolTree.addTopLevelItem(groupItem)
             self.toolTree.sortItems(1, Qt.AscendingOrder)
-            self.toolTree.resizeColumnToContents(0)
 
 class TreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
