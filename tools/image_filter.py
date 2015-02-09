@@ -30,7 +30,7 @@ from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
-import os, traceback
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):

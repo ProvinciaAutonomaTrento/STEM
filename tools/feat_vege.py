@@ -25,14 +25,12 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
