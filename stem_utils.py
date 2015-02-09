@@ -36,6 +36,7 @@ import os
 import inspect
 import re
 import tempfile
+import stem_base_dialogs
 
 try:
     import osgeo.gdal as gdal
@@ -115,25 +116,38 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, checkCombo=None, lineEdit=None):
+    def checkLayers(inmap, form, index=True):
         """Function to check if layers are choosen"""
-        try:
-            if lineEdit.text() == u'':
-                return STEMUtils.getNumSubset(inmap)
-            else:
-                return lineEdit.text().split(',')
-        except:
+        if isinstance(form, QCheckBox) or isinstance(form, stem_base_dialogs.CheckableComboBox):
             itemlist = []
-            for i in range(checkCombo.count()):
-                item = checkCombo.model().item(i)
+            for i in range(form.count()):
+                item = form.model().item(i)
                 if item.checkState() == Qt.Checked:
                     itemlist.append(str(i + 1))
             if len(itemlist) == 0:
                 return STEMUtils.getNumSubset(inmap)
             return itemlist
+        elif isinstance(form, QComboBox):
+            first = form.itemText(0)
+            if index:
+                val = form.currentIndex()
+                if val == 0 and first == "Seleziona banda":
+                    return None
+                elif val != 0 and first == "Seleziona banda":
+                    return val + 2
+                elif first != "Seleziona banda":
+                    return val + 1
+            else:
+                return form.currentText()
+
+        elif isinstance(form, QLineEdit):
+            if form.text() == u'':
+                return STEMUtils.getNumSubset(inmap)
+            else:
+                return form.text().split(',')
 
     @staticmethod
-    def addLayersNumber(combo, checkCombo=None):
+    def addLayersNumber(combo, checkCombo=None, empty=False):
         layerName = combo.currentText()
         if not layerName:
             return
@@ -143,9 +157,16 @@ class STEMUtils:
         gdalBands = gdalF.RasterCount
         gdalMeta = None
         checkCombo.clear()
+        i = 1
         if gdalF.GetDriver().LongName == 'ENVI .hdr Labelled':
             gdalMeta = gdalF.GetMetadata_Dict()
-        for n in range(1, gdalBands+1):
+        if empty:
+            checkCombo.addItem("Seleziona banda")
+            model = checkCombo.model()
+            item = model.item(0)
+            item.setCheckState(Qt.Unchecked)
+            i += 1
+        for n in range(1, gdalBands + 1):
             st = "Banda {i}".format(i=n)
             if gdalMeta:
                 try:
@@ -156,7 +177,10 @@ class STEMUtils:
                     pass
             checkCombo.addItem(st)
             model = checkCombo.model()
-            item = model.item(n-1)
+            if empty:
+                item = model.item(n + 2 - i)
+            else:
+                item = model.item(n - i)
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
