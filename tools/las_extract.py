@@ -63,16 +63,19 @@ class STEMToolsDialog(BaseDialog):
 
     def checkPercentile(self):
         if self.MethodInput.currentText() == 'percentile':
-            self.LabelLinedit.setText(self.tr("", self.labelMethod))
+            self.LabelLinedit2.setText(self.tr("", self.labelMethod))
             self.LabelLinedit2.setEnabled(True)
             self.Linedit2.setEnabled(True)
+            self.Linedit2.setText('0.95')
         elif self.MethodInput.currentText() == 'trimmean':
-            self.LabelLinedit.setText(self.tr("", "Valore del trim"))
+            self.LabelLinedit2.setText(self.tr("", "Valore del trim"))
             self.LabelLinedit2.setEnabled(True)
             self.Linedit2.setEnabled(True)
+            self.Linedit2.clear()
         else:
             self.LabelLinedit2.setEnabled(False)
             self.Linedit2.setEnabled(False)
+            self.Linedit2.clear()
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
