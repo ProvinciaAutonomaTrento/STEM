@@ -52,12 +52,14 @@ class STEMUtils:
     registry = QgsMapLayerRegistry.instance()
 
     @staticmethod
-    def addLayerToComboBox(combo, typ, clear=True):
+    def addLayerToComboBox(combo, typ, clear=True, empty=False):
         """Add layers to input files list"""
         if clear:
             combo.clear()
         layerlist = []
         layermap = STEMUtils.registry.mapLayers()
+        if empty:
+            layerlist.append("")
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
                 layerlist.append(layer.name())
@@ -188,6 +190,7 @@ class STEMUtils:
         layerName = combo.currentText()
         cols = []
         if not layerName:
+            checkCombo.clear()
             return
         else:
             checkCombo.clear()
@@ -196,6 +199,7 @@ class STEMUtils:
             fields = data.fields()
             [cols.append(i.name()) for i in fields]
             checkCombo.addItems(cols)
+            return
 
     @staticmethod
     def writeFile(text, name=False):
