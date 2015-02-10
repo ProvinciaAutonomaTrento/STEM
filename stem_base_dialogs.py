@@ -258,7 +258,7 @@ class BaseDialog(QDialog, baseDialog):
         self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
-    def _insertLayerChooseCheckBox2(self, label, combo=True):
+    def _insertLayerChooseCheckBox2(self, label, combo=True, pos=3):
         self.horizontalLayout_layer2 = QHBoxLayout()
         self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
@@ -271,7 +271,7 @@ class BaseDialog(QDialog, baseDialog):
             self.layer_list2 = QComboBox()
         self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
-        self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer2)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer2)
         self.label_layer2.setText(self.tr("", label))
 
     def _insertLayerChooseCheckBox3(self, label, combo=True):
