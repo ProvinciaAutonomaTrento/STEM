@@ -34,7 +34,7 @@ from osgeo import ogr
 gdal.UseExceptions()
 
 # import local libraries
-from fs import SSF
+from feature_selection import SSF
 
 NONE = -9999
 
@@ -46,6 +46,9 @@ MODELS = {# UC_26 Support Vector Machine (SVM)
           # UC_30 Stimatore lineare: LinearRegression
           # UC_32 Attribuzione/modifica delle classi tematiche: SVR
           'SVR': []}
+
+TRANS = {'sqrt': np.sqrt, 'log': np.log}
+UNTRANS = {'sqrt': np.exp2, 'log': np.exp}
 
 
 class WriteError(Exception):
@@ -342,7 +345,8 @@ def run_model(model, data):
     return model['predict']
 
 
-def apply_models(input_file, output_file, models, X, y, transformations):
+def apply_models(input_file, output_file, models, X, y, transformations,
+                 transform=None, untransform=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -366,6 +370,9 @@ def apply_models(input_file, output_file, models, X, y, transformations):
     rast = read_raster(input_file)
     rxsize, rysize = rast.RasterXSize, rast.RasterYSize
     brows = estimate_best_row_buffer(rast, np.float32, 1)  # len(models))
+
+    if transform is not None:
+        y = transform(y)
 
     # instantiate and train the model and create the empty raster map
     for model in models:
@@ -392,10 +399,12 @@ def apply_models(input_file, output_file, models, X, y, transformations):
         for model in models:
             yoff = chunk * brows
             ysize = brows if chunk < (nchunks - 1) else rysize - yoff
+            # predict
+            predict = run_model(model, data).astype(dtype=np.uint32)
+            if untransform is not None:
+                predict = untransform(predict)
             # write_chunk(band, data, yoff, rxsize, ysize)
-            write_chunk(model['band'],
-                        run_model(model, data).astype(dtype=np.uint32),
-                        yoff, rxsize, ysize)
+            write_chunk(model['band'], predict, yoff, rxsize, ysize)
             gc.collect()  # force to free memory of unreferenced objects
 
 
@@ -414,7 +423,8 @@ class MLToolBox(object):
                    output_file='{0}', models=None,
                    scoring=None, score_func=None,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
-                   scaler=None, fselector=None, decomposer=None):
+                   scaler=None, fselector=None, decomposer=None,
+                   transform=None, untransform=None):
         """Method to set class attributes, the attributes are:
 
         Parameters
@@ -450,13 +460,17 @@ class MLToolBox(object):
         fselector : Instance with fit and transform methods
             Instance that select the most relevant features in the data-set
             before apply the model.
-        decompoer : Instance with fit and transform methods
+        decomposer : Instance with fit and transform methods
             Instance for the decomposition of the data-set before apply the
             model.
+        transform : Set a function to transform the target before apply
+            the model.
+        untrasform : Set a function to remove the transformation before write
+            the model result.
         """
         self.raster = raster_file
         self.vector = vector_file
-        self.output = '{0}'
+        self.output = output_file
         self.column = column
         self.models = models
         self.scoring = scoring
@@ -467,9 +481,15 @@ class MLToolBox(object):
         self.scaler = scaler
         self.fselector = fselector
         self.decomposer = decomposer
+        self.transform = transform
+        self.untransform = untransform
 
     def get_params(self):
-        pass
+        keys = ('raster_file', 'vector_file', 'output_file', 'column',
+                'models', 'scoring', 'score_func', 'n_folds', 'n_jobs',
+                'n_best', 'scaler', 'fselector', 'decomposer',
+                'transform', 'untransform')
+        return {key: getattr(self, key) for key in keys}
 
     def extract_training(self, raster_file=None, vector_file=None, column=None,
                          csv_file=None, delimiter=';', nodata=None,
@@ -583,7 +603,8 @@ class MLToolBox(object):
 
     def cross_validation(self, models=None, X=None, y=None,
                          scoring=None, score_func=None,
-                         n_folds=None, n_jobs=None, cv=None):
+                         n_folds=None, n_jobs=None, cv=None,
+                         transform=None):
         """Return a numpy array with the scoring results for each model.
 
         Parameters
@@ -615,27 +636,32 @@ class MLToolBox(object):
         """
         X = (self.Xt if self.Xt is not None else self.X) if X is None else X
         self.y = self.y if y is None else y
+        self.transform = transform if transform is not None else self.transform
+        y = self.y if self.transform is None else self.transform(self.y)
         self.scoring = self.scoring if scoring is None else scoring
         self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
         self.cv = cv if cv else get_cv(self.y, n_folds=self.n_folds)
-        res = np.array([cross_val_model(mod, X, self.y, self.cv,
+        res = np.array([cross_val_model(mod, X, y, self.cv,
                                         n_jobs=self.n_jobs,
                                         scoring=self.scoring)
                         for mod in self.models])
         return res
 
     def test(self, Xtest, ytest, models=None, X=None, y=None,
-             scoring=None, score_func=None):
+             scoring=None, score_func=None, transform=None):
         """Return a list with the score for each model."""
         X = (self.Xt if self.Xt is not None else self.X) if X is None else X
         self.y = self.y if y is None else y
+        self.transform = transform if transform is not None else self.transform
+        y = self.y if self.transform is None else self.transform(self.y)
+        ytest = ytest if self.transform is None else self.transform(ytest)
         self.scoring = self.scoring if scoring is None else scoring
         self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
-        return [test_model(model, X, self.y, Xtest, ytest,
+        return [test_model(model, X, y, Xtest, ytest,
                            scoring=self.scoring, score_func=self.score_func)
                 for model in self.models]
 
@@ -659,7 +685,8 @@ class MLToolBox(object):
         return self.order, self.best
 
     def execute(self, raster_file=None, output_file=None,
-                best=None, X=None, y=None, trans=None):
+                best=None, X=None, y=None, trans=None,
+                transform=None, untransform=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
         self.raster = self.raster if raster_file is None else raster_file
@@ -669,7 +696,8 @@ class MLToolBox(object):
         X = (self.Xt if self.Xt is not None else self.X) if X is None else X
         self.y = self.y if y is None else y
         apply_models(self.raster, self.output, best,
-                     X, self.y, self._trans)
+                     X, self.y, self._trans,
+                     transform=transform, untransform=untransform)
 
 
 if __name__ == "__main__":
@@ -812,6 +840,10 @@ if __name__ == "__main__":
                         dest='tcolumn',
                         help='Column name with the values/classes'
                              ' used as training')
+    parser.add_argument('--transform', choices=['sqrt', 'log', ],
+                        dest='transform', default=None,
+                        help='Transform regression target before to apply the'
+                             'regression.')
     parser.add_argument('-l', '--labels', type=pca_components, dest='labels',
                         metavar='LABEL', default=None, nargs='+',
                         help='Label tag')
@@ -844,7 +876,8 @@ if __name__ == "__main__":
                      n_folds=args.n_folds, n_jobs=args.n_jobs,
                      n_best=args.n_best,
                      best_strategy=getattr(np, args.best_strategy),
-                     scaler=None, fselector=None, decomposer=None)
+                     scaler=None, fselector=None, decomposer=None,
+                     transform=None, untransform=None)
 
     # -----------------------------------------------------------------------
     # Extract training samples
@@ -899,11 +932,19 @@ if __name__ == "__main__":
                    fscolumns=fscolumns, fsfile=args.ff)
 
     # -----------------------------------------------------------------------
+    # Transform the training/target
+    if args.transform:
+        transform = TRANS[args.transform]
+        untransform = UNTRANS[args.transform]
+    else:
+        transform, untransform = None, None
+
+    # -----------------------------------------------------------------------
     # test Models
     respath = os.path.join(args.odir, args.csvresults)
     bpkpath = os.path.join(args.odir, args.best_pickle)
     if (not os.path.exists(respath) or args.overwrite):
-        res = mltb.cross_validation()
+        res = mltb.cross_validation(transform=transform)
         np.savetxt(respath, res, delimiter=args.csvdelimiter, fmt='%s',
                    header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
@@ -921,4 +962,4 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------
     # execute Models and save the output raster map
     if args.execute:
-        mltb.execute(best=best)
+        mltb.execute(best=best, transform=transform, untransform=untransform)
