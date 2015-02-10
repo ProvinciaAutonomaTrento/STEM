@@ -242,7 +242,7 @@ def write_chunk(band, data, yoff, xsize, ysize):
 #        raise WriteError(msg % (chunk, (chunkrows, band.XSize)))
 
 
-def columns_indexes(fields, columns):
+def columns2indexes(fields, columns):
     """Return an array with column indexes
 
     >>> class Field()
@@ -271,7 +271,7 @@ def extract_vector_fields(layer, icols):
 
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
-                     exclude_columns=None, delimiter=';', nodata=None,
+                     use_columns=None, delimiter=';', nodata=None,
                      dtype=np.uint32):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
@@ -324,10 +324,8 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         vect = ogr.Open(vector_file)
         layer = vect.GetLayer()
         fields = layer.schema
-        itraining = column_idexes(fields, column)
-        iexclude = column_idexes(fields, exclude_columns) if exclude_columns else []
-        iexclude.append(itraining)
-        icols = [i for i in range(len(fields)) if i not in iexclude]
+        itraining = columns2indexes(fields, column)
+        icols = columns2indexes(fields, use_columns)
         training = extract_vector_fields(layer, (itraining, )).T[0]
         dt = extract_vector_fields(layer, icols)
         data = np.concatenate((dt.T, training[None, :]), axis=0).T
