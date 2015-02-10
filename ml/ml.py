@@ -24,6 +24,7 @@ from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score, LeaveOneOut
+from sklearn.cross_validation import check_scoring
 
 # import greographical libraries
 from osgeo import gdal
@@ -157,7 +158,8 @@ def get_cv(y, n_folds=5):
 
 
 def cross_val_model(model, X, y,
-                    cv=None, n_folds=5, n_jobs=5, scoring='accuracy',
+                    cv=None, n_folds=5, n_jobs=5,
+                    scoring=None, score_func=None,
                     verbose=0,
                     fmt=("%03d %s mean: %.3f, max: %.3f, min: %.3f, "
                          "std: %.3f, required: %.1fs")):
@@ -174,6 +176,15 @@ def cross_val_model(model, X, y,
             scores.std(), scoretime)
     print(fmt % vals)
     return vals
+
+
+def test_model(model, Xtraining, ytraining, Xtest, ytest,
+               scoring=None, score_func=None):
+    model['mod'] = model['model'](**model.get('kwargs', {}))
+    model['mod'].fit(Xtraining, ytraining)
+    scorer = check_scoring(model['mod'], score_func=score_func, scoring=scoring)
+    model['score_test'] = scorer(model['mod'], Xtest, ytest)
+    return model['score_test']
 
 
 def find_best(models, strategy=np.mean):
@@ -230,9 +241,37 @@ def write_chunk(band, data, yoff, xsize, ysize):
 #        raise WriteError(msg % (chunk, (chunkrows, band.XSize)))
 
 
+def columns_indexes(fields, columns):
+    """Return an array with column indexes
 
-def extract_training(raster_file, vector_file, column, csv_file,
-                     delimiter=';', nodata=None, dtype=np.uint32):
+    >>> class Field()
+    ...     def __init__(self, name):
+    ...         self.name = name
+    ...
+    >>> fields = [Field(name) for name in ['cat', 'c1', 'c2', 'c3', 'tr']]
+    >>> column_indexes(fields, ['cat', ])
+    array([0, ])
+    >>> column_indexes(fields, ['c1', 'c2', 'c3' ])
+    array([1, 2, 3])
+    """
+    return np.array([i for i in range(len(fields))
+                     if fields[i].name in columns])
+
+
+def extract_vector_fields(layer, icols):
+    """Return an array from a vector layer with the data corresponding to
+    the index of the columns given.
+    """
+    # TODO: can we avoid to cycle over the row and column of the
+    # vector properties, avoid to do this in python should make it
+    # significantly faster
+    layer.ResetReading()
+    return np.array([[f.GetField(i) for i in icols] for f in layer])
+
+
+def extract_training(vector_file, column, csv_file, raster_file=None,
+                     exclude_columns=None, delimiter=';', nodata=None,
+                     dtype=np.uint32):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
 
@@ -255,31 +294,44 @@ def extract_training(raster_file, vector_file, column, csv_file,
 
     A tuple with two array: X and y
     """
-    rast = read_raster(raster_file)
-    band = rast.GetRasterBand(1)
-    nodata = band.GetNoDataValue() if nodata is None else nodata
-    tmp_file = os.path.join(tempfile.gettempdir(),
-                            'tmprast%d' % random.randint(1000, 9999))
-    # vect_file, rast_file, asrast, column, format='GTiff',
-    #              datatype=gdal.GDT_Int32, nodata=-9999
-    trst = vect2rast(vector_file=vector_file, rast_file=tmp_file, asrast=rast,
-                     column=column, nodata=nodata)
-    arr = trst.ReadAsArray()
-    if (arr == nodata).all():
-        raise TypeError("No training pixels found! all pixels are null!")
-    # rows, cols = rast.RasterYSize, rast.RasterXSize
-    pixels = get_index_pixels(trst, nodata)
-    nbands = rast.RasterCount
-    # Add all the band in the input raster map
-    bands = [rast.GetRasterBand(i) for i in range(1, nbands + 1)]
-    # add the training category
-    bands.append(trst.GetRasterBand(1))
-    data = read_pixels(bands, pixels)
-    header = delimiter.join([str(i) for i in range(1, nbands + 1)] +
-                            ['training', ])
+    if raster_file:
+        rast = read_raster(raster_file)
+        band = rast.GetRasterBand(1)
+        nodata = band.GetNoDataValue() if nodata is None else nodata
+        tmp_file = os.path.join(tempfile.gettempdir(),
+                                'tmprast%d' % random.randint(1000, 9999))
+        # vect_file, rast_file, asrast, column, format='GTiff',
+        #              datatype=gdal.GDT_Int32, nodata=-9999
+        trst = vect2rast(vector_file=vector_file, rast_file=tmp_file, asrast=rast,
+                         column=column, nodata=nodata)
+        arr = trst.ReadAsArray()
+        if (arr == nodata).all():
+            raise TypeError("No training pixels found! all pixels are null!")
+        # rows, cols = rast.RasterYSize, rast.RasterXSize
+        pixels = get_index_pixels(trst, nodata)
+        nbands = rast.RasterCount
+        # Add all the band in the input raster map
+        bands = [rast.GetRasterBand(i) for i in range(1, nbands + 1)]
+        # add the training category
+        bands.append(trst.GetRasterBand(1))
+        data = read_pixels(bands, pixels)
+        header = delimiter.join([str(i) for i in range(1, nbands + 1)] +
+                                ['training', ])
+        os.remove(tmp_file)
+        gc.collect()  # force to free memory of unreferenced objects
+    else:
+        vect = ogr.Open(vector_file)
+        layer = vect.GetLayer()
+        fields = layer.schema
+        itraining = column_idexes(fields, column)
+        iexclude = column_idexes(fields, exclude_columns) if exclude_columns else []
+        iexclude.append(itraining)
+        icols = [i for i in range(len(fields)) if i not in iexclude]
+        training = extract_vector_fields(layer, (itraining, )).T[0]
+        dt = extract_vector_fields(layer, icols)
+        data = np.concatenate((dt.T, training[None, :]), axis=0).T
+        header = delimiter.join([fields[i].name for i in icols] + [column, ])
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
-    os.remove(tmp_file)
-    gc.collect()  # force to free memory of unreferenced objects
     return data[:, :-1].astype(float), data[:, -1]  # X, y
 
 
@@ -360,7 +412,8 @@ class MLToolBox(object):
         self.set_params(*args, **kwargs)
 
     def set_params(self, raster_file=None, vector_file=None, column=None,
-                   output_file='{0}', models=None, scoring=None,
+                   output_file='{0}', models=None,
+                   scoring=None, score_func=None,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    scaler=None, fselector=None, decomposer=None):
         """Method to set class attributes, the attributes are:
@@ -378,8 +431,14 @@ class MLToolBox(object):
             Output file where the model results are stored.
         models : list of dictionaries
             List of dictionaries containing the models that will be tested.
-        scoring : str or callable
-            Scoring function that we want to use during the cross-validation.
+        scoring : str
+            Scoring function name to use during the cross-validation and test.
+            valid string are:
+            ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
+            ``adjusted_rand_score``, ``mean_absolute_error``,
+            ``mean_squared_error``, ``r2``
+        score_func : function
+            Scoring function to use during the cross-validation and test.
         n_folds : int, default=5
             Number of folds that will be used during the cross-validation.
         n_jobs : int or None, default=1
@@ -402,6 +461,7 @@ class MLToolBox(object):
         self.column = column
         self.models = models
         self.scoring = scoring
+        self.score_func = score_func
         self.n_folds = n_folds
         self.n_jobs = n_jobs
         self.n_best = n_best
@@ -441,10 +501,10 @@ class MLToolBox(object):
         self.vector = self.vector if vector_file is None else vector_file
         self.column = self.column if column is None else column
         self.training_csv = self.training_csv if csv_file is None else csv_file
-        self.X, self.y = extract_training(raster_file=self.raster,
-                                          vector_file=self.vector,
+        self.X, self.y = extract_training(vector_file=self.vector,
                                           column=self.column,
                                           csv_file=self.training_csv,
+                                          raster_file=self.raster,
                                           delimiter=delimiter, nodata=nodata,
                                           dtype=dtype)
         return self.X, self.y
@@ -522,7 +582,8 @@ class MLToolBox(object):
         self.Xt = Xt
         return Xt
 
-    def cross_validation(self, models=None, X=None, y=None, scoring=None,
+    def cross_validation(self, models=None, X=None, y=None,
+                         scoring=None, score_func=None,
                          n_folds=None, n_jobs=None, cv=None):
         """Return a numpy array with the scoring results for each model.
 
@@ -537,12 +598,14 @@ class MLToolBox(object):
         y: 1D array
             It is a 1D array with the values/classes used to assess the
             performance of the model.
-        scoring: str or function
-            It is a string to select the scoring functions, valid string for
-            the cross-validation are:
+        scoring : str
+            Scoring function name to use during the cross-validation and test.
+            valid string are:
             ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
             ``adjusted_rand_score``, ``mean_absolute_error``,
             ``mean_squared_error``, ``r2``
+        score_func : function
+            Scoring function to use during the cross-validation and test.
         n_folds: int
             Number of folds that will be used during the cross-validation. If
             n_folds < 0 Leave One Out method is used.
@@ -554,6 +617,7 @@ class MLToolBox(object):
         X = (self.Xt if self.Xt is not None else self.X) if X is None else X
         self.y = self.y if y is None else y
         self.scoring = self.scoring if scoring is None else scoring
+        self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
@@ -563,6 +627,18 @@ class MLToolBox(object):
                                         scoring=self.scoring)
                         for mod in self.models])
         return res
+
+    def test(self, Xtest, ytest, models=None, X=None, y=None,
+             scoring=None, score_func=None):
+        """Return a list with the score for each model."""
+        X = (self.Xt if self.Xt is not None else self.X) if X is None else X
+        self.y = self.y if y is None else y
+        self.scoring = self.scoring if scoring is None else scoring
+        self.score_func = self.score_func if score_func is None else score_func
+        self.models = self.models if models is None else models
+        return [test_model(model, X, self.y, Xtest, ytest,
+                           scoring=self.scoring, score_func=self.score_func)
+                for model in self.models]
 
     def select_best(self, n_best=1, best=None, order=None):
         """Return a dictionary with ``{key: model}``, for only the best
@@ -608,21 +684,21 @@ if __name__ == "__main__":
     # Define the parser options
     parser = argparse.ArgumentParser(description='Test several machine-'
                                                  'learning models.')
-    parser.add_argument('raster', type=str, metavar='RASTER',
-                        help='Multi/Hyper spectral raster file supported by GDAL')
     parser.add_argument('vector', type=str, metavar='VECTOR',
                         help='Training vector format supported by OGR')
     parser.add_argument('column', type=str, metavar='COLUMN',
                         help='Column name with the values/classes'
                              ' used as training')
+    parser.add_argument('-r', '--raster', type=str, default=None, dest='raster',
+                        help='Multi/Hyper spectral raster file supported by GDAL')
     parser.add_argument('-t', '--csv-training', type=str, dest='csvtraining',
                         default='training.csv',
                         help='Name of the CSV file with the training values'
                              ' extracted by the raster and vector map.')
-    parser.add_argument('-r', '--csv-results', type=str, dest='csvresults',
+    parser.add_argument('-cr', '--csv-results', type=str, dest='csvresults',
                         default='results.csv',
                         help='Name of the CSV file with the models results.')
-    parser.add_argument('-d', '--csv-delimiter', type=str, dest='csvdelimiter',
+    parser.add_argument('-cd', '--csv-delimiter', type=str, dest='csvdelimiter',
                         default=';',
                         help='CSV delimiter.')
     parser.add_argument('-m', '--models', type=importable,
