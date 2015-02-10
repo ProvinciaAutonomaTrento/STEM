@@ -23,18 +23,17 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import uic
 from qgis.core import *
 from qgis.gui import *
 
-from base import Ui_Dialog
-from help_ui import Ui_Dialog as Help_Dialog
-from settings_ui import Ui_Dialog as Setting_Dialog
 
 import os
 import sys
 import subprocess
 import tempfile
 import codecs
+import platform
 from functools import partial
 
 from stem_utils import (STEMMessageHandler,
@@ -42,6 +41,9 @@ from stem_utils import (STEMMessageHandler,
 
 MSG_BOX_TITLE = "STEM Plugin"
 
+baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
+helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
+settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
@@ -69,19 +71,18 @@ class CheckableComboBox(QComboBox):
             item.setCheckState(Qt.Checked)
 
 
-class BaseDialog(QDialog, Ui_Dialog):
+class BaseDialog(QDialog, baseDialog):
 
     def __init__(self, title, parent=None):
         QDialog.__init__(self, parent)
-        self.dialog = Ui_Dialog
+        self.dialog = baseDialog
         self.setAttribute(Qt.WA_DeleteOnClose)
-        #self.iface = iface
 
-        #self.mapCanvas = iface.mapCanvas()
         self.process = QProcess(self)
         self.connect(self.process, SIGNAL("error(QProcess::ProcessError)"),
                      self.processError)
-        self.connect(self.process, SIGNAL("finished(int, QProcess::ExitStatus)"),
+        self.connect(self.process,
+                     SIGNAL("finished(int, QProcess::ExitStatus)"),
                      self.processFinished)
 
         self.setupUi(self)
@@ -148,14 +149,14 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
 
-    def _insertFileInput(self):
+    def _insertFileInput(self, pos=0):
         """Function to add a second output"""
         self.horizontalLayout_input = QHBoxLayout()
-        self.horizontalLayout_input.setObjectName("horizontalLayout_output2")
-        self.label = QLabel()
-        self.label.setObjectName("LabelOut")
-        self.label.setWordWrap(True)
-        self.horizontalLayout_input.addWidget(self.label)
+        self.horizontalLayout_input.setObjectName("horizontalLayout_output")
+        self.labelF = QLabel()
+        self.labelF.setObjectName("LabelOut")
+        self.labelF.setWordWrap(True)
+        self.horizontalLayout_input.addWidget(self.labelF)
         self.TextIn = QLineEdit()
         self.TextIn.setObjectName("TextIn")
         self.horizontalLayout_input.addWidget(self.TextIn)
@@ -163,7 +164,7 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
-        self.label.setText(self.tr("", "Selezionare file LAS di input"))
+        self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.BrowseInFile, self.TextIn))
@@ -196,10 +197,31 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.BaseInput2.setEditable(True)
         self.BaseInput2.setObjectName("BaseInput2")
         self.horizontalLayout_input2.addWidget(self.BaseInput2)
-        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input2)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_input2)
         self.label2.setText(self.tr("", label))
 
-    def _insertLayerChoose(self):
+    def _insertFileInputOption(self, label, pos=0):
+        """Function to add a second output"""
+        self.horizontalLayout_inputopt = QHBoxLayout()
+        self.horizontalLayout_inputopt.setObjectName("horizontalLayout_inputopt")
+        self.labelFO = QLabel()
+        self.labelFO.setObjectName("labelFO")
+        self.labelFO.setWordWrap(True)
+        self.horizontalLayout_inputopt.addWidget(self.labelFO)
+        self.TextInOpt = QLineEdit()
+        self.TextInOpt.setObjectName("TextInOpt")
+        self.horizontalLayout_inputopt.addWidget(self.TextInOpt)
+        self.BrowseButtonInOpt = QPushButton()
+        self.BrowseButtonInOpt.setObjectName("BrowseButtonIn")
+        self.horizontalLayout_inputopt.addWidget(self.BrowseButtonInOpt)
+        self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputopt)
+        self.labelFO.setText(self.tr("", label))
+        self.BrowseButtonInOpt.setText(self.tr("", "Sfoglia"))
+        self.connect(self.BrowseButtonInOpt, SIGNAL("clicked()"),
+                     partial(self.BrowseInFile, self.TextInOpt))
+
+    def _insertLayerChoose(self, pos=2):
         # TODO da rimuovere
         """Function to add a LineEdit Widget for the layers list"""
         self.horizontalLayout_layer = QHBoxLayout()
@@ -207,20 +229,20 @@ class BaseDialog(QDialog, Ui_Dialog):
         self.label_layer = QLabel()
         self.label_layer.setObjectName("label_layer")
         self.horizontalLayout_layer.addWidget(self.label_layer)
-        self.layer_list = QLineEdit()
+        self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
-        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
-        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
-                                            "layer da utilizzare, separati da\n"
-                                            " una virgola e partendo da 1 (se\n"
-                                            " lasciato vuoto considererà tutti"
-                                            " i layer"))
-        self.label_layer.setText(self.tr("", "Inserire numero layers"))
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
+#        self.layer_list.setToolTip(self.tr("", "Inserire i numeri dei "
+#                                            "layer da utilizzare, separati da\n"
+#                                            " una virgola e partendo da 1 (se\n"
+#                                            " lasciato vuoto considererà tutti"
+#                                            " i layer"))
+        self.label_layer.setText(self.tr("", "Selezionare una sola banda"))
 
     def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
                                                "utilizzare cliccandoci sopra",
-                                   combo=True):
+                                   combo=True, pos=2):
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
@@ -233,10 +255,10 @@ class BaseDialog(QDialog, Ui_Dialog):
             self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
-        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_layer)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
-    def _insertLayerChooseCheckBox2(self, label, combo=True):
+    def _insertLayerChooseCheckBox2(self, label, combo=True, pos=3):
         self.horizontalLayout_layer2 = QHBoxLayout()
         self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
@@ -249,7 +271,7 @@ class BaseDialog(QDialog, Ui_Dialog):
             self.layer_list2 = QComboBox()
         self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
-        self.verticalLayout_input.insertLayout(3, self.horizontalLayout_layer2)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer2)
         self.label_layer2.setText(self.tr("", label))
 
     def _insertLayerChooseCheckBox3(self, label, combo=True):
@@ -281,7 +303,8 @@ class BaseDialog(QDialog, Ui_Dialog):
             self.layer_list4 = QComboBox()
         self.layer_list4.setObjectName("layer_list4")
         self.horizontalLayout_layer4.addWidget(self.layer_list4)
-        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer4)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_layer4)
         self.label_layer4.setText(self.tr("", label))
 
     def _insertMethod(self, methods, label, posnum):
@@ -405,6 +428,24 @@ class BaseDialog(QDialog, Ui_Dialog):
             [self.BaseInputCombo.addItem(m) for m in items]
         self.LabelCombo.setText(self.tr("", label))
 
+    def _insertSecondCombobox(self, label, posnum, items=None):
+        """Function to add a ComboBox Widget"""
+        self.horizontalLayout_combo2 = QHBoxLayout()
+        self.horizontalLayout_combo2.setObjectName("horizontalLayout_combo2")
+        self.LabelCombo2 = QLabel()
+        self.LabelCombo2.setObjectName("LabelCombo2")
+        self.LabelCombo2.setWordWrap(True)
+        self.horizontalLayout_combo2.addWidget(self.LabelCombo2)
+        self.BaseInputCombo2 = QComboBox()
+        self.BaseInputCombo2.setEditable(True)
+        self.BaseInputCombo2.setObjectName("BaseInputCombo2")
+        self.horizontalLayout_combo2.addWidget(self.BaseInputCombo2)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_combo2)
+        if items:
+            [self.BaseInputCombo2.addItem(m) for m in items]
+        self.LabelCombo2.setText(self.tr("", label))
+
     def _insertSecondOutput(self, label, posnum):
         """Function to add a second output"""
         self.horizontalLayout_output2 = QHBoxLayout()
@@ -438,6 +479,66 @@ class BaseDialog(QDialog, Ui_Dialog):
                                                 self.horizontalLayout_textarea)
         self.LabelTextarea.setText(self.tr("Dialog", label))
 
+    def _insertCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox = QHBoxLayout()
+        self.horizontalLayout_checkbox.setObjectName("horizontalLayout_checkbox")
+        self.LabelCheckbox = QLabel()
+        self.LabelCheckbox.setWordWrap(True)
+        self.LabelCheckbox.setObjectName("LabelCheckbox")
+        self.horizontalLayout_checkbox.addWidget(self.LabelCheckbox)
+        self.checkbox = QCheckBox()
+        self.checkbox.setObjectName("checkbox")
+        self.horizontalLayout_checkbox.addWidget(self.checkbox)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox)
+        self.LabelCheckbox.setText(self.tr("Dialog", label))
+        self.checkbox.setChecked(state)
+
+    def _insertSecondCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox2 = QHBoxLayout()
+        self.horizontalLayout_checkbox2.setObjectName("horizontalLayout_checkbox2")
+        self.LabelCheckbox2 = QLabel()
+        self.LabelCheckbox2.setWordWrap(True)
+        self.LabelCheckbox2.setObjectName("LabelCheckbox2")
+        self.horizontalLayout_checkbox2.addWidget(self.LabelCheckbox2)
+        self.checkbox2 = QCheckBox()
+        self.checkbox2.setObjectName("checkbox2")
+        self.horizontalLayout_checkbox2.addWidget(self.checkbox2)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox2)
+        self.LabelCheckbox2.setText(self.tr("Dialog", label))
+        self.checkbox2.setChecked(state)
+
+    def _insertThirdCheckbox(self, label, posnum, state=False):
+        self.horizontalLayout_checkbox3 = QHBoxLayout()
+        self.horizontalLayout_checkbox3.setObjectName("horizontalLayout_checkbox3")
+        self.LabelCheckbox3 = QLabel()
+        self.LabelCheckbox3.setWordWrap(True)
+        self.LabelCheckbox3.setObjectName("LabelCheckbox3")
+        self.horizontalLayout_checkbox3.addWidget(self.LabelCheckbox3)
+        self.checkbox3 = QCheckBox()
+        self.checkbox3.setObjectName("checkbox3")
+        self.horizontalLayout_checkbox3.addWidget(self.checkbox3)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_checkbox3)
+        self.LabelCheckbox3.setText(self.tr("Dialog", label))
+        self.checkbox3.setChecked(state)
+
+    def _insertSingleInputOption(self, pos, label="Dati di input"):
+        """Function to add ComboBox Widget where insert a single input file"""
+        self.horizontalLayout_inputOpt = QHBoxLayout()
+        self.horizontalLayout_inputOpt.setObjectName("horizontalLayout_inputOpt")
+        self.labelOpt = QLabel()
+        self.labelOpt.setObjectName("labelOpt")
+        self.labelOpt.setWordWrap(True)
+        self.horizontalLayout_inputOpt.addWidget(self.labelOpt)
+        self.BaseInputOpt = QComboBox()
+        self.BaseInputOpt.setEditable(True)
+        self.BaseInputOpt.setObjectName("BaseInputOpt")
+        self.horizontalLayout_inputOpt.addWidget(self.BaseInputOpt)
+        self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputOpt)
+        self.labelOpt.setText(self.tr("", label))
+
     def processError(self, error):
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
 
@@ -466,9 +567,9 @@ class BaseDialog(QDialog, Ui_Dialog):
         if not bbox and not mask:
             return False, False, False
         if bbox and mask:
-            STEMMessageHandler.error("Sono state impostate sia una maschera vettoriale "
-                                     "sia una estensione di QGIS. Si prega di "
-                                     "rimuoverne una delle due")
+            STEMMessageHandler.error("Sono state impostate sia una maschera "
+                                     "vettoriale sia una estensione di QGIS. "
+                                     "Si prega di rimuoverne una delle due")
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(tempfile.gettempdir(), outname)
         PIPE = subprocess.PIPE
@@ -495,10 +596,24 @@ class BaseDialog(QDialog, Ui_Dialog):
         runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         log, err = runcom.communicate()
         if runcom.returncode != 0:
-            raise Exception("Errore eseguendo il ritaglio del file di input: "
-                            "Errore eseguendo il comando {err}".format(err=err))
+            STEMMessageHandler.error("Errore eseguendo il ritaglio del file di input: "
+                                     "Errore eseguendo il comando {err}".format(err=err))
 
         return outname.strip(), out, mask
+
+    def cutInputMulti(self, inp, source, typ):
+        if len(inp) != len(source):
+            STEMMessageHandler.error("Errore durante il ritaglio di più immagini")
+        newinp = []
+        newsource = []
+        for n in range(len(inp)):
+            newn, news, newm = self.cutInput(inp[n], source[n], typ)
+            if not newn:
+                return False, False
+            else:
+                newinp.append(newn)
+                newsource.append(news)
+        return newinp, newsource
 
     def mapDisplay(self, source, typ):
         render = self.iface.mapCanvas()
@@ -510,7 +625,8 @@ class BaseDialog(QDialog, Ui_Dialog):
         pass
 
     def onRunServer(self):
-        STEMMessageHandler.warning("Esegui sul Server", "Opzione non ancora implementata")
+        STEMMessageHandler.warning("Esegui sul Server",
+                                   "Opzione non ancora implementata")
         pass
 
     # stop the command execution
@@ -573,17 +689,21 @@ class BaseDialog(QDialog, Ui_Dialog):
 
     def SphinxUrl(self):
         filename = "{tool}.html".format(tool=self.toolname.lower().replace(" ",
-                                                                          "_"))
+                                                                           "_"))
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
                             'build', 'html', 'tools', filename)
-        return "file://{p}".format(p=path)
+        if platform.system().startswith('linux') or platform.system().startswith('darwin'):
+            return "file://{p}".format(p=path)
+        else:
+            path = path.replace("\\", "/")
+            return "file:///{p}".format(p=path)
 
 
-class SettingsDialog(QDialog, Setting_Dialog):
+class SettingsDialog(QDialog, settingsDialog):
 
     def __init__(self, parent, iface):
         QDialog.__init__(self, parent)
-        self.dialog = Setting_Dialog
+        self.dialog = settingsDialog
         self.iface = iface
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -600,11 +720,11 @@ class SettingsDialog(QDialog, Setting_Dialog):
         self.connect(self.pushButton_grassdata, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_grassdata))
         self.connect(self.pushButton_gdal, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_gdal))
+                     partial(self.BrowseDir, self.lineEdit_gdal))
         self.connect(self.pushButton_liblas, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_liblas))
+                     partial(self.BrowseDir, self.lineEdit_liblas))
         self.connect(self.pushButton_pdal, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_pdal))
+                     partial(self.BrowseDir, self.lineEdit_pdal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
@@ -677,12 +797,11 @@ class SettingsDialog(QDialog, Setting_Dialog):
         STEMSettings.setValue("epsgcode", self.epsg.text())
 
 
-class helpDialog(QDialog, Help_Dialog):
+class helpDialog(QDialog, helpDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         """Set up the help user interface"""
-        self.dialog = Help_Dialog
-        #self.iface = iface
+        self.dialog = helpDialog
         self.setupUi(self)
 
     def fillfromUrl(self, url):

@@ -27,10 +27,11 @@ __revision__ = '$Format:%H$'
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import uic
 from qgis.utils import iface
-
 import os
-from STEMToolbox import Ui_STEMToolBox
+
+toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'toolbox.ui'))[0]
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
 TOOLS = {("0", "Pre-elaborazione immagini")
@@ -39,7 +40,8 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         ("1","Segmentazione"):"image_segm",
                                         ("2","Pansharpening"):"image_pansh",
                                         ("3","Maschera"):"image_mask",
-                                        ("4","Accatastamento"):"image_multi"}],
+                                        ("4","Accatastamento"):"image_multi",
+                                        ("5","Correzione atmosferica"):"image_atmo"}],
         ("1","Pre-elaborazioni LIDAR")
                                         :[{("0","Filtraggio file LAS"):"las_filter",
                                         ("1","Unione file LAS"):"las_union",
@@ -74,18 +76,21 @@ TOOLS = {("0", "Pre-elaborazione immagini")
                                         ("2","K-fold cross validation"):"post_kfold",
                                         ("3","Statistiche"):"post_stats"}],
         ("7","Struttura bosco")
-                                        :[{("0","Struttura bosco"):"bosco"}]
+                                        :[{("0","Struttura bosco"):"bosco"}],
+        ("8","QGIS Tool")
+                                        :[{("0","Raster:Georeferenziatore"):"&Georef"}]
 }
 
-class STEMToolbox(QDockWidget, Ui_STEMToolBox):
+class STEMToolbox(QDockWidget, toolboxDockWidget):
     def __init__(self):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
 
         #self.fill_widget(self.toolTree, TOOLS)
-        self.toolTree.setColumnCount(2)
+        self.toolTree.setColumnCount(3)
         self.toolTree.setColumnHidden(1, True)
+        self.toolTree.setColumnHidden(2, True)
         self.toolTree.setAlternatingRowColors(True)
 
         self.populateTree()
@@ -93,12 +98,27 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
 
     def executeTool(self):
         item = self.toolTree.currentItem()
+        if isinstance(item, QGISTreeToolItem):
+            toolName = ':'.join([item.text(2), item.text(0)])
+            module = TOOLS[(item.parent().text(1),
+                            item.parent().text(0))][0][(item.text(1),
+                                                       toolName)]
+            if toolName.split(":")[0] == "Raster":
+                items = iface.rasterMenu()
+            elif toolName.split(":")[0] in ["Vector", "Vettore"]:
+                items = iface.vectorMenu()
+            for firstact in items.actions():
+                if firstact.text().find("&" + toolName.split(":")[1][:6]) != -1:
+                    secondact = firstact
+                    for act in secondact.menu().actions():
+                        if act.text().find(module[1:]) != -1:
+                            act.trigger()
+
         if isinstance(item, TreeToolItem):
             toolName = item.text(0)
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
-                                                        toolName)]
-
+                                                       toolName)]
             globals()["toolModule"] = __import__(module)
             dlg = toolModule.STEMToolsDialog(iface, toolName)
             dlg.exec_()
@@ -113,14 +133,16 @@ class STEMToolbox(QDockWidget, Ui_STEMToolBox):
             iconGroupItem = QIcon(os.path.dirname(__file__) + '/images/rootItemTool.svg')
             groupItem.setIcon(0, iconGroupItem)
             for tool, module in modToolList[0].iteritems():
-                toolItem = TreeToolItem(tool)
+                if module.startswith("&"):
+                    toolItem = QGISTreeToolItem(tool)
+                else:
+                    toolItem = TreeToolItem(tool)
                 if not module:
                     toolItem.setDisabled(True)
                 groupItem.addChild(toolItem)
 
             self.toolTree.addTopLevelItem(groupItem)
             self.toolTree.sortItems(1, Qt.AscendingOrder)
-            self.toolTree.resizeColumnToContents(0)
 
 class TreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
@@ -130,3 +152,13 @@ class TreeToolItem(QTreeWidgetItem):
         self.setToolTip(0, toolName[1])
         self.setText(0, toolName[1])
         self.setText(1, toolName[0])
+
+class QGISTreeToolItem(QTreeWidgetItem):
+    def __init__(self, toolName):
+        QTreeWidgetItem.__init__(self)
+        iconToolItem = QIcon(os.path.dirname(__file__) + '/images/qgis.png')
+        self.setIcon(0, iconToolItem)
+        self.setToolTip(0, toolName[1].split(":")[1])
+        self.setText(0, toolName[1].split(":")[1])
+        self.setText(1, toolName[0])
+        self.setText(2, toolName[1].split(":")[0])

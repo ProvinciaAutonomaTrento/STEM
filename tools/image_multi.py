@@ -27,10 +27,9 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMSettings
 from gdal_functions import convertGDAL
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 
 
 class STEMToolsDialog(BaseDialog):
@@ -47,6 +46,8 @@ class STEMToolsDialog(BaseDialog):
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
+        self.helpui.fillfromUrl(self.SphinxUrl())
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -61,7 +62,10 @@ class STEMToolsDialog(BaseDialog):
             items.append(self.BaseInput.item(index))
         labels = [STEMUtils.getLayersSource(i.text()) for i in items]
         outformat = str(self.BaseInputCombo.currentText())
-
+        cut, cutsource = self.cutInputMulti(items, labels, 'raster')
+        if cut:
+                items = cut
+                labels = cutsource
         cgdal = convertGDAL(labels, self.TextOut.text(), outformat)
         cgdal.write()
         if self.AddLayerToCanvas.isChecked():

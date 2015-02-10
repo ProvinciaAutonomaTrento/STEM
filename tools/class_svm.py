@@ -32,6 +32,7 @@ from qgis.gui import *
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -40,20 +41,101 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput()
-        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+        self._insertSingleInput(label='Dati di input vettoriale')
+        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
+        self.labelcol = "Seleziona la colonna con indicazione della classe"
+        self._insertLayerChoose(pos=1)
+        self.label_layer.setText(self.tr("", self.labelcol))
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
-        self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        self.label_layer.setEnabled(False)
+        self.layer_list.setEnabled(False)
 
-        self._insertSecondSingleInput()
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+        self._insertSecondSingleInput(pos=2, label="Dati di input raster")
+        STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
+        self._insertLayerChooseCheckBox2("Selezionare le bande da utilizzare "
+                                         "cliccandoci sopra", pos=3)
+        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+
+        kernels = ['lineare', 'polinomiale', 'RBF']
+
+        self.lk = 'Selezionare il kernel da utilizzare'
+        self._insertFirstCombobox(self.lk, 0, kernels)
+        self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
+        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=1)
+        self._insertSecondLineEdit(label="Inserire il valore del grado del "
+                                   "polinomio", posnum=2)
+        self.LabelLinedit2.setEnabled(False)
+        self.Linedit2.setEnabled(False)
+
+        mets = ['no', 'manuale', 'file']
+        self.lm = "Selezione feature"
+        self._insertMethod(mets, self.lm, 3)
+        self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+
+        self.lio = "File di selezione"
+        self._insertFileInputOption(self.lio, 4)
+        self.labelFO.setEnabled(False)
+        self.TextInOpt.setEnabled(False)
+        self.BrowseButtonInOpt.setEnabled(False)
+
+        self._insertSingleInputOption(5, label="Vettoriale di validazione")
+        STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
+        #self.BaseInputOpt.setEnabled(False)
+        #self.labelOpt.setEnabled(False)
+
+        label = "Seleziona la colonna per la validazione"
+        self._insertSecondCombobox(label, 6)
+
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+        self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+
+    def columnsChange(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+
+    def columnsChange2(self):
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+
+    def kernelChanged(self):
+        if self.BaseInputCombo.currentText() == 'lineare':
+            self.LabelLinedit2.setEnabled(False)
+            self.Linedit2.setEnabled(False)
+        else:
+            self.LabelLinedit2.setEnabled(True)
+            self.Linedit2.setEnabled(True)
+        if self.BaseInputCombo.currentText() == 'polinomiale':
+            self.LabelLinedit2.setText(self.tr("", "Inserire il valore del "
+                                               "grado del polinomio"))
+        elif self.BaseInputCombo.currentText() == 'RBF':
+            self.LabelLinedit2.setText(self.tr("",
+                                               "Inserire il valore di gamma"))
+
+    def methodChanged(self):
+        if self.MethodInput.currentText() == 'file':
+            self.labelFO.setEnabled(True)
+            self.TextInOpt.setEnabled(True)
+            self.BrowseButtonInOpt.setEnabled(True)
+            self.label_layer.setEnabled(False)
+            self.layer_list.setEnabled(False)
+        elif self.MethodInput.currentText() == 'manuale':
+            self.label_layer.setEnabled(True)
+            self.layer_list.setEnabled(True)
+            self.labelFO.setEnabled(False)
+            self.TextInOpt.setEnabled(False)
+            self.BrowseButtonInOpt.setEnabled(False)
+        else:
+            self.labelFO.setEnabled(False)
+            self.TextInOpt.setEnabled(False)
+            self.BrowseButtonInOpt.setEnabled(False)
+            self.label_layer.setEnabled(False)
+            self.layer_list.setEnabled(False)
 
     def show_(self):
         self.switchClippingMode()
@@ -67,16 +149,41 @@ class STEMToolsDialog(BaseDialog):
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
-            name = str(self.BaseInput.currentText())
-            source = STEMUtils.getLayersSource(name)
-            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+            invect = str(self.BaseInput.currentText())
+            invectsource = STEMUtils.getLayersSource(invect)
+            invectcols = str(self.layer_list.currentText())
+            inrast = str(self.BaseInput2.currentText())
+            inrastsource = STEMUtils.getLayersSource(inrast)
+            nlayerchoose = STEMUtils.checkLayers(inrastsource, self.layer_list)
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-            coms = []
+            feat = str(self.MethodInput.currentText())
+            kernel = str(self.BaseInputCombo.currentText())
+            cpar = self.Linedit.text()
+            otherpar = self.Linedit2.text()
+            infile = self.TextInOpt.text()
+            optvect = str(self.BaseInputOpt.currentText())
             outnames = []
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            cut, cutsource, mask = self.cutInput(invect, invectsource, typ)
             if cut:
-                name = cut
-                source = cutsource
+                invect = cut
+                invectsource = cutsource
+            cut, cutsource, mask = self.cutInput(inrast, inrastsource, typ)
+            if cut:
+                inrast = cut
+                inrastsource = cutsource
+            if optvect:
+                optvectsource = STEMUtils.getLayersSource(optvect)
+                optvectcols = str(self.BaseInputCombo2.currentText())
+                cut, cutsource, mask = self.cutInput(optvect, optvectsource,
+                                                     typ)
+                if cut:
+                    optvect = cut
+                    optvectsource = cutsource
+
+            from PyQt4.QtCore import *
+            import pdb
+            pyqtRemoveInputHook()
+            pdb.set_trace()
             # TODO finish
         except:
             error = traceback.format_exc()

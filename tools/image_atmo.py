@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    post_aggraree.py
+    image_atmo.py
     ---------------------
     Date                 : August 2014
     Copyright            : (C) 2014 Luca Delucchi
@@ -27,10 +27,10 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import *
 from qgis.gui import *
-import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from gdal_functions import infoOGR
+from grass_stem import helpUrl
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -39,80 +39,80 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput("Dati di input (vettoriale di punti o aree)")
-        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
+        self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        self._insertSecondSingleInput(label="Dati di input (vettoriale di aree)")
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+        self._insertFileInput(pos=1)
+        self.lf = "Selezionare file con i parametri 6s"
+        self.labelF.setText(self.tr("", self.lf))
 
-        label = "Seleziona la colonna da considerare per le statistiche"
-        self._insertFirstCombobox(label, 0)
+        self._insertLayerChoose()
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
-        methods = ['sum', 'average', 'median', 'mode', 'minimum',
-                   'maximum', 'range', 'stddev', 'variance']
-        lmet = "Metodo statistico di aggregazione"
-        self._insertMethod(methods, lmet, 1)
+        items = ['6s']
+        label = "Seleziona l'algortimo da utilizzare"
+        self._insertFirstCombobox(label, 2, items)
+        self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
+
+        self.helpui.fillfromUrl(helpUrl('i.atcorr'))
+
+        self._insertCheckbox('Convertire la mappa di input in riflettanza '
+                             '(default è radianza)', 3)
+        self._insertSecondCheckbox('ETM+ precedente al 1 Luglio 2000', 4)
+        self._insertThirdCheckbox('ETM+ successivo al 1 Luglio 2000', 4)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
-        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+
+    def operatorChanged(self):
+        if self.BaseInputCombo.currentText() == '6s':
+            self.LabelLinedit.setText(self.tr(self.toolName, self.lf))
+            self.BrowseButtonIn.setEnabled(True)
+            self.helpui.fillfromUrl(helpUrl('i.atcorr'))
 
     def show_(self):
         self.switchClippingMode()
-        self.show_(self)
-
-    def onClosing(self):
-        self.onClosing(self)
+        BaseDialog.show_(self)
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
-            typ = 'vector'
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            infoname = infoOGR(source)
-            if infoname.getType() in [1, 4, -2147483647, -2147483644]:
-                geotype = 'point'
-            elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
-                geotype = 'centroid'
-            else:
-                error = "Geometria non supportata"
-                STEMMessageHandler.error(error)
-                return
-            name2 = str(self.BaseInput2.currentText())
-            source2 = STEMUtils.getLayersSource(name2)
+            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            coms = []
+            outnames = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
-            cut2, cutsource2, mask = self.cutInput(name2, source2, typ)
             if cut:
                 name = cut
                 source = cutsource
-            if cut2:
-                name2 = cut2
-                source2 = cutsource2
-
             tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
-            pid = tempin.split('_')[2]
-
-            gs.import_grass(source, tempin, typ)
-            tempin2 = 'stem_{name}_{pid}'.format(name=name2, pid=pid)
-            gs.import_grass(source2, tempin2, typ)
+            gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
-            com = ['v.vect.stats', 'points={m}'.format(m=tempin),
-                   'areas={n}'.format(n=tempin2), 'type={t}'.format(t=geotype),
-                   'count_column=count_{p}'.format(p=pid),
-                   'stats_column=stats_{p}'.format(p=pid),
-                   'method={m}'.format(m=self.MethodInput.currentText()),
-                   'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
+
+            outnames.append(tempout)
+            com = ['i.atcorr', 'input={name}'.format(name=tempin),
+                   'output={outname}'.format(outname=tempout),
+                   'parameters={para}'.format(self.TextIn.text())]
+            if self.checkbox.isChecked():
+                com.append('-r')
+            if self.checkbox2.isChecked():
+                com.append('-r')
+            if self.checkbox3.isChecked():
+                com.append('-a')
+            coms.append(com)
             self.saveCommand(com)
-            gs.run_grass([com])
+            gs.run_grass(coms)
+
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempin2, typ)
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

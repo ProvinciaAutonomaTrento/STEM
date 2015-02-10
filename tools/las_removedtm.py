@@ -25,12 +25,10 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 
 
 class STEMToolsDialog(BaseDialog):
@@ -45,7 +43,6 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
 
         self.label2.setText(self.tr(name, "Input DTM"))
-        self.label.setText(self.tr(name, "Input LAS file"))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

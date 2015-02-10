@@ -35,6 +35,8 @@ from grass_stem import stemGRASS
 import os
 import inspect
 import re
+import tempfile
+import stem_base_dialogs
 
 try:
     import osgeo.gdal as gdal
@@ -50,12 +52,14 @@ class STEMUtils:
     registry = QgsMapLayerRegistry.instance()
 
     @staticmethod
-    def addLayerToComboBox(combo, typ, clear=True):
+    def addLayerToComboBox(combo, typ, clear=True, empty=False):
         """Add layers to input files list"""
         if clear:
             combo.clear()
         layerlist = []
         layermap = STEMUtils.registry.mapLayers()
+        if empty:
+            layerlist.append("")
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
                 layerlist.append(layer.name())
@@ -114,25 +118,38 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, checkCombo=None, lineEdit=None):
+    def checkLayers(inmap, form, index=True):
         """Function to check if layers are choosen"""
-        try:
-            if lineEdit.text() == u'':
-                return STEMUtils.getNumSubset(inmap)
-            else:
-                return lineEdit.text().split(',')
-        except:
+        if isinstance(form, QCheckBox) or isinstance(form, stem_base_dialogs.CheckableComboBox):
             itemlist = []
-            for i in range(checkCombo.count()):
-                item = checkCombo.model().item(i)
+            for i in range(form.count()):
+                item = form.model().item(i)
                 if item.checkState() == Qt.Checked:
                     itemlist.append(str(i + 1))
             if len(itemlist) == 0:
                 return STEMUtils.getNumSubset(inmap)
             return itemlist
+        elif isinstance(form, QComboBox):
+            first = form.itemText(0)
+            if index:
+                val = form.currentIndex()
+                if val == 0 and first == "Seleziona banda":
+                    return None
+                elif val != 0 and first == "Seleziona banda":
+                    return val + 2
+                elif first != "Seleziona banda":
+                    return val + 1
+            else:
+                return form.currentText()
+
+        elif isinstance(form, QLineEdit):
+            if form.text() == u'':
+                return STEMUtils.getNumSubset(inmap)
+            else:
+                return form.text().split(',')
 
     @staticmethod
-    def addLayersNumber(combo, checkCombo=None):
+    def addLayersNumber(combo, checkCombo=None, empty=False):
         layerName = combo.currentText()
         if not layerName:
             return
@@ -142,9 +159,16 @@ class STEMUtils:
         gdalBands = gdalF.RasterCount
         gdalMeta = None
         checkCombo.clear()
+        i = 1
         if gdalF.GetDriver().LongName == 'ENVI .hdr Labelled':
             gdalMeta = gdalF.GetMetadata_Dict()
-        for n in range(1, gdalBands+1):
+        if empty:
+            checkCombo.addItem("Seleziona banda")
+            model = checkCombo.model()
+            item = model.item(0)
+            item.setCheckState(Qt.Unchecked)
+            i += 1
+        for n in range(1, gdalBands + 1):
             st = "Banda {i}".format(i=n)
             if gdalMeta:
                 try:
@@ -155,7 +179,10 @@ class STEMUtils:
                     pass
             checkCombo.addItem(st)
             model = checkCombo.model()
-            item = model.item(n-1)
+            if empty:
+                item = model.item(n + 2 - i)
+            else:
+                item = model.item(n - i)
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
@@ -163,6 +190,7 @@ class STEMUtils:
         layerName = combo.currentText()
         cols = []
         if not layerName:
+            checkCombo.clear()
             return
         else:
             checkCombo.clear()
@@ -171,13 +199,13 @@ class STEMUtils:
             fields = data.fields()
             [cols.append(i.name()) for i in fields]
             checkCombo.addItems(cols)
+            return
 
     @staticmethod
     def writeFile(text, name=False):
         if name:
             fs = open(name, 'w')
         else:
-            import tempfile
             f = tempfile.NamedTemporaryFile()
             name = f.name
             fs = f.file
@@ -199,21 +227,45 @@ class STEMUtils:
 
     @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
-        if overwrite:
-            tmp = output + '.tmp'
-        else:
-            tmp = output
-        try:
-            gs.export_grass(tempout, tmp, typ)
-        except:
-            pass
-        if overwrite:
-            os.rename(tmp, output)
+        if typ == 'vector' and overwrite:
+            import shutil
+
+            newdir = os.path.join(tempfile.gettempdir(), "shpdir")
+            if not os.path.exists(newdir):
+                os.mkdir(newdir)
+            original_dir = os.path.dirname(output)
+            original_basename = os.path.basename(output)
+            tmp = os.path.join(newdir, original_basename)
             try:
-                os.rename('{name}.aux.xml'.format(name=tmp),
-                          '{name}.aux.xml'.format(name=output))
+                gs.export_grass(tempout, tmp, typ)
+                saved = True
+            except:
+                return
+            if saved:
+                files = os.listdir(newdir)
+                for f in files:
+                    try:
+                        p = os.path.join(newdir, f)
+                        shutil.copy(p, original_dir)
+                    except:
+                        return
+            shutil.rmtree(newdir)
+        else:
+            if overwrite:
+                tmp = output + '.tmp'
+            else:
+                tmp = output
+            try:
+                gs.export_grass(tempout, tmp, typ)
             except:
                 pass
+            if overwrite:
+                os.rename(tmp, output)
+                try:
+                    os.rename('{name}.aux.xml'.format(name=tmp),
+                              '{name}.aux.xml'.format(name=output))
+                except:
+                    pass
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
@@ -374,6 +426,9 @@ class STEMSettings:
         if tool:
             tool = re.sub(r"[^\w\s]", '', tool)
             tool = re.sub(r"\s+", '_', tool)
+
+        if not tool in STEMSettings.s.childGroups():
+            return
 
         for name, obj in inspect.getmembers(ui):
             if isinstance(obj, QComboBox):

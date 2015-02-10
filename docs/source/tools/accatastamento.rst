@@ -1,31 +1,30 @@
 Accatastamento
 ================================
 
-Il modulo esegue l'accatastamento di diverse immagini.
+Il modulo crea un nuovo raster multibanda a partire da più file mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda.
 
 .. only:: latex
 
-  .. image:: ../_static/accatastamento.png
+  .. image:: ../_static/tool_images/accatastamento.png
 
 
 Input
 ------------
 
-**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS.
-Selezionare i raster da accatastare.
+**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare i raster da accatastare.
 
 Parametri
 ------------
 
-**Formato di output**: il formato per l'output del comando
+**Formato di output**: selezionare il formato per l'output del comando
 
-  * *ENVI*: formato compatibile con il software ENVI.
+  * *ENVI*: formato ENVI (file binario + header).
   * *GTIFF*: formato GeoTiff.
 
 Output
 ------------
 
-**Risultato**: inserire percorso e nome del file di output.
+**Risultato**: inserire il percorso e il nome del file di output.
 
 .. only:: latex
 
