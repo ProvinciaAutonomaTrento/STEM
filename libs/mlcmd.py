@@ -8,6 +8,7 @@ import os
 import argparse
 from datetime import datetime
 import pickle as pkl
+from pprint import pprint
 
 # import scientific libraires
 import numpy as np
@@ -20,10 +21,8 @@ from sklearn.svm import SVC
 
 # import local libraries
 from feature_selection import SSF
-from machine_learning import MLToolBox, SEP, get_cv
+from machine_learning import MLToolBox, SEP, NODATA, get_cv
 
-
-NONE = -9999
 
 MODELS = {# UC_26 Support Vector Machine (SVM)
           'SVM': [],
@@ -92,12 +91,11 @@ def get_parser():
                         default='training.csv',
                         help='Name of the CSV file with the training values'
                              ' extracted by the raster and vector map.')
-    parser.add_argument('-cr', '--csv-results', type=str, dest='csvresults',
-                        default='results.csv',
+    parser.add_argument('-cr', '--csv-cross', type=str, dest='csvcross',
+                        default='cross_validation.csv',
                         help='Name of the CSV file with the models results.')
-    parser.add_argument('-cd', '--csv-delimiter', type=str, dest='csvdelimiter',
-                        default=SEP,
-                        help='CSV delimiter.')
+    parser.add_argument('-cd', '--csv-delimiter', type=str, default=SEP,
+                        dest='csvdelimiter', help='CSV delimiter.')
     parser.add_argument('-m', '--models', type=importable,
                         dest='models', default='classifiers.py',
                         help='A python file containing a list of dictionary'
@@ -159,7 +157,7 @@ def get_parser():
                         metavar='S', help='StandardScaler options: '
                                           'with_mean, with_std')
     parser.add_argument('-p', '--pca', type=pca_components, dest='pca',
-                        metavar='n_components', default=NONE, nargs='?',
+                        metavar='n_components', default=NODATA, nargs='?',
                         help='See PCA n_componets documentation')
     parser.add_argument('-f', '--feature-selection', default='RFECV',
                         dest='fs', help='Feature selection',
@@ -195,6 +193,10 @@ def get_parser():
                         help='Label tag')
     parser.add_argument('-v', '--verbosity', type=int, choices=(0, 1, 2),
                         default=0, dest='verbosity', help='Output verbosity.')
+    parser.add_argument('-nd', '--no-data', type=float, default=NODATA,
+                        dest='nodata',
+                        help='Name of the columns containing the data that '
+                             'will be used instad of the raster input map.')
     return parser
 
 
@@ -226,7 +228,7 @@ if __name__ == "__main__":
                      use_columns=args.use_columns, raster_file=args.raster,
                      models=models, scoring=args.scoring,
                      n_folds=args.n_folds, n_jobs=args.n_jobs,
-                     n_best=args.n_best,
+                     n_best=args.n_best, nodata=args.nodata,
                      tvector=args.tvector, tcolumn=args.tcolumn,
                      traster=args.traster,
                      best_strategy=getattr(np, args.best_strategy),
@@ -235,14 +237,25 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Extract training samples
+    print('Extract training samples')
     trnpath = os.path.join(args.odir, args.csvtraining)
     if (not os.path.exists(trnpath) or args.overwrite):
+        print('    From:')
+        print('      - vector: %s' % mltb.vector)
+        print('      - training column: %s' % mltb.column)
+        if mltb.use_columns:
+            print('      - use columns: %s' % mltb.use_columns)
+        if mltb.raster:
+            print('      - raster: %s' % mltb.raster)
         X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                     nodata=0, dtype=np.uint32)
+                                     nodata=args.nodata, dtype=np.uint32)
     else:
+        print('    Load from:')
+        print('      - %s' % trnpath)
         dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
         X, y = dt[:, :-1], dt[:, -1]
     X = X.astype(float)
+    print('Training sample shape:', X.shape)
 
     fselect = {
            # Sequential Forward Floating Feature Selection
@@ -277,13 +290,13 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Decomposer
-    decomposer = PCA(n_components=args.pca) if args.pca != NONE else None
+    decomposer = PCA(n_components=args.pca) if args.pca != NODATA else None
 
     # -----------------------------------------------------------------------
     # Transform the input data
-    mltb.transform(X=X, y=y,
-                   scaler=scaler, fselector=fselector, decomposer=decomposer,
-                   fscolumns=fscolumns, fsfile=args.ff)
+    Xt = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
+                             decomposer=decomposer, fscolumns=fscolumns,
+                             fsfile=args.ff)
 
     # -----------------------------------------------------------------------
     # Transform the training/target
@@ -295,28 +308,42 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Extract test samples
+    print('Extract test samples')
     if args.tvector and args.tcolumn:
-        traster = args.trast if args.traster else args.raster
         # extract_training(vector_file, column, csv_file, raster_file=None,
         #                  use_columns=None, delimiter=SEP, nodata=None,
         #                  dtype=np.uint32)
         testpath = os.path.join(args.odir, args.csvtest)
         if (not os.path.exists(testpath) or args.overwrite):
-            Xtest, ytest = mltb.extract_test(csv_file=testpath)
-            mltb.test(Xtest, ytest,)
-
+            print('    From:')
+            print('      - vector: %s' % mltb.tvector)
+            print('      - training column: %s' % mltb.tcolumn)
+            if mltb.use_columns:
+                print('      - use columns: %s' % mltb.use_columns)
+            if mltb.raster:
+                print('      - raster: %s' % mltb.traster)
+            Xtest, ytest = mltb.extract_test(csv_file=testpath,
+                                             nodata=args.nodata)
+            dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
+            np.savetxt(testpath, dt, delimiter=SEP,
+                       header="# last column is the training.")
         else:
-            dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
-            X, y = dt[:, :-1], dt[:, -1]
-        X = X.astype(float)
+            print('    Load from:')
+            print('      - %s' % trnpath)
+            dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
+            Xtest, ytest = dt[:, :-1], dt[:, -1]
+        Xtest = Xtest.astype(float)
+        print('Training sample shape:', Xtest.shape)
 
     # -----------------------------------------------------------------------
-    # test Models
-    respath = os.path.join(args.odir, args.csvresults)
+    # Cross Models
+    #import ipdb; ipdb.set_trace()
+    print('Cross-validation of the models')
+    crosspath = os.path.join(args.odir, args.csvcross)
     bpkpath = os.path.join(args.odir, args.best_pickle)
-    if (not os.path.exists(respath) or args.overwrite):
-        res = mltb.cross_validation(transform=transform)
-        np.savetxt(respath, res, delimiter=args.csvdelimiter, fmt='%s',
+    if (not os.path.exists(crosspath) or args.overwrite):
+        cross = mltb.cross_validation(X=X, y=y, transform=transform)
+        np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
                    header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
         mltb.find_best(models, strategy=args.best_strategy)
@@ -324,12 +351,40 @@ if __name__ == "__main__":
         with open(bpkpath, 'w') as bpkl:
             pkl.dump(best, bpkl)
     else:
+        print('    Read cross-validation results from file:')
+        print('      -  %s' % crosspath)
         with open(bpkpath, 'r') as bpkl:
             best = pkl.load(bpkl)
         order, models = mltb.find_best(models=best)
         best = mltb.select_best(best=models)
+    print('Best models:')
+    pprint(best)
+
+    # -----------------------------------------------------------------------
+    # test Models
+    if Xtest is not None and ytest is not None:
+        print('Test models with an indipendent dataset')
+        import ipdb; ipdb.set_trace()
+        testpath = os.path.join(args.odir, args.csvtest)
+        bpkpath = os.path.join(args.odir, args.test_pickle)
+        if (not os.path.exists(testpath) or args.overwrite):
+            test = mltb.test(Xterst=Xtest, ytest=ytest, X=X, y=y,
+                             transform=transform)
+            np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
+                       header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
+                                                      'min', 'std', 'time']))
+            mltb.find_best(models, strategy=args.best_strategy)
+            best = mltb.select_best()
+            with open(bpkpath, 'w') as bpkl:
+                pkl.dump(best, bpkl)
+        else:
+            with open(bpkpath, 'r') as bpkl:
+                best = pkl.load(bpkl)
+            order, models = mltb.find_best(models=best)
+            best = mltb.select_best(best=models)
 
     # -----------------------------------------------------------------------
     # execute Models and save the output raster map
     if args.execute:
+        print('Execute the model to the whole raster map.')
         mltb.execute(best=best, transform=transform, untransform=untransform)
