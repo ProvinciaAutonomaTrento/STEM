@@ -7,6 +7,7 @@ import os
 import time
 import tempfile
 import random
+from collections import namedtuple
 
 
 # to check the amount of free memory available for the analisys
@@ -26,10 +27,40 @@ from osgeo import ogr
 gdal.UseExceptions()
 
 SEP = ';'
+NODATA = -9999
+
+
+CVResult = namedtuple('CVResult',
+                      ['index', 'name', 'mean', 'max', 'min', 'std', 'time'])
 
 
 class WriteError(Exception):
     pass
+
+
+def cvbar(total, fill='#', empty='-', barsize=30,
+          fmt=("{index:03d}/{total:03d} {mean:.3f} {max:.3f} {min:.3f} "
+               "{std:.3f}, {time:.1f}s"),
+          _best=[CVResult(0, '', 0, 0, 0, 0, 0), ]):
+    total -= 1
+    ftotal = float(total)
+
+    def printinfo(i, cross):
+        rest = i / ftotal
+        ifill = int(rest * barsize)
+        bar = '[%s%s] %3d%%"' % (fill * ifill,
+                                 empty * (barsize - ifill),
+                                 int(rest * 100.))
+        best = _best[0]
+        if best.mean < cross.mean:
+            _best[0] = cross
+            best = cross
+        bst = '%s is the best so far (%03d): %.4f' % (best.name, best.index,
+                                                      best.mean)
+        info = fmt.format(total=total, **cross.__dict__)
+        print('\r\x1b[3A\n{bar}\n{best}\n{info}'.format(bar=bar, best=bst,
+                                                        info=info), end='')
+    return printinfo
 
 
 def read_raster(rast_file, nbands=1):
@@ -44,7 +75,7 @@ def read_raster(rast_file, nbands=1):
 
 
 def empty_rast(newrast_file, rast, format=None,
-               datatype=gdal.GDT_Int32, nodata=-9999):
+               datatype=gdal.GDT_Int32, nodata=NODATA):
     trns = rast.GetGeoTransform()
     driver = (rast.GetDriver() if format is None
               else gdal.GetDriverByName(format))
@@ -53,17 +84,18 @@ def empty_rast(newrast_file, rast, format=None,
                           1, datatype)
     nrast.SetGeoTransform(trns)
     band = nrast.GetRasterBand(1)
-    band.SetNoDataValue(nodata)
+    #import ipdb; ipdb.set_trace()
+    band.SetNoDataValue(float(nodata))
     band.Fill(nodata)
     return nrast
 
 
 def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
-              datatype=gdal.GDT_Int32, nodata=-9999):
+              datatype=gdal.GDT_Int32, nodata=NODATA):
     """Transform a vector file to a raster map"""
     vect = ogr.Open(vector_file)
     rast = empty_rast(rast_file, asrast, format=format,
-                      datatype=datatype, nodata=-nodata)
+                      datatype=datatype, nodata=nodata)
     gdal.RasterizeLayer(rast, [1], vect.GetLayer(), burn_values=[1],
                         options=["ATTRIBUTE=%s" % column, ])
     return rast
@@ -141,9 +173,7 @@ def get_cv(y, n_folds=5):
 def cross_val_model(model, X, y,
                     cv=None, n_folds=5, n_jobs=5,
                     scoring=None, score_func=None,
-                    verbose=0,
-                    fmt=("%03d %s mean: %.3f, max: %.3f, min: %.3f, "
-                         "std: %.3f, required: %.1fs")):
+                    verbose=0, ):
     cv = get_cv(y, n_folds) if cv is None else cv
 
     start = time.time()
@@ -153,9 +183,8 @@ def cross_val_model(model, X, y,
     scoretime = time.time() - start
     model['scores'] = scores
     model['score_time'] = scoretime
-    vals = (model['index'], model['name'], scores.mean(), scores.max(), scores.min(),
-            scores.std(), scoretime)
-    print(fmt % vals)
+    vals = CVResult(model['index'], model['name'], scores.mean(),
+                    scores.max(), scores.min(), scores.std(), scoretime)
     return vals
 
 
@@ -387,9 +416,11 @@ class MLToolBox(object):
         self.set_params(*args, **kwargs)
 
     def set_params(self, raster_file=None, vector_file=None, column=None,
-                   output_file='{0}', models=None,
-                   scoring=None, score_func=None,
+                   use_columns=None,
+                   output_file='{0}', models=None, training_csv=None,
+                   scoring=None, score_func=None, nodata=NODATA,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
+                   tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
                    transform=None, untransform=None):
         """Method to set class attributes, the attributes are:
@@ -435,16 +466,25 @@ class MLToolBox(object):
         untrasform : Set a function to remove the transformation before write
             the model result.
         """
+        self.X = None
+        self.y = None
         self.raster = raster_file
         self.vector = vector_file
         self.output = output_file
         self.column = column
+        self.use_columns = use_columns
+        self.training_csv = training_csv
         self.models = models
         self.scoring = scoring
         self.score_func = score_func
+        self.nodata = nodata
         self.n_folds = n_folds
         self.n_jobs = n_jobs
         self.n_best = n_best
+        self.tvector = tvector,
+        self.tcolumn = tcolumn,
+        self.traster = traster,
+        self.test_csv = test_csv,
         self.scaler = scaler
         self.fselector = fselector
         self.decomposer = decomposer
@@ -453,14 +493,15 @@ class MLToolBox(object):
 
     def get_params(self):
         keys = ('raster_file', 'vector_file', 'output_file', 'column',
-                'models', 'scoring', 'score_func', 'n_folds', 'n_jobs',
-                'n_best', 'scaler', 'fselector', 'decomposer',
+                'training_csv', 'models', 'scoring', 'score_func', 'nodata',
+                'n_folds', 'n_jobs', 'n_best', 'tvector', 'tcolumn', 'traster',
+                'test_csv', 'scaler', 'fselector', 'decomposer',
                 'transform', 'untransform')
         return {key: getattr(self, key) for key in keys}
 
     def extract_training(self, vector_file=None, column=None, use_columns=None,
-                         csv_file=None, raster_file=None, delimiter=SEP, nodata=None,
-                         dtype=np.uint32):
+                         csv_file=None, raster_file=None, delimiter=SEP,
+                         nodata=None, dtype=np.uint32):
         """Return the data and classes array for the training, and save them on
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
@@ -489,6 +530,7 @@ class MLToolBox(object):
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
         self.training_csv = self.training_csv if csv_file is None else csv_file
+        self.nodata = nodata
         self.X, self.y = extract_training(vector_file=self.vector,
                                           column=self.column,
                                           use_columns=self.use_columns,
@@ -501,12 +543,14 @@ class MLToolBox(object):
     def extract_test(self, vector_file=None, column=None, use_columns=None,
                      csv_file=None, raster_file=None, delimiter=SEP,
                      nodata=None, dtype=np.uint32):
-        self.traster = self.raster if raster_file is None else raster_file
-        self.tvector = self.vector if vector_file is None else vector_file
-        self.tcolumn = self.column if column is None else column
+        self.traster = ((self.traster if self.traster is None else self.raster)
+                        if raster_file is None else raster_file)
+        self.tvector = self.tvector if vector_file is None else vector_file
+        self.tcolumn = self.tcolumn if column is None else column
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
         self.test_csv = self.test_csv if csv_file is None else csv_file
+        self.nodata = nodata
         self.Xtest, self.ytest = extract_training(vector_file=self.vector,
                                                   column=self.column,
                                                   use_columns=self.use_columns,
@@ -517,9 +561,9 @@ class MLToolBox(object):
                                                   dtype=dtype)
         return self.Xtest, self.ytest
 
-    def transform(self, X=None, y=None,
-                  scaler=None, fselector=None,  decomposer=None, trans=None,
-                  fscolumns=None, fsfile=None):
+    def data_transform(self, X=None, y=None, scaler=None, fselector=None,
+                       decomposer=None, trans=None, fscolumns=None,
+                       fsfile=None):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
@@ -592,7 +636,8 @@ class MLToolBox(object):
     def cross_validation(self, models=None, X=None, y=None,
                          scoring=None, score_func=None,
                          n_folds=None, n_jobs=None, cv=None,
-                         transform=None):
+                         transform=None, verbose=True,
+                         fmt=None):
         """Return a numpy array with the scoring results for each model.
 
         Parameters
@@ -622,21 +667,26 @@ class MLToolBox(object):
         cv:
             Cross-Validation instance.
         """
-        X = self.X if X is None else X
         y = self.y if y is None else y
         self.transform = transform if transform is not None else self.transform
         y = y if self.transform is None else self.transform(y)
+        X = self.data_transform(X=self.X if X is None else X, y=y)
         self.scoring = self.scoring if scoring is None else scoring
         self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
-        self.cv = cv if cv else get_cv(self.y, n_folds=self.n_folds)
-        res = np.array([cross_val_model(mod, X, y, self.cv,
-                                        n_jobs=self.n_jobs,
-                                        scoring=self.scoring)
-                        for mod in self.models])
-        return res
+        self.cv = cv if cv else get_cv(y, n_folds=self.n_folds)
+        res = []
+        info = (cvbar(len(self.models), fill='#', empty='-', barsize=30)
+                if verbose else lambda x, y: '')
+
+        for i, mod in enumerate(self.models):
+            cross = cross_val_model(mod, X, y, self.cv, n_jobs=self.n_jobs,
+                                    scoring=self.scoring)
+            res.append(cross)
+            info(i, cross)
+        return np.array(res)
 
     def test(self, Xtest, ytest, models=None, X=None, y=None,
              scoring=None, score_func=None, transform=None):
