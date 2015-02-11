@@ -125,7 +125,10 @@ class STEMUtils:
             for i in range(form.count()):
                 item = form.model().item(i)
                 if item.checkState() == Qt.Checked:
-                    itemlist.append(str(i + 1))
+                    if index:
+                        itemlist.append(str(i + 1))
+                    else:
+                        itemlist.append(str(item.text()))
             if len(itemlist) == 0:
                 return STEMUtils.getNumSubset(inmap)
             return itemlist
@@ -186,7 +189,7 @@ class STEMUtils:
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
-    def addColumnsName(combo, checkCombo):
+    def addColumnsName(combo, checkCombo, multi=False):
         layerName = combo.currentText()
         cols = []
         if not layerName:
@@ -197,8 +200,16 @@ class STEMUtils:
             layer = STEMUtils.getLayer(layerName)
             data = layer.dataProvider()
             fields = data.fields()
-            [cols.append(i.name()) for i in fields]
-            checkCombo.addItems(cols)
+            if multi:
+                for i in range(len(fields)):
+                    model = checkCombo.model()
+                    name = fields[i].name()
+                    checkCombo.addItem(name)
+                    item = model.item(i)
+                    item.setCheckState(Qt.Unchecked)
+            else:
+                [cols.append(i.name()) for i in fields]
+                checkCombo.addItems(cols)
             return
 
     @staticmethod

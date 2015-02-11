@@ -35,50 +35,58 @@ toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
 TOOLS = {("0", "Pre-elaborazione immagini")
-                                        :[{("0","Filtro riduzione del rumore"):"image_filter",
-#                                        ("1","Correzione atmosferica"):"image_corratmo",
-                                        ("1","Segmentazione"):"image_segm",
-                                        ("2","Pansharpening"):"image_pansh",
-                                        ("3","Maschera"):"image_mask",
-                                        ("4","Accatastamento"):"image_multi",
-                                        ("5","Correzione atmosferica"):"image_atmo"}],
+                                        :[{
+                                        ("0", "Accatastamento"): "image_multi",
+                                        ("1", "Raster:Georeferenziatore"):"&Georef",
+                                        ("2","Raster:Proiezioni"):"&Ripro",
+                                        ("3","Raster:Miscellanea"):"&Union",
+                                        ("4","Correzione atmosferica"):"image_atmo",
+                                        ("5","Filtro riduzione del rumore"):"image_filter",
+                                        ("6","Segmentazione"):"image_segm",
+                                        ("7","Pansharpening"):"image_pansh",
+                                        ("8","Maschera"):"image_mask"
+                                        }],
         ("1","Pre-elaborazioni LIDAR")
-                                        :[{("0","Filtraggio file LAS"):"las_filter",
+                                        :[{
+                                        ("0","Filtraggio file LAS"):"las_filter",
                                         ("1","Unione file LAS"):"las_union",
                                         ("2","Ritaglio file LAS"):"las_clip",
-                                        ("3","Rasterizzazione file LAS"):"las_extract",
-                                        ("4","Estrazione CHM"):"las_removedtm" }],
-        ("2","Estrazione/selezione feature"
-        " per la classificazione")
-                                        :[{("0","Feature di tessitura"):"feat_texture",
-                                        ("1","Feature geometriche"):"feat_geometry",
-                                        ("2","Indici di vegetazione"):"feat_vege",
-                                        ("3","Selezione feature"):"feat_select",
-                                        ("4","Delimitazione chiome"):"feat_delin"}],
-        ("3","Classificazione supervisionata")
+                                        ("3","Estrazione CHM"):"las_removedtm"
+                                        }],
+        ("2","Estrazione feature")
+                                        :[{
+                                        ("0","Delimitazione chiome"):"feat_delin",
+                                        ("1","Feature di tessitura"):"feat_texture",
+                                        ("2","Feature geometriche"):"feat_geometry",
+                                        ("3","Indici di vegetazione"):"feat_vege",
+                                        ("4","Rasterizzazione file LAS"):"las_extract",
+                                        ("5","Estrazione feature LiDAR da poligoni"): "las_feat"
+                                        }],
+        ("3","Selezione feature/varibili")
+                                        :[{
+                                        ("0","Selezione feature per classificazione"):"feat_select",
+                                        ("1","Selezione variabili per la stima"):"stim_selvar",
+                                        }],
+        ("4","Classificazione supervisionata")
                                         :[{("0","Support Vector Machines"):"class_svm",
                                         ("1","Minima distanza"):"class_mindist",
                                         ("2","Massima Verosimiglianza"):"class_maxvero",
                                         ("3","Spectral Angle Mapper"):"class_sap"}],
-        ("4","Post-classificazione")
+        ("5","Post-classificazione")
                                         :[{("0","Attribuzione/modifica classi tematiche"):"clas_mod",
                                         ("1","Filtro maggioranza"):"error_reduction"}],
-#        ("5","Estrazione feature dalle chiome")
-#                                        :[{("0","Delineazione chiome"):"feat_delin",
-#                                        ("1","Estrazione feature"):"" }],
-        ("5","Stima di parametri")
-                                        :[{("0","Selezione variabili"):"stim_selvar",
+        ("6","Stima di parametri")
+                                        :[{
                                         ("1","Stimatore lineare"):"stim_linear",
-                                        ("2","Support Vector Regression"):"stim_svr"}],
-        ("6","Post-elaborazione stima")
+                                        ("2","Support Vector Regression"):"stim_svr"
+                                        }],
+        ("7","Post-elaborazione stima")
                                         :[{("0","Aggregazione ad aree"):"post_aggraree",
                                         ("1","Metriche di accuratezza"):"post_accu",
                                         ("2","K-fold cross validation"):"post_kfold",
                                         ("3","Statistiche"):"post_stats"}],
-        ("7","Struttura bosco")
-                                        :[{("0","Struttura bosco"):"bosco"}],
-        ("8","QGIS Tool")
-                                        :[{("0","Raster:Georeferenziatore"):"&Georef"}]
+        ("8","Struttura bosco")
+                                        :[{("0","Struttura bosco"):"bosco"}]
 }
 
 class STEMToolbox(QDockWidget, toolboxDockWidget):
@@ -108,7 +116,8 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             elif toolName.split(":")[0] in ["Vector", "Vettore"]:
                 items = iface.vectorMenu()
             for firstact in items.actions():
-                if firstact.text().find("&" + toolName.split(":")[1][:6]) != -1:
+                print firstact.text(), toolName.split(":")[1][:6]
+                if firstact.text().find(toolName.split(":")[1][:6]) != -1:
                     secondact = firstact
                     for act in secondact.menu().actions():
                         if act.text().find(module[1:]) != -1:
