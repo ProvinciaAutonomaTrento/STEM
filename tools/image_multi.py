@@ -57,6 +57,8 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        if not self.overwrite:
+            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         items = []
         for index in xrange(self.BaseInput.count()):
             items.append(self.BaseInput.item(index))
@@ -66,7 +68,13 @@ class STEMToolsDialog(BaseDialog):
         if cut:
                 items = cut
                 labels = cutsource
-        cgdal = convertGDAL(labels, self.TextOut.text(), outformat)
+        if self.overwrite:
+            out = self.TextOut.text() + '.tmp'
+        else:
+            out = self.TextOut.text()
+        cgdal = convertGDAL(labels, out, outformat)
         cgdal.write()
+        if self.overwrite:
+            STEMUtils.renameRast(out, self.TextOut.text())
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
