@@ -31,70 +31,68 @@ from PyQt4 import uic
 from qgis.utils import iface
 import os
 
-toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'toolbox.ui'))[0]
+toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                'ui', 'toolbox.ui'))[0]
 
 ##      {("order","groupItem")          :[{("order","toolName"):"module"}]}
-TOOLS = {("0", "Pre-elaborazione immagini")
-                                        :[{
-                                        ("0", "Accatastamento"): "image_multi",
-                                        ("1", "Raster:Georeferenziatore"):"&Georef",
-                                        ("2","Raster:Proiezioni"):"&Ripro",
-                                        ("3","Raster:Miscellanea"):"&Union",
-                                        ("4","Correzione atmosferica"):"image_atmo",
-                                        ("5","Filtro riduzione del rumore"):"image_filter",
-                                        ("6","Segmentazione"):"image_segm",
-                                        ("7","Pansharpening"):"image_pansh",
-                                        ("8","Maschera"):"image_mask"
-                                        }],
-        ("1","Pre-elaborazioni LIDAR")
-                                        :[{
-                                        ("0","Filtraggio file LAS"):"las_filter",
-                                        ("1","Unione file LAS"):"las_union",
-                                        ("2","Ritaglio file LAS"):"las_clip",
-                                        ("3","Estrazione CHM"):"las_removedtm"
-                                        }],
-        ("2","Estrazione feature")
-                                        :[{
-                                        ("0","Delimitazione chiome"):"feat_delin",
-                                        ("1","Feature di tessitura"):"feat_texture",
-                                        ("2","Feature geometriche"):"feat_geometry",
-                                        ("3","Indici di vegetazione"):"feat_vege",
-                                        ("4","Rasterizzazione file LAS"):"las_extract",
-                                        ("5","Estrazione feature LiDAR da poligoni"): "las_feat"
-                                        }],
-        ("3","Selezione feature/varibili")
-                                        :[{
-                                        ("0","Selezione feature per classificazione"):"feat_select",
-                                        ("1","Selezione variabili per la stima"):"stim_selvar",
-                                        }],
-        ("4","Classificazione supervisionata")
-                                        :[{("0","Support Vector Machines"):"class_svm",
-                                        ("1","Minima distanza"):"class_mindist",
-                                        ("2","Massima Verosimiglianza"):"class_maxvero",
-                                        ("3","Spectral Angle Mapper"):"class_sap"}],
-        ("5","Post-classificazione")
-                                        :[{("0","Attribuzione/modifica classi tematiche"):"clas_mod",
-                                        ("1","Filtro maggioranza"):"error_reduction"}],
-        ("6","Stima di parametri")
-                                        :[{
-                                        ("1","Stimatore lineare"):"stim_linear",
-                                        ("2","Support Vector Regression"):"stim_svr"
-                                        }],
-        ("7","Post-elaborazione stima")
-                                        :[{("0","Aggregazione ad aree"):"post_aggraree",
-                                        ("1","Metriche di accuratezza"):"post_accu",
-                                        ("2","K-fold cross validation"):"post_kfold",
-                                        ("3","Statistiche"):"post_stats"}],
-        ("8","Struttura bosco")
-                                        :[{("0","Struttura bosco"):"bosco"}]
-}
+TOOLS = {("0", "Pre-elaborazione immagini"): [{
+                                              ("0", "Maschera"): "image_mask",
+                                              ("1", "Accatastamento"): "image_multi",
+                                              ("2", "Raster:Georeferenziatore"): "&Georef",
+                                              ("3", "Raster:Proiezioni"): "&Ripro",
+                                              ("4", "Raster:Miscellanea"): "&Union",
+                                              ("5", "Correzione atmosferica"): "image_atmo",
+                                              ("6", "Filtro riduzione del rumore"): "image_filter",
+                                              ("7", "Segmentazione"): "image_segm",
+                                              ("8", "Pansharpening"): "image_pansh"
+                                              }],
+         ("1", "Pre-elaborazioni LIDAR"): [{
+                                           ("0", "Filtraggio file LAS"): "las_filter",
+                                           ("1", "Unione file LAS"): "las_union",
+                                           ("2", "Ritaglio file LAS"): "las_clip",
+                                           ("3", "Estrazione CHM"): "las_removedtm"
+                                           }],
+         ("2", "Estrazione feature"): [{
+                                       ("0", "Delimitazione chiome"): "feat_delin",
+                                       ("1", "Feature di tessitura"): "feat_texture",
+                                       ("2", "Feature geometriche"): "feat_geometry",
+                                       ("3", "Indici di vegetazione"): "feat_vege",
+                                       ("4", "Rasterizzazione file LAS"): "las_extract",
+                                       ("5", "Estrazione feature LiDAR da poligoni"): "las_feat"
+                                       }],
+         ("3", "Selezione feature/varibili"): [{
+                                               ("0", "Selezione feature per classificazione"): "feat_select",
+                                               ("1", "Selezione variabili per la stima"): "stim_selvar",
+                                               }],
+         ("4", "Classificazione supervisionata"): [{
+                                                   ("0", "Support Vector Machines"): "class_svm",
+                                                   ("1", "Minima distanza"): "class_mindist",
+                                                   ("2", "Massima Verosimiglianza"): "class_maxvero",
+                                                   ("3", "Spectral Angle Mapper"): "class_sap"
+                                                   }],
+         ("5", "Post-classificazione"): [{
+                                         ("0", "Attribuzione/modifica classi tematiche"): "clas_mod",
+                                         ("1", "Filtro maggioranza"): "error_reduction"
+                                         }],
+         ("6", "Stima di parametri"): [{
+                                       ("1", "Stimatore lineare"): "stim_linear",
+                                       ("2", "Support Vector Regression"): "stim_svr"
+                                       }],
+         ("7", "Post-elaborazione stima"): [{
+                                            ("0", "Aggregazione ad aree"): "post_aggraree",
+                                            ("1", "Metriche di accuratezza"): "post_accu",
+                                            ("2", "K-fold cross validation"): "post_kfold",
+                                            ("3", "Statistiche"): "post_stats"
+                                            }],
+         ("8", "Struttura bosco"): [{("0", "Struttura bosco"): "bosco"}]
+         }
+
 
 class STEMToolbox(QDockWidget, toolboxDockWidget):
     def __init__(self):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-
         #self.fill_widget(self.toolTree, TOOLS)
         self.toolTree.setColumnCount(3)
         self.toolTree.setColumnHidden(1, True)
@@ -139,7 +137,8 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             groupItem.setText(0, gr[1])
             groupItem.setText(1, gr[0])
             groupItem.setToolTip(0, gr[1])
-            iconGroupItem = QIcon(os.path.dirname(__file__) + '/images/rootItemTool.svg')
+            iconGroupItem = QIcon(os.path.join(os.path.dirname(__file__),
+                                               'images', 'rootItemTool.svg'))
             groupItem.setIcon(0, iconGroupItem)
             for tool, module in modToolList[0].iteritems():
                 if module.startswith("&"):
@@ -153,19 +152,23 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             self.toolTree.addTopLevelItem(groupItem)
             self.toolTree.sortItems(1, Qt.AscendingOrder)
 
+
 class TreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
-        iconToolItem = QIcon(os.path.dirname(__file__) + '/images/itemTool.svg')
+        iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
+                                          'images', 'itemTool.svg'))
         self.setIcon(0, iconToolItem)
         self.setToolTip(0, toolName[1])
         self.setText(0, toolName[1])
         self.setText(1, toolName[0])
 
+
 class QGISTreeToolItem(QTreeWidgetItem):
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
-        iconToolItem = QIcon(os.path.dirname(__file__) + '/images/qgis.png')
+        iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
+                                          'images', 'qgis.png'))
         self.setIcon(0, iconToolItem)
         self.setToolTip(0, toolName[1].split(":")[1])
         self.setText(0, toolName[1].split(":")[1])

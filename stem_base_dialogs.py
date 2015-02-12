@@ -35,7 +35,7 @@ import tempfile
 import codecs
 import platform
 from functools import partial
-
+from types import StringType, UnicodeType
 from stem_utils import (STEMMessageHandler,
                         STEMSettings)
 
@@ -729,15 +729,27 @@ class SettingsDialog(QDialog, settingsDialog):
                      partial(self.BrowseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
+    def _check(self, string):
+        if isinstance(string, UnicodeType) or isinstance(string, StringType):
+            return string
+        else:
+            return str("")
+
     def _onLoad(self):
         """Load the parameters from the settings"""
-        self.lineEdit_grass.setText(STEMSettings.value("grasspath", ""))
-        self.lineEdit_grassdata.setText(STEMSettings.value("grassdata", ""))
-        self.lineEdit_grasslocation.setText(STEMSettings.value("grasslocation", ""))
-        self.lineEdit_liblas.setText(STEMSettings.value("liblaspath", ""))
-        self.lineEdit_gdal.setText(STEMSettings.value("gdalpath", ""))
-        self.lineEdit_pdal.setText(STEMSettings.value("pdalpath", ""))
-        self.epsg.setText(STEMSettings.value("epsgcode", ""))
+        self.lineEdit_grass.setText(self._check(STEMSettings.value("grasspath",
+                                                                   "")))
+        self.lineEdit_grassdata.setText(self._check(STEMSettings.value("grassdata",
+                                                                       "")))
+        self.lineEdit_grasslocation.setText(self._check(STEMSettings.value("grasslocation",
+                                                                           "")))
+        self.lineEdit_liblas.setText(self._check(STEMSettings.value("liblaspath",
+                                                                    "")))
+        self.lineEdit_gdal.setText(self._check(STEMSettings.value("gdalpath",
+                                                                  "")))
+        self.lineEdit_pdal.setText(self._check(STEMSettings.value("pdalpath",
+                                                                  "")))
+        self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
         if sys.platform != 'win32':
             self.pushButton_proj.setEnabled(False)
             self.lineEdit_proj.setEnabled(False)
