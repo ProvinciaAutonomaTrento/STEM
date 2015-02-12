@@ -79,7 +79,15 @@ class stemGRASS():
             raise Exception("Errore eseguendo GRASS: Vanno settate tutte le "
                             "variabili necessarie: GRASSDATA, LOCATION ed "
                             "eseguibile")
-        gisbase = out.strip()
+        if sys.platform.startswith('linux'):
+            gisbase = out.strip('\n')
+        elif sys.platform.startswith('win'):
+            if out.find("OSGEO4W home is") != -1:
+                gisbase = out.strip().split('\n')[1]
+            else:
+                gisbase = out.strip('\n')
+            os.environ['GRASS_SH'] = os.path.join(gisbase, 'msys', 'bin',
+                                                  'sh.exe')
         # Set GISBASE environment variable
         os.environ['GISBASE'] = gisbase
         # define GRASS-Python environment
@@ -99,8 +107,13 @@ class stemGRASS():
             if not epsg:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Manca il codice EPSG nelle impostazioni")
-            import grass.script.core as gcore
-            gcore.create_location(grassdatabase, location, epsg=epsg)
+            startcmd = grassbin + ' -c epsg:' + epsg + ' -e ' + locexist
+            p = subprocess.Popen(startcmd, shell=True,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = p.communicate()
+            if p.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: ",
+                                "Creazione della location fallita")
 
         self.mapsetpath = os.path.join(grassdatabase, location, self.mapset)
         if not os.path.exists(self.mapsetpath):
@@ -108,6 +121,18 @@ class stemGRASS():
         wind = readfile(os.path.join(grassdatabase, location, "PERMANENT",
                                      "DEFAULT_WIND"))
         writefile(os.path.join(self.mapsetpath, "WIND"), wind)
+
+        path = os.getenv('LD_LIBRARY_PATH')
+        dirlib = os.path.join(gisbase, 'lib')
+        if path:
+            path = dirlib + os.pathsep + path
+        else:
+            path = dirlib
+        os.environ['LD_LIBRARY_PATH'] = path
+
+        # language
+        os.environ['LANG'] = 'en_US'
+        os.environ['LOCALE'] = 'C'
         ###########
         # launch session
         gsetup.init(gisbase, grassdatabase, location, self.mapset)
