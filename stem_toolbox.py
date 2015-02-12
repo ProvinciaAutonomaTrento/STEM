@@ -38,9 +38,9 @@ toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(
 TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                               ("0", "Maschera"): "image_mask",
                                               ("1", "Accatastamento"): "image_multi",
-                                              ("2", "Raster:Georeferenziatore"): "&Georef",
-                                              ("3", "Raster:Proiezioni"): "&Ripro",
-                                              ("4", "Raster:Miscellanea"): "&Union",
+                                              ("2", "Raster:Georeferenziatore:Georeferenziatore"): "&Georef",
+                                              ("3", "Raster:Proiezioni:Riproiezione"): "&Ripro",
+                                              ("4", "Raster:Miscellanea:Unione"): "&Union",
                                               ("5", "Correzione atmosferica"): "image_atmo",
                                               ("6", "Filtro riduzione del rumore"): "image_filter",
                                               ("7", "Segmentazione"): "image_segm",
@@ -94,9 +94,10 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         #self.fill_widget(self.toolTree, TOOLS)
-        self.toolTree.setColumnCount(3)
+        self.toolTree.setColumnCount(4)
         self.toolTree.setColumnHidden(1, True)
         self.toolTree.setColumnHidden(2, True)
+        self.toolTree.setColumnHidden(3, True)
         self.toolTree.setAlternatingRowColors(True)
 
         self.populateTree()
@@ -105,7 +106,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
     def executeTool(self):
         item = self.toolTree.currentItem()
         if isinstance(item, QGISTreeToolItem):
-            toolName = ':'.join([item.text(2), item.text(0)])
+            toolName = ':'.join([item.text(2), item.text(3), item.text(0)])
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
                                                        toolName)]
@@ -170,7 +171,9 @@ class QGISTreeToolItem(QTreeWidgetItem):
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
                                           'images', 'qgis.png'))
         self.setIcon(0, iconToolItem)
-        self.setToolTip(0, toolName[1].split(":")[1])
-        self.setText(0, toolName[1].split(":")[1])
+        print toolName
+        self.setToolTip(0, toolName[1].split(":")[2])
+        self.setText(0, toolName[1].split(":")[2])
         self.setText(1, toolName[0])
         self.setText(2, toolName[1].split(":")[0])
+        self.setText(3, toolName[1].split(":")[1])
