@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    gdal_functions.py
+    gdal_stem.py
     ---------------------
     Date                 : August 2014
     Copyright            : (C) 2014 Luca Delucchi

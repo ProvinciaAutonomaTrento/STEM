@@ -237,6 +237,15 @@ class STEMUtils:
         return False
 
     @staticmethod
+    def renameRast(tmp, out):
+        os.rename(tmp, out)
+        try:
+            os.rename('{name}.aux.xml'.format(name=tmp),
+                      '{name}.aux.xml'.format(name=out))
+        except:
+            pass
+
+    @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
         if typ == 'vector' and overwrite:
             import shutil
@@ -271,12 +280,7 @@ class STEMUtils:
             except:
                 pass
             if overwrite:
-                os.rename(tmp, output)
-                try:
-                    os.rename('{name}.aux.xml'.format(name=tmp),
-                              '{name}.aux.xml'.format(name=output))
-                except:
-                    pass
+                renameRast(tmp, output)
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,

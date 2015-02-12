@@ -30,7 +30,7 @@ from qgis.gui import *
 import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from gdal_functions import infoOGR
+from gdal_stem import infoOGR
 
 
 class STEMToolsDialog(BaseDialog):
