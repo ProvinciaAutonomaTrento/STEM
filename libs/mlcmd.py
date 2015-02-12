@@ -180,6 +180,11 @@ def get_parser():
                         dest='tcolumn',
                         help='Column name with the values/classes'
                              ' used as training')
+    parser.add_argument('-tp', '--test-pickle',
+                        default='test_model.pickle',
+                        dest='test_pickle', type=str,
+                        help='All the test models results saved and serialized '
+                             'using python pickle.')
     parser.add_argument('-tf', '--csv-test', type=str, dest='csvtest',
                         default='test.csv',
                         help='Name of the CSV file with the test values'
@@ -237,7 +242,7 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Extract training samples
-    print('Extract training samples')
+    print('\nExtract training samples')
     trnpath = os.path.join(args.odir, args.csvtraining)
     if (not os.path.exists(trnpath) or args.overwrite):
         print('    From:')
@@ -255,7 +260,7 @@ if __name__ == "__main__":
         dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
         X, y = dt[:, :-1], dt[:, -1]
     X = X.astype(float)
-    print('Training sample shape:', X.shape)
+    print('\nTraining sample shape:', X.shape)
 
     fselect = {
            # Sequential Forward Floating Feature Selection
@@ -308,7 +313,7 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Extract test samples
-    print('Extract test samples')
+    print('\nExtract test samples')
     if args.tvector and args.tcolumn:
         # extract_training(vector_file, column, csv_file, raster_file=None,
         #                  use_columns=None, delimiter=SEP, nodata=None,
@@ -338,7 +343,7 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------
     # Cross Models
     #import ipdb; ipdb.set_trace()
-    print('Cross-validation of the models')
+    print('\nCross-validation of the models')
     crosspath = os.path.join(args.odir, args.csvcross)
     bpkpath = os.path.join(args.odir, args.best_pickle)
     if (not os.path.exists(crosspath) or args.overwrite):
@@ -346,7 +351,7 @@ if __name__ == "__main__":
         np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
                    header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
-        mltb.find_best(models, strategy=args.best_strategy)
+        mltb.find_best(models)
         best = mltb.select_best()
         with open(bpkpath, 'w') as bpkl:
             pkl.dump(best, bpkl)
@@ -357,34 +362,36 @@ if __name__ == "__main__":
             best = pkl.load(bpkl)
         order, models = mltb.find_best(models=best)
         best = mltb.select_best(best=models)
-    print('Best models:')
+    print('\nBest models:')
     pprint(best)
 
     # -----------------------------------------------------------------------
     # test Models
     if Xtest is not None and ytest is not None:
-        print('Test models with an indipendent dataset')
-        import ipdb; ipdb.set_trace()
+        print('\nTest models with an indipendent dataset')
         testpath = os.path.join(args.odir, args.csvtest)
         bpkpath = os.path.join(args.odir, args.test_pickle)
         if (not os.path.exists(testpath) or args.overwrite):
-            test = mltb.test(Xterst=Xtest, ytest=ytest, X=X, y=y,
+            test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                              transform=transform)
-            np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
-                       header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
-                                                      'min', 'std', 'time']))
-            mltb.find_best(models, strategy=args.best_strategy)
+            np.savetxt(testpath, test, delimiter=args.csvdelimiter, fmt='%s',
+                       header=args.csvdelimiter.join(test[0].__dict__.keys()))
+            mltb.find_best(models, strategy=lambda x: x, key='score_test')
             best = mltb.select_best()
             with open(bpkpath, 'w') as bpkl:
                 pkl.dump(best, bpkl)
         else:
             with open(bpkpath, 'r') as bpkl:
                 best = pkl.load(bpkl)
-            order, models = mltb.find_best(models=best)
+            order, models = mltb.find_best(models=best, strategy=lambda x: x, key='score_test')
             best = mltb.select_best(best=models)
+        print('Best models:')
+        pprint(best)
 
     # -----------------------------------------------------------------------
     # execute Models and save the output raster map
     if args.execute:
-        print('Execute the model to the whole raster map.')
+        print('\Execute the model to the whole raster map.')
         mltb.execute(best=best, transform=transform, untransform=untransform)
+
+    print('Finished!')
