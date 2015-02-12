@@ -36,6 +36,7 @@ NODATA = -9999
 
 CVResult = namedtuple('CVResult',
                       ['index', 'name', 'mean', 'max', 'min', 'std', 'time'])
+TestResult = namedtuple('TestResult', ['index', 'name', 'score', ])
 
 
 class WriteError(Exception):
@@ -198,10 +199,10 @@ def test_model(model, Xtraining, ytraining, Xtest, ytest,
     model['mod'].fit(Xtraining, ytraining)
     scorer = check_scoring(model['mod'], score_func=score_func, scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
-    return model['score_test']
+    return TestResult(model['index'], model['name'], model['score_test'])
 
 
-def find_best(models, strategy=np.mean):
+def find_best(models, strategy=np.mean, key='scores'):
     """Return a tuple with the order of the best model and a dictionary with
     the models parameters.
 
@@ -213,7 +214,7 @@ def find_best(models, strategy=np.mean):
     mods = {m.__name__: 0. for m in set(model['model'] for model in models)}
     best = {}
     for m in models:
-        val = strategy(m['scores'])
+        val = strategy(m[key])
         mkey = m['model'].__name__
         if mods[mkey] < val:
             mods[mkey] = val
@@ -485,6 +486,7 @@ class MLToolBox(object):
         self.n_folds = n_folds
         self.n_jobs = n_jobs
         self.n_best = n_best
+        self.best_strategy = best_strategy
         self.tvector = tvector,
         self.tcolumn = tcolumn,
         self.traster = traster,
@@ -684,7 +686,7 @@ class MLToolBox(object):
         res = []
         info = (cvbar(len(self.models), fill='#', empty='-', barsize=30)
                 if verbose else lambda x, y: '')
-
+        print('\n' * 3)
         for i, mod in enumerate(self.models):
             cross = cross_val_model(mod, X, y, self.cv, n_jobs=self.n_jobs,
                                     scoring=self.scoring)
@@ -707,7 +709,7 @@ class MLToolBox(object):
                            scoring=self.scoring, score_func=self.score_func)
                 for model in self.models]
 
-    def select_best(self, n_best=1, best=None, order=None):
+    def select_best(self, n_best=None, best=None, order=None):
         """Return a dictionary with ``{key: model}``, for only the best
         N models.
         """
@@ -718,12 +720,15 @@ class MLToolBox(object):
                      if n_best > 0 or n_best < len(order) else order)]
         return [self.best[b] for b in best_mods]
 
-    def find_best(self, models=None, strategy=np.mean):
+    def find_best(self, models=None, strategy=None, key='scores'):
         """Return a list of tuple ``(score, key)`` and a dictionary
         with ``{key: model}``.
         """
         self.models = self.models if models is None else models
-        self.order, self.best = find_best(models, strategy=strategy)
+        self.best_strategy = (self.best_strategy if strategy is None
+                              else strategy)
+        self.order, self.best = find_best(models, strategy=self.best_strategy,
+                                          key=key)
         return self.order, self.best
 
     def execute(self, raster_file=None, output_file=None,
