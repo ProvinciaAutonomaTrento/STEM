@@ -106,6 +106,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
     def executeTool(self):
         item = self.toolTree.currentItem()
         if isinstance(item, QGISTreeToolItem):
+            menuTitle = []
             toolName = ':'.join([item.text(2), item.text(3), item.text(0)])
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
@@ -115,12 +116,19 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             elif toolName.split(":")[0] in ["Vector", "Vettore"]:
                 items = iface.vectorMenu()
             for firstact in items.actions():
-                print firstact.text(), toolName.split(":")[1][:6]
+                menuTitle.append(firstact.text())
                 if firstact.text().find(toolName.split(":")[1][:6]) != -1:
                     secondact = firstact
                     for act in secondact.menu().actions():
                         if act.text().find(module[1:]) != -1:
                             act.trigger()
+
+            # check if plugin is active otherwise popup plugin manager dialog
+            match = [s for s in menuTitle if toolName.split(":")[1][:6] in s]
+            if not match:
+                plIface = iface.pluginManagerInterface()
+                plIface.pushMessage("E' necessario attivare il plugin prima!", 1, 10)
+                iface.actionManagePlugins().trigger()
 
         if isinstance(item, TreeToolItem):
             toolName = item.text(0)
@@ -170,7 +178,7 @@ class QGISTreeToolItem(QTreeWidgetItem):
         QTreeWidgetItem.__init__(self)
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
                                           'images', 'qgis.png'))
-        self.setIcon(0, iconToolItem)e
+        self.setIcon(0, iconToolItem)
         self.setToolTip(0, toolName[1].split(":")[2])
         self.setText(0, toolName[1].split(":")[2])
         self.setText(1, toolName[0])
