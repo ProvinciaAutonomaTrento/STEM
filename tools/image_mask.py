@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 from qgis.core import *
 from qgis.gui import *
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMSettings
+from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
 
 
 class STEMToolsDialog(BaseDialog):
@@ -65,7 +65,9 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         if self.AddLayerToCanvas.isChecked():
             STEMSettings.setValue("mask", "")
+            STEMMessageHandler.success("Maschera rimossa correttamente")
         else:
             name = str(self.BaseInput.currentText())
-            source = self.getLayersSource(name)
+            source = STEMUtils.getLayersSource(name)
             STEMSettings.setValue("mask", source)
+            STEMMessageHandler.success("Maschera impostata correttamente")
