@@ -18,7 +18,11 @@ import numpy as np
 
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score, LeaveOneOut
-from sklearn.cross_validation import check_scoring
+
+try:
+    from sklearn.cross_validation import check_scoring
+except ImportError:
+    from scorer import check_scoring
 
 # import greographical libraries
 from osgeo import gdal
