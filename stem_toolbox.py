@@ -93,7 +93,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        #self.fill_widget(self.toolTree, TOOLS)
+
         self.toolTree.setColumnCount(4)
         self.toolTree.setColumnHidden(1, True)
         self.toolTree.setColumnHidden(2, True)
@@ -170,8 +170,7 @@ class QGISTreeToolItem(QTreeWidgetItem):
         QTreeWidgetItem.__init__(self)
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
                                           'images', 'qgis.png'))
-        self.setIcon(0, iconToolItem)
-        print toolName
+        self.setIcon(0, iconToolItem)e
         self.setToolTip(0, toolName[1].split(":")[2])
         self.setText(0, toolName[1].split(":")[2])
         self.setText(1, toolName[0])
