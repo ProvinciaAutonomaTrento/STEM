@@ -36,8 +36,7 @@ import codecs
 import platform
 from functools import partial
 from types import StringType, UnicodeType
-from stem_utils import (STEMMessageHandler,
-                        STEMSettings)
+from stem_utils import STEMMessageHandler, STEMSettings
 
 MSG_BOX_TITLE = "STEM Plugin"
 
