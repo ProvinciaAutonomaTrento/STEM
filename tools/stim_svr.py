@@ -41,7 +41,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput(label='Dati di input vettoriale')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
-        self.labelcol = "Seleziona la colonna con indicazione della classe"
+        self.labelcol = "Seleziona la colonna con indicazione del parametro da stimare"
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
@@ -56,29 +56,41 @@ class STEMToolsDialog(BaseDialog):
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
-        kernels = ['nessuna', 'logaritmo', 'radice quadrata']
+        self._insertThirdLineEdit(label="Inserire il numero di fold della "
+                                  "cross validation", posnum=0)
+
+        kernels = ['RBF', 'lineare', 'polinomiale', 'sigmoidale']
+
+        self.lk = 'Selezionare il kernel da utilizzare'
+        self._insertFirstCombobox(self.lk, 1, kernels)
+        self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
+        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
+        self._insertSecondLineEdit(label="Inserire il valore di gamma",
+                                   posnum=3)
+
+        trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
         self.lk = 'Selezionare la trasformazione'
-        self._insertFirstCombobox(self.lk, 0, kernels)
+        self._insertFirstCombobox(self.lk, 4, trasf)
 
         mets = ['no', 'manuale', 'file']
-        self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 3)
+        self.lm = "Selezione variabili"
+        self._insertMethod(mets, self.lm, 5)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 4)
+        self._insertFileInputOption(self.lio, 6)
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(5, label="Vettoriale di validazione")
+        self._insertSingleInputOption(7, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 6)
+        self._insertSecondCombobox(label, 8)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
