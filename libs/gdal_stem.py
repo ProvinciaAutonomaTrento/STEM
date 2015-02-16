@@ -70,8 +70,9 @@ class convertGDAL:
             raise IOError('Format driver %s not found, pick a supported '
                           'driver.' % outformat)
         self._checkPara()
+        outbands = self._checkOutputBands()
         self.output = self.driver.Create(output, self.xsize, self.ysize,
-                                         len(self.in_names), self.bandtype)
+                                         outbands, self.bandtype)
         self.output.SetProjection(self.proj)
         self.output.SetGeoTransform(self.geotrasf)
 
@@ -98,10 +99,23 @@ class convertGDAL:
         self.geotrasf = self.file_infos[0].geotransform
         self.bandtype = self.file_infos[0].band_type
 
+    def _checkOutputBands(self):
+        output = 0
+        for fi in self.file_infos:
+            output += fi.bands
+        return output
+
     def write(self):
+        targetband = 0
         for f in range(len(self.file_infos)):
             fi = self.file_infos[f]
-            fi.copy_into(self.output, f + 1)
+            if fi.bands > 1:
+                for b in range(fi.bands):
+                    targetband += 1
+                    fi.copy_into(self.output, targetband, b + 1)
+            else:
+                targetband += 1
+                fi.copy_into(self.output, targetband)
         self.output = None
 
 
@@ -173,27 +187,26 @@ class file_info:
 
     def init_from_name(self, filename):
         """Initialize file_info from filename"""
-        fh = gdal.Open(filename)
-        if fh is None:
+        self.s_fh = gdal.Open(filename)
+        if self.s_fh is None:
             return 0
 
-        self.filename = filename
-        self.bands = fh.RasterCount
-        self.xsize = fh.RasterXSize
-        self.ysize = fh.RasterYSize
-        self.band = fh.GetRasterBand(1)
-        self.band_type = fh.GetRasterBand(1).DataType
-        self.block_size = fh.GetRasterBand(1).GetBlockSize()
-        self.projection = fh.GetProjection()
-        self.geotransform = fh.GetGeoTransform()
+        self.bands = self.s_fh.RasterCount
+        self.xsize = self.s_fh.RasterXSize
+        self.ysize = self.s_fh.RasterYSize
+        self.band = self.s_fh.GetRasterBand(1)
+        self.band_type = self.s_fh.GetRasterBand(1).DataType
+        self.block_size = self.s_fh.GetRasterBand(1).GetBlockSize()
+        self.projection = self.s_fh.GetProjection()
+        self.geotransform = self.s_fh.GetGeoTransform()
         self.ulx = self.geotransform[0]
         self.uly = self.geotransform[3]
         self.lrx = self.ulx + self.geotransform[1] * self.xsize
         self.lry = self.uly + self.geotransform[5] * self.ysize
 
-        meta = fh.GetMetadata()
-        if '_FillValue' in meta.keys():
-            self.fill_value = meta['_FillValue']
+        self.meta = self.s_fh.GetMetadata()
+        if '_FillValue' in self.meta.keys():
+            self.fill_value = self.meta['_FillValue']
         else:
             self.fill_value = None
 
@@ -270,11 +283,8 @@ class file_info:
         if sw_xsize < 1 or sw_ysize < 1:
             return 1
 
-        # Open the source file, and copy the selected region.
-        s_fh = gdal.Open(self.filename)
-
         return \
-            raster_copy(s_fh, sw_xoff, sw_yoff, sw_xsize, sw_ysize, s_band,
-                        t_fh, tw_xoff, tw_yoff, tw_xsize, tw_ysize, t_band,
-                        nodata_arg)
-        s_fh = None
+            raster_copy(self.s_fh, sw_xoff, sw_yoff, sw_xsize, sw_ysize,
+                        s_band, t_fh, tw_xoff, tw_yoff, tw_xsize, tw_ysize,
+                        t_band, nodata_arg)
+        self.s_fh = None
