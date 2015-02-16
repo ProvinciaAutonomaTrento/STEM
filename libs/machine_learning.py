@@ -740,8 +740,9 @@ class MLToolBox(object):
         self.output = self.output if output_file is None else output_file
         best = self.select_best() if best is None else best
         self._trans = self._trans if trans is None else trans
+        self.transform = transform if transform is not None else self.transform
+        self.untransform = untransform if untransform is not None else self.untransform
         X = self.X if X is None else X
         y = self.y if y is None else y
-        apply_models(self.raster, self.output, best,
-                     X, y, self._trans,
-                     transform=transform, untransform=untransform)
+        apply_models(self.raster, self.output, best, X, y, self._trans,
+                     transform=self.transform, untransform=self.untransform)
