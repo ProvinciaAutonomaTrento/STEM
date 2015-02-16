@@ -7,6 +7,7 @@ import os
 import time
 import tempfile
 import random
+import itertools
 from collections import namedtuple
 
 
@@ -66,6 +67,32 @@ def cvbar(total, fill='#', empty='-', barsize=30,
         print('\r\x1b[3A\n{bar}\n{best}\n{info}'.format(bar=bar, best=bst,
                                                         info=info), end='')
     return printinfo
+
+
+def split_in_chunk(iterable, lenght=10000):
+    """Split a list in chunk.
+
+    >>> for chunk in split_in_chunk(range(25)): print chunk
+    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    (10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+    (20, 21, 22, 23, 24)
+    >>> for chunk in split_in_chunk(range(25), 3): print chunk
+    (0, 1, 2)
+    (3, 4, 5)
+    (6, 7, 8)
+    (9, 10, 11)
+    (12, 13, 14)
+    (15, 16, 17)
+    (18, 19, 20)
+    (21, 22, 23)
+    (24,)
+    """
+    it = iter(iterable)
+    while True:
+        chunk = tuple(itertools.islice(it, lenght))
+        if not chunk:
+            return
+        yield chunk
 
 
 def read_raster(rast_file, nbands=1):
@@ -271,7 +298,8 @@ def extract_vector_fields(layer, icols):
     # vector properties, avoid to do this in python should make it
     # significantly faster
     layer.ResetReading()
-    return np.array([[f.GetField(i) for i in icols] for f in layer])
+    for f in layer:
+        yield [f.GetField(i) for i in icols]
 
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
@@ -330,8 +358,8 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         fields = layer.schema
         itraining = columns2indexes(fields, column)
         icols = columns2indexes(fields, use_columns)
-        training = extract_vector_fields(layer, (itraining, )).T[0]
-        dt = extract_vector_fields(layer, icols)
+        training = np.array(extract_vector_fields(layer, (itraining, ))).T[0]
+        dt = np.array(extract_vector_fields(layer, icols))
         data = np.concatenate((dt.T, training[None, :]), axis=0).T
         header = delimiter.join([fields[i].name for i in icols] + [column, ])
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
@@ -347,7 +375,7 @@ def run_model(model, data):
 
 
 def apply_models(input_file, output_file, models, X, y, transformations,
-                 transform=None, untransform=None):
+                 transform=None, untransform=None, use_columns=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -368,9 +396,6 @@ def apply_models(input_file, output_file, models, X, y, transformations,
     """
     if not isinstance(models, list):
         raise TypeError("models parameter must be a list.")
-    rast = read_raster(input_file)
-    rxsize, rysize = rast.RasterXSize, rast.RasterYSize
-    brows = estimate_best_row_buffer(rast, np.float32, 1)  # len(models))
 
     if transform is not None:
         y = transform(y)
@@ -386,28 +411,62 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         model['band'] = model['out'].GetRasterBand(1)
         model['execution_time'] = 0.
 
-    # compute the number of chunks
-    nchunks = rysize // brows + (1 if rysize % brows else 0)
-    print('number of chunks: %d' % nchunks)
-    # TODO: fix read_chunks to read and use only the selected features and not
-    # all bands
-    for chunk, data in enumerate(read_chunks(rast, nchunks, brows)):
-        # trasform input data following the users options
-        for trans in transformations:
-            data = trans.transform(data)
+    if use_columns is None:
+        # the input file is a raster
+        rast = read_raster(input_file)
+        rxsize, rysize = rast.RasterXSize, rast.RasterYSize
+        brows = estimate_best_row_buffer(rast, np.float32, 1)  # len(models))
+        # compute the number of chunks
+        nchunks = rysize // brows + (1 if rysize % brows else 0)
+        print('number of chunks: %d' % nchunks)
+        # TODO: fix read_chunks to read and use only the selected
+        # features and not all bands
+        for chunk, data in enumerate(read_chunks(rast, nchunks, brows)):
+            # trasform input data following the users options
+            for trans in transformations:
+                data = trans.transform(data)
 
-        # run the model to the data
-        for model in models:
-            yoff = chunk * brows
-            ysize = brows if chunk < (nchunks - 1) else rysize - yoff
-            # predict
-            predict = run_model(model, data).astype(dtype=np.uint32)
-            if untransform is not None:
-                predict = untransform(predict)
-            # write_chunk(band, data, yoff, rxsize, ysize)
-            write_chunk(model['band'], predict, yoff, rxsize, ysize)
-            gc.collect()  # force to free memory of unreferenced objects
+            # run the model to the data
+            for model in models:
+                yoff = chunk * brows
+                ysize = brows if chunk < (nchunks - 1) else rysize - yoff
+                # predict
+                predict = run_model(model, data).astype(dtype=np.uint32)
+                if untransform is not None:
+                    predict = untransform(predict)
+                # write_chunk(band, data, yoff, rxsize, ysize)
+                write_chunk(model['band'], predict, yoff, rxsize, ysize)
+                gc.collect()  # force to free memory of unreferenced objects
+    else:
+        # input is a vector
+        vect = ogr.Open(input_file)
+        layer = vect.GetLayer()
+        fields = layer.schema
+        icols = columns2indexes(fields, use_columns)
+        # write a new vector map
+        # TODO:
+        # create an empty vector map, with a column for each model
+        dchunk = split_in_chunk(extract_vector_fields(layer, icols))
+        fchunk = split_in_chunk(layer)
+        for features, data in zip(fchunk, dchunk):
+            for trans in transformations:
+                data = trans.transform(data)
 
+            # write features
+            for feature in features:
+                pass
+
+            # run the model to the data
+            for model in models:
+                # predict
+                predict = run_model(model, data).astype(dtype=np.uint32)
+                if untransform is not None:
+                    predict = untransform(predict)
+                # write vector
+                for feature in features:
+                    # TODO:
+                    # write field
+                    pass
 
 class MLToolBox(object):
     def __init__(self, *args, **kwargs):
