@@ -25,8 +25,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from qgis.core import *
-from qgis.gui import *
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMSettings
 from gdal_stem import convertGDAL
@@ -60,8 +58,12 @@ class STEMToolsDialog(BaseDialog):
         if not self.overwrite:
             self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         items = []
-        for index in xrange(self.BaseInput.count()):
-            items.append(self.BaseInput.item(index))
+
+        if len(self.BaseInput.selectedItems()) != 0:
+            items = self.BaseInput.selectedItems()
+        else:
+            for index in xrange(self.BaseInput.count()):
+                items.append(self.BaseInput.item(index))
         labels = [STEMUtils.getLayersSource(i.text()) for i in items]
         outformat = str(self.BaseInputCombo.currentText())
         cut, cutsource = self.cutInputMulti(items, labels, 'raster')

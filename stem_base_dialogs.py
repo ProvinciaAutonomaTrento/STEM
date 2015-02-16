@@ -36,8 +36,7 @@ import codecs
 import platform
 from functools import partial
 from types import StringType, UnicodeType
-from stem_utils import (STEMMessageHandler,
-                        STEMSettings)
+from stem_utils import STEMMessageHandler, STEMSettings
 
 MSG_BOX_TITLE = "STEM Plugin"
 
@@ -145,6 +144,7 @@ class BaseDialog(QDialog, baseDialog):
         self.BaseInput.setGeometry(QRect(10, 30, 341, 211))
         self.BaseInput.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.BaseInput.setObjectName("BaseInput")
+        self.BaseInput.setDragDropMode(QAbstractItemView.InternalMove)
         self.horizontalLayout_input.addWidget(self.BaseInput)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
@@ -409,6 +409,21 @@ class BaseDialog(QDialog, baseDialog):
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_linedit2)
         self.LabelLinedit2.setText(self.tr("", label))
+
+    def _insertThirdLineEdit(self, label, posnum):
+        """Function to add a LineEdit Widget"""
+        self.horizontalLayout_linedit3 = QHBoxLayout()
+        self.horizontalLayout_linedit3.setObjectName("horizontalLayout_linedit3")
+        self.LabelLinedit3 = QLabel()
+        self.LabelLinedit3.setObjectName("LabelLinedit3")
+        self.LabelLinedit3.setWordWrap(True)
+        self.horizontalLayout_linedit3.addWidget(self.LabelLinedit3)
+        self.Linedit3 = QLineEdit()
+        self.Linedit3.setObjectName("Linedit3")
+        self.horizontalLayout_linedit3.addWidget(self.Linedit3)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_linedit3)
+        self.LabelLinedit3.setText(self.tr("", label))
 
     def _insertFirstCombobox(self, label, posnum, items=None):
         """Function to add a ComboBox Widget"""

@@ -38,9 +38,9 @@ toolboxDockWidget = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(
 TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                               ("0", "Maschera"): "image_mask",
                                               ("1", "Accatastamento"): "image_multi",
-                                              ("2", "Raster:Georeferenziatore"): "&Georef",
-                                              ("3", "Raster:Proiezioni"): "&Ripro",
-                                              ("4", "Raster:Miscellanea"): "&Union",
+                                              ("2", "Raster:Georeferenziatore:Georeferenziatore"): "&Georef",
+                                              ("3", "Raster:Proiezioni:Riproiezione"): "&Ripro",
+                                              ("4", "Raster:Miscellanea:Unione"): "&Union",
                                               ("5", "Correzione atmosferica"): "image_atmo",
                                               ("6", "Filtro riduzione del rumore"): "image_filter",
                                               ("7", "Segmentazione"): "image_segm",
@@ -60,10 +60,10 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                        ("4", "Rasterizzazione file LAS"): "las_extract",
                                        ("5", "Estrazione feature LiDAR da poligoni"): "las_feat"
                                        }],
-         ("3", "Selezione feature/varibili"): [{
-                                               ("0", "Selezione feature per classificazione"): "feat_select",
-                                               ("1", "Selezione variabili per la stima"): "stim_selvar",
-                                               }],
+         ("3", "Selezione feature/variabili"): [{
+                                                ("0", "Selezione feature per classificazione"): "feat_select",
+                                                ("1", "Selezione variabili per la stima"): "stim_selvar",
+                                                }],
          ("4", "Classificazione supervisionata"): [{
                                                    ("0", "Support Vector Machines"): "class_svm",
                                                    ("1", "Minima distanza"): "class_mindist",
@@ -93,10 +93,11 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
         self.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        #self.fill_widget(self.toolTree, TOOLS)
-        self.toolTree.setColumnCount(3)
+
+        self.toolTree.setColumnCount(4)
         self.toolTree.setColumnHidden(1, True)
         self.toolTree.setColumnHidden(2, True)
+        self.toolTree.setColumnHidden(3, True)
         self.toolTree.setAlternatingRowColors(True)
 
         self.populateTree()
@@ -105,7 +106,8 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
     def executeTool(self):
         item = self.toolTree.currentItem()
         if isinstance(item, QGISTreeToolItem):
-            toolName = ':'.join([item.text(2), item.text(0)])
+            menuTitle = []
+            toolName = ':'.join([item.text(2), item.text(3), item.text(0)])
             module = TOOLS[(item.parent().text(1),
                             item.parent().text(0))][0][(item.text(1),
                                                        toolName)]
@@ -114,12 +116,19 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             elif toolName.split(":")[0] in ["Vector", "Vettore"]:
                 items = iface.vectorMenu()
             for firstact in items.actions():
-                print firstact.text(), toolName.split(":")[1][:6]
+                menuTitle.append(firstact.text())
                 if firstact.text().find(toolName.split(":")[1][:6]) != -1:
                     secondact = firstact
                     for act in secondact.menu().actions():
                         if act.text().find(module[1:]) != -1:
                             act.trigger()
+
+            # check if plugin is active otherwise popup plugin manager dialog
+            match = [s for s in menuTitle if toolName.split(":")[1][:6] in s]
+            if not match:
+                plIface = iface.pluginManagerInterface()
+                plIface.pushMessage("E' necessario attivare il plugin prima!", 1, 10)
+                iface.actionManagePlugins().trigger()
 
         if isinstance(item, TreeToolItem):
             toolName = item.text(0)
@@ -170,7 +179,8 @@ class QGISTreeToolItem(QTreeWidgetItem):
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
                                           'images', 'qgis.png'))
         self.setIcon(0, iconToolItem)
-        self.setToolTip(0, toolName[1].split(":")[1])
-        self.setText(0, toolName[1].split(":")[1])
+        self.setToolTip(0, toolName[1].split(":")[2])
+        self.setText(0, toolName[1].split(":")[2])
         self.setText(1, toolName[0])
         self.setText(2, toolName[1].split(":")[0])
+        self.setText(3, toolName[1].split(":")[1])

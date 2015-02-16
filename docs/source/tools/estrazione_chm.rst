@@ -6,7 +6,7 @@ Il CHM è un file las in cui sono memorizzati i punti la cui quota è data dalla
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/creazione_chm.png
+  .. image:: ../_static/tool_images/estrazione_chm.png
 
 
 Input
