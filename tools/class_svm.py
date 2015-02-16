@@ -210,7 +210,7 @@ class STEMToolsDialog(BaseDialog):
                 ncolumnschoose = None
             else:
                 ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                     self.layer_list2, False)
+                                                       self.layer_list2, False)
                 nlayerchoose = None
                 inrast = None
                 inrastsource = None
@@ -219,7 +219,7 @@ class STEMToolsDialog(BaseDialog):
                 except:
                     pass
 
-            nfold = self.Linedit3.text()
+            nfold = int(self.Linedit3.text())
             models = self.getModel()
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
@@ -249,6 +249,8 @@ class STEMToolsDialog(BaseDialog):
                              scaler=None, fselector=None, decomposer=None,
                              transform=None, untransform=None)
 
+            nodata = -9999
+            delimiter=';'
             # ---------------------------------------------------------------
             # Extract training samples
             print('\nExtract training samples')
@@ -263,7 +265,7 @@ class STEMToolsDialog(BaseDialog):
                 if mltb.raster:
                     print('      - raster: %s' % mltb.raster)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                             dtype=np.uint32, nodata=-9999)
+                                             dtype=np.uint32, nodata=nodata)
             else:
                 print('    Load from:')
                 print('      - %s' % trnpath)
@@ -290,7 +292,7 @@ class STEMToolsDialog(BaseDialog):
                     if mltb.raster:
                         print('      - raster: %s' % mltb.traster)
                     Xtest, ytest = mltb.extract_test(csv_file=testpath,
-                                                     nodata=-9999)
+                                                     nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
                     np.savetxt(testpath, dt, delimiter=SEP,
                                header="# last column is the training.")
@@ -304,17 +306,16 @@ class STEMToolsDialog(BaseDialog):
 
             # ---------------------------------------------------------------
             # Cross Models
-            #import ipdb; ipdb.set_trace()
             print('\nCross-validation of the models')
-            #crosspath = os.path.join(args.odir, args.csvcross)
+            # crosspath = os.path.join(args.odir, args.csvcross)
+            # bpkpath = os.path.join(args.odir, args.best_pickle)
             crosspath = '/tmp/csvcross.csv'
-            #bpkpath = os.path.join(args.odir, args.best_pickle)
             bpkpath = '/tmp/best_pickle.csv'
             if (not os.path.exists(crosspath) or False):
-                cross = mltb.cross_validation(X=X, y=y, transform=transform)
-                np.savetxt(crosspath, cross, delimiter=';', fmt='%s',
-                           header=";".join(['id', 'name', 'mean', 'max',
-                                                          'min', 'std', 'time']))
+                cross = mltb.cross_validation(X=X, y=y, transform=None)
+                np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
+                           header=delimiter.join(['id', 'name', 'mean', 'max',
+                                                  'min', 'std', 'time']))
                 mltb.find_best(models)
                 best = mltb.select_best()
                 with open(bpkpath, 'w') as bpkl:
@@ -340,16 +341,18 @@ class STEMToolsDialog(BaseDialog):
                 if (not os.path.exists(testpath) or False):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=transform)
-                    np.savetxt(testpath, test, delimiter=';', fmt='%s',
-                               header=';'.join(test[0].__dict__.keys()))
-                    mltb.find_best(models, strategy=lambda x: x, key='score_test')
+                    np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
+                               header=delimiter.join(test[0].__dict__.keys()))
+                    mltb.find_best(models, strategy=lambda x: x,
+                                   key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
                         pkl.dump(best, bpkl)
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
-                    order, models = mltb.find_best(models=best, strategy=lambda x: x,
+                    order, models = mltb.find_best(models=best,
+                                                   strategy=lambda x: x,
                                                    key='score_test')
                     best = mltb.select_best(best=models)
                 print('Best models:')
