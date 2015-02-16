@@ -41,6 +41,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from stem_base_dialogs import SettingsDialog
 from stem_toolbox import STEMToolbox
+from stem_utils import STEMSettings
 
 
 class STEMPlugin:
@@ -54,19 +55,31 @@ class STEMPlugin:
         self.stemMenu = QMenu(menuBar)
         self.stemMenu.setTitle(QCoreApplication.translate("STEM", "S&TEM"))
 
-        ## Toolbox
+        # Toolbox
         self.toolbox = STEMToolbox()
         self.iface.addDockWidget(Qt.RightDockWidgetArea, self.toolbox)
 
         self.toolboxAction = self.toolbox.toggleViewAction()
-        self.toolboxAction.setIcon(QIcon(os.path.dirname(__file__) + '/images/icon.svg'))
-        self.toolboxAction.setText(QCoreApplication.translate('STEM', '&STEM Toolbox'))
+        self.toolboxAction.setIcon(QIcon(os.path.join(os.path.dirname(__file__),
+                                                      'images', 'icon.svg')))
+        self.toolboxAction.setText(QCoreApplication.translate('STEM',
+                                                              '&STEM Toolbox'))
         self.stemMenu.addAction(self.toolboxAction)
 
-        self.stemMenu.addAction(QIcon(os.path.dirname(__file__) + '/images/settings.svg'),
+        self.stemMenu.addAction(QIcon(os.path.join(os.path.dirname(__file__),
+                                                   'images', 'settings.svg')),
                                 "&Impostazioni", self.settings)
 
-        menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.stemMenu)
+        self.mkdir()
+
+        menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(),
+                           self.stemMenu)
+
+    def mkdir(self):
+        home = os.path.join(os.path.expanduser('~'), '.qgis2', 'stem')
+        if not os.path.exists(home):
+            os.mkdir(home)
+            STEMSettings.setValue('stempath', home)
 
     def unload(self):
         self.toolbox.setVisible(False)
