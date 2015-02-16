@@ -410,6 +410,21 @@ class BaseDialog(QDialog, baseDialog):
                                                  self.horizontalLayout_linedit2)
         self.LabelLinedit2.setText(self.tr("", label))
 
+    def _insertThirdLineEdit(self, label, posnum):
+        """Function to add a LineEdit Widget"""
+        self.horizontalLayout_linedit3 = QHBoxLayout()
+        self.horizontalLayout_linedit3.setObjectName("horizontalLayout_linedit3")
+        self.LabelLinedit3 = QLabel()
+        self.LabelLinedit3.setObjectName("LabelLinedit3")
+        self.LabelLinedit3.setWordWrap(True)
+        self.horizontalLayout_linedit3.addWidget(self.LabelLinedit3)
+        self.Linedit3 = QLineEdit()
+        self.Linedit3.setObjectName("Linedit3")
+        self.horizontalLayout_linedit3.addWidget(self.Linedit3)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_linedit3)
+        self.LabelLinedit3.setText(self.tr("", label))
+
     def _insertFirstCombobox(self, label, posnum, items=None):
         """Function to add a ComboBox Widget"""
         self.horizontalLayout_combo = QHBoxLayout()
