@@ -60,10 +60,10 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                        ("4", "Rasterizzazione file LAS"): "las_extract",
                                        ("5", "Estrazione feature LiDAR da poligoni"): "las_feat"
                                        }],
-         ("3", "Selezione feature/varibili"): [{
-                                               ("0", "Selezione feature per classificazione"): "feat_select",
-                                               ("1", "Selezione variabili per la stima"): "stim_selvar",
-                                               }],
+         ("3", "Selezione feature/variabili"): [{
+                                                ("0", "Selezione feature per classificazione"): "feat_select",
+                                                ("1", "Selezione variabili per la stima"): "stim_selvar",
+                                                }],
          ("4", "Classificazione supervisionata"): [{
                                                    ("0", "Support Vector Machines"): "class_svm",
                                                    ("1", "Minima distanza"): "class_mindist",
