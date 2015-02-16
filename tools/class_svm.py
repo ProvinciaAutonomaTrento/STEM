@@ -31,6 +31,11 @@ from PyQt4.QtGui import *
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
+from machine_learning import MLToolBox, SEP, NODATA
+from sklearn.svm import SVC
+import numpy as np
+import pickle as pkl
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -57,33 +62,36 @@ class STEMToolsDialog(BaseDialog):
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
-        kernels = ['RBF', 'lineare', 'polinomiale']
+        self._insertThirdLineEdit(label="Inserire il numero di fold della "
+                                  "cross validation", posnum=0)
+
+        kernels = ['RBF', 'lineare', 'polinomiale', 'sigmoidale']
 
         self.lk = 'Selezionare il kernel da utilizzare'
-        self._insertFirstCombobox(self.lk, 0, kernels)
+        self._insertFirstCombobox(self.lk, 1, kernels)
         self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
-        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=1)
+        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
         self._insertSecondLineEdit(label="Inserire il valore di gamma",
-                                   posnum=2)
+                                   posnum=3)
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 3)
+        self._insertMethod(mets, self.lm, 4)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 4)
+        self._insertFileInputOption(self.lio, 5)
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(5, label="Vettoriale di validazione")
+        self._insertSingleInputOption(6, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 6)
+        self._insertSecondCombobox(label, 7)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
@@ -115,7 +123,7 @@ class STEMToolsDialog(BaseDialog):
         if self.BaseInputCombo.currentText() == 'polinomiale':
             self.LabelLinedit2.setText(self.tr("", "Inserire il valore del "
                                                "grado del polinomio"))
-        elif self.BaseInputCombo.currentText() == 'RBF':
+        elif self.BaseInputCombo.currentText() in ['RBF', 'sigmoidale']:
             self.LabelLinedit2.setText(self.tr("",
                                                "Inserire il valore di gamma"))
 
@@ -147,6 +155,32 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
+    def getModel(self):
+        kernel = str(self.BaseInputCombo.currentText())
+        c = float(self.Linedit.text())
+        if kernel in ['RBF', 'sigmoidale']:
+            if kernel == 'RBF':
+                k = 'rbf'
+            else:
+                k = 'sigmoid'
+            g = float(self.Linedit2.text())
+            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
+                     'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                                'probability': True}}]
+        elif kernel == 'lineare':
+            k = 'linear'
+            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVC,
+                     'kwargs': {'kernel': k, 'C': c,
+                                'probability': True}}]
+        else:
+            k = 'poly'
+            g = float(self.Linedit2.text())
+            d = 3 # TODO ask pietro
+            return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
+                     'model': SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                                              'degree': d, 'probability': True}
+                     }]
+
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         if not self.overwrite:
@@ -173,18 +207,21 @@ class STEMToolsDialog(BaseDialog):
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
+                ncolumnschoose = None
             else:
-                nlayerchoose = STEMUtils.checkLayers(invectsource,
+                ncolumnschoose = STEMUtils.checkLayers(invectsource,
                                                      self.layer_list2, False)
+                nlayerchoose = None
+                inrast = None
+                inrastsource = None
                 try:
-                    nlayerchoose.remove(invectcol)
+                    ncolumnschoose.remove(invectcol)
                 except:
                     pass
 
+            nfold = self.Linedit3.text()
+            models = self.getModel()
             feat = str(self.MethodInput.currentText())
-            kernel = str(self.BaseInputCombo.currentText())
-            cpar = self.Linedit.text()
-            otherpar = self.Linedit2.text()
             infile = self.TextInOpt.text()
 
             optvect = str(self.BaseInputOpt.currentText())
@@ -196,6 +233,136 @@ class STEMToolsDialog(BaseDialog):
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
+            else:
+                optvectsource = None
+                optvectcols = None
+
+            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
+                             use_columns=ncolumnschoose,
+                             raster_file=inrastsource,
+                             models=models, scoring='accuracy',
+                             n_folds=nfold, n_jobs=1,
+                             n_best=1,
+                             tvector=optvectsource, tcolumn=optvectcols,
+                             traster=None,
+                             best_strategy=getattr(np, 'mean'),
+                             scaler=None, fselector=None, decomposer=None,
+                             transform=None, untransform=None)
+
+            # ---------------------------------------------------------------
+            # Extract training samples
+            print('\nExtract training samples')
+            #trnpath = os.path.join(args.odir, args.csvtraining)
+            trnpath = '/tmp/csvtraining.csv'
+            if (not os.path.exists(trnpath) or False):
+                print('    From:')
+                print('      - vector: %s' % mltb.vector)
+                print('      - training column: %s' % mltb.column)
+                if mltb.use_columns:
+                    print('      - use columns: %s' % mltb.use_columns)
+                if mltb.raster:
+                    print('      - raster: %s' % mltb.raster)
+                X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
+                                             dtype=np.uint32, nodata=-9999)
+            else:
+                print('    Load from:')
+                print('      - %s' % trnpath)
+                dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
+                X, y = dt[:, :-1], dt[:, -1]
+            X = X.astype(float)
+            print('\nTraining sample shape:', X.shape)
+
+            # -----------------------------------------------------------------------
+            # Extract test samples
+            print('\nExtract test samples')
+            if mltb.tvector and mltb.tcolumn:
+                # extract_training(vector_file, column, csv_file, raster_file=None,
+                #                  use_columns=None, delimiter=SEP, nodata=None,
+                #                  dtype=np.uint32)
+                # testpath = os.path.join(args.odir, args.csvtest)
+                testpath = '/tmp/csvtest.csv'
+                if (not os.path.exists(testpath) or False):
+                    print('    From:')
+                    print('      - vector: %s' % mltb.tvector)
+                    print('      - training column: %s' % mltb.tcolumn)
+                    if mltb.use_columns:
+                        print('      - use columns: %s' % mltb.use_columns)
+                    if mltb.raster:
+                        print('      - raster: %s' % mltb.traster)
+                    Xtest, ytest = mltb.extract_test(csv_file=testpath,
+                                                     nodata=-9999)
+                    dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
+                    np.savetxt(testpath, dt, delimiter=SEP,
+                               header="# last column is the training.")
+                else:
+                    print('    Load from:')
+                    print('      - %s' % trnpath)
+                    dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
+                    Xtest, ytest = dt[:, :-1], dt[:, -1]
+                Xtest = Xtest.astype(float)
+                print('Training sample shape:', Xtest.shape)
+
+            # ---------------------------------------------------------------
+            # Cross Models
+            #import ipdb; ipdb.set_trace()
+            print('\nCross-validation of the models')
+            #crosspath = os.path.join(args.odir, args.csvcross)
+            crosspath = '/tmp/csvcross.csv'
+            #bpkpath = os.path.join(args.odir, args.best_pickle)
+            bpkpath = '/tmp/best_pickle.csv'
+            if (not os.path.exists(crosspath) or False):
+                cross = mltb.cross_validation(X=X, y=y, transform=transform)
+                np.savetxt(crosspath, cross, delimiter=';', fmt='%s',
+                           header=";".join(['id', 'name', 'mean', 'max',
+                                                          'min', 'std', 'time']))
+                mltb.find_best(models)
+                best = mltb.select_best()
+                with open(bpkpath, 'w') as bpkl:
+                    pkl.dump(best, bpkl)
+            else:
+                print('    Read cross-validation results from file:')
+                print('      -  %s' % crosspath)
+                with open(bpkpath, 'r') as bpkl:
+                    best = pkl.load(bpkl)
+                order, models = mltb.find_best(models=best)
+                best = mltb.select_best(best=models)
+            print('\nBest models:')
+            pprint(best)
+
+            # ---------------------------------------------------------------
+            # test Models
+            if Xtest is not None and ytest is not None:
+                print('\nTest models with an indipendent dataset')
+                #testpath = os.path.join(args.odir, args.csvtest)
+                #bpkpath = os.path.join(args.odir, args.test_pickle)
+                testpath = '/tmp/csvtest.csv'
+                bpkpath = '/tmp/test_pickle.csv'
+                if (not os.path.exists(testpath) or False):
+                    test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
+                                     transform=transform)
+                    np.savetxt(testpath, test, delimiter=';', fmt='%s',
+                               header=';'.join(test[0].__dict__.keys()))
+                    mltb.find_best(models, strategy=lambda x: x, key='score_test')
+                    best = mltb.select_best()
+                    with open(bpkpath, 'w') as bpkl:
+                        pkl.dump(best, bpkl)
+                else:
+                    with open(bpkpath, 'r') as bpkl:
+                        best = pkl.load(bpkl)
+                    order, models = mltb.find_best(models=best, strategy=lambda x: x,
+                                                   key='score_test')
+                    best = mltb.select_best(best=models)
+                print('Best models:')
+                pprint(best)
+
+            # ----------------------------------------------------------------
+            # execute Models and save the output raster map
+
+            #if args.execute:
+            #    print('\Execute the model to the whole raster map.')
+            #    mltb.execute(best=best, transform=transform, untransform=untransform)
+
+            print('Finished!')
 
             from PyQt4.QtCore import *
             import pdb
