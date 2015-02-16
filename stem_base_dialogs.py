@@ -461,6 +461,24 @@ class BaseDialog(QDialog, baseDialog):
             [self.BaseInputCombo2.addItem(m) for m in items]
         self.LabelCombo2.setText(self.tr("", label))
 
+    def _insertThirdCombobox(self, label, posnum, items=None):
+        """Function to add a ComboBox Widget"""
+        self.horizontalLayout_combo3 = QHBoxLayout()
+        self.horizontalLayout_combo3.setObjectName("horizontalLayout_combo3")
+        self.LabelCombo3 = QLabel()
+        self.LabelCombo3.setObjectName("LabelCombo3")
+        self.LabelCombo3.setWordWrap(True)
+        self.horizontalLayout_combo3.addWidget(self.LabelCombo3)
+        self.BaseInputCombo3 = QComboBox()
+        self.BaseInputCombo3.setEditable(True)
+        self.BaseInputCombo3.setObjectName("BaseInputCombo3")
+        self.horizontalLayout_combo3.addWidget(self.BaseInputCombo3)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_combo3)
+        if items:
+            [self.BaseInputCombo3.addItem(m) for m in items]
+        self.LabelCombo3.setText(self.tr("", label))
+
     def _insertSecondOutput(self, label, posnum):
         """Function to add a second output"""
         self.horizontalLayout_output2 = QHBoxLayout()
