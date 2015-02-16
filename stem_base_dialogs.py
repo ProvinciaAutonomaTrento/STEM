@@ -145,6 +145,7 @@ class BaseDialog(QDialog, baseDialog):
         self.BaseInput.setGeometry(QRect(10, 30, 341, 211))
         self.BaseInput.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.BaseInput.setObjectName("BaseInput")
+        self.BaseInput.setDragDropMode(QAbstractItemView.InternalMove)
         self.horizontalLayout_input.addWidget(self.BaseInput)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
