@@ -129,6 +129,10 @@ def get_parser():
                         dest='rname', default='%s',
                         help='Specify the name of the output raster map that'
                              ' will be written.')
+    parser.add_argument('-c', '--cross-validation', action='store_true',
+                        dest='cross', default=False,
+                        help='Apply the models to the input data and '
+                             'write the output raster maps.')
     parser.add_argument('-e', '--execute', action='store_true',
                         dest='execute', default=False,
                         help='Apply the models to the input data and '
@@ -342,28 +346,28 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Cross Models
-    #import ipdb; ipdb.set_trace()
-    print('\nCross-validation of the models')
-    crosspath = os.path.join(args.odir, args.csvcross)
-    bpkpath = os.path.join(args.odir, args.best_pickle)
-    if (not os.path.exists(crosspath) or args.overwrite):
-        cross = mltb.cross_validation(X=X, y=y, transform=transform)
-        np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
-                   header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
-                                                  'min', 'std', 'time']))
-        mltb.find_best(models)
-        best = mltb.select_best()
-        with open(bpkpath, 'w') as bpkl:
-            pkl.dump(best, bpkl)
-    else:
-        print('    Read cross-validation results from file:')
-        print('      -  %s' % crosspath)
-        with open(bpkpath, 'r') as bpkl:
-            best = pkl.load(bpkl)
-        order, models = mltb.find_best(models=best)
-        best = mltb.select_best(best=models)
-    print('\nBest models:')
-    pprint(best)
+    if args.cross:
+        print('\nCross-validation of the models')
+        crosspath = os.path.join(args.odir, args.csvcross)
+        bpkpath = os.path.join(args.odir, args.best_pickle)
+        if (not os.path.exists(crosspath) or args.overwrite):
+            cross = mltb.cross_validation(X=X, y=y, transform=transform)
+            np.savetxt(crosspath, cross, delimiter=args.csvdelimiter, fmt='%s',
+                       header=args.csvdelimiter.join(['id', 'name', 'mean', 'max',
+                                                      'min', 'std', 'time']))
+            mltb.find_best(models)
+            best = mltb.select_best()
+            with open(bpkpath, 'w') as bpkl:
+                pkl.dump(best, bpkl)
+        else:
+            print('    Read cross-validation results from file:')
+            print('      -  %s' % crosspath)
+            with open(bpkpath, 'r') as bpkl:
+                best = pkl.load(bpkl)
+            order, models = mltb.find_best(models=best)
+            best = mltb.select_best(best=models)
+        print('\nBest models:')
+        pprint(best)
 
     # -----------------------------------------------------------------------
     # test Models
