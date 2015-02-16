@@ -71,8 +71,8 @@ class stemGRASS():
         startcmd = [grassbin, '--config', 'path']
         #p = subprocess.Popen(startcmd, shell=True, stdin=subprocess.PIPE,
         #                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p = subprocess.Popen(startcmd, shell=False, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
+                             stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
 
         if p.returncode != 0:
@@ -80,12 +80,12 @@ class stemGRASS():
                             "variabili necessarie: GRASSDATA, LOCATION ed "
                             "eseguibile")
         if sys.platform.startswith('linux'):
-            gisbase = out.strip('\n')
+            gisbase = out.strip()
         elif sys.platform.startswith('win'):
             if out.find("OSGEO4W home is") != -1:
                 gisbase = out.strip().split('\n')[1]
             else:
-                gisbase = out.strip('\n')
+                gisbase = out.strip()
             os.environ['GRASS_SH'] = os.path.join(gisbase, 'msys', 'bin',
                                                   'sh.exe')
         # Set GISBASE environment variable
@@ -108,8 +108,8 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Manca il codice EPSG nelle impostazioni")
             startcmd = grassbin + ' -c epsg:' + epsg + ' -e ' + locexist
-            p = subprocess.Popen(startcmd, shell=True,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
+                                 stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if p.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
@@ -191,15 +191,27 @@ class stemGRASS():
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Errore eseguendo r.in.gdal {err}".format(err=err))
-            if len(nl) > 1:
-                runcom = gcore.Popen(['g.region', 'rast={intemp}.{n}'.format(intemp=intemp,
-                                                                             n=max(nl))],
-                                     stdin=PIPE, stdout=PIPE,
-                                     stderr=PIPE)
-            else:
+            runcom = gcore.Popen(['g.list', 'type=rast',
+                                  'pattern={n}*'.format(n=intemp)], stdin=PIPE,
+                                 stdout=PIPE, stderr=PIPE)
+            out, err = runcom.communicate()
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo g.list {err}".format(err=err))
+            listfiles = out.split('\n')
+            namelay = '{intemp}.{n}'.format(intemp=intemp, n=max(nl))
+            namergb = '{intemp}.red'.format(intemp=intemp)
+            if intemp in listfiles:
                 runcom = gcore.Popen(['g.region', 'rast={intemp}'.format(intemp=intemp)],
-                                     stdin=PIPE, stdout=PIPE,
-                                     stderr=PIPE)
+                                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            elif namelay in listfiles:
+                 runcom = gcore.Popen(['g.region', 'rast={intemp}.{n}'.format(intemp=intemp,
+                                                                             n=max(nl))],
+                                      stdin=PIPE, stdout=PIPE,  stderr=PIPE)
+            else:
+                #TODO add something when layer are imported as RGB
+                print "RGB image"
+
             out, err = runcom.communicate()
             #  print out,err
             if runcom.returncode != 0:
@@ -207,8 +219,23 @@ class stemGRASS():
                                 "Errore eseguendo g.region {err}".format(err=err))
 
         elif typ == 'vector':
-            gcore.run_command('v.in.ogr', input=inp, output=intemp)
-            gcore.run_command('g.region', vect=intemp)
+            runcom = gcore.Popen(['v.in.ogr', 'input={i}'.format(i=inp),
+                                  'output={i}'.format(i=intemp)],
+                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            out, err = runcom.communicate()
+            #  print out,err
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo v.in.ogr {err}".format(err=err))
+
+
+            runcom = gcore.Popen(['g.region', 'vect={i}'.format(i=intemp)],
+                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            out, err = runcom.communicate()
+            #  print out,err
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo g.region {err}".format(err=err))
 
     def vtorast(self, inp, column=None):
         import grass.script.core as gcore
