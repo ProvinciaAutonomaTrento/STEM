@@ -64,9 +64,10 @@ class STEMToolsDialog(BaseDialog):
         else:
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
-        labels = [STEMUtils.getLayersSource(i.text()) for i in items]
+        names = [i.text() for i in items]
+        sources = [STEMUtils.getLayersSource(i) for i in names]
         outformat = str(self.BaseInputCombo.currentText())
-        cut, cutsource = self.cutInputMulti(items, labels, 'raster')
+        cut, cutsource = self.cutInputMulti(names, sources, 'raster')
         if cut:
                 items = cut
                 labels = cutsource

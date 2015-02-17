@@ -246,14 +246,21 @@ class STEMUtils:
             pass
 
     @staticmethod
+    def removeFiles(path, pref="stem_cut_"):
+        files = glob.glob1(path, 'stem_cut_*')
+        for f in files:
+            shutil.rmtree(out)
+
+
+    @staticmethod
     def exportGRASS(gs, overwrite, output, tempout, typ):
+        original_dir = os.path.dirname(output)
         if typ == 'vector' and overwrite:
             import shutil
 
             newdir = os.path.join(tempfile.gettempdir(), "shpdir")
             if not os.path.exists(newdir):
                 os.mkdir(newdir)
-            original_dir = os.path.dirname(output)
             original_basename = os.path.basename(output)
             tmp = os.path.join(newdir, original_basename)
             try:
@@ -270,6 +277,7 @@ class STEMUtils:
                     except:
                         return
             shutil.rmtree(newdir)
+            STEMUtils.removeFiles(newdir)
         else:
             if overwrite:
                 tmp = output + '.tmp'
@@ -280,7 +288,8 @@ class STEMUtils:
             except:
                 pass
             if overwrite:
-                renameRast(tmp, output)
+                STEMUtils.renameRast(tmp, output)
+        STEMUtils.removeFiles(original_dir)
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
