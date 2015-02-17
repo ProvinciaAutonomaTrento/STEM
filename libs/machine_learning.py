@@ -49,7 +49,7 @@ def cvbar(total, fill='#', empty='-', barsize=30,
                "{std:.3f}, {time:.1f}s"),
           _best=[CVResult(0, '', 0, 0, 0, 0, 0), ]):
     total -= 1
-    ftotal = float(total)
+    ftotal = 1. if total == 0 else float(total)
 
     def printinfo(i, cross):
         rest = i / ftotal
