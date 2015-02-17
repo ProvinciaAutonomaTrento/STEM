@@ -36,7 +36,7 @@ import codecs
 import platform
 from functools import partial
 from types import StringType, UnicodeType
-from stem_utils import STEMMessageHandler, STEMSettings
+from stem_utils import STEMMessageHandler, STEMSettings, STEMUtils
 
 MSG_BOX_TITLE = "STEM Plugin"
 
@@ -623,10 +623,7 @@ class BaseDialog(QDialog, baseDialog):
             if not out.endswith('.shp'):
                 out += '.shp'
             if os.path.exists(out):
-                import glob
-                files = glob.glob1(path, 'stem_cut_*')
-                for f in files:
-                    shutil.rmtree(out)
+                STEMUtils.removeFiles(path)
             com = ['ogr2ogr']
             if bbox:
                 com.append('-clipsrc')
