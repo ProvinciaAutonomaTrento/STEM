@@ -191,6 +191,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
+            prefcsv = "{vect}_{col}".format(vect=invect , col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -204,6 +205,7 @@ class STEMToolsDialog(BaseDialog):
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
+                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
@@ -218,6 +220,7 @@ class STEMToolsDialog(BaseDialog):
                     ncolumnschoose.remove(invectcol)
                 except:
                     pass
+                prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
             models = self.getModel()
@@ -249,14 +252,16 @@ class STEMToolsDialog(BaseDialog):
                              scaler=None, fselector=None, decomposer=None,
                              transform=None, untransform=None)
 
+            home = STEMSettings.value("stempath")
             nodata = -9999
-            delimiter=';'
+            overwrite = False
+            delimiter = ';'
             # ---------------------------------------------------------------
             # Extract training samples
             print('\nExtract training samples')
-            #trnpath = os.path.join(args.odir, args.csvtraining)
-            trnpath = '/tmp/csvtraining.csv'
-            if (not os.path.exists(trnpath) or False):
+            trnpath = os.path.join(home,
+                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+            if (not os.path.exists(trnpath) or overwrite):
                 print('    From:')
                 print('      - vector: %s' % mltb.vector)
                 print('      - training column: %s' % mltb.column)
@@ -282,8 +287,9 @@ class STEMToolsDialog(BaseDialog):
                 #                  use_columns=None, delimiter=SEP, nodata=None,
                 #                  dtype=np.uint32)
                 # testpath = os.path.join(args.odir, args.csvtest)
-                testpath = '/tmp/csvtest.csv'
-                if (not os.path.exists(testpath) or False):
+                testpath = os.path.join(home,
+                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                if (not os.path.exists(testpath) or overwrite):
                     print('    From:')
                     print('      - vector: %s' % mltb.tvector)
                     print('      - training column: %s' % mltb.tcolumn)
@@ -307,11 +313,13 @@ class STEMToolsDialog(BaseDialog):
             # ---------------------------------------------------------------
             # Cross Models
             print('\nCross-validation of the models')
-            # crosspath = os.path.join(args.odir, args.csvcross)
-            # bpkpath = os.path.join(args.odir, args.best_pickle)
-            crosspath = '/tmp/csvcross.csv'
-            bpkpath = '/tmp/best_pickle.csv'
-            if (not os.path.exists(crosspath) or False):
+
+            crosspath = os.path.join(home,
+                                     "{pref}_csvcross.csv".format(pref=prefcsv))
+
+            bpkpath = os.path.join(home,
+                                   "{pref}_best_pickle.csv".format(pref=prefcsv))
+            if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=None)
                 np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
                            header=delimiter.join(['id', 'name', 'mean', 'max',
@@ -334,11 +342,11 @@ class STEMToolsDialog(BaseDialog):
             # test Models
             if Xtest is not None and ytest is not None:
                 print('\nTest models with an indipendent dataset')
-                #testpath = os.path.join(args.odir, args.csvtest)
-                #bpkpath = os.path.join(args.odir, args.test_pickle)
-                testpath = '/tmp/csvtest.csv'
-                bpkpath = '/tmp/test_pickle.csv'
-                if (not os.path.exists(testpath) or False):
+                testpath = os.path.join(home,
+                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                bpkpath = os.path.join(home,
+                                       "{pref}_test_pickle.csv".format(pref=prefcsv))
+                if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=transform)
                     np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
