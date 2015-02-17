@@ -191,7 +191,7 @@ class stemGRASS():
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Errore eseguendo r.in.gdal {err}".format(err=err))
-            runcom = gcore.Popen(['g.list', 'type=rast',
+            runcom = gcore.Popen(['g.list', 'type=raster',
                                   'pattern={n}*'.format(n=intemp)], stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
@@ -337,5 +337,5 @@ class stemGRASS():
 
     def removeMapset(self):
         """Remove mapset with all the contained data"""
-        from grass.script import try_rmdir
-        try_rmdir(self.mapsetpath)
+        import shutil
+        shutil.rmtree(self.mapsetpath)
