@@ -247,6 +247,7 @@ class STEMUtils:
 
     @staticmethod
     def removeFiles(path, pref="stem_cut_"):
+        import glob
         files = glob.glob1(path, 'stem_cut_*')
         for f in files:
             shutil.rmtree(out)
