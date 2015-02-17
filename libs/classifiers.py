@@ -17,6 +17,7 @@ from sklearn.neighbors import (KNeighborsClassifier,
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
+from sklearn.covariance import EmpiricalCovariance
 
 
 # number of estimators
@@ -33,6 +34,8 @@ MF = ('auto', 'sqrt', 'log2', 0.05, 0.25, 0.5, 0.75, 0.95, 0.98)
 CRANGE = 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e-0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6
 # SVC gamma range
 GRANGE = CRANGE
+#
+BOOLS = [True, False]
 
 
 SGD = [{'name': 'sgd_l%s_p%s' % (l, p),
@@ -147,6 +150,10 @@ SVCPOL = [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g), 'model': SVC,
           for d in (2, 3)
           for k in ('poly', )]
 
+EMCOV = [{'name': 'EMCOV_ac%s_sp%s' % (a, s), 'model': EmpiricalCovariance,
+          'kwargs': {'store_precision': a, 'assume_centered': s}}
+         for a in BOOLS
+         for s in BOOLS]
 
 ALL = (SGD + KNN + DECTREE + RNDFOREST + ADABOOST +
        EXTRATREE + GRDBOOST + GAUSSIAN +
