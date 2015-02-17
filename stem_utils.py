@@ -280,7 +280,7 @@ class STEMUtils:
             except:
                 pass
             if overwrite:
-                renameRast(tmp, output)
+                STEMUtils.renameRast(tmp, output)
 
     @staticmethod
     def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,

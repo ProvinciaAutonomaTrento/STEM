@@ -594,6 +594,7 @@ class BaseDialog(QDialog, baseDialog):
         hFile.close()
 
     def cutInput(self, inp, source, typ):
+        import shutil
         self.mapDisplay(inp, typ)
         mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
@@ -603,10 +604,13 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.error("Sono state impostate sia una maschera "
                                      "vettoriale sia una estensione di QGIS. "
                                      "Si prega di rimuoverne una delle due")
+        path = tempfile.gettempdir()
         outname = "stem_cut_{name}".format(name=inp)
-        out = os.path.join(tempfile.gettempdir(), outname)
+        out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
         if typ == 'raster' or typ == 'image':
+            if os.path.exists(out):
+                os.remove(out)
             if bbox:
                 com = ['gdal_translate', source, out, '-projwin']
                 com.extend(self.rect_str)
@@ -616,6 +620,13 @@ class BaseDialog(QDialog, baseDialog):
             else:
                 return False, False, False
         if typ == 'vector':
+            if not out.endswith('.shp'):
+                out += '.shp'
+            if os.path.exists(out):
+                import glob
+                files = glob.glob1(path, 'stem_cut_*')
+                for f in files:
+                    shutil.rmtree(out)
             com = ['ogr2ogr']
             if bbox:
                 com.append('-clipsrc')
