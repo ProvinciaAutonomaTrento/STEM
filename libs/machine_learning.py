@@ -215,7 +215,7 @@ def cross_val_model(model, X, y,
     scoretime = time.time() - start
     model['scores'] = scores
     model['score_time'] = scoretime
-    vals = CVResult(model['index'], model['name'], scores.mean(),
+    vals = CVResult(model.get('index', 1), model['name'], scores.mean(),
                     scores.max(), scores.min(), scores.std(), scoretime)
     return vals
 
@@ -226,7 +226,7 @@ def test_model(model, Xtraining, ytraining, Xtest, ytest,
     model['mod'].fit(Xtraining, ytraining)
     scorer = check_scoring(model['mod'], score_func=score_func, scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
-    return TestResult(model['index'], model['name'], model['score_test'])
+    return TestResult(model.get('index', 1), model['name'], model['score_test'])
 
 
 def find_best(models, strategy=np.mean, key='scores'):
