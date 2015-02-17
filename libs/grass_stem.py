@@ -71,7 +71,7 @@ class stemGRASS():
         startcmd = [grassbin, '--config', 'path']
         #p = subprocess.Popen(startcmd, shell=True, stdin=subprocess.PIPE,
         #                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
+        p = subprocess.Popen(startcmd, shell=False, stdin=PIPE,
                              stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
 
@@ -108,7 +108,7 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Manca il codice EPSG nelle impostazioni")
             startcmd = grassbin + ' -c epsg:' + epsg + ' -e ' + locexist
-            p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
+            p = subprocess.Popen(startcmd, shell=False, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if p.returncode != 0:
