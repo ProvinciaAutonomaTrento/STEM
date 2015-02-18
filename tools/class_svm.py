@@ -96,6 +96,9 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
+        label = "Creare output"
+        self._insertCheckbox(label, 8)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
@@ -288,7 +291,7 @@ class STEMToolsDialog(BaseDialog):
                 #                  dtype=np.uint32)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
-                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                                        "{pref}_csvtestsample.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     print('    From:')
                     print('      - vector: %s' % mltb.tvector)
@@ -336,19 +339,19 @@ class STEMToolsDialog(BaseDialog):
                 order, models = mltb.find_best(models=best)
                 best = mltb.select_best(best=models)
             print('\nBest models:')
-            pprint(best)
+            print(best)
 
             # ---------------------------------------------------------------
             # test Models
             if Xtest is not None and ytest is not None:
                 print('\nTest models with an indipendent dataset')
                 testpath = os.path.join(home,
-                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                                        "{pref}_csvtestmodel.csv".format(pref=prefcsv))
                 bpkpath = os.path.join(home,
                                        "{pref}_test_pickle.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
-                                     transform=transform)
+                                     transform=None)
                     np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
                                header=delimiter.join(test[0].__dict__.keys()))
                     mltb.find_best(models, strategy=lambda x: x,
@@ -364,22 +367,17 @@ class STEMToolsDialog(BaseDialog):
                                                    key='score_test')
                     best = mltb.select_best(best=models)
                 print('Best models:')
-                pprint(best)
+                print(best)
 
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
-
-            #if args.execute:
-            #    print('\Execute the model to the whole raster map.')
-            #    mltb.execute(best=best, transform=transform, untransform=untransform)
+            execute = True
+            if execute:
+                print('\Execute the model to the whole raster map.')
+                mltb.execute(best=best, transform=None, untransform=None)
 
             print('Finished!')
 
-            from PyQt4.QtCore import *
-            import pdb
-            pyqtRemoveInputHook()
-            pdb.set_trace()
-            # TODO finish
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
