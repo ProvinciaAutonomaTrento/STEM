@@ -860,3 +860,14 @@ class helpDialog(QDialog, helpDialog):
     def fillfromUrl(self, url):
         """Load a url in the Help window"""
         self.webView.load(QUrl(url))
+
+    def home(self):
+        """Load the home page"""
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
+                            'build', 'html', 'index.html')
+        if platform.system().startswith('linux') or platform.system().startswith('darwin'):
+            url = "file://{p}".format(p=path)
+        else:
+            path = path.replace("\\", "/")
+            url = "file:///{p}".format(p=path)
+        self.webView.load(QUrl(url))
