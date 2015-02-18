@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Documentazione STEM
-===============================================
+========================
 
 .. only:: html
 
@@ -12,11 +12,15 @@ Documentazione STEM
 
 
 .. toctree::
-  :maxdepth: 1
-  :glob:
+  :maxdepth: 2
 
   general
-  tools/*
+  tools/toc_pre_image
+  tools/toc_pre_lidar
+  tools/toc_estrazioni_feature
+  tools/toc_classi
+  tools/toc_post_class
+
 
 .. only:: latex
 
