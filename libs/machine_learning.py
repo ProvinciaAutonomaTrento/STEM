@@ -439,34 +439,54 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 gc.collect()  # force to free memory of unreferenced objects
     else:
         # input is a vector
-        vect = ogr.Open(input_file)
-        layer = vect.GetLayer()
-        fields = layer.schema
-        icols = columns2indexes(fields, use_columns)
-        # write a new vector map
-        # TODO:
-        # create an empty vector map, with a column for each model
-        dchunk = split_in_chunk(extract_vector_fields(layer, icols))
-        fchunk = split_in_chunk(layer)
+        ivect = ogr.Open(input_file)
+        ilayer = ivect.GetLayer()
+        ifields = ilayer.schema
+        icols = columns2indexes(ifields, use_columns)
+
+        # Create the output Layer
+        odriver = ogr.GetDriverByName("ESRI Shapefile")
+        # Remove output shapefile if it already exists
+        if os.path.exists(output_file):
+            odriver.DeleteDataSource(output_file)
+        # Create the output shapefile
+        osrc = odriver.CreateDataSource(output_file)
+        olayer = osrc.CreateLayer("states_centroids", geom_type=ogr.wkbPoint)
+
+        # Add a new field for each model to the output layer
+        ofieldtype = ogr.OFTInteger if y.dtype == np.int else ogr.OFTReal
+        for model in models:
+            olayer.CreateField(ogr.FieldDefn(model['name'], ofieldtype))
+
+        # read the vector input data and features splitted in chunksS
+        dchunk = split_in_chunk(extract_vector_fields(ilayer, icols))
+        fchunk = split_in_chunk(ilayer)
+
         for features, data in zip(fchunk, dchunk):
+            # transform the data consistently before to apply the model
             for trans in transformations:
                 data = trans.transform(data)
 
-            # write features
-            for feature in features:
-                pass
-
-            # run the model to the data
             for model in models:
-                # predict
+                # apply the model to the data chunk
                 predict = run_model(model, data).astype(dtype=np.uint32)
+                # if the data were transformed, then traform them back
+                # to original values
                 if untransform is not None:
                     predict = untransform(predict)
-                # write vector
-                for feature in features:
-                    # TODO:
-                    # write field
-                    pass
+
+                col = model['name']
+                for ofeature, value in zip(features, predict):
+                    # update feature field
+                    ofeature.SetField(col, value)
+            # save feature to the new vector map
+            for ofeature in features:
+                olayer.CreateFeature(ofeature)
+
+        # Close DataSources
+        osrc.Destroy()
+
+
 
 class MLToolBox(object):
     def __init__(self, *args, **kwargs):
