@@ -343,7 +343,8 @@ class STEMToolsDialog(BaseDialog):
             execute = True
             if execute:
                 print('\Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=None, untransform=None)
+                mltb.execute(X=X, y=y,
+                             best=best, transform=None, untransform=None)
 
             print('Finished!')
 
