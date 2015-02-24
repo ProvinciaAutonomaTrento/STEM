@@ -407,7 +407,6 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         model['mod'].fit(X, y)
         model['training_time'] = time.time() - start
         print("trained: %s [%.2fs]" % (model['name'], model['training_time']))
-        model['band'] = model['out'].GetRasterBand(1)
         model['execution_time'] = 0.
 
     if use_columns is None:
@@ -416,6 +415,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         # create the raster outputs
         for model in models:
             model['out'] = empty_rast(output_file.format(model['name']), rast)
+            model['band'] = model['out'].GetRasterBand(1)
         rxsize, rysize = rast.RasterXSize, rast.RasterYSize
         brows = estimate_best_row_buffer(rast, np.float32, 1)  # len(models))
         # compute the number of chunks
