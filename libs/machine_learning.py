@@ -109,12 +109,14 @@ def read_raster(rast_file, nbands=1):
 def empty_rast(newrast_file, rast, format=None,
                datatype=gdal.GDT_Int32, nodata=NODATA):
     trns = rast.GetGeoTransform()
+    proj = rast.GetProjection()
     driver = (rast.GetDriver() if format is None
               else gdal.GetDriverByName(format))
     # get the new raster instance
     nrast = driver.Create(newrast_file, rast.RasterXSize, rast.RasterYSize,
                           1, datatype)
     nrast.SetGeoTransform(trns)
+    nrast.SetProjection(proj)
     band = nrast.GetRasterBand(1)
     #import ipdb; ipdb.set_trace()
     band.SetNoDataValue(float(nodata))
