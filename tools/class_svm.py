@@ -371,12 +371,13 @@ class STEMToolsDialog(BaseDialog):
 
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
-            execute = True
-            if execute:
+            if self.checkbox.isChecked():
                 print('\Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=None, untransform=None)
+                mltb.execute(best=best, transform=None, untransform=None,
+                             output_file=self.TextOut.text())
 
-            print('Finished!')
+                if self.AddLayerToCanvas.isChecked():
+                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
 
         except:
             error = traceback.format_exc()

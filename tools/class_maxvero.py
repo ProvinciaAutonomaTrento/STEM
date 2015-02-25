@@ -87,6 +87,9 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
+        label = "Creare output"
+        self._insertCheckbox(label, 7)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
@@ -323,12 +326,14 @@ class STEMToolsDialog(BaseDialog):
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
 
-            #if args.execute:
-            #    print('\Execute the model to the whole raster map.')
-            #    mltb.execute(best=best, transform=None, untransform=None)
+            if self.checkbox.isChecked():
+                print('\Execute the model to the whole raster map.')
+                mltb.execute(best=best, transform=None, untransform=None,
+                             output_file=self.TextOut.text())
 
-            print('Finished!')
-            # TODO finish
+                if self.AddLayerToCanvas.isChecked():
+                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
