@@ -39,9 +39,15 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        self.AddLayerToCanvas.hide()
+
+#        self._insertLayerChooseCheckBox()
+#        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+#        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+
+        label = "Percentile da calcolare"
+        self._insertFirstLineEdit(label, 0)
+        self.Linedit.setText('90')
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -62,15 +68,37 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
-            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+#            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
+#            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            nlayerchoose = [1]
+            typ = 'raster'
+            perc = str(self.Linedit.text())
             coms = []
-            outnames = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
             if cut:
                 name = cut
                 source = cutsource
-            # TODO finish
+
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            gs.import_grass(source, tempin, typ, nlayerchoose)
+            if mask:
+                gs.check_mask(mask)
+
+            com = ['r.univar', '-e', '-g', 'map={name}'.format(name=tempin),
+                   'percentile={p}'.format(p=perc)]
+            out = self.TextOut.text()
+            if out:
+                com.append('output={name}'.format(name=out))
+            else:
+                STEMMessageHandler.error("Si prega di inserire il nome del "
+                                         "file di output")
+            coms.append(com)
+            self.saveCommand(com)
+
+            gs.run_grass(coms)
+            STEMMessageHandler.success("Il file {name} è stato scritto "
+                                       "correttamente".format(name=out))
+
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
