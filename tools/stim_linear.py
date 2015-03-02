@@ -69,6 +69,7 @@ class STEMToolsDialog(BaseDialog):
         self.lk = 'Selezionare la trasformazione'
         self._insertFirstCombobox(self.lk, 1, kernels)
 
+
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione variabili"
         self._insertMethod(mets, self.lm, 2)
@@ -93,6 +94,9 @@ class STEMToolsDialog(BaseDialog):
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
+
+        label = "Creare output"
+        self._insertCheckbox(label, 8)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -163,7 +167,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "{vect}_{col}".format(vect=invect , col=invectcol)
+            prefcsv = "lin_{vect}_{col}".format(vect=invect , col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -173,24 +177,29 @@ class STEMToolsDialog(BaseDialog):
                 inrastsource = STEMUtils.getLayersSource(inrast)
                 nlayerchoose = STEMUtils.checkLayers(inrastsource,
                                                      self.layer_list2)
-                prefcsv += "_{rast}".format(rast=inrast)
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
+                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
+                ncolumnschoose = None
             else:
-                nlayerchoose = STEMUtils.checkLayers(invectsource,
-                                                     self.layer_list2, False)
+                ncolumnschoose = STEMUtils.checkLayers(invectsource,
+                                                       self.layer_list2, False)
+                nlayerchoose = None
+                inrast = None
+                inrastsource = None
                 try:
-                    nlayerchoose.remove(invectcol)
+                    ncolumnschoose.remove(invectcol)
                 except:
                     pass
+                prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
+            nfold = int(self.Linedit3.text())
             feat = str(self.MethodInput.currentText())
-            nfold = self.Linedit3.text()
             infile = self.TextInOpt.text()
 
             optvect = str(self.BaseInputOpt.currentText())
@@ -202,6 +211,9 @@ class STEMToolsDialog(BaseDialog):
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
+            else:
+                optvectsource = None
+                optvectcols = None
 
             from regressors import LINEAR
             model = LINEAR
@@ -225,10 +237,11 @@ class STEMToolsDialog(BaseDialog):
             nodata = -9999
             overwrite = False
             delimiter = ';'
-            # ----------------------------------------------------------------
+            # ---------------------------------------------------------------
             # Extract training samples
             print('\nExtract training samples')
-            trnpath = os.path.join(home, args.csvtraining)
+            trnpath = os.path.join(home,
+                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
             if (not os.path.exists(trnpath) or overwrite):
                 print('    From:')
                 print('      - vector: %s' % mltb.vector)
@@ -238,7 +251,7 @@ class STEMToolsDialog(BaseDialog):
                 if mltb.raster:
                     print('      - raster: %s' % mltb.raster)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                             nodata=nodata, dtype=np.uint32)
+                                             dtype=np.uint32, nodata=nodata)
             else:
                 print('    Load from:')
                 print('      - %s' % trnpath)
@@ -271,7 +284,9 @@ class STEMToolsDialog(BaseDialog):
                 # extract_training(vector_file, column, csv_file, raster_file=None,
                 #                  use_columns=None, delimiter=SEP, nodata=None,
                 #                  dtype=np.uint32)
-                testpath = os.path.join(home, 'csvtest')
+                # testpath = os.path.join(args.odir, args.csvtest)
+                testpath = os.path.join(home,
+                                        "{pref}_csvtestsample.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     print('    From:')
                     print('      - vector: %s' % mltb.tvector)
@@ -293,17 +308,20 @@ class STEMToolsDialog(BaseDialog):
                 Xtest = Xtest.astype(float)
                 print('Training sample shape:', Xtest.shape)
 
-            # -----------------------------------------------------------------------
+            # ---------------------------------------------------------------
             # Cross Models
-            #import ipdb; ipdb.set_trace()
             print('\nCross-validation of the models')
-            crosspath = os.path.join(home, args.csvcross)
-            bpkpath = os.path.join(home, args.best_pickle)
+
+            crosspath = os.path.join(home,
+                                     "{pref}_csvcross.csv".format(pref=prefcsv))
+
+            bpkpath = os.path.join(home,
+                                   "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=transform)
                 np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
                            header=delimiter.join(['id', 'name', 'mean', 'max',
-                                                          'min', 'std', 'time']))
+                                                  'min', 'std', 'time']))
                 mltb.find_best(models)
                 best = mltb.select_best()
                 with open(bpkpath, 'w') as bpkl:
@@ -316,44 +334,47 @@ class STEMToolsDialog(BaseDialog):
                 order, models = mltb.find_best(models=best)
                 best = mltb.select_best(best=models)
             print('\nBest models:')
-            pprint(best)
+            print(best)
 
-            # -----------------------------------------------------------------------
+            # ---------------------------------------------------------------
             # test Models
             if Xtest is not None and ytest is not None:
                 print('\nTest models with an indipendent dataset')
-                testpath = os.path.join(home, args.csvtest)
-                bpkpath = os.path.join(home, args.test_pickle)
+                testpath = os.path.join(home,
+                                        "{pref}_csvtestmodel.csv".format(pref=prefcsv))
+                bpkpath = os.path.join(home,
+                                       "{pref}_test_pickle.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=transform)
                     np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
                                header=delimiter.join(test[0].__dict__.keys()))
-                    mltb.find_best(models, strategy=lambda x: x, key='score_test')
+                    mltb.find_best(models, strategy=lambda x: x,
+                                   key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
                         pkl.dump(best, bpkl)
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
-                    order, models = mltb.find_best(models=best, strategy=lambda x: x, key='score_test')
+                    order, models = mltb.find_best(models=best,
+                                                   strategy=lambda x: x,
+                                                   key='score_test')
                     best = mltb.select_best(best=models)
                 print('Best models:')
-                pprint(best)
+                print(best)
 
-            # -----------------------------------------------------------------------
+            # ----------------------------------------------------------------
             # execute Models and save the output raster map
-            if args.execute:
+            if self.checkbox.isChecked():
                 print('\Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=transform, untransform=untransform)
+                mltb.execute(best=best, transform=transform,
+                             untransform=untransform,
+                             output_file=self.TextOut.text())
 
-            print('Finished!')
+                if self.AddLayerToCanvas.isChecked():
+                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
 
-            from PyQt4.QtCore import *
-            import pdb
-            pyqtRemoveInputHook()
-            pdb.set_trace()
-            # TODO finish
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
