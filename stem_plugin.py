@@ -78,7 +78,7 @@ class STEMPlugin:
                            self.stemMenu)
 
     def mkdir(self):
-        home = os.path.join(os.path.expanduser('~'), '.qgis2', 'stem')
+        home = os.path.join(QgsApplication.qgisSettingsDirPath(), "stem")
         if not os.path.exists(home):
             os.mkdir(home)
             STEMSettings.setValue('stempath', home)
