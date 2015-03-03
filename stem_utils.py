@@ -326,6 +326,21 @@ class STEMUtils:
         else:
             return [str(i) for i in range(1, src_ds.RasterCount + 1)]
 
+    @staticmethod
+    def saveParameters():
+        """Save all the keys/values stem related into a file"""
+        keys = [a for a in STEMSettings.allKeys()]
+        # TODO maybe add the possibility to choose where save the file
+        import tempfile
+        f = tempfile.NamedTemporaryFile(delete=False)
+        for k in keys:
+            line = "{key}:  {value}\n".format(key=k,
+                                              value=STEMSettings.value(k, ""))
+            f.write(line)
+        f.close()
+        STEMMessageHandler.information("STEM Plugin", 'Impostazioni salvate '
+                                       'nel file {0}'.format(f.name))
+
 
 class STEMMessageHandler:
     """

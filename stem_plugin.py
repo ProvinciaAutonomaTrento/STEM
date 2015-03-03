@@ -41,7 +41,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from stem_base_dialogs import SettingsDialog, helpDialog
 from stem_toolbox import STEMToolbox
-from stem_utils import STEMSettings
+from stem_utils import STEMSettings, STEMUtils
 
 
 class STEMPlugin:
@@ -69,6 +69,9 @@ class STEMPlugin:
         self.stemMenu.addAction(QIcon(os.path.join(os.path.dirname(__file__),
                                                    'images', 'settings.svg')),
                                 "&Impostazioni", self.settings)
+        self.stemMenu.addAction(QIcon.fromTheme('document-save'),
+                                "&Salvare tutti i parametri delle impostazioni"
+                                " di STEM in un file", self.save)
         self.stemMenu.addAction(QIcon.fromTheme('help-contents'),
                                 "&Help", self.help)
 
@@ -90,6 +93,9 @@ class STEMPlugin:
     def settings(self):
         dialog = SettingsDialog(self.iface.mainWindow(), self.iface)
         dialog.exec_()
+
+    def save(self):
+        STEMUtils.saveParameters()
 
     def help(self):
         dialog = helpDialog()
