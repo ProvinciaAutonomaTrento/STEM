@@ -218,6 +218,19 @@ class file_info:
 
         return 1
 
+    def get_pixel_value(self, x, y):
+        import struct
+        px = int((x - self.geotransform[0]) / self.geotransform[1])  # x pixel
+        py = int((y - self.geotransform[3]) / self.geotransform[5])  # y pixel
+        structval = self.band.ReadRaster(px, py, 1, 1, buf_type=self.band_type)
+        if self.band_type in [1, 3, 5, 8, 9]:
+            intval = struct.unpack('i', structval)
+        elif self.band_type in [2, 4]:
+            intval = struct.unpack('I', structval)
+        elif self.band_type in [6, 7]:
+            intval = struct.unpack('f', structval)
+        print intval[0]
+
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None):
         """Copy this files image into target file.
 
