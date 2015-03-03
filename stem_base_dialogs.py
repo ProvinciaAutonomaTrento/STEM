@@ -27,7 +27,6 @@ from PyQt4 import uic
 from qgis.core import *
 from qgis.gui import *
 
-
 import os
 import sys
 import subprocess
@@ -38,11 +37,10 @@ from functools import partial
 from types import StringType, UnicodeType
 from stem_utils import STEMMessageHandler, STEMSettings, STEMUtils
 
-MSG_BOX_TITLE = "STEM Plugin"
-
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
 helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
 settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
+
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string"""
@@ -133,7 +131,7 @@ class BaseDialog(QDialog, baseDialog):
         self.helpui.exec_()
 
     def _insertMultipleInput(self):
-        """Function to add List Widget where insert multiple input files name"""
+        """Function to add ListWidget where insert multiple input files name"""
         self.horizontalLayout_input = QVBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
@@ -509,7 +507,7 @@ class BaseDialog(QDialog, baseDialog):
         self.TextArea.setObjectName("TextArea")
         self.horizontalLayout_textarea.addWidget(self.TextArea)
         self.verticalLayout_options.insertLayout(posnum,
-                                                self.horizontalLayout_textarea)
+                                                 self.horizontalLayout_textarea)
         self.LabelTextarea.setText(self.tr("Dialog", label))
 
     def _insertCheckbox(self, label, posnum, state=False):
@@ -595,7 +593,6 @@ class BaseDialog(QDialog, baseDialog):
         hFile.close()
 
     def cutInput(self, inp, source, typ):
-        import shutil
         self.mapDisplay(inp, typ)
         mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
@@ -678,14 +675,13 @@ class BaseDialog(QDialog, baseDialog):
         self.process.kill()
 
     def BrowseInFile(self, line, filt="LAS file (*.las)"):
-        """Function to create new file in a directory"""
+        """Function to check file in a directory"""
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file di"
                                             " input", "", filt)
         if os.path.exists(mydir):
             line.setText(mydir)
             return
         else:
-            # TODO add overwrite option
             STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def BrowseDir(self, line):
@@ -755,7 +751,6 @@ class SettingsDialog(QDialog, settingsDialog):
 
         self.connect(self.buttonBox, SIGNAL("rejected()"), self._reject)
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self._accept)
-        self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self._save)
 #        self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.pushButton_grass, SIGNAL("clicked()"),
                      partial(self.BrowseBin, self.lineEdit_grass))
