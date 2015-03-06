@@ -499,6 +499,7 @@ class MLToolBox(object):
         ``set_params`` method.
         """
         self._trans = []
+        self.fsfit = False
 
         # set values
         self.set_params(*args, **kwargs)
@@ -652,7 +653,7 @@ class MLToolBox(object):
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
                        decomposer=None, trans=None, fscolumns=None,
-                       fsfile=None):
+                       fsfile=None, fsfit=False):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
@@ -677,6 +678,8 @@ class MLToolBox(object):
         fsfile : path
             Path where to save the boolean array selected by the feature
             selection process.
+        fsfit: bool
+            True if you want to fit the feature selection
 
         Example
         --------
@@ -695,31 +698,46 @@ class MLToolBox(object):
         """
         X = self.X if X is None else X
         y = self.y if y is None else y
+        fsfit = fsfit if fsfit else self.fsfit
         Xt = X
         if trans is None:
             self.scaler = scaler if scaler else self.scaler
             if self.scaler is not None:
-                self._trans.append(self.scaler)
+                self.scaler.fit(Xt, y)
+                ##Xt = self.scaler.transform(Xt)
+                if self.scaler not in self._trans:
+                    self._trans.append(self.scaler)
+
             self.fselector = fselector if fselector else self.fselector
             if self.fselector is not None:
-                if fscolumns is None:
+                if fscolumns is not None:
+                    self.fselector.support_ = fscolumns
+                    ##Xt = self.fselector.transform(Xt)
+                if fsfit:
+                    self.fselector.fit(Xt, y)
+                    ##Xt = self.fselector.transform(Xt)
+                if self.fselector not in self._trans:
                     self._trans.append(self.fselector)
-                else:
-                    Xt = Xt[:, fscolumns]
+
             self.decomposer = decomposer if decomposer else self.decomposer
             if decomposer is not None:
-                self._trans.append(self.decomposer)
+                self.decomposer.fit(Xt, y)
+                ##Xt = self.decomposer.transform(Xt)
+                if self.decomposer not in self._trans:
+                    self._trans.append(self.decomposer)
         else:
             self._trans = trans
 
-        for trans in self._trans:
-            trans.fit(Xt, y)
-            Xt = trans.transform(Xt)
-            if fsfile is not None:
-                try:
-                    np.savetxt(fsfile, trans.support_)
-                except AttributeError:
-                    pass
+        # apply transformation to the data
+        for transform in self._trans:
+            Xt = transform.transform(X)
+
+        if fsfile is not None:
+            try:
+                np.savetxt(fsfile, self.fselector.support_)
+            except AttributeError:
+                print("Selected feature are not saved in: %s" % fsfile)
+                pass
         return Xt
 
     def cross_validation(self, models=None, X=None, y=None,
@@ -759,7 +777,7 @@ class MLToolBox(object):
         y = self.y if y is None else y
         self.transform = transform if transform is not None else self.transform
         y = y if self.transform is None else self.transform(y)
-        X = self.data_transform(X=self.X if X is None else X, y=y)
+        #X = self.data_transform(X=self.X if X is None else X, y=y)
         self.scoring = self.scoring if scoring is None else scoring
         self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
@@ -785,6 +803,8 @@ class MLToolBox(object):
         self.transform = transform if transform is not None else self.transform
         y = y if self.transform is None else self.transform(y)
         ytest = ytest if self.transform is None else self.transform(ytest)
+        #X = self.data_transform(X=self.X if X is None else X, y=y)
+        #Xtest = self.data_transform(X=Xtest, y=ytest)
         self.scoring = self.scoring if scoring is None else scoring
         self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models

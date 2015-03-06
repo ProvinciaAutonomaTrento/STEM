@@ -290,6 +290,7 @@ if __name__ == "__main__":
     # Feature selector
     fselector = None
     fscolumns = None
+    fspath = None
     if args.fs:
         if args.ff:
             fspath = os.path.join(args.odir, args.ff)
@@ -303,9 +304,10 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Transform the input data
-    Xt = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
-                             decomposer=decomposer, fscolumns=fscolumns,
-                             fsfile=args.ff)
+    #import ipdb; ipdb.set_trace()
+    X = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
+                            decomposer=decomposer, fscolumns=fscolumns,
+                            fsfile=fspath, fsfit=True)
 
     # -----------------------------------------------------------------------
     # Transform the training/target
@@ -376,6 +378,7 @@ if __name__ == "__main__":
         testpath = os.path.join(args.odir, args.csvtest)
         bpkpath = os.path.join(args.odir, args.test_pickle)
         if (not os.path.exists(testpath) or args.overwrite):
+            Xtest = mltb.data_transform(X=Xtest, y=ytest)
             test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                              transform=transform)
             np.savetxt(testpath, test, delimiter=args.csvdelimiter, fmt='%s',
