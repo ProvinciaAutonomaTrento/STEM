@@ -583,10 +583,11 @@ class BaseDialog(QDialog, baseDialog):
 
     def saveCommand(self, command):
         """Save the command history to file"""
-        _path = os.path.join(QgsApplication.qgisSettingsDirPath(), "stem",
-                             "stem_command_history.txt")
+        self.historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
+                                        "stem", "stem_command_history.txt")
+
         try:
-            hFile = codecs.open(_path, 'w', encoding='utf-8')
+            hFile = codecs.open(self.historypath, 'a', encoding='utf-8')
             hFile.write(" ".join(command) + '\n')
         except:
             raise
