@@ -40,16 +40,94 @@ except ImportError:
         import ogr
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
+try:
+    import osgeo.osr as osr
+except ImportError:
+    try:
+        import osr
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
+import os
+import numpy
+
+NP2GDAL_CONVERSION = {
+  "int8": 1,
+  "uint16": 2,
+  "int16": 3,
+  "uint32": 4,
+  "int32": 5,
+  "float32": 6,
+  "float64": 7,
+  "complex64": 10,
+  "complex128": 11,
+}
+
+GDAL2NP_CONVERSION = {
+  1: "int8",
+  2: "uint16",
+  3: "int16",
+  4: "uint32",
+  5: "int32",
+  6: "float32",
+  7: "float64",
+  10: "complex64",
+  11: "complex128",
+}
 
 
 class infoOGR:
     """A class to work with vector data"""
     def __init__(self, iname):
         self.inp = ogr.Open(iname)
+        if self.inp is None:
+            raise IOError('Could not open vector data: {n}'.format(n=iname))
         self.lay0 = self.inp.GetLayer(0)
 
     def getType(self):
         return self.lay0.GetGeomType()
+
+    def cutInputInverse(self, erase, output):
+        mask = ogr.Open(erase, 0)
+        if mask is None:
+            raise IOError('Could not open vector data: {n}'.format(n=erase))
+
+        laymask = mask.GetLayer()
+        featmask = laymask.GetFeature(0)
+        geomfeat2 = featmask.GetGeometryRef()
+
+        self.lay0.ResetReading()
+
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        # create a new data source and layer
+        if os.path.exists(output):
+            driver.DeleteDataSource(output)
+        outDS = driver.CreateDataSource(output)
+        if outDS is None:
+            raise IOError('Could not create file for inverse mask')
+        outLayer = outDS.CreateLayer('inverse_mask', geom_type=self.getType(),
+                                     srs=self.lay0.GetSpatialRef())
+        # get the FeatureDefn for the output shapefile
+        featureDefn = self.lay0.GetLayerDefn()
+
+        # loop through input layer
+        for inFeature in self.lay0:
+            # create a new feature
+            outFeature = ogr.Feature(featureDefn)
+
+            # copy the attributes and set geometry
+            outFeature.SetFrom(inFeature)
+
+            # get Geometry of feature and apply the difference method
+            inGeom = inFeature.GetGeometryRef()
+            GeomDiff = inGeom.Difference(geomfeat2)
+            if GeomDiff:
+                # Set geometry of the outfeature
+                outFeature.SetGeometry(GeomDiff)
+
+                # add the feature to the output layer
+                outLayer.CreateFeature(outFeature)
+        outLayer = None
+        outDS = None
 
 
 class convertGDAL:
@@ -60,11 +138,13 @@ class convertGDAL:
        :param str outformat: the name of output format according with gdal
                              format names
     """
-    def __init__(self, innames, output, outformat='GTIFF'):
+    def __init__(self):
+        self.file_infos = []
+
+    def initialize(self, innames, output, outformat='GTIFF'):
         """Function for the initialize the object"""
         # Open source dataset
         self.in_names = innames
-        self.file_infos = []
         self.driver = gdal.GetDriverByName(outformat)
         if self.driver is None:
             raise IOError('Format driver %s not found, pick a supported '
@@ -116,6 +196,14 @@ class convertGDAL:
             else:
                 targetband += 1
                 fi.copy_into(self.output, targetband)
+        self.output = None
+
+    def cutInputInverse(self, erase):
+        numpycode = GDAL2NP_CONVERSION[self.bandtype]
+        numpytype = numpy.dtype(numpycode)
+        for f in range(len(self.file_infos)):
+            fi = self.file_infos[f]
+            fi.cutInputInverse(erase, self.output, numpytype)
         self.output = None
 
 
@@ -195,8 +283,8 @@ class file_info:
         self.xsize = self.s_fh.RasterXSize
         self.ysize = self.s_fh.RasterYSize
         self.band = self.s_fh.GetRasterBand(1)
-        self.band_type = self.s_fh.GetRasterBand(1).DataType
-        self.block_size = self.s_fh.GetRasterBand(1).GetBlockSize()
+        self.band_type = self.band.DataType
+        self.block_size = self.band.GetBlockSize()
         self.projection = self.s_fh.GetProjection()
         self.geotransform = self.s_fh.GetGeoTransform()
         self.ulx = self.geotransform[0]
@@ -230,6 +318,58 @@ class file_info:
         elif self.band_type in [6, 7]:
             intval = struct.unpack('f', structval)
         print intval[0]
+
+    def cutInputInverse(self, erase, output, datatype):
+        import json
+        mask = ogr.Open(erase, 0)
+        if mask is None:
+            raise IOError('Could not open vector data: {n}'.format(n=erase))
+
+        laymask = mask.GetLayer()
+        featmask = laymask.GetFeature(0)
+        geomfeat = featmask.GetGeometryRef()
+        geomjs = json.loads(geomfeat.ExportToJson())
+        coors = geomjs['coordinates'][0]
+        pointsX = []
+        pointsY = []
+        for c in coors:
+            pointsX.append(c[0])
+            pointsY.append(c[1])
+        xmin = min(pointsX)
+        xmax = max(pointsX)
+        ymin = min(pointsY)
+        ymax = max(pointsY)
+        xoff = int((xmin - self.geotransform[0]) / self.geotransform[1])
+        yoff = int((self.geotransform[3] - ymax) / self.geotransform[1])
+        xcount = int((xmax - xmin) / self.geotransform[1]) + 1
+        ycount = int((ymax - ymin) / self.geotransform[1]) + 1
+        target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount,
+                                                       gdal.GDT_Byte)
+        target_ds.SetGeoTransform((xmin, self.geotransform[1], 0, ymax, 0,
+                                   self.geotransform[5]))
+
+        # create for target raster the same projection as for the value raster
+        raster_srs = osr.SpatialReference()
+        raster_srs.ImportFromWkt(self.s_fh.GetProjectionRef())
+        target_ds.SetProjection(raster_srs.ExportToWkt())
+        # rasterize zone polygon to raster
+        gdal.RasterizeLayer(target_ds, [1], laymask, burn_values=[1])
+        import pdb; pdb.set_trace()
+        bandmask = target_ds.GetRasterBand(1)
+        datamask = bandmask.ReadAsArray(0, 0, xcount, ycount)
+
+        # read raster as arrays
+        for b in range(1, self.bands + 1):
+            banddataraster = self.s_fh.GetRasterBand(b)
+            dataraster = banddataraster.ReadAsArray(xoff, yoff, xcount, ycount)
+
+            outband = numpy.ma.masked_array(dataraster, datamask)
+            outband_null = numpy.ma.filled(outband.astype(float), numpy.nan)
+            outband_null = outband_null.astype(datatype, copy=False)
+            pdb.set_trace()
+            t_band = output.GetRasterBand(b)
+
+            t_band.WriteArray(outband_null)
 
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None):
         """Copy this files image into target file.
