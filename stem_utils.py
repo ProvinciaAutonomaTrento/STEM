@@ -432,7 +432,8 @@ class STEMUtils:
 
 class STEMMessageHandler:
     """
-    Handler of message notification via QgsMessageBar.
+    Handler of message notification via QgsMessageBar to display
+    non-blocking messages to the user.
 
     STEMMessageHandler.[information, warning, critical, success](title, text, timeout)
     STEMMessageHandler.[information, warning, critical, success](title, text)
@@ -452,51 +453,51 @@ class STEMMessageHandler:
     messageTime = iface.messageTimeout()
 
     @staticmethod
-    def information(title="", text="", timeout=None):
-        """Function used to report a information message
+    def information(title="", text="", timeout=0):
+        """Function used to display an information message
 
         :param title str: the title of message
         :param text str: the text of message
-        :param timeout : ???
+        :param timeout int: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[0]
-        if timeout is None:
+        if timeout:
             timeout = STEMMessageHandler.messageTime
         STEMMessageHandler.messageBar(title, text, level, timeout)
 
     @staticmethod
-    def warning(title="", text="", timeout=None):
-        """Function used to report a warning message
+    def warning(title="", text="", timeout=0):
+        """Function used to display a warning message
 
         :param title str: the title of message
         :param text str: the text of message
-        :param timeout : ???
+        :param timeout int: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[1]
-        if timeout is None:
+        if timeout:
             timeout = STEMMessageHandler.messageTime
         STEMMessageHandler.messageBar(title, text, level, timeout)
 
     @staticmethod
-    def critical(title="", text="", timeout=None):
-        """Function used to report a critical message
+    def critical(title="", text="", timeout=0):
+        """Function used to display a critical message
 
         :param title str: the title of message
         :param text str: the text of message
-        :param timeout : ???
+        :param timeout int: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[2]
-        if timeout is None:
+        if timeout:
             timeout = STEMMessageHandler.messageTime
         STEMMessageHandler.messageBar(title, text, level, timeout)
 
     @staticmethod
-    def success(title="", text="", timeout=None):
-        """Function used to report a succeded message
+    def success(title="", text="", timeout=0):
+        """Function used to display a succeded message
 
         :param title str: the title of message
         :param text str: the text of message
-        :param timeout : ???
+        :param timeout int: timeout duration of message in seconds
         """
         ## SUCCESS was introduced in 2.7
         ## if it throws an AttributeError INFO will be used
@@ -504,13 +505,13 @@ class STEMMessageHandler:
             level = STEMMessageHandler.messageLevel[3]
         except:
             level = STEMMessageHandler.messageLevel[0]
-        if timeout is None:
+        if timeout:
             timeout = STEMMessageHandler.messageTime
         STEMMessageHandler.messageBar(title, text, level, timeout)
 
     @staticmethod
     def error(message):
-        """Function used to report a error message
+        """Function used to display an error message
 
         :param message str: the text of message
         """
