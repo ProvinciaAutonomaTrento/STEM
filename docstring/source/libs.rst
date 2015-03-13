@@ -1,3 +1,8 @@
+Libraries
+===============
+
+The libraries are used as backend of STEM plugin
+
 :mod:`gdal_stem` module
 --------------------------------
 
