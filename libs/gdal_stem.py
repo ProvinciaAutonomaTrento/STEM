@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    gdal_stem.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+gdal_stem.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'
@@ -84,9 +80,16 @@ class infoOGR:
         self.lay0 = self.inp.GetLayer(0)
 
     def getType(self):
+        """Return the type of vector geometry"""
         return self.lay0.GetGeomType()
 
     def cutInputInverse(self, erase, output):
+        """Create an inverse mask and remove/cut the elements inside erase
+        polygon
+
+        :param erase str: the path to vector file containing one polygon
+        :param output str: path for the output file
+        """
         mask = ogr.Open(erase, 0)
         if mask is None:
             raise IOError('Could not open vector data: {n}'.format(n=erase))
@@ -131,18 +134,18 @@ class infoOGR:
 
 
 class convertGDAL:
-    """A class to convert modis data from hdf to GDAL formats using GDAL
+    """A class to convert modis data from hdf to GDAL formats using GDALpath of the mask"""
+    def __init__(self):
+        self.file_infos = []
+
+    def initialize(self, innames, output, outformat='GTIFF'):
+        """Function for the initialize the object
 
        :param str inname: name of input data
        :param str output: prefix for output data
        :param str outformat: the name of output format according with gdal
                              format names
-    """
-    def __init__(self):
-        self.file_infos = []
-
-    def initialize(self, innames, output, outformat='GTIFF'):
-        """Function for the initialize the object"""
+        """
         # Open source dataset
         self.in_names = innames
         self.driver = gdal.GetDriverByName(outformat)
@@ -172,6 +175,7 @@ class convertGDAL:
                 # return error
 
     def _checkPara(self):
+        """Set information from the first raster"""
         self._names_to_fileinfos()
         self.xsize = self.file_infos[0].xsize
         self.ysize = self.file_infos[0].ysize
@@ -180,12 +184,14 @@ class convertGDAL:
         self.bandtype = self.file_infos[0].band_type
 
     def _checkOutputBands(self):
+        """Set the number of bands for the output file"""
         output = 0
         for fi in self.file_infos:
             output += fi.bands
         return output
 
     def write(self):
+        """Write the output file"""
         targetband = 0
         for f in range(len(self.file_infos)):
             fi = self.file_infos[f]
@@ -199,6 +205,11 @@ class convertGDAL:
         self.output = None
 
     def cutInputInverse(self, erase):
+        """Create an inverted mask, returning a raster containing only data
+        external to the given polygon
+
+        :param erase str: the path to vector file containing one polygon
+        """
         numpycode = GDAL2NP_CONVERSION[self.bandtype]
         numpytype = numpy.dtype(numpycode)
         for f in range(len(self.file_infos)):
@@ -266,7 +277,7 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
 class file_info:
     """A class holding information about a GDAL file.
 
-       Class copied from gdal_merge.py
+       Class copied from gdal_merge.py, extended by Luca Delucchi
 
        :param str filename: Name of file to read.
 
@@ -307,6 +318,11 @@ class file_info:
         return 1
 
     def get_pixel_value(self, x, y):
+        """Return a value for a coordinate
+
+        :param x numeric: longitude of coordinate
+        :param y numeric: latitude of coordinate
+        """
         import struct
         px = int((x - self.geotransform[0]) / self.geotransform[1])  # x pixel
         py = int((y - self.geotransform[3]) / self.geotransform[5])  # y pixel
@@ -320,6 +336,13 @@ class file_info:
         print intval[0]
 
     def cutInputInverse(self, erase, output, datatype):
+        """Create an inverted mask, returning a raster containing only data
+        external to the given polygon
+
+        :param erase str: the path to vector file containing one polygon
+        :param output obj: a GDAL object containing the output raster
+        :param datatype obj: Numpy dtype object
+        """
         import json
         mask = ogr.Open(erase, 0)
         if mask is None:
