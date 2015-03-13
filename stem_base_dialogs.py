@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    stem_utils.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+stem_utils.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'
@@ -174,7 +170,7 @@ class BaseDialog(QDialog, baseDialog):
         self.BrowseButtonIn = QPushButton()
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
-        self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input)
         self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
@@ -707,9 +703,11 @@ class BaseDialog(QDialog, baseDialog):
         self.labelOpt.setText(self.tr("", label))
 
     def processError(self, error):
+        """"""
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
 
     def processFinished(self, exitCode, status):
+        """"""
         self.emit(SIGNAL("processFinished(int, QProcess::ExitStatus)"),
                   exitCode, status)
 
@@ -818,13 +816,13 @@ class BaseDialog(QDialog, baseDialog):
                          str(rect.xMaximum()), str(rect.yMinimum())]
 
     def onRunLocal(self):
-        """Function to run the command, redefined in each module"""
+        """Function to run the command locally, redefined in each module"""
         pass
 
     def onRunServer(self):
+        """Function to run the command on the server, not yet developed"""
         STEMMessageHandler.warning("Esegui sul Server",
                                    "Opzione non ancora implementata")
-        pass
 
     def stop(self):
         """Stop the command execution"""
@@ -1006,6 +1004,7 @@ class SettingsDialog(QDialog, settingsDialog):
             STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def _reject(self):
+        """"""
         pass
 
     def _accept(self):
