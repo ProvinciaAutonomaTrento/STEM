@@ -51,10 +51,10 @@ class STEMUtils:
     def addLayerToComboBox(combo, typ, clear=True, empty=False):
         """Add layers to input files list
 
-        :param combo obj: the ComboBox object where add layers
-        :param typ str: the type of layers to add
-        :param clear bool: True to clear the ComboBox
-        :param empty bool: True to add a empty record
+        :param obj combo: the ComboBox object where add layers
+        :param str typ: the type of layers to add
+        :param bool clear: True to clear the ComboBox
+        :param bool empty: True to add a empty record
         """
         if clear:
             combo.clear()
@@ -72,7 +72,7 @@ class STEMUtils:
     def getLayer(layerName):
         """Return the layer object starting from the name
 
-        :param layerName str: the name of layer
+        :param str layerName: the name of layer
         """
         layermap = STEMUtils.registry.mapLayers()
 
@@ -87,7 +87,7 @@ class STEMUtils:
     def getLayersSource(layerName):
         """Return the source path of the layer
 
-        :param layerName str: the name of layer
+        :param str layerName: the name of layer
         """
         layer = STEMUtils.getLayer(layerName)
 
@@ -100,7 +100,7 @@ class STEMUtils:
     def getLayersType(layerName):
         """Return the type of the layer
 
-        :param layerName str: the name of layer
+        :param str layerName: the name of layer
         """
         layer = STEMUtils.getLayer(layerName)
 
@@ -113,8 +113,8 @@ class STEMUtils:
     def addLayerIntoCanvas(filename, typ):
         """Add the output in the QGIS canvas
 
-        :param filename str: the name of layer
-        :param typ str: the type of data
+        :param str filename: the name of layer
+        :param str typ: the type of data
         """
         layerName = QFileInfo(filename).baseName()
         if typ == 'raster' or typ == 'image':
@@ -130,9 +130,9 @@ class STEMUtils:
     def checkMultiRaster(inmap, checkCombo=None, lineEdit=None):
         """Check if raster is multiband or singleband.
 
-        :param inmap str: the input map
-        :param checkCombo obj: a ComboBox object containing the bands of map
-        :param lineEdit obj: a lineEdit object containing the bands of map
+        :param str inmap: the input map
+        :param obj checkCombo: a ComboBox object containing the bands of map
+        :param obj lineEdit: a lineEdit object containing the bands of map
         """
         nsub = STEMUtils.getNumSubset(inmap)
         nlayerchoose = STEMUtils.checkLayers(inmap, checkCombo, lineEdit)
@@ -145,9 +145,9 @@ class STEMUtils:
     def checkLayers(inmap, form, index=True):
         """Function to check if layers are choosen
 
-        :param inmap str: the input map
-        :param form obj: a object containing the bands of map
-        :param index bool:
+        :param str inmap: the input map
+        :param obj form: a object containing the bands of map
+        :param bool index:
         """
         if isinstance(form, QCheckBox) or isinstance(form, stem_base_dialogs.CheckableComboBox):
             itemlist = []
@@ -184,9 +184,9 @@ class STEMUtils:
     def addLayersNumber(combo, checkCombo=None, empty=False):
         """Add the subsets name  of a rasterto a ComboBox
 
-        :param combo obj: a ComboBox containing the list of vector files
-        :param checkCombo obj: the ComboBox to fill with column's name
-        :param empty bool: True to add an empty record
+        :param obj combo: a ComboBox containing the list of vector files
+        :param obj checkCombo: the ComboBox to fill with column's name
+        :param bool empty: True to add an empty record
         """
         layerName = combo.currentText()
         if not layerName:
@@ -227,9 +227,9 @@ class STEMUtils:
     def addColumnsName(combo, checkCombo, multi=False):
         """Add the column's name to a ComboBox
 
-        :param combo obj: a ComboBox containing the list of vector files
-        :param checkCombo obj: the ComboBox to fill with column's name
-        :param multi bool: True if it is a checkableComboBox
+        :param obj combo: a ComboBox containing the list of vector files
+        :param obj checkCombo: the ComboBox to fill with column's name
+        :param bool multi: True if it is a checkableComboBox
         """
         layerName = combo.currentText()
         cols = []
@@ -257,8 +257,8 @@ class STEMUtils:
     def writeFile(text, name=False):
         """Write the the into a file
 
-        :param text str: the text to write into file
-        :param name str: the path of the file, without name it create a file
+        :param str text: the text to write into file
+        :param str name: the path of the file, without name it create a file
                          using tempfile functions
         """
         if name:
@@ -275,7 +275,7 @@ class STEMUtils:
     def fileExists(fileName):
         """Check if a file already exist
 
-        :param fileName str: the path of file
+        :param str fileName: the path of file
         """
         if QFileInfo(fileName).exists():
             res = QMessageBox.question(None, "STEM Plugin", u"Esiste già un "
@@ -291,8 +291,8 @@ class STEMUtils:
     def renameRast(tmp, out):
         """Rename a raster file
 
-        :param tmp str: the temporary file name
-        :param out str: the final output file name
+        :param str tmp: the temporary file name
+        :param str out: the final output file name
         """
         os.rename(tmp, out)
         try:
@@ -305,8 +305,8 @@ class STEMUtils:
     def removeFiles(path, pref="stem_cut_*"):
         """Remove file from path with prefix
 
-        :param path str: the directory where remove files
-        :param pref str: the prefix for the file to remove
+        :param str path: the directory where remove files
+        :param str pref: the prefix for the file to remove
         """
         import glob
         files = glob.glob1(path, pref)
@@ -318,11 +318,11 @@ class STEMUtils:
     def exportGRASS(gs, overwrite, output, tempout, typ):
         """Export data from GRASS environment
 
-        :param gs obj: a stemGRASS object
-        :param overwrite bool:
-        :param output str:
-        :param tempout str:
-        :param typ str:
+        :param obj gs: a stemGRASS object
+        :param bool overwrite:
+        :param str output:
+        :param str tempout:
+        :param str typ:
         """
         original_dir = os.path.dirname(output)
         if typ == 'vector' and overwrite:
@@ -366,10 +366,10 @@ class STEMUtils:
                          epsg=None):
         """Read the QGIS's settings and obtain information for GRASS GIS
 
-        :param grassdatabase str: the path to grassdatabase
-        :param location str: the name of location
-        :param grassbin str: the path to grass7 binary
-        :param epsg str: the epsg code to use
+        :param str grassdatabase: the path to grassdatabase
+        :param str location: the name of location
+        :param str grassbin: the path to grass7 binary
+        :param str epsg: the epsg code to use
         """
         # query GRASS 7 itself for its GISBASE
         # we assume that GRASS GIS' start script is available and in the PATH
@@ -389,7 +389,7 @@ class STEMUtils:
         """Create temporary grass information (input and output data name and
         a stemGRASS object)
 
-        :param name str: the name of input map
+        :param str name: the name of input map
         """
         pid = os.getpid()
         tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
@@ -402,7 +402,7 @@ class STEMUtils:
     def getNumSubset(name):
         """Return a list with the subsets of a raster
 
-        :param name str: the name of raster map
+        :param str name: the name of raster map
         """
         src_ds = gdal.Open(name)
         if len(src_ds.GetSubDatasets()) != 0:
@@ -455,9 +455,9 @@ class STEMMessageHandler:
     def information(title="", text="", timeout=0):
         """Function used to display an information message
 
-        :param title str: the title of message
-        :param text str: the text of message
-        :param timeout int: timeout duration of message in seconds
+        :param str title: the title of message
+        :param str text: the text of message
+        :param int timeout: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[0]
         if timeout:
@@ -468,9 +468,9 @@ class STEMMessageHandler:
     def warning(title="", text="", timeout=0):
         """Function used to display a warning message
 
-        :param title str: the title of message
-        :param text str: the text of message
-        :param timeout int: timeout duration of message in seconds
+        :param str title: the title of message
+        :param str text: the text of message
+        :param int timeout: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[1]
         if timeout:
@@ -481,9 +481,9 @@ class STEMMessageHandler:
     def critical(title="", text="", timeout=0):
         """Function used to display a critical message
 
-        :param title str: the title of message
-        :param text str: the text of message
-        :param timeout int: timeout duration of message in seconds
+        :param str title: the title of message
+        :param str text: the text of message
+        :param int timeout: timeout duration of message in seconds
         """
         level = STEMMessageHandler.messageLevel[2]
         if timeout:
@@ -494,9 +494,9 @@ class STEMMessageHandler:
     def success(title="", text="", timeout=0):
         """Function used to display a succeded message
 
-        :param title str: the title of message
-        :param text str: the text of message
-        :param timeout int: timeout duration of message in seconds
+        :param str title: the title of message
+        :param str text: the text of message
+        :param int timeout: timeout duration of message in seconds
         """
         ## SUCCESS was introduced in 2.7
         ## if it throws an AttributeError INFO will be used
@@ -512,7 +512,7 @@ class STEMMessageHandler:
     def error(message):
         """Function used to display an error message
 
-        :param message str: the text of message
+        :param str message: the text of message
         """
         ## TODO: add an action to message bar to trigger the Log Messages Viewer
         # button = QToolButton()
@@ -558,8 +558,8 @@ class STEMSettings:
     def saveWidgetsValue(ui, tool=""):
         """Save the parameters used into a tool in the STEMSettings
 
-        :param ui obj: the obkect of tool's UI
-        :param tool str: the name of the tool
+        :param obj ui: the obkect of tool's UI
+        :param str tool: the name of the tool
         """
         if tool:
             tool = re.sub(r"[^\w\s]", '', tool)
@@ -586,8 +586,8 @@ class STEMSettings:
     def restoreWidgetsValue(ui, tool=""):
         """Restore the parameters used earlier into a tool in the STEMSettings
 
-        :param ui obj: the obkect of tool's UI
-        :param tool str: the name of the tool
+        :param obj ui: the obkect of tool's UI
+        :param str tool: the name of the tool
         """
         if tool:
             tool = re.sub(r"[^\w\s]", '', tool)
@@ -629,12 +629,21 @@ class STEMSettings:
 
     @staticmethod
     def setValue(key, value):
-        """Set the value for the given key"""
+        """Set the value for the given key
+
+        :param str key: the key to set
+        :param str value: the value for the given key
+        """
         return STEMSettings.s.setValue(key, value)
 
     @staticmethod
     def value(key, default=None, type=None):
-        """Return the value of the given key"""
+        """Return the value of the given key
+
+        :param str key: the key to get
+        :param str default: the default value to return
+        :param obj type: the type of value
+        """
         if default and type:
             return STEMSettings.s.value(key, default, type=type)
         elif default and not type:

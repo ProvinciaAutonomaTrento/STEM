@@ -48,7 +48,7 @@ class STEMPlugin:
         self.stemMenu = None
 
     def initGui(self):
-        """Function used to initialize the gui. ???"""
+        """Function used to initialize the gui."""
         # insert into top-level menu
         menuBar = self.iface.mainWindow().menuBar()
         self.stemMenu = QMenu(menuBar)

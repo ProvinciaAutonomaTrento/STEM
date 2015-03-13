@@ -85,7 +85,7 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
 
 
 class STEMToolbox(QDockWidget, toolboxDockWidget):
-    """Class for the STEM toolbox ???"""
+    """Class for the STEM toolbox"""
     def __init__(self):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
@@ -164,7 +164,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
 class TreeToolItem(QTreeWidgetItem):
     """Class for STEM tool, it set itemtool image
 
-    :param toolName str: the name of tool
+    :param str toolName: the name of tool
     """
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
@@ -179,7 +179,7 @@ class TreeToolItem(QTreeWidgetItem):
 class QGISTreeToolItem(QTreeWidgetItem):
     """Class for QGIS standard tool it set the QGIS icon
 
-    :param toolName str: the name of tool
+    :param str toolName: the name of tool
     """
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)

@@ -33,7 +33,7 @@ stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
 def helpUrl(name):
     """Create the url for GRASS manuals page
 
-    :param name str: the name of grass command
+    :param str name: the name of grass command
     """
     return "http://grass.osgeo.org/grass70/manuals/{name}.html".format(name=name)
 
@@ -41,7 +41,7 @@ def helpUrl(name):
 def readfile(path):
     """Read the file and return a string
 
-    :param path str: the path to a file
+    :param str path: the path to a file
     """
     f = open(path, 'r')
     s = f.read()
@@ -52,8 +52,8 @@ def readfile(path):
 def writefile(path, s):
     """Write the file from a string, new line should be added in the string
 
-    :param path str: the path to a file
-    :param s str: the string to write into file
+    :param str path: the path to a file
+    :param str s: the string to write into file
     """
     f = open(path, 'w')
     f.write(s)
@@ -154,7 +154,7 @@ class stemGRASS():
     def check_mask(self, mask):
         """Check if a mask should be used
 
-        :param mask str: the path to the mask, None to remove it
+        :param str mask: the path to the mask, None to remove it
         """
         import grass.script.core as gcore
         if mask == '':
@@ -178,10 +178,10 @@ class stemGRASS():
     def import_grass(self, inp, intemp, typ, nl=None):
         """Import data into GRASS database
 
-        :param inp str: the path to source data
-        :param intemp str: the name inside GRASS database
-        :param typ str: the type of data
-        :param nl list: a list containing the band to use of a raster
+        :param str inp: the path to source data
+        :param str intemp: the name inside GRASS database
+        :param str typ: the type of data
+        :param list nl: a list containing the band to use of a raster
         """
         import grass.script.core as gcore
 
@@ -257,8 +257,8 @@ class stemGRASS():
     def vtorast(self, inp, column=None):
         """Convert vector to rast
 
-        :param inp str: the input name
-        :param column str: the name of cloumn to use to assign value to raster
+        :param str inp: the input name
+        :param str column: the name of cloumn to use to assign value to raster
         """
         import grass.script.core as gcore
         command = ['v.to.rast', 'input={name}'.format(name=inp),
@@ -277,9 +277,9 @@ class stemGRASS():
     def create_group(self, maps, gname, base=False):
         """Crea a group of raster data
 
-        :param maps: a list of maps name or a string if base is True
-        :param gname str: the name of group
-        :param base bool: if True maps is the prefix of maps to look for
+        :param list maps: a list of maps name or a string if base is True
+        :param str gname: the name of group
+        :param bool base: if True maps is the prefix of maps to look for
         """
         import grass.script.core as gcore
         if base:
@@ -297,10 +297,10 @@ class stemGRASS():
     def export_grass(self, outemp, finalout, typ, remove=True):
         """Export the result of analisys
 
-        :param outemp str: the output in GRASS
-        :param finalout str: the path for the output
-        :param typ str: the type of data
-        :param remove bool: remove this mapset
+        :param str outemp: the output in GRASS
+        :param str finalout: the path for the output
+        :param str typ: the type of data
+        :param bool remove: remove this mapset
         """
         import grass.script.core as gcore
 
@@ -323,14 +323,14 @@ class stemGRASS():
                    percentile=None, trim=None):
         """Import LAS file trhough r.in.lidar
 
-        :param inp str: the input source
-        :param out str: the out name in GRASS database
-        :param method str: the method to be use during import
-        :param returnpulse str: import points of selected return type,
+        :param str inp: the input source
+        :param str out: the out name in GRASS database
+        :param str method: the method to be use during import
+        :param str returnpulse: import points of selected return type,
                                 acpted values are first, last, mid
-        :param resolution str: the resolution for outpat map
-        :param percentile str: percentile of the values
-        :param trim str: discard <trim> percent of the smallest and <trim>
+        :param str resolution: the resolution for outpat map
+        :param str percentile: percentile of the values
+        :param str trim: discard <trim> percent of the smallest and <trim>
                          percent of the largest observations
         """
         import grass.script.core as gcore
@@ -373,7 +373,7 @@ class stemGRASS():
     def run_grass(self, comm):
         """Run a GRASS module
 
-        :param comm list: a list with all the command to run
+        :param list comm: a list with all the command to run
         """
         import grass.script.core as gcore
 

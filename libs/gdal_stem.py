@@ -87,8 +87,8 @@ class infoOGR:
         """Create an inverse mask and remove/cut the elements inside erase
         polygon
 
-        :param erase str: the path to vector file containing one polygon
-        :param output str: path for the output file
+        :param str erase: the path to vector file containing one polygon
+        :param str output: path for the output file
         """
         mask = ogr.Open(erase, 0)
         if mask is None:
@@ -208,7 +208,7 @@ class convertGDAL:
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
 
-        :param erase str: the path to vector file containing one polygon
+        :param str erase: the path to vector file containing one polygon
         """
         numpycode = GDAL2NP_CONVERSION[self.bandtype]
         numpytype = numpy.dtype(numpycode)
@@ -320,8 +320,8 @@ class file_info:
     def get_pixel_value(self, x, y):
         """Return a value for a coordinate
 
-        :param x numeric: longitude of coordinate
-        :param y numeric: latitude of coordinate
+        :param numeric x: longitude of coordinate
+        :param numeric y: latitude of coordinate
         """
         import struct
         px = int((x - self.geotransform[0]) / self.geotransform[1])  # x pixel
@@ -339,9 +339,9 @@ class file_info:
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
 
-        :param erase str: the path to vector file containing one polygon
-        :param output obj: a GDAL object containing the output raster
-        :param datatype obj: Numpy dtype object
+        :param str erase: the path to vector file containing one polygon
+        :param obj output: a GDAL object containing the output raster
+        :param obj datatype: Numpy dtype object
         """
         import json
         mask = ogr.Open(erase, 0)
