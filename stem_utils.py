@@ -446,7 +446,10 @@ class STEMMessageHandler:
         messageLevel.append(QgsMessageBar.SUCCESS)
     except:
         pass
-    messageTime = iface.messageTimeout()
+    try:
+        messageTime = iface.messageTimeout()
+    except:
+        pass
 
     @staticmethod
     def information(title="", text="", timeout=0):
