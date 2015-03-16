@@ -742,7 +742,7 @@ class BaseDialog(QDialog, baseDialog):
         :param str source: the full path to source data
         :param str typ: the type of data, it should be raster, image, vector
         """
-        self.mapDisplay(inp, typ)
+        self.mapDisplay()
         mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
         if not bbox and not mask:
