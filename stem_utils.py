@@ -264,7 +264,7 @@ class STEMUtils:
         if name:
             fs = open(name, 'w')
         else:
-            f = tempfile.NamedTemporaryFile()
+            f = tempfile.NamedTemporaryFile(delete=False)
             name = f.name
             fs = f.file
         fs.write(text)
@@ -415,7 +415,6 @@ class STEMUtils:
         """Save all the keys/values stem related into a file"""
         keys = [a for a in STEMSettings.allKeys()]
         # TODO maybe add the possibility to choose where save the file
-        import tempfile
         f = tempfile.NamedTemporaryFile(delete=False)
         for k in keys:
             line = "{key}:  {value}\n".format(key=k,
