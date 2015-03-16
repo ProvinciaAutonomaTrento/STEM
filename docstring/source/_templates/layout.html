@@ -3,6 +3,23 @@
 <link rel="stylesheet" href="{{ pathto('_static/stem.css', 1) }}" type="text/css" />
 {% endblock %}
 
+{% macro nav() %}
+        <p>
+        {%- block haikurel1 %}
+        {%- endblock %}
+        {%- if prev %}
+        «&#160;&#160;<a href="{{ prev.link|e }}">{{ prev.title }}</a>
+        &#160;&#160;::&#160;&#160;
+        {%- endif %}
+        <a class="uplink" href="{{ pathto(master_doc) }}">{{ _('Contents') }}</a>
+        {%- if next %}
+        &#160;&#160;::&#160;&#160;
+        <a href="{{ next.link|e }}">{{ next.title }}</a>&#160;&#160;»
+        {%- endif %}
+        {%- block haikurel2 %}
+        {%- endblock %}
+        </p>
+{% endmacro %}
 
 {% block content %}
       <div class="header">
@@ -22,7 +39,7 @@
         {%- endblock %}
       </div>
       <div class="topnav">
-        <a class="uplink" href="{{ pathto(master_doc) }}">{{ _('Home page') }}</a>
+        {{ nav() }}
       </div>
       <div class="content">
         {#{%- if display_toc %}
@@ -34,7 +51,7 @@
         {% block body %}{% endblock %}
       </div>
       <div class="bottomnav">
-	<a class="uplink" href="{{ pathto(master_doc) }}">{{ _('Home page') }}</a>
+        {{ nav() }}
       </div>
 {% endblock %}
 
