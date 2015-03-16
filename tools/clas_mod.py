@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-clas_mod.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to change attribute of classification map
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

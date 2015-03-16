@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Sequential forward floating feature selection with Jeffries-Matusita Distance
-==============================================================================
-
-
 
 Reference: Pudil, P.; Novovicová, J. & Kittler, J.
            Floating search methods in feature selection Pattern recognition letters,
            Elsevier, 1994, 15, 1119-1125
 
 Authors: Michele Dalponte & Hans Ole Ørka & Pietro Zambelli
-Date: Oct, 2014
+
+Date: October 2014
 """
 from __future__ import print_function
 from itertools import combinations
@@ -46,19 +44,22 @@ def cov(data):
 
 
 def v2m(arr, id0, id1):
-    """Extract values from a covariance matrix. ::
+    """Extract values from a covariance matrix.
 
-        >>> arr = np.arange(1, 10).reshape((3, 3))
-        >>> arr
-        array([[1, 2, 3],
-               [4, 5, 6],
-               [7, 8, 9]])
-        >>> v2m(arr, (0, 1), (0, 1))
-        array([[1, 2],
-               [4, 5]])
-        >>> v2m(arr, (0, 2), (0, 2))
-        array([[1, 3],
-               [7, 9]])
+    >>> arr = np.arange(1, 10).reshape((3, 3))
+    >>> arr
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+
+    >>> v2m(arr, (0, 1), (0, 1))
+    array([[1, 2],
+           [4, 5]])
+
+    >>> v2m(arr, (0, 2), (0, 2))
+    array([[1, 3],
+           [7, 9]])
+
     """
     x, y = np.array([(i0, i1) for i0 in id0 for i1 in id1]).T
     return arr[x, y].reshape((len(id0), len(id1)))

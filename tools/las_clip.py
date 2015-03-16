@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-las_clip.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to clip LAS file
+
+It use the **las_stem** library
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

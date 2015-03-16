@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 22 11:03:09 2014
+Authors: Pietro Zambelli
 
-@author: pietro
+Date: October 2014
 """
 import numpy as np
 

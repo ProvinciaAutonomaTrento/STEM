@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-image_mask.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to set up a mask. It save a variable with the name source of the
+choosen vector map.
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

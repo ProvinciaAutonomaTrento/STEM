@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+Library to do classification using different methods
+
+Authors: Pietro Zambelli
+
+Date: October 2014
+"""
+
 from __future__ import print_function
 
 # from python standard library
@@ -235,10 +243,7 @@ def find_best(models, strategy=np.mean, key='scores'):
     """Return a tuple with the order of the best model and a dictionary with
     the models parameters.
 
-    Return
-    -------
-
-    ([(score0, key0), (score1, key1), ...], {key0: Model0, key1: Model1})
+    :return: ([(score0, key0), (score1, key1), ...], {key0: Model0, key1: Model1})
     """
     mods = {m.__name__: 0. for m in set(model['model'] for model in models)}
     best = {}
@@ -324,10 +329,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
     :param nodata: value of nodata category, default: None
     :type nodata: numeric
 
-    Returns
-    -------
-
-    A tuple with two array: X and y
+    :return: A tuple with two array: X and y
     """
     if raster_file:
         rast = read_raster(raster_file)
@@ -517,49 +519,49 @@ class MLToolBox(object):
         :param raster_file: Raster file with the pixel bands to be classified.
         :type raster_file: str, raster input file/path
         :param vector_file: Vector input file with the training areas to train
-            the model.
+                            the model.
         :type vector_file: str, vector input file/path
         :param column: Column name with the data that will be used to train
-            the models.
+                       the models.
         :type column: str, column name
         :param output_file: Output file where the model results are stored.
         :type output_file: output file/path
         :param models: List of dictionaries containing the models that will
-            be tested.
+                       be tested.
         :type models: list of dictionaries
         :param scoring: Scoring function name to use during the
-        cross-validation and test.
-            valid string are:
-            ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
-            ``adjusted_rand_score``, ``mean_absolute_error``,
-            ``mean_squared_error``, ``r2``
+                        cross-validation and test. Valid string are:
+                        ``accuracy``, ``f1``, ``precision``, ``recall``,
+                        ``roc_auc``, ``adjusted_rand_score``,
+                        ``mean_absolute_error``, ``mean_squared_error``, ``r2``
         :type scoring: str
         :param score_fun: Scoring function to use during the cross-validation
-            and test.
+                          and test.
         :type score_fun: function
-        :param n_folds: Number of folds that will be used during
-            the cross-validation.
+        :param n_folds: Number of folds that will be used during the
+                        cross-validation.
         :type n_folds: int, default=5
         :param n_jobs: Number of processors that will be used during
-            the cross-validation.
+                       the cross-validation.
         :type n_jobs: int or None, default=1
         :param best_strategy: Function to select the best model mased on
-            the cross-validated scores, models wiht higher values is selected.
+                              the cross-validated scores, models wiht higher
+                              values is selected.
         :type best_strategy: function, default: mean
         :param scaler: Instance that scale the data-set before apply
-            the model.
+                       the model.
         :type scaler: Instance with fit and transform methods
         :param fselector: Instance that select the most relevant features
-            in the data-set before apply the model.
+                          in the data-set before apply the model.
         :type fselector: Instance with fit and transform methods
         :param decomposer: Instance for the decomposition of the data-set
-            before apply the model.
+                           before apply the model.
         :type decomposer: Instance with fit and transform methods
         :param transform: Set a function to transform the target before apply
-            the model.
+                          the model.
         :type transform: function
         :param untrasform: Set a function to remove the transformation before write
-            the model result.
+                           the model result.
         :type untrasform: function
         """
         self.X = None
@@ -697,19 +699,18 @@ class MLToolBox(object):
         :param decomposer: Object with methods: ``fit`` and ``transform``.
         :type decomposer: instance
         :param trans: List of transformer instances that will be applied in
-            sequence.
+                      sequence.
         :type trans: list of instances
         :param fscolumns: Boolean array with the data column that will be
-            selected.
+                          selected.
         :type fscolumns: boolean array
         :param fsfile: Path where to save the boolean array selected by the
-            feature selection process.
+                       feature selection process.
         :type fsfile: path
-        param fsfit: True if you want to fit the feature selection
+        :param fsfit: True if you want to fit the feature selection
         :type fsfit: bool
 
-        Example
-        --------
+        Example:
 
         >>> mltb = MLToolBox()
         >>> scaler = StandardScaler(with_mean=True, with_std=True)

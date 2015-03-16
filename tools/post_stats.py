@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-post_stats.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to calculate statistics of raster maps
+
+It use the **grass_stem** library and it run several times *r.univar* GRASS
+command.
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

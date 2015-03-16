@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-stem_plugin.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Date: August 2014
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+Authors: Luca Delucchi, Salvatore La Rosa
+
+Copyright: (C) 2014 Luca Delucchi
+
+
+This create the menu in the toolbar and the toolbox
 """
 
 __author__ = 'Luca Delucchi'
@@ -37,7 +35,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from stem_base_dialogs import SettingsDialog, helpDialog
 from stem_toolbox import STEMToolbox
-from stem_utils import STEMSettings, STEMUtils, STEMMessageHandler
+from stem_utils import STEMSettings, STEMMessageHandler
 
 
 class STEMPlugin:
@@ -116,16 +114,14 @@ class STEMPlugin:
 
     def load(self):
         """Load parameters from a file"""
-        setpath = str(STEMSettings.s.fileName())
         myfile = QFileDialog.getOpenFileName(None, "Selezionare il file con la"
-                                             "configurazione da caricare","")
+                                             "configurazione da caricare", "")
         import ConfigParser
         newconfig = ConfigParser.ConfigParser()
         newconfig.read(myfile)
         newsections = newconfig.sections()
         oldconfig = ConfigParser.ConfigParser()
         oldconfig.read(STEMSettings.s.fileName())
-        oldsections = oldconfig.sections()
         for news in newsections:
             items = newconfig.items(news)
             for i in items:

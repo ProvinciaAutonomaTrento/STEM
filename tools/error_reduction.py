@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-error_reduction.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to reduce errors after classification
+
+It use the **grass_stem** library and it run *r.neighbors* or *r.reclass.area*
+GRASS command depending on the options choosen.
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

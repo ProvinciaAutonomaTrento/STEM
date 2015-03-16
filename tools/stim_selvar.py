@@ -25,6 +25,10 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
 from sklearn.svm import LinearSVC
 import traceback
+from machine_learning import MLToolBox, SEP, NODATA
+import pickle as pkl
+import os
+import numpy as np
 
 
 class STEMToolsDialog(BaseDialog):
@@ -96,8 +100,6 @@ class STEMToolsDialog(BaseDialog):
 
             nfold = int(self.Linedit3.text())
             models = self.getModel()
-            feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
 
             mltb = MLToolBox(vector_file=invectsource, column=invectcol,
                              use_columns=ncolumnschoose,
@@ -118,7 +120,8 @@ class STEMToolsDialog(BaseDialog):
 
             # ------------------------------------------------------------
             # Extract training samples
-
+            trnpath = os.path.join(home,
+                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
             print('    From:')
             print('      - vector: %s' % mltb.vector)
             print('      - training column: %s' % mltb.column)
@@ -127,7 +130,7 @@ class STEMToolsDialog(BaseDialog):
             if mltb.raster:
                 print('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=args.nodata, dtype=np.uint32)
+                                         nodata=NODATA, dtype=np.uint32)
 
             X = X.astype(float)
             print('\nTraining sample shape:', X.shape)

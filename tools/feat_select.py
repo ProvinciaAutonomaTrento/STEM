@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
-feat_select.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to select feature using Sequential Forward Floating Feature Selection
+(SSF).
+
+It use the STEM library **machine_learning** and **feature_selection** and
+the external *numpy*
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,6 +31,9 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
 from feature_selection import SSF
 import traceback
+from machine_learning import MLToolBox, SEP, NODATA
+import numpy as np
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -43,6 +52,11 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
+
+        mets = ['mean', 'min', 'median']
+        self.lm = "Selezione la strategia da utilizzare"
+        self._insertMethod(mets, self.lm, 0)
+        self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -96,8 +110,7 @@ class STEMToolsDialog(BaseDialog):
 
             nfold = int(self.Linedit3.text())
             models = self.getModel()
-            feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
+            meth = str(self.MethodInput.currentText())
 
             mltb = MLToolBox(vector_file=invectsource, column=invectcol,
                              use_columns=ncolumnschoose,
@@ -112,13 +125,11 @@ class STEMToolsDialog(BaseDialog):
                              transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
-            nodata = -9999
-            overwrite = False
-            delimiter = ';'
 
             # ------------------------------------------------------------
             # Extract training samples
-
+            trnpath = os.path.join(home,
+                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
             print('    From:')
             print('      - vector: %s' % mltb.vector)
             print('      - training column: %s' % mltb.column)
@@ -127,14 +138,14 @@ class STEMToolsDialog(BaseDialog):
             if mltb.raster:
                 print('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=args.nodata, dtype=np.uint32)
+                                         nodata=NODATA, dtype=np.uint32)
 
             X = X.astype(float)
             print('\nTraining sample shape:', X.shape)
 
             # --------------------------------------------------------------
             # Feature selector
-            fselector = SSF(strategy=getattr(np, args.SSF_strategy))
+            fselector = SSF(strategy=getattr(np, meth))
 
             # ------------------------------------------------------------
             # Transform the input data
