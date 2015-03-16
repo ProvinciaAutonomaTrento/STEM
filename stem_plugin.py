@@ -37,7 +37,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from stem_base_dialogs import SettingsDialog, helpDialog
 from stem_toolbox import STEMToolbox
-from stem_utils import STEMSettings, STEMUtils
+from stem_utils import STEMSettings, STEMUtils, STEMMessageHandler
 
 
 class STEMPlugin:
@@ -71,6 +71,10 @@ class STEMPlugin:
         self.stemMenu.addAction(QIcon.fromTheme('document-save'),
                                 "&Salvare tutti i parametri delle impostazioni"
                                 " di STEM in un file", self.save)
+        self.stemMenu.addAction(QIcon.fromTheme('document-open'),
+                                "&Importa i parametri delle impostazioni di "
+                                "STEM da un file precedentemente salvato",
+                                self.load)
         self.stemMenu.addAction(QIcon.fromTheme('help-contents'),
                                 "&Help", self.help)
 
@@ -100,7 +104,33 @@ class STEMPlugin:
 
     def save(self):
         """Save parameters to a file"""
-        STEMUtils.saveParameters()
+        # save in different way
+        # STEMUtils.saveParameters()
+        import shutil
+        import tempfile
+        f = tempfile.NamedTemporaryFile(delete=False)
+        name = f.name
+        shutil.copy(STEMSettings.s.fileName(), name)
+        STEMMessageHandler.success("Configurazione salvata in {n}, si prega"
+                                   "di rimuovere i tools non utili".format(n=name))
+
+    def load(self):
+        """Load parameters from a file"""
+        setpath = str(STEMSettings.s.fileName())
+        myfile = QFileDialog.getOpenFileName(None, "Selezionare il file con la"
+                                             "configurazione da caricare","")
+        import ConfigParser
+        newconfig = ConfigParser.ConfigParser()
+        newconfig.read(myfile)
+        newsections = newconfig.sections()
+        oldconfig = ConfigParser.ConfigParser()
+        oldconfig.read(STEMSettings.s.fileName())
+        oldsections = oldconfig.sections()
+        for news in newsections:
+            items = newconfig.items(news)
+            for i in items:
+                oldconfig.set(news, i[0], i[1])
+        STEMMessageHandler.success("Opzioni caricate correttamente")
 
     def help(self):
         """Show the help dialog"""
