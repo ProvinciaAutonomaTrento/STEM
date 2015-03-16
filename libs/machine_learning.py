@@ -514,46 +514,53 @@ class MLToolBox(object):
                    transform=None, untransform=None):
         """Method to set class attributes, the attributes are:
 
-        Parameters
-        ----------
-
-        raster_file : str, raster input file/path
-            Raster file with the pixel bands to be classified.
-        vector_file : str, vector input file/path
-            Vector input file with the training areas to train the model.
-        column: str, column name
-            Column name with the data that will be used to train the models.
-        output_file : output file/path
-            Output file where the model results are stored.
-        models : list of dictionaries
-            List of dictionaries containing the models that will be tested.
-        scoring : str
-            Scoring function name to use during the cross-validation and test.
+        :param raster_file: Raster file with the pixel bands to be classified.
+        :type raster_file: str, raster input file/path
+        :param vector_file: Vector input file with the training areas to train
+            the model.
+        :type vector_file: str, vector input file/path
+        :param column: Column name with the data that will be used to train
+            the models.
+        :type column: str, column name
+        :param output_file: Output file where the model results are stored.
+        :type output_file: output file/path
+        :param models: List of dictionaries containing the models that will
+            be tested.
+        :type models: list of dictionaries
+        :param scoring: Scoring function name to use during the
+        cross-validation and test.
             valid string are:
             ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
             ``adjusted_rand_score``, ``mean_absolute_error``,
             ``mean_squared_error``, ``r2``
-        score_func : function
-            Scoring function to use during the cross-validation and test.
-        n_folds : int, default=5
-            Number of folds that will be used during the cross-validation.
-        n_jobs : int or None, default=1
-            Number of processors that will be used during the cross-validation.
-        best_strategy: function, default: mean
-            Function to select the best model mased on the cross-validated
-            scores, models wiht higher values is selected.
-        scaler : Instance with fit and transform methods
-            Instance that scale the data-set before apply the model.
-        fselector : Instance with fit and transform methods
-            Instance that select the most relevant features in the data-set
-            before apply the model.
-        decomposer : Instance with fit and transform methods
-            Instance for the decomposition of the data-set before apply the
-            model.
-        transform : Set a function to transform the target before apply
+        :type scoring: str
+        :param score_fun: Scoring function to use during the cross-validation
+            and test.
+        :type score_fun: function
+        :param n_folds: Number of folds that will be used during
+            the cross-validation.
+        :type n_folds: int, default=5
+        :param n_jobs: Number of processors that will be used during
+            the cross-validation.
+        :type n_jobs: int or None, default=1
+        :param best_strategy: Function to select the best model mased on
+            the cross-validated scores, models wiht higher values is selected.
+        :type best_strategy: function, default: mean
+        :param scaler: Instance that scale the data-set before apply
             the model.
-        untrasform : Set a function to remove the transformation before write
+        :type scaler: Instance with fit and transform methods
+        :param fselector: Instance that select the most relevant features
+            in the data-set before apply the model.
+        :type fselector: Instance with fit and transform methods
+        :param decomposer: Instance for the decomposition of the data-set
+            before apply the model.
+        :type decomposer: Instance with fit and transform methods
+        :param transform: Set a function to transform the target before apply
+            the model.
+        :type transform: function
+        :param untrasform: Set a function to remove the transformation before write
             the model result.
+        :type untrasform: function
         """
         self.X = None
         self.y = None
@@ -596,23 +603,23 @@ class MLToolBox(object):
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
 
-        Parameters
-        ----------
-
-        raster_file: path
-            Raster file name/path used to extract the training values.
-        vector_file: path
-            Vector file name/path used to assign a valeu/class for the rainign.
-        column: str
-            Column name containing the values/classes.
-        csv_file: path,
-            CSV file name containing the data and the training values.
-        delimiter: str, default=SEP
-            Delimiter that will be used when savint to CSV.
-        nodata: numeric
-            Value to use for nodata
-        dtype: numpy dtype
-            Type of the raster map
+        :param raster_file: Raster file name/path used to extract the training
+            values.
+        :type raster_file: path
+        :param vector_file: Vector file name/path used to assign a valeu/class
+            for the rainign.
+        :type vector_file: str, path/name
+        :param column: Column name containing the values/classes.
+        :type column: str
+        :param csv_file: CSV file name containing the data and the training
+            values.
+        :type csv_file: path,
+        :param delimiter: Delimiter that will be used when savint to CSV.
+        :type delimiter: str, default=SEP
+        :param nodata: Value to use for nodata
+        :type nodata: numeric
+        :param dtype: Type of the raster map
+        :type dtype: numpy dtype
         """
         self.raster = self.raster if raster_file is None else raster_file
         self.vector = self.vector if vector_file is None else vector_file
@@ -633,6 +640,28 @@ class MLToolBox(object):
     def extract_test(self, vector_file=None, column=None, use_columns=None,
                      csv_file=None, raster_file=None, delimiter=SEP,
                      nodata=None, dtype=np.uint32):
+        """Return the data and classes array for testing and save them on
+        self.X and self.y, see: ``extract_training`` function for more detail
+        on the parameters.
+
+        :param raster_file: Raster file name/path used to extract the training
+            values.
+        :type raster_file: path
+        :param vector_file: Vector file name/path used to assign a valeu/class
+            for the rainign.
+        :type vector_file: str, path/name
+        :param column: Column name containing the values/classes.
+        :type column: str
+        :param csv_file: CSV file name containing the data and the training
+            values.
+        :type csv_file: path,
+        :param delimiter: Delimiter that will be used when savint to CSV.
+        :type delimiter: str, default=SEP
+        :param nodata: Value to use for nodata
+        :type nodata: numeric
+        :param dtype: Type of the raster map
+        :type dtype: numpy dtype
+        """
         self.traster = ((self.traster if self.traster is None else self.raster)
                         if raster_file is None else raster_file)
         self.tvector = self.tvector if vector_file is None else vector_file
@@ -657,29 +686,27 @@ class MLToolBox(object):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
-        Parameters
-        -----------
-
-        X : array
-            Float 2D array with the data to be transformed
-        y : array
-            Array with the target values or classes
-        scaler : instance
-            Object with methods: ``fit`` and ``transform``.
-        fselector : instance
-            Object with methods: ``fit`` and ``transform``.
-        decomposer : instance
-            Object with methods: ``fit`` and ``transform``.
-        trans : list of instances
-            List of transformer instances that will be applied in
+        :param X: Float 2D array with the data to be transformed
+        :type X: array
+        :param y: Array with the target values or classes
+        :type y: array
+        :param scaler: Object with methods: ``fit`` and ``transform``.
+        :type scaler: instance
+        :param fselector: Object with methods: ``fit`` and ``transform``.
+        :type fselector: instance
+        :param decomposer: Object with methods: ``fit`` and ``transform``.
+        :type decomposer: instance
+        :param trans: List of transformer instances that will be applied in
             sequence.
-        fscolumns : boolean array
-            Boolean array with the data column that will be selected.
-        fsfile : path
-            Path where to save the boolean array selected by the feature
-            selection process.
-        fsfit: bool
-            True if you want to fit the feature selection
+        :type trans: list of instances
+        :param fscolumns: Boolean array with the data column that will be
+            selected.
+        :type fscolumns: boolean array
+        :param fsfile: Path where to save the boolean array selected by the
+            feature selection process.
+        :type fsfile: path
+        param fsfit: True if you want to fit the feature selection
+        :type fsfit: bool
 
         Example
         --------
@@ -740,6 +767,7 @@ class MLToolBox(object):
                 pass
         return Xt
 
+
     def cross_validation(self, models=None, X=None, y=None,
                          scoring=None, score_func=None,
                          n_folds=None, n_jobs=None, cv=None,
@@ -747,32 +775,33 @@ class MLToolBox(object):
                          fmt=None):
         """Return a numpy array with the scoring results for each model.
 
-        Parameters
-        ----------
-
-        models: list of dictionaries
-            List of dictionaries, see classifiers.py and regressors.py file
-            for examples.
-        X: 2D array
-            It is a 2D array with the data.
-        y: 1D array
-            It is a 1D array with the values/classes used to assess the
-            performance of the model.
-        scoring : str
-            Scoring function name to use during the cross-validation and test.
-            valid string are:
+        :param models: List of dictionaries, see classifiers.py and
+            regressors.py file for examples.
+        :type models: list of dictionaries
+        :param X: It is a 2D array with the data.
+        :type X: 2D array
+        :param y: It is a 1D array with the values/classes used to assess
+            the performance of the model.
+        :type y: 1D array
+        :param scoring: Scoring function name to use during the
+            cross-validation and test. valid string are:
             ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
             ``adjusted_rand_score``, ``mean_absolute_error``,
             ``mean_squared_error``, ``r2``
-        score_func : function
-            Scoring function to use during the cross-validation and test.
-        n_folds: int
-            Number of folds that will be used during the cross-validation. If
-            n_folds < 0 Leave One Out method is used.
-        n_jobs: int
-            Number of processors used for the cross-validation
-        cv:
-            Cross-Validation instance.
+        :type scoring: str
+        :param score_func: Scoring function to use during the cross-validation
+            and test.
+        :type score_func: function
+        :param n_folds: Number of folds that will be used during the
+            cross-validation. If n_folds < 0 Leave One Out method is used.
+        :type n_folds: int
+        :param n_jobs: Number of processors used for the cross-validation
+        :type n_jobs: int
+        :param cv: Cross-Validation instance.
+        :type cv: cross-validator
+        :param transform: Function to transform y data before use the values
+            for train/test.
+        :type transform: function
         """
         y = self.y if y is None else y
         self.transform = transform if transform is not None else self.transform
@@ -797,7 +826,38 @@ class MLToolBox(object):
 
     def test(self, Xtest, ytest, models=None, X=None, y=None,
              scoring=None, score_func=None, transform=None):
-        """Return a list with the score for each model."""
+        """Return a list with the score for each model.
+
+        :param Xtest: It is a 2D array with the test data.
+        :type Xtest: 2D array
+        :param ytest: It is a 1D array with the values/classes used to test
+            the performance of the model.
+        :type ytest: 1D array
+        :param models: List of dictionaries, see classifiers.py and
+            regressors.py file for examples.
+        :type models: list of dictionaries
+        :param X: It is a 2D array with the training data.
+        :type X: 2D array
+        :param y: It is a 1D array with the values/classes used to train the
+            model.
+        :type y: 1D array
+        :param scoring: Scoring function name to use during the
+            cross-validation and test. valid string are:
+            ``accuracy``, ``f1``, ``precision``, ``recall``, ``roc_auc``,
+            ``adjusted_rand_score``, ``mean_absolute_error``,
+            ``mean_squared_error``, ``r2``
+        :type scoring: str
+        :param score_func: Scoring function to use during the cross-validation
+            and test.
+        :type score_func: function
+        :param transform: Function to transform y data before use the values
+            for train/test.
+        :type transform: function
+        :param n_jobs: Number of processors used for the cross-validation
+        :type n_jobs: int
+        :param cv: Cross-Validation instance.
+        :type cv: cross-validator
+        """
         X = self.X if X is None else X
         y = self.y if y is None else y
         self.transform = transform if transform is not None else self.transform
