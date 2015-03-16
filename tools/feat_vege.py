@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    feat_vege.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+feat_vege.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'

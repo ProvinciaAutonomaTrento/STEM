@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    stem_utils.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+stem_utils.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'
@@ -43,7 +39,10 @@ settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__f
 
 
 def escapeAndJoin(strList):
-    """Escapes arguments and return them joined in a string"""
+    """Escapes arguments and return them joined in a string
+
+    :param list strList: a list of string
+    """
     joined = ''
     for s in strList:
         if s.find(" ") is not -1:
@@ -55,6 +54,7 @@ def escapeAndJoin(strList):
 
 
 class CheckableComboBox(QComboBox):
+    """New class to create chackable QComboBox"""
     def __init__(self):
         super(CheckableComboBox, self).__init__()
         self.view().pressed.connect(self.handleItemPressed)
@@ -69,7 +69,12 @@ class CheckableComboBox(QComboBox):
 
 
 class BaseDialog(QDialog, baseDialog):
+    """The main class for all the tools.
+    It has most of the functions to exchange information beetween user, tool
+    and backend.
 
+    :param str title: the name of the tool
+    """
     def __init__(self, title, parent=None):
         QDialog.__init__(self, parent)
         self.dialog = baseDialog
@@ -148,7 +153,11 @@ class BaseDialog(QDialog, baseDialog):
         self.label.setText(self.tr("", "Dati di input"))
 
     def _insertFileInput(self, pos=0):
-        """Function to add a second output"""
+        """Function to add QLineEdit and QPushButton to select the data
+        outside QGIS (for example LAS files)
+
+        :param int pos: the position of form in the input layout
+        """
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_output")
         self.labelF = QLabel()
@@ -161,14 +170,17 @@ class BaseDialog(QDialog, baseDialog):
         self.BrowseButtonIn = QPushButton()
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
-        self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
+        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input)
         self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.BrowseInFile, self.TextIn))
 
     def _insertSingleInput(self, label="Dati di input"):
-        """Function to add ComboBox Widget where insert a single input file"""
+        """Function to add ComboBox Widget where insert a single input file
+
+        :param str label: the label of form
+        """
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
         self.label = QLabel()
@@ -184,7 +196,11 @@ class BaseDialog(QDialog, baseDialog):
 
     def _insertSecondSingleInput(self, pos=1, label="Dati di input"):
         """Function to add a second ComboBox Widget where insert a single
-        input file"""
+        input file
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_input2 = QHBoxLayout()
         self.horizontalLayout_input2.setObjectName("horizontalLayout_input2")
         self.label2 = QLabel()
@@ -200,7 +216,11 @@ class BaseDialog(QDialog, baseDialog):
         self.label2.setText(self.tr("", label))
 
     def _insertFileInputOption(self, label, pos=0):
-        """Function to add a second output"""
+        """Function to add a second output
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_inputopt = QHBoxLayout()
         self.horizontalLayout_inputopt.setObjectName("horizontalLayout_inputopt")
         self.labelFO = QLabel()
@@ -220,8 +240,10 @@ class BaseDialog(QDialog, baseDialog):
                      partial(self.BrowseInFile, self.TextInOpt))
 
     def _insertLayerChoose(self, pos=2):
-        # TODO da rimuovere
-        """Function to add a LineEdit Widget for the layers list"""
+        """Function to add a LineEdit Widget for the layers list
+
+        :param int pos: the position of form in the input layout
+        """
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
@@ -241,6 +263,13 @@ class BaseDialog(QDialog, baseDialog):
     def _insertLayerChooseCheckBox(self, label="Selezionare le bande da "
                                                "utilizzare cliccandoci sopra",
                                    combo=True, pos=2):
+        """Function to insert a CheckBox
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        :param bool combo: boolean to choose if the CheckBox should be
+                           checkable or not
+        """
         self.horizontalLayout_layer = QHBoxLayout()
         self.horizontalLayout_layer.setObjectName("horizontalLayout_layer")
         self.label_layer = QLabel()
@@ -253,10 +282,18 @@ class BaseDialog(QDialog, baseDialog):
             self.layer_list = QComboBox()
         self.layer_list.setObjectName("layer_list")
         self.horizontalLayout_layer.addWidget(self.layer_list)
-        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
     def _insertLayerChooseCheckBox2(self, label, combo=True, pos=3):
+        """Function to insert a second CheckBox
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        :param bool combo: boolean to choose if the CheckBox should be
+                           checkable or not
+        """
         self.horizontalLayout_layer2 = QHBoxLayout()
         self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
         self.label_layer2 = QLabel()
@@ -269,10 +306,18 @@ class BaseDialog(QDialog, baseDialog):
             self.layer_list2 = QComboBox()
         self.layer_list2.setObjectName("layer_list2")
         self.horizontalLayout_layer2.addWidget(self.layer_list2)
-        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_layer2)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_layer2)
         self.label_layer2.setText(self.tr("", label))
 
-    def _insertLayerChooseCheckBox3(self, label, combo=True):
+    def _insertLayerChooseCheckBox3(self, label, combo=True, pos=4):
+        """Function to insert a third CheckBox
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        :param bool combo: boolean to choose if the CheckBox should be
+                           checkable or not
+        """
         self.horizontalLayout_layer3 = QHBoxLayout()
         self.horizontalLayout_layer3.setObjectName("horizontalLayout_layer3")
         self.label_layer3 = QLabel()
@@ -285,10 +330,18 @@ class BaseDialog(QDialog, baseDialog):
             self.layer_list3 = QComboBox()
         self.layer_list3.setObjectName("layer_list3")
         self.horizontalLayout_layer3.addWidget(self.layer_list3)
-        self.verticalLayout_input.insertLayout(4, self.horizontalLayout_layer3)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_layer3)
         self.label_layer3.setText(self.tr("", label))
 
     def _insertLayerChooseCheckBox4(self, label, pos=5, combo=True):
+        """Function to insert a fourth CheckBox
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        :param bool combo: boolean to choose if the CheckBox should be
+                           checkable or not
+        """
         self.horizontalLayout_layer4 = QHBoxLayout()
         self.horizontalLayout_layer4.setObjectName("horizontalLayout_layer4")
         self.label_layer4 = QLabel()
@@ -306,7 +359,12 @@ class BaseDialog(QDialog, baseDialog):
         self.label_layer4.setText(self.tr("", label))
 
     def _insertMethod(self, methods, label, posnum):
-        """Function to add ComboBox Widget"""
+        """Function to add ComboBox Widget
+
+        :param list methods: list of method to add to the ComboBox
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_method = QHBoxLayout()
         self.horizontalLayout_method.setObjectName("horizontalLayout_method")
         self.labelmethod = QLabel()
@@ -324,7 +382,15 @@ class BaseDialog(QDialog, baseDialog):
 
     def _insertThresholdDouble(self, minn, maxx, step, posnum, deci=2,
                                label="Seleziona il threshold da utilizzare"):
-        """Function to add SpinBox Widget for decimal number"""
+        """Function to add SpinBox Widget for decimal number
+
+        :param float minn: minimum value for SpinBox
+        :param float maxx: maximum value for SpinBox
+        :param float step: the value for step in the SpinBox
+        :param int posnum: the position of form in the input layout
+        :param deci int: the number of decimal to use
+        :param str label: the label of form
+        """
         self.horizontalLayout_thred = QHBoxLayout()
         self.horizontalLayout_thred.setObjectName("horizontalLayout_thred")
         self.LabelThred = QLabel()
@@ -343,7 +409,15 @@ class BaseDialog(QDialog, baseDialog):
 
     def _insertSecondThresholdDouble(self, minn, maxx, step, posnum, deci=2,
                                      label="Seleziona il threshold da utilizzare"):
-        """Function to add SpinBox Widget for decimal number"""
+        """Function to add second SpinBox Widget for decimal number
+
+        :param float minn: minimum value for SpinBox
+        :param float maxx: maximum value for SpinBox
+        :param float step: the value for step in the SpinBox
+        :param int posnum: the position of form in the input layout
+        :param deci int: the number of decimal to use
+        :param str label: the label of form
+        """
         self.horizontalLayout_thred2 = QHBoxLayout()
         self.horizontalLayout_thred2.setObjectName("horizontalLayout_thred2")
         self.LabelThred2 = QLabel()
@@ -362,7 +436,14 @@ class BaseDialog(QDialog, baseDialog):
 
     def _insertThresholdInteger(self, minn, maxx, step, posnum,
                                 label="Seleziona il threshold da utilizzare"):
-        """Function to add SpinBox Widget for integer number"""
+        """Function to add SpinBox Widget for integer number
+
+        :param int minn: minimum value for SpinBox
+        :param int maxx: maximum value for SpinBox
+        :param int step: the value for step in the SpinBox
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_threi = QHBoxLayout()
         self.horizontalLayout_threi.setObjectName("horizontalLayout_threi")
         self.LabelThrei = QLabel()
@@ -379,7 +460,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelThrei.setText(self.tr("", label))
 
     def _insertFirstLineEdit(self, label, posnum):
-        """Function to add a LineEdit Widget"""
+        """Function to add a LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_linedit = QHBoxLayout()
         self.horizontalLayout_linedit.setObjectName("horizontalLayout_linedit")
         self.LabelLinedit = QLabel()
@@ -394,7 +479,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelLinedit.setText(self.tr("", label))
 
     def _insertSecondLineEdit(self, label, posnum):
-        """Function to add a LineEdit Widget"""
+        """Function to add a second LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_linedit2 = QHBoxLayout()
         self.horizontalLayout_linedit2.setObjectName("horizontalLayout_linedit2")
         self.LabelLinedit2 = QLabel()
@@ -409,7 +498,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelLinedit2.setText(self.tr("", label))
 
     def _insertThirdLineEdit(self, label, posnum):
-        """Function to add a LineEdit Widget"""
+        """Function to add a third LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_linedit3 = QHBoxLayout()
         self.horizontalLayout_linedit3.setObjectName("horizontalLayout_linedit3")
         self.LabelLinedit3 = QLabel()
@@ -424,7 +517,12 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelLinedit3.setText(self.tr("", label))
 
     def _insertFirstCombobox(self, label, posnum, items=None):
-        """Function to add a ComboBox Widget"""
+        """Function to add a ComboBox Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param list items: the list of elements to add in the ComboBox
+        """
         self.horizontalLayout_combo = QHBoxLayout()
         self.horizontalLayout_combo.setObjectName("horizontalLayout_combo")
         self.LabelCombo = QLabel()
@@ -442,7 +540,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelCombo.setText(self.tr("", label))
 
     def _insertSecondCombobox(self, label, posnum, items=None):
-        """Function to add a ComboBox Widget"""
+        """Function to add a second ComboBox Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param list items: the list of elements to add in the ComboBox"""
         self.horizontalLayout_combo2 = QHBoxLayout()
         self.horizontalLayout_combo2.setObjectName("horizontalLayout_combo2")
         self.LabelCombo2 = QLabel()
@@ -460,7 +562,12 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelCombo2.setText(self.tr("", label))
 
     def _insertThirdCombobox(self, label, posnum, items=None):
-        """Function to add a ComboBox Widget"""
+        """Function to add a third ComboBox Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param list items: the list of elements to add in the ComboBox
+        """
         self.horizontalLayout_combo3 = QHBoxLayout()
         self.horizontalLayout_combo3.setObjectName("horizontalLayout_combo3")
         self.LabelCombo3 = QLabel()
@@ -478,7 +585,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelCombo3.setText(self.tr("", label))
 
     def _insertSecondOutput(self, label, posnum):
-        """Function to add a second output"""
+        """Function to add a second output
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_output2 = QHBoxLayout()
         self.horizontalLayout_output2.setObjectName("horizontalLayout_output2")
         self.LabelOut2 = QLabel()
@@ -496,7 +607,11 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelOut2.setText(self.tr("", label))
 
     def _insertTextArea(self, label, posnum):
-        """Function to add a text area"""
+        """Function to add a text area
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
         self.horizontalLayout_textarea = QHBoxLayout()
         self.horizontalLayout_textarea.setObjectName("horizontalLayout_textarea")
         self.LabelTextarea = QLabel()
@@ -511,6 +626,12 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelTextarea.setText(self.tr("Dialog", label))
 
     def _insertCheckbox(self, label, posnum, state=False):
+        """Function to add a QCheckBox
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param bool state: set True o False to che checkbox
+        """
         self.horizontalLayout_checkbox = QHBoxLayout()
         self.horizontalLayout_checkbox.setObjectName("horizontalLayout_checkbox")
         self.LabelCheckbox = QLabel()
@@ -526,6 +647,12 @@ class BaseDialog(QDialog, baseDialog):
         self.checkbox.setChecked(state)
 
     def _insertSecondCheckbox(self, label, posnum, state=False):
+        """Function to add a second QCheckBox
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param bool state: set True o False to che checkbox
+        """
         self.horizontalLayout_checkbox2 = QHBoxLayout()
         self.horizontalLayout_checkbox2.setObjectName("horizontalLayout_checkbox2")
         self.LabelCheckbox2 = QLabel()
@@ -541,6 +668,12 @@ class BaseDialog(QDialog, baseDialog):
         self.checkbox2.setChecked(state)
 
     def _insertThirdCheckbox(self, label, posnum, state=False):
+        """Function to add a third QCheckBox
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param bool state: set True o False to che checkbox
+        """
         self.horizontalLayout_checkbox3 = QHBoxLayout()
         self.horizontalLayout_checkbox3.setObjectName("horizontalLayout_checkbox3")
         self.LabelCheckbox3 = QLabel()
@@ -571,28 +704,44 @@ class BaseDialog(QDialog, baseDialog):
         self.labelOpt.setText(self.tr("", label))
 
     def processError(self, error):
+        """"""
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
 
     def processFinished(self, exitCode, status):
+        """"""
         self.emit(SIGNAL("processFinished(int, QProcess::ExitStatus)"),
                   exitCode, status)
 
     # enables the OK button
     def enableRun(self, enable=True):
+        """Set to true the OK button
+
+        :param bool enable: Value to set
+        """
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(enable)
 
     def saveCommand(self, command):
-        """Save the command history to file"""
-        _path = os.path.join(QgsApplication.qgisSettingsDirPath(), "stem",
-                             "stem_command_history.txt")
+        """Save the command history to file
+
+        :param list command: the list of all parameter used
+        """
+        self.historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
+                                        "stem", "stem_command_history.txt")
+
         try:
-            hFile = codecs.open(_path, 'w', encoding='utf-8')
+            hFile = codecs.open(self.historypath, 'a', encoding='utf-8')
             hFile.write(" ".join(command) + '\n')
         except:
             raise
         hFile.close()
 
     def cutInput(self, inp, source, typ):
+        """Cut the input data according to a bounding box or a vector geometry
+
+        :param str inp: the name of input data
+        :param str source: the full path to source data
+        :param str typ: the type of data, it should be raster, image, vector
+        """
         self.mapDisplay(inp, typ)
         mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
@@ -641,6 +790,12 @@ class BaseDialog(QDialog, baseDialog):
         return outname.strip(), out, mask
 
     def cutInputMulti(self, inp, source, typ):
+        """Cut multiple data according to a bounding box or a vector geometry
+
+        :param str inp: the name of input data
+        :param str source: the full path to source data
+        :param str typ: the type of data, it should be raster, image, vector
+        """
         if len(inp) != len(source):
             STEMMessageHandler.error("Errore durante il ritaglio di più immagini")
         newinp = []
@@ -654,28 +809,34 @@ class BaseDialog(QDialog, baseDialog):
                 newsource.append(news)
         return newinp, newsource
 
-    def mapDisplay(self, source, typ):
+    def mapDisplay(self):
+        """Return the bounding box of QGIS map display"""
         render = self.iface.mapCanvas()
         rect = render.extent()
         self.rect_str = [str(rect.xMinimum()), str(rect.yMaximum()),
                          str(rect.xMaximum()), str(rect.yMinimum())]
 
     def onRunLocal(self):
+        """Function to run the command locally, redefined in each module"""
         pass
 
     def onRunServer(self):
+        """Function to run the command on the server, not yet developed"""
         STEMMessageHandler.warning("Esegui sul Server",
                                    "Opzione non ancora implementata")
-        pass
 
-    # stop the command execution
     def stop(self):
+        """Stop the command execution"""
         self.enableRun(True)
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
 
     def BrowseInFile(self, line, filt="LAS file (*.las)"):
-        """Function to check file in a directory"""
+        """Function to select existing file in a directory
+
+        :param obj line: the QLineEdit object to update
+        :param str filt: a string with the filter of directory
+        """
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file di"
                                             " input", "", filt)
         if os.path.exists(mydir):
@@ -685,7 +846,10 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def BrowseDir(self, line):
-        """Function to create new file in a directory"""
+        """Function to create new file in a directory
+
+        :param obj line: the QLineEdit object to update
+        """
         fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
         if fileName:
             try:
@@ -696,6 +860,10 @@ class BaseDialog(QDialog, baseDialog):
                                          'salvato. Errore: {1}'.format(fileName, error.strerror))
 
     def save(self, fileName=None):
+        """Function set the name of output file
+
+        :param str fileName: name of output file
+        """
         if fileName:
             self.path = fileName
         if self.path is None:
@@ -713,6 +881,10 @@ class BaseDialog(QDialog, baseDialog):
         self.overwrite = QFileInfo(path).exists()
 
     def finished(self, outFn):
+        """Function to advice the user about the status of analysis
+
+        :param str outFn: output full path
+        """
         fileInfo = QFileInfo(outFn)
         if fileInfo.exists():
             STEMMessageHandler.information("Finished", "Processing completed, "
@@ -721,11 +893,13 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.warning("Warning", "{0} not created.".format(outFn))
 
     def tr(self, context, text):
+        """Translate the text"""
         if context == '':
             context = 'STEM'
         return QCoreApplication.translate(context, text.decode('utf-8'))
 
     def SphinxUrl(self):
+        """Create the local url for the tool"""
         filename = "{tool}.html".format(tool=self.toolname.lower().replace(" ",
                                                                            "_"))
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
@@ -738,7 +912,7 @@ class BaseDialog(QDialog, baseDialog):
 
 
 class SettingsDialog(QDialog, settingsDialog):
-
+    """Dialog for setting"""
     def __init__(self, parent, iface):
         QDialog.__init__(self, parent)
         self.dialog = settingsDialog
@@ -767,6 +941,10 @@ class SettingsDialog(QDialog, settingsDialog):
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
     def _check(self, string):
+        """Check the type of string
+
+        :param obj string: a string, it should be as UnicodeType or StringType
+        """
         if isinstance(string, UnicodeType) or isinstance(string, StringType):
             return string
         else:
@@ -799,6 +977,10 @@ class SettingsDialog(QDialog, settingsDialog):
                 self.lineEdit_proj.setText('C:\OSGeo4W\share\proj')
 
     def BrowseBin(self, line):
+        """Choose an existing file and set it to a QLineEdit
+
+        :param obj line: the QLineEdit object to update
+        """
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file desiderato",
                                             "")
         if os.path.exists(mydir):
@@ -809,7 +991,10 @@ class SettingsDialog(QDialog, settingsDialog):
             STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def BrowseDir(self, line):
-        """"""
+        """Choose an existing directory and set it to a QLineEdit
+
+        :param obj line: the QLineEdit object to update
+        """
         mydir = QFileDialog.getExistingDirectory(None, "Selezionare il percorso desiderato",
                                                  "")
         if os.path.exists(mydir):
@@ -820,6 +1005,7 @@ class SettingsDialog(QDialog, settingsDialog):
             STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
     def _reject(self):
+        """"""
         pass
 
     def _accept(self):
@@ -834,6 +1020,7 @@ class SettingsDialog(QDialog, settingsDialog):
 
 
 class helpDialog(QDialog, helpDialog):
+    """Dialog for help manual"""
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         """Set up the help user interface"""
@@ -841,11 +1028,14 @@ class helpDialog(QDialog, helpDialog):
         self.setupUi(self)
 
     def fillfromUrl(self, url):
-        """Load a url in the Help window"""
+        """Load a url in the Help window
+
+        :param str url: the url to open, it should be local or web
+        """
         self.webView.load(QUrl(url))
 
     def home(self):
-        """Load the home page"""
+        """Load the home page from local path"""
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
                             'build', 'html', 'index.html')
         if platform.system().startswith('linux') or platform.system().startswith('darwin'):

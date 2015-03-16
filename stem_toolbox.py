@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    stem_toolbox.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+stem_toolbox.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'
@@ -89,6 +85,7 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
 
 
 class STEMToolbox(QDockWidget, toolboxDockWidget):
+    """Class for the STEM toolbox"""
     def __init__(self):
         QDockWidget.__init__(self, None)
         self.setupUi(self)
@@ -104,6 +101,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
         self.toolTree.doubleClicked.connect(self.executeTool)
 
     def executeTool(self):
+        """Function to execute the tool"""
         item = self.toolTree.currentItem()
         if isinstance(item, QGISTreeToolItem):
             menuTitle = []
@@ -140,6 +138,7 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
             dlg.exec_()
 
     def populateTree(self):
+        """Function to populate the toolbox tree"""
         self.toolTree.clear()
         for gr, modToolList in TOOLS.iteritems():
             groupItem = QTreeWidgetItem()
@@ -163,6 +162,10 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
 
 
 class TreeToolItem(QTreeWidgetItem):
+    """Class for STEM tool, it set itemtool image
+
+    :param str toolName: the name of tool
+    """
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
@@ -174,6 +177,10 @@ class TreeToolItem(QTreeWidgetItem):
 
 
 class QGISTreeToolItem(QTreeWidgetItem):
+    """Class for QGIS standard tool it set the QGIS icon
+
+    :param str toolName: the name of tool
+    """
     def __init__(self, toolName):
         QTreeWidgetItem.__init__(self)
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),

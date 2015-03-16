@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-***************************************************************************
-    grass_stem.py
-    ---------------------
-    Date                 : August 2014
-    Copyright            : (C) 2014 Luca Delucchi
-    Email                : luca.delucchi@fmach.it
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
+grass_stem.py
+---------------------
+Date                 : August 2014
+Copyright            : (C) 2014 Luca Delucchi
+Email                : luca.delucchi@fmach.it
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 """
 
 __author__ = 'Luca Delucchi'
@@ -35,12 +31,18 @@ stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
 
 
 def helpUrl(name):
-    """Create the url for GRASS manuals page"""
+    """Create the url for GRASS manuals page
+
+    :param str name: the name of grass command
+    """
     return "http://grass.osgeo.org/grass70/manuals/{name}.html".format(name=name)
 
 
 def readfile(path):
-    """Read the file and return a string"""
+    """Read the file and return a string
+
+    :param str path: the path to a file
+    """
     f = open(path, 'r')
     s = f.read()
     f.close()
@@ -48,7 +50,11 @@ def readfile(path):
 
 
 def writefile(path, s):
-    """Write the file from a string, new line should be added in the string"""
+    """Write the file from a string, new line should be added in the string
+
+    :param str path: the path to a file
+    :param str s: the string to write into file
+    """
     f = open(path, 'w')
     f.write(s)
     f.close()
@@ -57,7 +63,7 @@ PIPE = subprocess.PIPE
 
 
 class stemGRASS():
-
+    """The class to use GRASS GIS as backend of STEM plugin"""
     def __init__(self, pid, grassdatabase, location, grassbin, epsg):
 #        s = QSettings()
 #        # query GRASS 7 itself for its GISBASE
@@ -146,6 +152,10 @@ class stemGRASS():
             os.environ['SHELL'] = 'C:\Windows\system32\cmd.exe'
 
     def check_mask(self, mask):
+        """Check if a mask should be used
+
+        :param str mask: the path to the mask, None to remove it
+        """
         import grass.script.core as gcore
         if mask == '':
             runcom = gcore.Popen(['r.mask', '-r'])
@@ -166,6 +176,13 @@ class stemGRASS():
                     gcore.run_command('r.mask', vector=name)
 
     def import_grass(self, inp, intemp, typ, nl=None):
+        """Import data into GRASS database
+
+        :param str inp: the path to source data
+        :param str intemp: the name inside GRASS database
+        :param str typ: the type of data
+        :param list nl: a list containing the band to use of a raster
+        """
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
@@ -238,6 +255,11 @@ class stemGRASS():
                                 "Errore eseguendo g.region {err}".format(err=err))
 
     def vtorast(self, inp, column=None):
+        """Convert vector to rast
+
+        :param str inp: the input name
+        :param str column: the name of cloumn to use to assign value to raster
+        """
         import grass.script.core as gcore
         command = ['v.to.rast', 'input={name}'.format(name=inp),
                    'output={name}'.format(name=inp)]
@@ -253,6 +275,12 @@ class stemGRASS():
                             "Errore eseguendo v.to.rast {err}".format(err=err))
 
     def create_group(self, maps, gname, base=False):
+        """Crea a group of raster data
+
+        :param list maps: a list of maps name or a string if base is True
+        :param str gname: the name of group
+        :param bool base: if True maps is the prefix of maps to look for
+        """
         import grass.script.core as gcore
         if base:
             maps = gcore.list_grouped('rast', pattern='{base}*'.format(base=maps))[self.mapset]
@@ -267,6 +295,13 @@ class stemGRASS():
                             "Errore eseguendo i.group {err}".format(err=err))
 
     def export_grass(self, outemp, finalout, typ, remove=True):
+        """Export the result of analisys
+
+        :param str outemp: the output in GRASS
+        :param str finalout: the path for the output
+        :param str typ: the type of data
+        :param bool remove: remove this mapset
+        """
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
@@ -286,7 +321,18 @@ class stemGRASS():
 
     def las_import(self, inp, out, method, returnpulse=None, resolution=None,
                    percentile=None, trim=None):
-        """Import LAS file trhough r.in.lidar"""
+        """Import LAS file trhough r.in.lidar
+
+        :param str inp: the input source
+        :param str out: the out name in GRASS database
+        :param str method: the method to be use during import
+        :param str returnpulse: import points of selected return type,
+                                acpted values are first, last, mid
+        :param str resolution: the resolution for outpat map
+        :param str percentile: percentile of the values
+        :param str trim: discard <trim> percent of the smallest and <trim>
+                         percent of the largest observations
+        """
         import grass.script.core as gcore
 
         outp = gcore.read_command('r.in.lidar', flags='go', input=inp,
@@ -325,7 +371,10 @@ class stemGRASS():
             raise Exception("Errore eseguendo l'importazione del file LAS")
 
     def run_grass(self, comm):
-        """Run a GRASS module"""
+        """Run a GRASS module
+
+        :param list comm: a list with all the command to run
+        """
         import grass.script.core as gcore
 
         for i in comm:
