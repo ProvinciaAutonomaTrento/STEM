@@ -3,6 +3,8 @@ Pansharpening
 
 Il modulo utilizza la banda pancromatica di un'immagine multispettrale per incrementare la risoluzione di altre tre bande a più bassa risoluzione geometrica. Le tre bande possono poi essere combinate in un'immagine RGB a più alta risoluzione geometrica. Per esempio, un'immagine Landsat ETM ha alcune bande a 30 m di risoluzione spaziale [banda 1 (blu), 2 (verde), 3 (rosso), 4 (NIR), 5 (mid-IR), and 7 (mid-IR)], e una banda pancromatica a più alta risoluzione(banda 8 a 15m di risoluzione geometrica). Il modulo pansharpening permette alle bande 3-2-1 (o ad altre combinazioni di bande a 30 m di risoluzione, come ad esempio 4-3-2 or 5-4-2) di essere combinate in un'immagine a 15 metri di risoluzione.
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.pansharpen <http://grass.osgeo.org/grass70/manuals/i.pansharpen.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/pansharpening.png

@@ -3,6 +3,9 @@ Filtro maggioranza
 
 Il modulo effettua un filtraggio a maggioranza delle mappe di classificazione. Il modulo va utilizzato per rimuovere i pixel di una classe isolati tra pixel di un'altra classe, o piccole aree classificate in una classe ma circondate da altre classi.
 
+Per maggiori informazioni si veda la documentazione dei comandi di GRASS GIS utilizzati: per il metodo *vicinanza* `r.neighbors <http://grass.osgeo.org/grass70/manuals/r.neighbors.html>`_ per *area*
+`r.reclass.area <http://grass.osgeo.org/grass70/manuals/r.reclass.area.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/filtro_maggioranza.png

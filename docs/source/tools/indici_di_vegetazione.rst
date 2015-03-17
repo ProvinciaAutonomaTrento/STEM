@@ -1,6 +1,7 @@
 Indici di vegetazione
 ================================
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.vi <http://grass.osgeo.org/grass70/manuals/i.vi.html>`_
 
 .. only:: latex
 

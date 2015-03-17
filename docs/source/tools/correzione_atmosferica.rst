@@ -3,9 +3,12 @@ Correzione Atmosferica
 
 Il modulo esegue la correzione atmosferica sulla mappa raster di input utilizzando l'algoritmo 6S (Seconda Simulazione del segnale satellite nello spettro solare).
 Una descrizione dettagliata algoritmo è disponibile presso il sito internet "Land Surface Reflectance Science Computing Facility" (http://modis-sr.ltdri.org/).
-Nota importante: le impostazioni della regione corrente vengono ignorate!
+
 La regione viene modificata in modo da coprire la mappa raster ingresso prima che venga eseguita la correzione atmosferica. Le impostazioni precedenti vengono ripristinate dopo.
 Si noti inoltre che il tempo di passaggio del satellite deve essere specificato in Greenwich Mean Time (GMT).
+
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.atcorr <http://grass.osgeo.org/grass70/manuals/i.atcorr.html>`_
+
 
 .. only:: latex
 

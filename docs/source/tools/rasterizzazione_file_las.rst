@@ -3,6 +3,8 @@ Rasterizzazione file LAS
 
 Il modulo converte una nuvola di punti in formato LAS in una nuova immagine raster. L'utente può scegliere tra una varietà di metodi statistici nella creazione del nuova raster. L'output sarà un'mmagine raster.
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `r.in.lidar <http://grass.osgeo.org/grass70/manuals/r.in.lidar.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/rasterizzazione_file_las.png

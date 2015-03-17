@@ -7,6 +7,8 @@ Per ogni banda e per ogni livello di smoothing, è eseguita una segmentazione (v
 Il risultato finale di questo processo è una serie (scala) di immagini accatastate per ogni banda in un unico file di output.
 Nota che questo modulo è stato ottimizzato per utilizzare immagini multispettrali (4 bande).
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.segment <http://grass.osgeo.org/grass70/manuals/i.segment.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/feature_geometriche.png

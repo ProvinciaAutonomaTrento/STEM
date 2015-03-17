@@ -7,8 +7,14 @@ Lettura dati
 Tutti i moduli, tranne quelli che hanno come input un file
 `LAS <http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html>`_,
 utilizzano i dati caricati nell'albero dei layer di QGIS.
-Per i file LAS è possibile direttamenter impostare il percorso al file
+Per i file LAS è possibile direttamente impostare il percorso al file
 direttamente all'interno del modulo selezionato.
+
+Dati di output
+--------------------
+
+I dati di output vengono salvati nella directory e con il nome specificato
+nel campo apposito.
 
 Opzioni comuni dei moduli
 ---------------------------

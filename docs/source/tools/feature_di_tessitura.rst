@@ -7,6 +7,8 @@ Il modulo prende in input un layer raster e calcola le caratteristiche tessitura
 
 Un modello di struttura comunemente usato è basato sulla cosiddetta matrice di co-occorrenza dei livelli di grigio. Questa matrice è un istogramma bidimensionale di livelli di grigio per ogni coppia di pixel che sono separati da una relazione spaziale fissa. La matrice approssima la distribuzione di probabilità congiunta di una coppia di pixel. Diverse misure di texture sono direttamente calcolate sulla matrice di co-occorrenza dei livelli di grigio.
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `r.texture <http://grass.osgeo.org/grass70/manuals/r.texture.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/feature_di_tessitura.png

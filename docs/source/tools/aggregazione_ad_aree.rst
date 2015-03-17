@@ -3,6 +3,7 @@ Aggregazione ad aree
 
 Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile del catasto sull'area di competenza).
 Per ogni area del secondo vettoriale vengono calcolate le statistiche di uno o più parametri di interesse (ad es. altezze medie, volume totale, ecc.) memorizzati nel primo file.
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `v.vect.stats <http://grass.osgeo.org/grass70/manuals/v.vect.stats.html>`_
 
 .. only:: latex
 

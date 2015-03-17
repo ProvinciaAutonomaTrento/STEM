@@ -14,6 +14,8 @@ Nota che la segmentazione differesce dalla classificazione dove tutti i pixel si
 I risultati di segmentazione delle immagini può essere utile per conto proprio e utilizzato come un passo di preprocessing per la classificazione delle immagini.
 La segmentazione è una fase di pre-elaborazione in grado di ridurre il rumore e velocizzare la classifica.
 
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.segment <http://grass.osgeo.org/grass70/manuals/i.segment.html>`_
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/segmentazione.png
