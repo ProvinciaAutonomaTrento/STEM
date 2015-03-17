@@ -14,6 +14,7 @@ Contents:
    plugin
    libs
    tools
+   uml
 
 
 
