@@ -50,6 +50,7 @@ class STEMToolsDialog(BaseDialog):
         self.QGISextent.hide()
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def show_(self):
         self.switchClippingMode()

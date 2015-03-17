@@ -91,6 +91,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertCheckbox(label, 7)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def indexChanged(self):
         if self.BaseInput2.currentText() != "":

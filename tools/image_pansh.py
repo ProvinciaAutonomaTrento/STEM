@@ -76,7 +76,7 @@ class STEMToolsDialog(BaseDialog):
 #        self.label_layer.setToolTip(tooltip)
 
         self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
-        self.helpui.fillfromUrl(helpUrl('i.pansharpen'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

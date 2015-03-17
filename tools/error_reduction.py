@@ -55,14 +55,13 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstLineEdit(self.ln, 2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'vicinanza':
             self.LabelLinedit.setText(self.tr(self.toolName, self.ln))
-            self.helpui.fillfromUrl(helpUrl('r.neighbors'))
         else:
             self.LabelLinedit.setText(self.tr(self.toolName, self.lf))
-            self.helpui.fillfromUrl(helpUrl('r.reclass.area'))
 
     def show_(self):
         self.switchClippingMode()

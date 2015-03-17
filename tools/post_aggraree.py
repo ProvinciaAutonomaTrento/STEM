@@ -55,6 +55,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(methods, lmet, 1)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def indexChanged(self):
         STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)

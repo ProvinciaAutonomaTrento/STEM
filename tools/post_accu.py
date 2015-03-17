@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Tool to calculate kappa parameter for accuracy assessment of classification result
+Tool to calculate kappa parameter for accuracy assessment of classification
+result
 
 It use the **grass_stem** library and it run several times *r.kappa* GRASS
 command.

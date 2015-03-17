@@ -67,6 +67,7 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit2.setText('500')
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)

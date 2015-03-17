@@ -69,7 +69,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertCheckbox('Usa Neighborhood circolare', 4)
 
-        self.helpui.fillfromUrl(helpUrl('r.neighbors'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 #        self.horizontalLayout_filter = QHBoxLayout()
 #        self.horizontalLayout_filter.setObjectName(_fromUtf8("horizontalLayout_filter"))
 #        self.labelfilter = QLabel()
@@ -100,7 +100,6 @@ class STEMToolsDialog(BaseDialog):
 #            self.labelfilter.setEnabled(True)
             self.TextOutFilter.setEnabled(True)
             self.BrowseButtonFilter.setEnabled(True)
-            self.helpui.fillfromUrl(helpUrl('r.mfilter'))
         else:
             self.LabelLinedit.setText(self.tr(name, self.ln))
             self.labelmethod.setEnabled(True)
@@ -108,7 +107,6 @@ class STEMToolsDialog(BaseDialog):
 #            self.labelfilter.setEnabled(False)
             self.TextOutFilter.setEnabled(False)
             self.BrowseButtonFilter.setEnabled(False)
-            self.helpui.fillfromUrl(helpUrl('r.neighbors'))
 
     def methodChanged(self):
         if self.MethodInput.currentText() == 'quantile':

@@ -50,7 +50,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(methods, label, 0)
         label = "Dimensione della finestra mobile"
         self._insertFirstLineEdit(label, 1)
-        self.helpui.fillfromUrl(helpUrl('r.texture'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

@@ -52,7 +52,7 @@ class STEMToolsDialog(BaseDialog):
         self.MethodInput.currentIndexChanged.connect(self.checkPercentile)
         self.LabelLinedit2.setEnabled(False)
         self.Linedit2.setEnabled(False)
-        self.helpui.fillfromUrl(helpUrl('r.in.lidar'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

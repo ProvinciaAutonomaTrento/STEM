@@ -60,6 +60,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondCheckbox('ETM+ precedente al 1 Luglio 2000', 4)
         self._insertThirdCheckbox('ETM+ successivo al 1 Luglio 2000', 4)
 
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
@@ -69,7 +70,6 @@ class STEMToolsDialog(BaseDialog):
         if self.BaseInputCombo.currentText() == '6s':
             self.LabelLinedit.setText(self.tr(self.toolName, self.lf))
             self.BrowseButtonIn.setEnabled(True)
-            self.helpui.fillfromUrl(helpUrl('i.atcorr'))
 
     def show_(self):
         self.switchClippingMode()

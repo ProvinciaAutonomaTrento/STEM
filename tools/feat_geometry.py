@@ -73,6 +73,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondLineEdit(lm, 4)
         self.Linedit2.setText('500')
 
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
