@@ -47,6 +47,7 @@ except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 import os
 import numpy
+from types import StringType, ListType
 
 NP2GDAL_CONVERSION = {
   "int8": 1,
@@ -73,9 +74,34 @@ GDAL2NP_CONVERSION = {
 }
 
 
+def createMaskFromBbox(coord):
+    """Function to create an OGR polygon geometry
+
+    :param coord: a list or a string (space separator) with for values
+                  xmin ymin xmax ymax
+    """
+    if type(coord) == StringType:
+        coord = coord.split()
+    elif type(coord) != ListType:
+        raise IOError('coord parameter must be a string or a list')
+    if len(coord) != 4:
+        raise IOError('coord parameter must contain 4 values: xmin ymin xmax ymax')
+    poly = ogr.Geometry(ogr.wkbPolygon)
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    coords = []
+    for c in coord:
+        coords.append(float(c))
+    ring.AddPoint(coords[0], coords[1])
+    ring.AddPoint(coords[0], coords[3])
+    ring.AddPoint(coords[2], coords[3])
+    ring.AddPoint(coords[2], coords[1])
+    poly.AddGeometry(ring)
+    return poly
+
+
 class infoOGR:
     """A class to work with vector data"""
-    def __init__(self, iname):
+    def initialize(self, iname):
         self.inp = ogr.Open(iname)
         if self.inp is None:
             raise IOError('Could not open vector data: {n}'.format(n=iname))
@@ -85,20 +111,27 @@ class infoOGR:
         """Return the type of vector geometry"""
         return self.lay0.GetGeomType()
 
-    def cutInputInverse(self, erase, output):
+    def cutInputInverse(self, output, erase=None, bbox=None):
         """Create an inverse mask and remove/cut the elements inside erase
         polygon
 
-        :param str erase: the path to vector file containing one polygon
         :param str output: path for the output file
+        :param str erase: the path to vector file containing one polygon
+        :param str bbox: a string containin a bounding box with the four values
+                         xmin ymin xmax ymax
         """
-        mask = ogr.Open(erase, 0)
-        if mask is None:
-            raise IOError('Could not open vector data: {n}'.format(n=erase))
+        if erase:
+            mask = ogr.Open(erase, 0)
+            if mask is None:
+                raise IOError('Could not open vector data: {n}'.format(n=erase))
 
-        laymask = mask.GetLayer()
-        featmask = laymask.GetFeature(0)
-        geomfeat2 = featmask.GetGeometryRef()
+            laymask = mask.GetLayer()
+            featmask = laymask.GetFeature(0)
+            geomfeat2 = featmask.GetGeometryRef()
+        elif bbox:
+            geomfeat2 = createMaskFromBbox(bbox)
+        else:
+            raise IOError('erase or bbox paramater must be set')
 
         self.lay0.ResetReading()
 
@@ -140,7 +173,7 @@ class convertGDAL:
     def __init__(self):
         self.file_infos = []
 
-    def initialize(self, innames, output, outformat='GTIFF'):
+    def initialize(self, innames, output=None, outformat='GTIFF'):
         """Function for the initialize the object
 
        :param str inname: name of input data
@@ -206,17 +239,29 @@ class convertGDAL:
                 fi.copy_into(self.output, targetband)
         self.output = None
 
-    def cutInputInverse(self, erase):
+    def cutInputInverse(self, erase=None, bbox=None):
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
 
         :param str erase: the path to vector file containing one polygon
+        :param str bbox: a string containin a bounding box with the four values
+                         xmin ymin xmax ymax
         """
         numpycode = GDAL2NP_CONVERSION[self.bandtype]
         numpytype = numpy.dtype(numpycode)
+        if erase:
+            mask = ogr.Open(erase, 0)
+            if mask is None:
+                raise IOError('Could not open vector data: {n}'.format(n=erase))
+
+            laymask = mask.GetLayer()
+            featmask = laymask.GetFeature(0)
+            geom = featmask.GetGeometryRef()
+        elif bbox:
+            geom = createMaskFromBbox(bbox)
         for f in range(len(self.file_infos)):
             fi = self.file_infos[f]
-            fi.cutInputInverse(erase, self.output, numpytype)
+            fi.cutInputInverse(geom, self.output, numpytype)
         self.output = None
 
 
@@ -319,6 +364,14 @@ class file_info:
 
         return 1
 
+    def getColorInterpretation(self, n):
+        band = self.s_fh.GetRasterBand(n)
+        name = gdal.GetColorInterpretationName(band.GetColorInterpretation())
+        if name in ['Undefined', 'Gray']:
+            return n
+        else:
+            return name.lower()
+
     def get_pixel_value(self, x, y):
         """Return a value for a coordinate
 
@@ -337,23 +390,16 @@ class file_info:
             intval = struct.unpack('f', structval)
         print intval[0]
 
-    def cutInputInverse(self, erase, output, datatype):
+    def cutInputInverse(self, geom, output, datatype):
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
 
-        :param str erase: the path to vector file containing one polygon
+        :param obj geom: an OGR geometry object
         :param obj output: a GDAL object containing the output raster
         :param obj datatype: Numpy dtype object
         """
         import json
-        mask = ogr.Open(erase, 0)
-        if mask is None:
-            raise IOError('Could not open vector data: {n}'.format(n=erase))
-
-        laymask = mask.GetLayer()
-        featmask = laymask.GetFeature(0)
-        geomfeat = featmask.GetGeometryRef()
-        geomjs = json.loads(geomfeat.ExportToJson())
+        geomjs = json.loads(geom.ExportToJson())
         coors = geomjs['coordinates'][0]
         pointsX = []
         pointsY = []

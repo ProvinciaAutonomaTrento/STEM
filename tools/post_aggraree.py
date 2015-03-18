@@ -75,7 +75,8 @@ class STEMToolsDialog(BaseDialog):
             typ = 'vector'
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            infoname = infoOGR(source)
+            infoname = infoOGR()
+            infoname.initialize(source)
             if infoname.getType() in [1, 4, -2147483647, -2147483644]:
                 geotype = 'point'
             elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
