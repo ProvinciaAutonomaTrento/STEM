@@ -163,9 +163,9 @@ def get_parser():
     parser.add_argument('-p', '--pca', type=pca_components, dest='pca',
                         metavar='n_components', default=NODATA, nargs='?',
                         help='See PCA n_componets documentation')
-    parser.add_argument('-f', '--feature-selection', default='RFECV',
+    parser.add_argument('-f', '--feature-selection', default='None',
                         dest='fs', help='Feature selection',
-                        choices=['SSF', 'RFECV', 'LinearSVC',
+                        choices=['None', 'SSF', 'RFECV', 'LinearSVC',
                                  'ExtraTreesClassifier'], )
     parser.add_argument('-ff', '--feature-selection-file', default=None,
                         dest='ff', help='File with the Feature selected.')
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     fselector = None
     fscolumns = None
     fspath = None
-    if args.fs:
+    if args.fs != 'None':
         if args.ff:
             fspath = os.path.join(args.odir, args.ff)
             if (os.path.exists(fspath) and not args.overwrite):
@@ -399,6 +399,7 @@ if __name__ == "__main__":
     # execute Models and save the output raster map
     if args.execute:
         print('\Execute the model to the whole raster map.')
-        mltb.execute(best=best, transform=transform, untransform=untransform)
+        mltb.execute(X=X, y=y, best=best,
+                     transform=transform, untransform=untransform)
 
     print('Finished!')
