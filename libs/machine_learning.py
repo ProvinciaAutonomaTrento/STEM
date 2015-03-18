@@ -443,6 +443,10 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 # write_chunk(band, data, yoff, rxsize, ysize)
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
+
+        # Close DataSources
+        for model in models:
+            model['out'] = None
     else:
         # input is a vector
         ivect = ogr.Open(input_file)
