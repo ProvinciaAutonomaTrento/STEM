@@ -109,7 +109,7 @@ class STEMToolsDialog(BaseDialog):
                                               "utilizzare"))
 
     def weightChanged(self):
-        if self.BaseInputCombo3.currentText() != 'uniforme':
+        if self.BaseInputCombo3.currentText() == 'uniforme':
             self.weight = 'uniform'
         else:
             self.weight = 'distance'
