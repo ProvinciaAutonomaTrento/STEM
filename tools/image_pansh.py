@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
-from grass_stem import helpUrl
+from gdal_stem import file_info
 
 
 class STEMToolsDialog(BaseDialog):
@@ -130,12 +130,18 @@ class STEMToolsDialog(BaseDialog):
                 gs.import_grass(sourcepan, namepan, typ, [pan])
             if mask:
                 gs.check_mask(mask)
+            raster = file_info()
+            raster.init_from_name(source)
+            red = raster.getColorInterpretation(red)
+            green = raster.getColorInterpretation(green)
+            blu = raster.getColorInterpretation(blu)
             com = ['i.pansharpen', 'red={name}.{l}'.format(name=tempin, l=red),
                    'green={name}.{l}'.format(name=tempin, l=green),
                    'blue={name}.{l}'.format(name=tempin, l=blu),
                    'output={name}'.format(name=tempout),
                    'method={met}'.format(met=method)]
             if name == namepan:
+                pan = raster.getColorInterpretation(pan)
                 com.append('pan={name}.{l}'.format(name=tempin, l=pan))
             else:
                 com.append('pan={name}'.format(name=namepan))

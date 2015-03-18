@@ -27,7 +27,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import helpUrl
+from gdal_stem import file_info
 import traceback
 
 
@@ -94,14 +94,14 @@ class STEMToolsDialog(BaseDialog):
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'filter':
-            self.LabelLinedit.setText(self.tr(name, self.lf))
+            self.LabelLinedit.setText(self.tr(self.toolName, self.lf))
             self.labelmethod.setEnabled(False)
             self.MethodInput.setEnabled(False)
 #            self.labelfilter.setEnabled(True)
             self.TextOutFilter.setEnabled(True)
             self.BrowseButtonFilter.setEnabled(True)
         else:
-            self.LabelLinedit.setText(self.tr(name, self.ln))
+            self.LabelLinedit.setText(self.tr(self.toolName, self.ln))
             self.labelmethod.setEnabled(True)
             self.MethodInput.setEnabled(True)
 #            self.labelfilter.setEnabled(False)
@@ -144,16 +144,19 @@ class STEMToolsDialog(BaseDialog):
                 pass
             else:
                 if len(nlayerchoose) > 1:
+                    raster = file_info()
+                    raster.init_from_name(source)
                     for n in nlayerchoose:
-                        out = '{name}_{lay}'.format(name=tempout, lay=n)
+                        layer = raster.getColorInterpretation(n)
+                        out = '{name}_{lay}'.format(name=tempout, lay=layer)
                         outnames.append(out)
-                        com = ['r.neighbors', 'input={name}.{lay}'.format(name=tempin,
-                                                                          lay=n),
+                        com = ['r.neighbors', 'input={n}.{l}'.format(n=tempin,
+                                                                     l=layer),
                                'output={outname}'.format(outname=out),
                                'size={val}'.format(val=self.Linedit.text()),
                                'method={met}'.format(met=method)]
                         if method == 'quantile':
-                            com.append('quantile={val}'.format(val=self.Linedit2.text()))
+                            com.append('quantile={v}'.format(v=self.Linedit2.text()))
                         if self.checkbox.isChecked():
                             com.append('-c')
                         coms.append(com)
@@ -174,7 +177,8 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

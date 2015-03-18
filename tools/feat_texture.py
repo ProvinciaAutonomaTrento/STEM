@@ -27,7 +27,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import helpUrl
+from gdal_stem import file_info
 import traceback
 
 
@@ -85,10 +85,14 @@ class STEMToolsDialog(BaseDialog):
                 gs.check_mask(mask)
 
             if len(nlayerchoose) > 1:
+                raster = file_info()
+                raster.init_from_name(source)
                 for n in nlayerchoose:
-                    out = '{name}_{lay}'.format(name=tempout, lay=n)
+                    layer = raster.getColorInterpretation(n)
+                    out = '{name}_{lay}'.format(name=tempout, lay=layer)
                     outnames.append(out)
-                    com = ['r.texture', 'input={name}.{l}'.format(name=tempin, l=n),
+                    com = ['r.texture', 'input={name}.{l}'.format(name=tempin,
+                                                                  l=layer),
                            'output={name}'.format(name=out),
                            'size={val}'.format(val=self.Linedit.text()),
                            'method={met}'.format(met=self.MethodInput.currentText())]
@@ -106,7 +110,8 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
             gs.create_group(tempout, tempout, True)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
