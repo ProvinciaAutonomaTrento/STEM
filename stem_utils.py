@@ -30,7 +30,8 @@ import inspect
 import re
 import tempfile
 import stem_base_dialogs
-
+import shutil
+import glob
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -305,10 +306,12 @@ class STEMUtils:
         :param str path: the directory where remove files
         :param str pref: the prefix for the file to remove
         """
-        import glob
         files = glob.glob1(path, pref)
         for f in files:
-            shutil.rmtree(out)
+            try:
+                shutil.rmtree(f)
+            except:
+                continue
 
 
     @staticmethod
@@ -323,7 +326,6 @@ class STEMUtils:
         """
         original_dir = os.path.dirname(output)
         if typ == 'vector' and overwrite:
-            import shutil
 
             newdir = os.path.join(tempfile.gettempdir(), "shpdir")
             if not os.path.exists(newdir):

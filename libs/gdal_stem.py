@@ -365,10 +365,10 @@ class file_info:
         return 1
 
     def getColorInterpretation(self, n):
-        band = self.s_fh.GetRasterBand(n)
+        band = self.s_fh.GetRasterBand(int(n))
         name = gdal.GetColorInterpretationName(band.GetColorInterpretation())
         if name in ['Undefined', 'Gray']:
-            return n
+            return str(n)
         else:
             return name.lower()
 
