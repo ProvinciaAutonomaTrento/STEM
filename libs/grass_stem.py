@@ -215,18 +215,10 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo g.list {err}".format(err=err))
             listfiles = out.split('\n')
-            namelay = '{intemp}.{n}'.format(intemp=intemp, n=max(nl))
-            namergb = '{intemp}.red'.format(intemp=intemp)
-            if intemp in listfiles:
-                runcom = gcore.Popen(['g.region', 'rast={intemp}'.format(intemp=intemp)],
-                                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
-            elif namelay in listfiles:
-                 runcom = gcore.Popen(['g.region', 'rast={intemp}.{n}'.format(intemp=intemp,
-                                                                             n=max(nl))],
-                                      stdin=PIPE, stdout=PIPE,  stderr=PIPE)
-            else:
-                #TODO add something when layer are imported as RGB
-                print "RGB image"
+
+            runcom = gcore.Popen(['g.region',
+                                  'rast={intemp}'.format(intemp=listfiles[0])],
+                                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
             out, err = runcom.communicate()
             #  print out,err
@@ -237,7 +229,7 @@ class stemGRASS():
         elif typ == 'vector':
             runcom = gcore.Popen(['v.in.ogr', 'input={i}'.format(i=inp),
                                   'output={i}'.format(i=intemp)],
-                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
             #  print out,err
             if runcom.returncode != 0:
@@ -246,7 +238,7 @@ class stemGRASS():
 
 
             runcom = gcore.Popen(['g.region', 'vect={i}'.format(i=intemp)],
-                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
             #  print out,err
             if runcom.returncode != 0:
@@ -263,7 +255,8 @@ class stemGRASS():
         command = ['v.to.rast', 'input={name}'.format(name=inp),
                    'output={name}'.format(name=inp)]
         if column:
-            command.extend(['use=attr', 'attribute_column={col}'.format(col=column)])
+            command.extend(['use=attr',
+                            'attribute_column={col}'.format(col=column)])
         else:
             command.append('use=val')
         runcom = gcore.Popen(command)
@@ -304,8 +297,9 @@ class stemGRASS():
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
-            runcom = gcore.Popen(['r.out.gdal', 'input={outemp}'.format(outemp=outemp),
-                                  'output={finalout}'.format(finalout=finalout)],
+            runcom = gcore.Popen(['r.out.gdal',
+                                  'input={outemp}'.format(outemp=outemp),
+                                  'output={final}'.format(final=finalout)],
                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
             # print out,err
