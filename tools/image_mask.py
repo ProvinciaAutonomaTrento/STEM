@@ -46,7 +46,8 @@ class STEMToolsDialog(BaseDialog):
         self.BrowseButton.hide()
         self.AddLayerToCanvas.setText(self.tr(name, "Rimuovi la maschera"))
         self.AddLayerToCanvas.setChecked(False)
-        self.LocalCheck.hide()
+        self.LocalCheck.setText(self.tr(name, "Maschera inversa"))
+        self.LocalCheck.setChecked(False)
         self.QGISextent.hide()
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -63,9 +64,14 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         if self.AddLayerToCanvas.isChecked():
             STEMSettings.setValue("mask", "")
+            STEMSettings.setValue("mask_inverse", "")
             STEMMessageHandler.success("Maschera rimossa correttamente")
         else:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             STEMSettings.setValue("mask", source)
+            if self.LocalCheck.isChecked():
+                STEMSettings.setValue("mask_inverse", "true")
+            else:
+                STEMSettings.setValue("mask_inverse", "false")
             STEMMessageHandler.success("Maschera impostata correttamente")

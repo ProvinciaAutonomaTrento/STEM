@@ -29,6 +29,7 @@ import platform
 from functools import partial
 from types import StringType, UnicodeType
 from stem_utils import STEMMessageHandler, STEMSettings, STEMUtils
+import gdal_stem
 
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
 helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
@@ -700,6 +701,19 @@ class BaseDialog(QDialog, baseDialog):
         self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputOpt)
         self.labelOpt.setText(self.tr("", label))
 
+    def _checkExtention(self, pref, ext, remove=True):
+        """Function to add extention if it was not set
+
+        :param str pref: the name to check
+        :param str ext: the prefix to add if missing
+        :param bool remove: if True remove the file is it exist
+        """
+        if not pref.endswith(ext):
+            out += ext
+        if os.path.exists(out):
+            STEMUtils.removeFiles(path)
+        return out
+
     def processError(self, error):
         """"""
         self.emit(SIGNAL("processError(QProcess::ProcessError)"), error)
@@ -732,12 +746,13 @@ class BaseDialog(QDialog, baseDialog):
             raise
         hFile.close()
 
-    def cutInput(self, inp, source, typ):
+    def cutInput(self, inp, source, typ, inverse=False):
         """Cut the input data according to a bounding box or a vector geometry
 
         :param str inp: the name of input data
         :param str source: the full path to source data
         :param str typ: the type of data, it should be raster, image, vector
+        :param bool inverse: if True create an inverse mask
         """
         self.mapDisplay()
         mask = STEMSettings.value("mask", "")
@@ -748,41 +763,67 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.error("Sono state impostate sia una maschera "
                                      "vettoriale sia una estensione di QGIS. "
                                      "Si prega di rimuoverne una delle due")
+        if mask:
+            inverse = STEMSettings.value("mask", "")
+            if inverse == "true":
+                mask_inverse = True
+            else:
+                mask_inverse = False
         path = tempfile.gettempdir()
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
-        if typ == 'raster' or typ == 'image':
-            if os.path.exists(out):
-                os.remove(out)
-            if bbox:
-                com = ['gdal_translate', source, out, '-projwin']
-                com.extend(self.rect_str)
-            elif mask:
-                com = ['gdalwarp', '-cutline', mask, '-crop_to_cutline',
-                       '-overwrite', source, out]
-            else:
-                return False, False, False
-        if typ == 'vector':
-            if not out.endswith('.shp'):
-                out += '.shp'
-            if os.path.exists(out):
-                STEMUtils.removeFiles(path)
-            com = ['ogr2ogr']
-            if bbox:
-                com.append('-clipsrc')
-                com.extend(self.rect_str)
-            elif mask:
-                com.append('-clipsrc {bbox}'.format(bbox=mask))
-            else:
-                return False, False, False
-            com.extend([out, source])
+        if mask_inverse:
+            if typ == 'raster' or typ == 'image':
+                raster = gdal_stem.convertGDAL()
+                raster.initialize([source], out)
+                if bbox:
+                    raster.cutInputInverse(bbox=bbox)
+                elif mask:
+                    raster.cutInputInverse(erase=mask)
+                else:
+                    return False, False, False
+            elif typ == 'vector':
+                out = self._checkExtention(out, '.shp')
+                vector = gdal_stem.infoOGR()
+                vector.initialize(source)
+                if bbox:
+                    vector.cutInputInverse(out, bbox=bbox)
+                elif mask:
+                    vector.cutInputInverse(out, erase=mask)
+                else:
+                    return False, False, False
+        else:
+            if typ == 'raster' or typ == 'image':
+                if os.path.exists(out):
+                    os.remove(out)
+                if bbox:
+                    com = ['gdal_translate', source, out, '-projwin']
+                    com.extend(self.rect_str)
+                elif mask:
+                    com = ['gdalwarp', '-cutline', mask, '-crop_to_cutline',
+                           '-overwrite', source, out]
+                else:
+                    return False, False, False
+            elif typ == 'vector':
+                out = self._checkExtention(out, '.shp')
+                com = ['ogr2ogr']
+                if bbox:
+                    com.append('-clipsrc')
+                    com.extend(self.rect_str)
+                elif mask:
+                    com.append('-clipsrc {bbox}'.format(bbox=mask))
+                else:
+                    return False, False, False
+                com.extend([out, source])
 
-        runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        log, err = runcom.communicate()
-        if runcom.returncode != 0:
-            STEMMessageHandler.error("Errore eseguendo il ritaglio del file di input: "
-                                     "Errore eseguendo il comando {err}".format(err=err))
+            runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE,
+                                      stderr=PIPE)
+            log, err = runcom.communicate()
+            if runcom.returncode != 0:
+                STEMMessageHandler.error("Errore eseguendo il ritaglio del "
+                                         "file di input. Errore eseguendo il "
+                                         "comando {err}".format(err=err))
 
         return outname.strip(), out, mask
 
