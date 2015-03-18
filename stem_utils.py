@@ -49,7 +49,7 @@ class STEMUtils:
         """Add layers to input files list
 
         :param obj combo: the ComboBox object where add layers
-        :param str typ: the type of layers to add
+        :param int typ: the type of layers to add, 0 for vector, 1 for raster
         :param bool clear: True to clear the ComboBox
         :param bool empty: True to add a empty record
         """
