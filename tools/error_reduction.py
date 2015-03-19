@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import helpUrl
+from gdal_stem import file_info
 import traceback
 
 
@@ -97,11 +97,15 @@ class STEMToolsDialog(BaseDialog):
                             'value={val}'.format(val=self.Linedit.text())]
 
             if len(nlayerchoose) > 1:
+                raster = file_info()
+                raster.init_from_name(source)
                 for n in nlayerchoose:
+                    layer = raster.getColorInterpretation(n)
                     com = startcom[:]
-                    out = '{name}_{lay}'.format(name=tempout, lay=n)
+                    out = '{name}_{lay}'.format(name=tempout, lay=layer)
                     outnames.append(out)
-                    com.extend(['input={name}.{lay}'.format(name=tempin, lay=n),
+                    com.extend(['input={name}.{lay}'.format(name=tempin,
+                                                            lay=layer),
                                 'output={outname}'.format(outname=out)])
                     coms.append(com)
                     self.saveCommand(com)

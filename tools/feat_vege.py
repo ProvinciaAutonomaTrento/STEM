@@ -30,6 +30,7 @@ from grass_stem import helpUrl
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
+from gdal_stem import file_info
 
 
 class STEMToolsDialog(BaseDialog):
@@ -40,25 +41,26 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
 
         self._insertLayerChooseCheckBox(label="Selezionare la banda per il "
                                         "canale rosso", combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertLayerChooseCheckBox2(label="Selezionare la banda per il "
                                          "canale infrarosso", combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
 
         self._insertLayerChooseCheckBox3(label="Selezionare la banda per il "
                                          "canale verde", combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True)
 
         self._insertLayerChooseCheckBox4(label="Selezionare la banda per il "
                                          "canale blue", combo=False)
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True)
 
         methods = ['arvi', 'dvi', 'evi', 'evi2', 'gari', 'gemi', 'ipvi',
@@ -70,6 +72,12 @@ class STEMToolsDialog(BaseDialog):
         self.helpui.fillfromUrl(helpUrl('i.vi'))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True)
 
     def show_(self):
         self.switchClippingMode()
@@ -107,6 +115,10 @@ class STEMToolsDialog(BaseDialog):
                 gs.check_mask(mask)
 
             gs.import_grass(source, tempin, typ, nlayers)
+            raster = file_info()
+            raster.init_from_name(source)
+            red = raster.getColorInterpretation(red)
+            nir = raster.getColorInterpretation(nir)
             com = ['i.vi', 'red={name}.{l}'.format(name=tempin, l=red),
                    'nir={name}.{l}'.format(name=tempin, l=nir),
                    'output={name}'.format(name=tempout),
@@ -116,12 +128,14 @@ class STEMToolsDialog(BaseDialog):
                     STEMMessageHandler.error("Selezionare la banda blu")
                     return
                 else:
+                    blue = raster.getColorInterpretation(blue)
                     com.append("blue={name}.{b}".format(name=tempin, b=blue))
             if method in ['gari', 'vari']:
                 if not green:
                     STEMMessageHandler.error("Selezionare la banda verde")
                     return
                 else:
+                    green = raster.getColorInterpretation(green)
                     com.append("green={name}.{g}".format(name=tempin, g=green))
             self.saveCommand(com)
 

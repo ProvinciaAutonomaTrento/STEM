@@ -199,7 +199,7 @@ class stemGRASS():
             elif len(nl) == 1 and str(nl[0]) != '1':
                 runcom = gcore.Popen(['r.in.gdal', 'input={inp}'.format(inp=inp),
                                       'output={intemp}'.format(intemp=intemp),
-                                      'band={bs}'.format(bs=','.join(nl))],
+                                      'band={bs}'.format(bs=nl[0])],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
             out, err = runcom.communicate()

@@ -40,6 +40,10 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
+        self._insertLayerChooseCheckBox(label="Selezionare la banda su cui "
+                                        "calcolare le statistice", combo=False)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
         self.AddLayerToCanvas.hide()
 
 #        self._insertLayerChooseCheckBox()
@@ -69,10 +73,8 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-#            nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
-#            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
-            nlayerchoose = [1]
-            typ = 'raster'
+            nlayerchoose = [str(STEMUtils.checkLayers(source, self.layer_list))]
+            typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             perc = str(self.Linedit.text())
             coms = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
