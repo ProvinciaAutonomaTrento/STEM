@@ -70,12 +70,13 @@ class STEMToolsDialog(BaseDialog):
         cut, cutsource = self.cutInputMulti(names, sources, 'raster')
         if cut:
                 items = cut
-                labels = cutsource
+                names = cutsource
         if self.overwrite:
             out = self.TextOut.text() + '.tmp'
         else:
             out = self.TextOut.text()
-        cgdal = convertGDAL(labels, out, outformat)
+        cgdal = convertGDAL()
+        cgdal.initialize(names, out, outformat)
         cgdal.write()
         if self.overwrite:
             STEMUtils.renameRast(out, self.TextOut.text())
