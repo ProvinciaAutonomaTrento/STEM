@@ -13,3 +13,11 @@ div.bottomnav p {
 div.footer {
     text-align: left;
 }
+
+div.warning {
+    padding: 10px 15px 10px 60px;
+}
+
+div.warning p.last {
+    margin-top: 0px;
+}
