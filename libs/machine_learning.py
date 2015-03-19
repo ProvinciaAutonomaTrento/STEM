@@ -126,7 +126,6 @@ def empty_rast(newrast_file, rast, format=None,
     nrast.SetGeoTransform(trns)
     nrast.SetProjection(proj)
     band = nrast.GetRasterBand(1)
-    #import ipdb; ipdb.set_trace()
     band.SetNoDataValue(float(nodata))
     band.Fill(nodata)
     return nrast
@@ -236,6 +235,7 @@ def test_model(model, Xtraining, ytraining, Xtest, ytest,
     model['mod'].fit(Xtraining, ytraining)
     scorer = check_scoring(model['mod'], score_func=score_func, scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
+    print(model['name'], model['score_test'])
     return TestResult(model.get('index', 1), model['name'], model['score_test'])
 
 
@@ -584,10 +584,10 @@ class MLToolBox(object):
         self.n_jobs = n_jobs
         self.n_best = n_best
         self.best_strategy = best_strategy
-        self.tvector = tvector,
-        self.tcolumn = tcolumn,
-        self.traster = traster,
-        self.test_csv = test_csv,
+        self.tvector = tvector
+        self.tcolumn = tcolumn
+        self.traster = traster
+        self.test_csv = test_csv
         self.scaler = scaler
         self.fselector = fselector
         self.decomposer = decomposer
@@ -668,7 +668,7 @@ class MLToolBox(object):
         :param dtype: Type of the raster map
         :type dtype: numpy dtype
         """
-        self.traster = ((self.traster if self.traster is None else self.raster)
+        self.traster = ((self.raster if self.traster is None else self.traster)
                         if raster_file is None else raster_file)
         self.tvector = self.tvector if vector_file is None else vector_file
         self.tcolumn = self.tcolumn if column is None else column
@@ -676,11 +676,11 @@ class MLToolBox(object):
                             else use_columns)
         self.test_csv = self.test_csv if csv_file is None else csv_file
         self.nodata = nodata
-        self.Xtest, self.ytest = extract_training(vector_file=self.vector,
-                                                  column=self.column,
+        self.Xtest, self.ytest = extract_training(vector_file=self.tvector,
+                                                  column=self.tcolumn,
                                                   use_columns=self.use_columns,
                                                   csv_file=self.test_csv,
-                                                  raster_file=self.raster,
+                                                  raster_file=self.traster,
                                                   delimiter=delimiter,
                                                   nodata=nodata,
                                                   dtype=dtype)
