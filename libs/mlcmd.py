@@ -304,7 +304,6 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Transform the input data
-    #import ipdb; ipdb.set_trace()
     X = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
                             decomposer=decomposer, fscolumns=fscolumns,
                             fsfile=fspath, fsfit=True)
