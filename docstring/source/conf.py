@@ -57,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'STEM develpoment documentation'
-copyright = u'2015, Luca Delucchi'
+copyright = u'2015, Luca Delucchi', Salvatore La Rosa, Pietro Zambelli
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -201,6 +201,7 @@ latex_elements = {
 # The font size ('10pt', '11pt' or '12pt').
 'pointsize': '10pt',
 
+'classoptions': ',oneside',
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
 }
@@ -210,7 +211,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'STEMdevelpomentdocumentation.tex', u'STEM develpoment documentation',
-   u'Luca Delucchi', 'manual'),
+   u'Luca Delucchi, Salvatore La Rosa, Pietro Zambelli', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -254,7 +255,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'STEMdevelpomentdocumentation', u'STEM develpoment documentation Documentation',
-   u'Luca Delucchi', 'STEMdevelpomentdocumentation', 'One line description of project.',
+   u'Luca Delucchi, Salvatore La Rosa, Pietro Zambelli', 'STEMdevelpomentdocumentation', 'One line description of project.',
    'Miscellaneous'),
 ]
 
