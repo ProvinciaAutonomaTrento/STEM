@@ -206,27 +206,3 @@ BEST = [
      'kwargs': {'kernel': 'sigmoid', 'C': 10**5, 'gamma': 10**-5,
                 'probability': True}},
 ]
-
-
-class MLPYWrapper(object):
-    def __init__(self, cls):
-        self.cls = cls
-        self.mlcls = None
-        self.wrap = dict(fit='learn', predict='pred')
-
-    def __getattr__(self, name):
-        if self.mlcls and name in self.wrap.keys():
-            return getattr(self.mlcls, self.wrap[name])
-        return super(MLPYWrapper, self).__getattr__(self, name)
-
-    def __call__(self, *args, **kwargs):
-        self.mlcls = self.cls(*args, **kwargs)
-
-try:
-    import mlpy
-
-    #MaxLikelihoodClassifier = MLPYWrapper(mlpy.MaximumLikelihoodC)
-except ImportError:
-    print("MLPY not found in the current python path"
-          "check that is installed or set the python path."
-          "Only `sklearn` will be used.")
