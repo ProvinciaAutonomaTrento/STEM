@@ -2,7 +2,29 @@
 """
 Authors: Pietro Zambelli
 
-Date: October 2014
+Questo file contiene alcune liste di classificatori presi da sciit-learn.
+Per ciascun algoritmo viene creata una lista di dizionari con le diverse
+opzioni in modo da identificare il set di parametri che massimizza le
+performance del classificatore.
+
+Ciascun modello È costituito da un dizionario con le seguenti chiavi:
+
+name : È una stringa che definisce il nome con cui verràidentificato il modello
+model : È la definizione di una classe
+kwargs : È un dizionario con i paramteri che verranno utilizzati per
+    inizializzare il classificatore.
+
+
+un esempio di lista contenute in questo file è quindi: ::
+
+    KNN = [{'name': 'knn%d_w%s' % (n, w),
+            'model': KNeighborsClassifier,
+            'kwargs': {'n_neighbors': n, 'weights': w}}
+           for n in (1, 2, 3, 4, 8, 16) for w in ('uniform', 'distance')]
+
+Per un dettaglio dei parametri utilizzati e dei classificatori disponibili
+si prega di far riferimento al codice.
+
 """
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import (AdaBoostClassifier,
@@ -184,3 +206,27 @@ BEST = [
      'kwargs': {'kernel': 'sigmoid', 'C': 10**5, 'gamma': 10**-5,
                 'probability': True}},
 ]
+
+
+class MLPYWrapper(object):
+    def __init__(self, cls):
+        self.cls = cls
+        self.mlcls = None
+        self.wrap = dict(fit='learn', predict='pred')
+
+    def __getattr__(self, name):
+        if self.mlcls and name in self.wrap.keys():
+            return getattr(self.mlcls, self.wrap[name])
+        return super(MLPYWrapper, self).__getattr__(self, name)
+
+    def __call__(self, *args, **kwargs):
+        self.mlcls = self.cls(*args, **kwargs)
+
+try:
+    import mlpy
+
+    #MaxLikelihoodClassifier = MLPYWrapper(mlpy.MaximumLikelihoodC)
+except ImportError:
+    print("MLPY not found in the current python path"
+          "check that is installed or set the python path."
+          "Only `sklearn` will be used.")
