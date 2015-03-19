@@ -1,7 +1,7 @@
 Informazioni di base
 ========================
 
-Lettura dati
+Dati di input
 ------------------
 
 Tutti i moduli, tranne quelli che hanno come input un file
@@ -9,6 +9,14 @@ Tutti i moduli, tranne quelli che hanno come input un file
 utilizzano i dati caricati nell'albero dei layer di QGIS.
 Per i file LAS è possibile direttamente impostare il percorso al file
 direttamente all'interno del modulo selezionato.
+
+.. warning::
+
+  I dati devono avere tutti lo stesso sistema di coordinate, non è possibile
+  eseguire alcuna analisi con dati con proiezioni diverse e non viene
+  effettuata nessuna riproiezione. Se necessario utilizzare lo strumento
+  di riproiezione prima di eseguire le analisi.
+
 
 Dati di output
 --------------------
