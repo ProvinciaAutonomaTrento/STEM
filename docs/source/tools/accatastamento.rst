@@ -13,6 +13,12 @@ Input
 
 **Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare i raster da accatastare.
 
+.. warning::
+
+  L'ordine dei raster è importante soprattutto per definire l'estensione
+  dell'output. Il primo raster, dall'alto verso il basso, selezionato
+  sarà quello dal quale si otterrà l'estensione dell'output
+
 Parametri
 ------------
 
