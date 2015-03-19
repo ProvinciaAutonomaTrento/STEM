@@ -318,11 +318,12 @@ if __name__ == "__main__":
 
     # -----------------------------------------------------------------------
     # Extract test samples
-    print('\nExtract test samples')
+    Xtest, ytest = None, None
     if args.tvector and args.tcolumn:
         # extract_training(vector_file, column, csv_file, raster_file=None,
         #                  use_columns=None, delimiter=SEP, nodata=None,
         #                  dtype=np.uint32)
+        print('\nExtract test samples')
         testpath = os.path.join(args.odir, args.csvtest)
         if (not os.path.exists(testpath) or args.overwrite):
             print('    From:')

@@ -254,6 +254,7 @@ class STEMToolsDialog(BaseDialog):
             # -----------------------------------------------------------------------
             # Extract test samples
             print('\nExtract test samples')
+            Xtest, ytest = None, None
             if mltb.tvector and mltb.tcolumn:
                 # extract_training(vector_file, column, csv_file, raster_file=None,
                 #                  use_columns=None, delimiter=SEP, nodata=None,
