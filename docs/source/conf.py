@@ -192,7 +192,7 @@ latex_elements = {
 'pointsize': '10pt',
 
 'classoptions': ',oneside',
-'babel': '\\usepackage{babel}[italian]'
+'babel': '\\usepackage[italian]{babel}'
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
 }
