@@ -78,8 +78,6 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInputOption(5, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
-        #self.BaseInputOpt.setEnabled(False)
-        #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
         self._insertSecondCombobox(label, 6)
@@ -160,7 +158,8 @@ class STEMToolsDialog(BaseDialog):
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
+                prefcsv += "_{rast}_{n}".format(rast=inrast,
+                                                n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
@@ -178,7 +177,8 @@ class STEMToolsDialog(BaseDialog):
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
-            models = [{'name': 'gaussianNB', 'model': GaussianNB}]
+            models = [{'name': 'gaussianNB', 'model': GaussianNB,
+                       'kwargs': {}}]
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
 
@@ -215,7 +215,7 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             print('\nExtract training samples')
             trnpath = os.path.join(home,
-                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+                                   "{p}_csvtraining.csv".format(p=prefcsv))
             if (not os.path.exists(trnpath) or overwrite):
                 print('    From:')
                 print('      - vector: %s' % mltb.vector)
@@ -244,7 +244,7 @@ class STEMToolsDialog(BaseDialog):
                 #                  dtype=np.uint32)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
-                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                                        "{p}_csvtest.csv".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     print('    From:')
                     print('      - vector: %s' % mltb.tvector)
@@ -271,10 +271,10 @@ class STEMToolsDialog(BaseDialog):
             print('\nCross-validation of the models')
 
             crosspath = os.path.join(home,
-                                     "{pref}_csvcross.csv".format(pref=prefcsv))
+                                     "{p}_csvcross.csv".format(p=prefcsv))
 
             bpkpath = os.path.join(home,
-                                   "{pref}_best_pickle.csv".format(pref=prefcsv))
+                                   "{p}_best_pickle.pkl".format(p=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=None)
                 np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
@@ -289,8 +289,8 @@ class STEMToolsDialog(BaseDialog):
                 print('      -  %s' % crosspath)
                 with open(bpkpath, 'r') as bpkl:
                     best = pkl.load(bpkl)
-                order, models = mltb.find_best(models=best)
-                best = mltb.select_best(best=models)
+                order, mods = mltb.find_best(models=best)
+                best = mltb.select_best(best=mods)
             print('\nBest models:')
             print(best)
 
@@ -299,9 +299,9 @@ class STEMToolsDialog(BaseDialog):
             if Xtest is not None and ytest is not None:
                 print('\nTest models with an indipendent dataset')
                 testpath = os.path.join(home,
-                                        "{pref}_csvtest.csv".format(pref=prefcsv))
+                                        "{p}_csvtest.csv".format(p=prefcsv))
                 bpkpath = os.path.join(home,
-                                       "{pref}_test_pickle.csv".format(pref=prefcsv))
+                                       "{p}_test_pickle.pkl".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=None)
@@ -315,10 +315,10 @@ class STEMToolsDialog(BaseDialog):
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
-                    order, models = mltb.find_best(models=best,
+                    order, mods = mltb.find_best(models=best,
                                                    strategy=lambda x: x,
                                                    key='score_test')
-                    best = mltb.select_best(best=models)
+                    best = mltb.select_best(best=mods)
                 print('Best models:')
                 print(best)
 
@@ -327,8 +327,8 @@ class STEMToolsDialog(BaseDialog):
 
             if self.checkbox.isChecked():
                 print('\Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=None, untransform=None,
-                             output_file=self.TextOut.text())
+                mltb.execute(X=X, y=y, best=best, transform=None,
+                             untransform=None, output_file=self.TextOut.text())
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
