@@ -31,7 +31,7 @@ from PyQt4.QtGui import *
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
-from sklearn.covariance import EmpiricalCovariance
+from sklearn.naive_bayes import GaussianNB
 from machine_learning import MLToolBox, SEP
 import os
 import pickle as pkl
@@ -178,10 +178,7 @@ class STEMToolsDialog(BaseDialog):
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
-            models = {'name': 'EMCOV_acFalse_spFalse',
-                      'model': EmpiricalCovariance,
-                      'kwargs': {'store_precision': False,
-                                 'assume_centered': False}}
+            models = [{'name': 'gaussianNB', 'model': GaussianNB}]
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
 
