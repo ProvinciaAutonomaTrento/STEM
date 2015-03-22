@@ -88,11 +88,12 @@ class BaseDialog(QDialog, baseDialog):
         self.setupUi(self)
 
         self.connect(self.buttonBox, SIGNAL("rejected()"), self._reject)
-        self.connect(self.buttonBox, SIGNAL("accepted()"), self._accept)
+        self.runButton.clicked.connect(self.run)
+        # self.connect(self.buttonBox, SIGNAL("accepted()"), self._accept)
         self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.TextOut))
-        self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
+        # self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
         self.toolname = title
         self.setWindowTitle(self.toolname)
@@ -122,12 +123,16 @@ class BaseDialog(QDialog, baseDialog):
             self.stop()
         QDialog.reject(self)
 
-    def _accept(self):
+    def run(self):
         """Function for accept button"""
+        if not self.overwrite:
+            if not STEMUtils.fileExists(self.TextOut.text()):
+                return
         if self.LocalCheck.isChecked():
             self.onRunLocal()
         else:
             self.onRunServer()
+        self.accept()
 
     def _help(self):
         """Function for help button"""

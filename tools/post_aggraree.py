@@ -69,8 +69,6 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
-        if not self.overwrite:
-            self.overwrite = STEMUtils.fileExists(self.TextOut.text())
         try:
             typ = 'vector'
             name = str(self.BaseInput.currentText())

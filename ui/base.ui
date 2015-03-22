@@ -14,7 +14,7 @@
    <string>STEM</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -39,8 +39,8 @@
         <number>6</number>
        </property>
        <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
           <widget class="QGroupBox" name="groupBox_3">
            <property name="title">
             <string>Input</string>
@@ -52,7 +52,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="1" column="0">
           <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
             <string>Parametri</string>
@@ -64,7 +64,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="2" column="0">
           <widget class="QGroupBox" name="groupBox_4">
            <property name="title">
             <string>Output</string>
@@ -101,7 +101,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="3" column="0">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -114,7 +114,7 @@
            </property>
           </spacer>
          </item>
-         <item>
+         <item row="4" column="0">
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Opzioni</string>
@@ -185,7 +185,14 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="runButton">
+     <property name="text">
+      <string>Esegui</string>
      </property>
     </widget>
    </item>
