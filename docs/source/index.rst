@@ -18,8 +18,12 @@ Documentazione STEM
   tools/toc_pre_image
   tools/toc_pre_lidar
   tools/toc_estrazioni_feature
+  tools/toc_sel_feat_var
   tools/toc_classi
   tools/toc_post_class
+  tools/toc_stima_parametri
+  tools/toc_post_stima
+  tools/toc_struttura
 
 
 .. only:: latex
