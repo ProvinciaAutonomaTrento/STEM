@@ -1,7 +1,7 @@
 Ritaglio file LAS
 ================================
 
-Il modulo permette di selezionare e ritagliare un'area selezionate sul file .las di input; l'output è un file con le informazioni sulla sola aria ritagliata
+Il modulo permette di selezionare e ritagliare un'area selezionate sul file .las di input; l'output Ã¨ un file con le informazioni sulla sola aria ritagliata
 
 .. only:: latex
 

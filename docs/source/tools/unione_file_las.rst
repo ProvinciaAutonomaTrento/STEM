@@ -1,7 +1,7 @@
 Unione file LAS
 ================================
 
-Il modulo unisce più file LAS insieme e li salva in un unico file.
+Il modulo unisce piÃ¹ file LAS insieme e li salva in un unico file.
 
 .. only:: latex
 
