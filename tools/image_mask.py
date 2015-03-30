@@ -60,7 +60,7 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
-    def _accept(self):
+    def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         if self.AddLayerToCanvas.isChecked():
             STEMSettings.setValue("mask", "")

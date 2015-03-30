@@ -282,9 +282,10 @@ class STEMUtils:
                                        QMessageBox.No)
 
             if res == QMessageBox.Yes:
-                return True
+                return True, True
             else:
-                return False
+                return False, False
+        return True, False
 
     @staticmethod
     def renameRast(tmp, out):
