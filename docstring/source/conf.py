@@ -57,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'STEM develpoment documentation'
-copyright = u'2015, Luca Delucchi', Salvatore La Rosa, Pietro Zambelli
+copyright = u'2015, Luca Delucchi, Salvatore La Rosa, Pietro Zambelli'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
