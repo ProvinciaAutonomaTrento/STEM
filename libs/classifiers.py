@@ -2,45 +2,41 @@
 """
 Authors: Pietro Zambelli
 
-Questo file contiene alcune liste di classificatori presi da sciit-learn.
-Per ciascun algoritmo viene creata una lista di dizionari con le diverse
-opzioni in modo da identificare il set di parametri che massimizza le
-performance del classificatore.
+This file contains some lists of scikit-learn classifiers.
+For each algoritms a list of dictionary with different options is created,
+to identify the set of parameters with better performance for each classifier.
 
-Ciascun modello È costituito da un dizionario con le seguenti chiavi:
+Each model is builded by a dictionary with the following keys:
 
-name : È una stringa che definisce il nome con cui verràidentificato il modello
-model : È la definizione di una classe
-kwargs : È un dizionario con i paramteri che verranno utilizzati per
-    inizializzare il classificatore.
+* name: is a string to define the identification name
+* model: definition of a class
+* kwargs: is a dictionary with the parameters to use for the initialization
+          of the classification.
 
+An example could be:
 
-un esempio di lista contenute in questo file è quindi: ::
+::
 
     KNN = [{'name': 'knn%d_w%s' % (n, w),
             'model': KNeighborsClassifier,
             'kwargs': {'n_neighbors': n, 'weights': w}}
            for n in (1, 2, 3, 4, 8, 16) for w in ('uniform', 'distance')]
 
-Per un dettaglio dei parametri utilizzati e dei classificatori disponibili
-si prega di far riferimento al codice.
 
+Please look the source code to know more  about classifiers.
 """
+
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import (AdaBoostClassifier,
                               ExtraTreesClassifier,
                               GradientBoostingClassifier,
                               RandomForestClassifier)
-                              # RandomTreesEmbedding)
 from sklearn.neighbors import (KNeighborsClassifier,
-                               # NearestNeighbors,
-                               # RadiusNeighborsClassifier,
                                NearestCentroid)
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.covariance import EmpiricalCovariance
-
 
 # number of estimators
 ESTIMATORS = 100
@@ -152,7 +148,6 @@ GAUSSIAN = [
 ]
 
 
-
 SVCRBFSIG = [
     {'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
      'kwargs': {'kernel': k, 'C': c, 'gamma': g,
@@ -180,7 +175,6 @@ EMCOV = [{'name': 'EMCOV_ac%s_sp%s' % (a, s), 'model': EmpiricalCovariance,
 ALL = (SGD + KNN + DECTREE + RNDFOREST + ADABOOST +
        EXTRATREE + GRDBOOST + GAUSSIAN +
        SVCRBFSIG + SVCLIN + SVCPOL)
-#ALL = SVCPOL
 
 BEST = [
     {'name': 'gradient_boost_500_meanleaf3', 'model': GradientBoostingClassifier,
@@ -198,7 +192,8 @@ BEST = [
                     n_jobs=4, random_state=None, verbose=0, min_density=None,
                     compute_importances=None)},
     {'name': 'rand_tree_entropy_0p50_500', 'model': RandomForestClassifier,
-     'kwargs': {'n_estimators': 500, 'n_jobs': 4, 'criterion': 'entropy', 'max_features': 0.5}},
+     'kwargs': {'n_estimators': 500, 'n_jobs': 4, 'criterion': 'entropy',
+                'max_features': 0.5}},
     {'name': 'SVC_linear', 'model': SVC,
      'kwargs': {'kernel': 'linear', 'C': 1.,
                 'probability': True}},
