@@ -129,7 +129,6 @@ class BaseDialog(QDialog, baseDialog):
             res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
             if not res: return
 
-        print self.overwrite
         self.onRunLocal()
         self.accept()
 
