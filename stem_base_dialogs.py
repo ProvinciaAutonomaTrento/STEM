@@ -130,10 +130,7 @@ class BaseDialog(QDialog, baseDialog):
             if not res: return
 
         print self.overwrite
-        if self.LocalCheck.isChecked():
-            self.onRunLocal()
-        else:
-            self.onRunServer()
+        self.onRunLocal()
         self.accept()
 
     def _help(self):
