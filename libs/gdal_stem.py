@@ -183,7 +183,7 @@ class convertGDAL:
         """
         # Open source dataset
         self.in_names = innames
-        self.driver = gdal.GetDriverByName(outformat)
+        self.driver = gdal.GetDriverByName(str(outformat))
         if self.driver is None:
             raise IOError('Format driver %s not found, pick a supported '
                           'driver.' % outformat)
@@ -512,3 +512,22 @@ class file_info:
                         s_band, t_fh, tw_xoff, tw_yoff, tw_xsize, tw_ysize,
                         t_band, nodata_arg)
         self.s_fh = None
+
+def main():
+    """This function is used in the server to activate three Pyro4 servers.
+       It initialize the three objects and after these are used by Pyro4
+    """
+    # decomment this two lines if you want activate the logging
+    #os.environ["PYRO_LOGFILE"] = "pyrogdal.log"
+    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+    import Pyro4
+    gdalinfo_stem = file_info()
+    gdalconvert_stem = convertGDAL()
+    ogrinfo_stem = infoOGR()
+    Pyro4.Daemon.serveSimple({gdalinfo_stem: "stem.gdalinfo",
+                              gdalconvert_stem: "stem.gdalconvert",
+                              ogrinfo_stem: "stem.ogrinfo"},
+                              host='10.234.1.190', port=9092, ns=True)
+
+if __name__ == "__main__":
+    main()

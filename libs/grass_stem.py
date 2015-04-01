@@ -63,7 +63,11 @@ PIPE = subprocess.PIPE
 
 class stemGRASS():
     """The class to use GRASS GIS as backend of STEM plugin"""
-    def __init__(self, pid, grassdatabase, location, grassbin, epsg):
+    def __init__(self):
+        self.mapset = None
+        self.mapsetpath = None
+
+    def initialize(self, pid, grassdatabase, location, grassbin, epsg):
 #        s = QSettings()
 #        # query GRASS 7 itself for its GISBASE
 #        # we assume that GRASS GIS' start script is available and in the PATH
@@ -368,7 +372,6 @@ class stemGRASS():
         :param list comm: a list with all the command to run
         """
         import grass.script.core as gcore
-
         for i in comm:
             runcom = gcore.Popen(i, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
@@ -376,7 +379,34 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo il comando {err}".format(err=err))
 
+    def print_grass(self, comm):
+        """Print a GRASS module"""
+        import grass.script.core as gcore
+
+        for i in comm:
+            runcom = gcore.Popen(i, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            out, err = runcom.communicate()
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo il comando {err}".format(err=err))
+            else:
+                return out
+
     def removeMapset(self):
         """Remove mapset with all the contained data"""
         import shutil
         shutil.rmtree(self.mapsetpath)
+
+def main():
+    """This function is used in the server to activate a Pyro4 server.
+       It initialize the stemGRASS objects and it is used by Pyro4
+    """
+    # decomment this two lines if you want activate the logging
+    #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
+    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+    import Pyro4
+    grass_stem = stemGRASS()
+    Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host='10.234.1.190', port=9091, ns=True)
+
+if __name__ == "__main__":
+    main()

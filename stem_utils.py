@@ -386,7 +386,7 @@ class STEMUtils:
         return grassdatabase, location, grassbin, epsg
 
     @staticmethod
-    def temporaryFilesGRASS(name):
+    def temporaryFilesGRASS(name, local=True):
         """Create temporary grass information (input and output data name and
         a stemGRASS object)
 
@@ -396,7 +396,12 @@ class STEMUtils:
         tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
         tempout = 'stem_output_{pid}'.format(pid=pid)
         grassdatabase, location, grassbin, epsg = STEMUtils.QGISettingsGRASS()
-        gs = stemGRASS(pid, grassdatabase, location, grassbin, epsg)
+        if local:
+            gs = stemGRASS()
+        else:
+            import Pyro4
+            gs = Pyro4.Proxy("PYRONAME:stem.grass")
+        gs.initialize(pid, grassdatabase, location, grassbin, epsg)
         return tempin, tempout, gs
 
     @staticmethod

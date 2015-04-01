@@ -36,7 +36,6 @@ except ImportError:
 # import greographical libraries
 from osgeo import gdal
 from osgeo import ogr
-
 gdal.UseExceptions()
 
 SEP = ';'
@@ -914,3 +913,18 @@ class MLToolBox(object):
         y = self.y if y is None else y
         apply_models(self.raster, self.output, best, X, y, self._trans,
                      transform=self.transform, untransform=self.untransform)
+
+def main():
+    """This function is used in the server to activate a Pyro4 server.
+       It initialize the MLToolBox objects and it is used by Pyro4
+    """
+    # decomment this two lines if you want activate the logging
+    #os.environ["PYRO_LOGFILE"] = "pyromachine.log"
+    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+    import Pyro4
+    machine_stem = MLToolBox()
+    Pyro4.Daemon.serveSimple({machine_stem: "stem.machinelearning"},
+                             host='10.234.1.190', port=9093, ns=True)
+
+if __name__ == "__main__":
+    main()
