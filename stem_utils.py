@@ -391,6 +391,8 @@ class STEMUtils:
         a stemGRASS object)
 
         :param str name: the name of input map
+        :param bool local: true to create local grass connection otherwise it
+                           try to connetc with the server
         """
         pid = os.getpid()
         tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
