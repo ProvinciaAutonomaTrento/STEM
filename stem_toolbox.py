@@ -74,8 +74,8 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
          ("7", "Post-elaborazione stima"): [{
                                             ("0", "Aggregazione ad aree"): "post_aggraree",
                                             ("1", "Metriche di accuratezza"): "post_accu",
-                                            ("2", "K-fold cross validation"): "post_kfold",
-                                            ("3", "Statistiche"): "post_stats"
+                                            ##("2", "K-fold cross validation"): "post_kfold",
+                                            ("2", "Statistiche"): "post_stats"
                                             }],
          ("8", "Struttura bosco"): [{("0", "Struttura bosco"): "bosco"}]
          }
