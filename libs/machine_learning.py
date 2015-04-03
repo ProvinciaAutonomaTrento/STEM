@@ -139,6 +139,7 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
                       datatype=datatype, nodata=nodata)
     gdal.RasterizeLayer(rast, [1], vect.GetLayer(), burn_values=[1],
                         options=["ATTRIBUTE=%s" % column, ])
+    vect = None
     return rast
 
 
@@ -354,6 +355,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         data = read_pixels(bands, pixels)
         header = delimiter.join([str(i) for i in range(1, nbands + 1)] +
                                 ['training', ])
+        trst = None
         os.remove(tmp_file)
         gc.collect()  # force to free memory of unreferenced objects
     else:
@@ -366,6 +368,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         dt = np.array(extract_vector_fields(layer, icols))
         data = np.concatenate((dt.T, training[None, :]), axis=0).T
         header = delimiter.join([fields[i].name for i in icols] + [column, ])
+        vect = None
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
     return data[:, :-1].astype(float), data[:, -1]  # X, y
 
