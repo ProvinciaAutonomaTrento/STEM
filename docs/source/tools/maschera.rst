@@ -17,6 +17,8 @@ Input
 Opzioni
 ------------
 
+**Maschera inversa**: se scelto la analisi successive verranno effettuate solo all'esterno dell'area coperto dallo shape di input.
+
 **Rimuovi la maschera**: se scelto la maschera verrà rimossa.
 
 .. only:: latex
