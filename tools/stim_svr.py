@@ -26,9 +26,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
@@ -240,17 +237,32 @@ class STEMToolsDialog(BaseDialog):
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
 
-            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                             use_columns=ncolumnschoose,
-                             raster_file=inrastsource,
-                             models=model, scoring=scor,
-                             n_folds=nfold, n_jobs=1,
-                             n_best=1,
-                             tvector=optvectsource, tcolumn=optvectcols,
-                             traster=None,
-                             best_strategy=getattr(np, 'mean'),
-                             scaler=None, fselector=None, decomposer=None,
-                             transform=trasf, untransform=utrasf)
+            if self.LocalCheck.isChecked():
+                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
+                                 use_columns=ncolumnschoose,
+                                 raster_file=inrastsource,
+                                 models=model, scoring=scor,
+                                 n_folds=nfold, n_jobs=1,
+                                 n_best=1,
+                                 tvector=optvectsource, tcolumn=optvectcols,
+                                 traster=None,
+                                 best_strategy=getattr(np, 'mean'),
+                                 scaler=None, fselector=None, decomposer=None,
+                                 transform=trasf, untransform=utrasf)
+            else:
+                import Pyro4
+                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+                mltb.set_params(vector_file=invectsource, column=invectcol,
+                                use_columns=ncolumnschoose,
+                                raster_file=inrastsource,
+                                models=model, scoring=scor,
+                                n_folds=nfold, n_jobs=1,
+                                n_best=1,
+                                tvector=optvectsource, tcolumn=optvectcols,
+                                traster=None,
+                                best_strategy=getattr(np, 'mean'),
+                                scaler=None, fselector=None, decomposer=None,
+                                transform=trasf, untransform=utrasf)
 
             home = STEMSettings.value("stempath")
             nodata = -9999

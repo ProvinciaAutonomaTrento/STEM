@@ -42,7 +42,7 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
         self._insertLayerChooseCheckBox()
-        self.BaseInput.currentIndexChanged.connect(STEMUtils.addLayersNumber)
+        self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         items = ['vicinanza', 'area']
@@ -56,6 +56,9 @@ class STEMToolsDialog(BaseDialog):
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
+
+    def indexChanged(self):
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
     def operatorChanged(self):
         if self.BaseInputCombo.currentText() == 'vicinanza':
@@ -83,7 +86,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)

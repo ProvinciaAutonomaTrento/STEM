@@ -24,6 +24,7 @@ import os
 import sys
 import subprocess
 import itertools
+from pyro_stem import PYROSERVER, GRASS_PORT
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -406,7 +407,8 @@ def main():
     #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
     import Pyro4
     grass_stem = stemGRASS()
-    Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host='10.234.1.190', port=9091, ns=True)
+    Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host=PYROSERVER,
+                             port=GRASS_PORT, ns=True)
 
 if __name__ == "__main__":
     main()

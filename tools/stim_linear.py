@@ -180,7 +180,8 @@ class STEMToolsDialog(BaseDialog):
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
+                prefcsv += "_{rast}_{n}".format(rast=inrast,
+                                                n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
@@ -220,25 +221,40 @@ class STEMToolsDialog(BaseDialog):
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
 
-            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                             use_columns=ncolumnschoose,
-                             raster_file=inrastsource,
-                             models=model, scoring=scor,
-                             n_folds=nfold, n_jobs=1,
-                             n_best=1,
-                             tvector=optvectsource, tcolumn=optvectcols,
-                             traster=None,
-                             best_strategy=getattr(np, 'mean'),
-                             scaler=None, fselector=None, decomposer=None,
-                             transform=trasf, untransform=utrasf)
+            if self.LocalCheck.isChecked():
+                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
+                                 use_columns=ncolumnschoose,
+                                 raster_file=inrastsource,
+                                 models=model, scoring=scor,
+                                 n_folds=nfold, n_jobs=1,
+                                 n_best=1,
+                                 tvector=optvectsource, tcolumn=optvectcols,
+                                 traster=None,
+                                 best_strategy=getattr(np, 'mean'),
+                                 scaler=None, fselector=None, decomposer=None,
+                                 transform=trasf, untransform=utrasf)
+            else:
+                import Pyro4
+                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+                mltb.set_params(vector_file=invectsource, column=invectcol,
+                                use_columns=ncolumnschoose,
+                                raster_file=inrastsource,
+                                models=model, scoring=scor,
+                                n_folds=nfold, n_jobs=1,
+                                n_best=1,
+                                tvector=optvectsource, tcolumn=optvectcols,
+                                traster=None,
+                                best_strategy=getattr(np, 'mean'),
+                                scaler=None, fselector=None, decomposer=None,
+                                transform=trasf, untransform=utrasf)
 
             home = STEMSettings.value("stempath")
             nodata = -9999
             overwrite = False
             delimiter = ';'
-            # ---------------------------------------------------------------
+
+            # ------------------------------------------------------------
             # Extract training samples
-            print('\nExtract training samples')
             trnpath = os.path.join(home,
                                    "{pref}_csvtraining.csv".format(pref=prefcsv))
             if (not os.path.exists(trnpath) or overwrite):
@@ -259,7 +275,7 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             print('\nTraining sample shape:', X.shape)
 
-            # ----------------------------------------------------------------
+            # --------------------------------------------------------------
             # Feature selector
             fselector = None
             fscolumns = None
@@ -270,7 +286,7 @@ class STEMToolsDialog(BaseDialog):
                         fscolumns = np.loadtxt(fspath)
                 fselector = fselect[args.fs]
 
-            # ----------------------------------------------------------------
+            # ------------------------------------------------------------
             # Transform the input data
             Xt = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
                                      decomposer=decomposer, fscolumns=fscolumns,

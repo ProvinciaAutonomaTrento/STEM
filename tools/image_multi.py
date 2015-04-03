@@ -73,7 +73,11 @@ class STEMToolsDialog(BaseDialog):
             out = self.TextOut.text() + '.tmp'
         else:
             out = self.TextOut.text()
-        cgdal = convertGDAL()
+        if self.LocalCheck.isChecked():
+            cgdal = convertGDAL()
+        else:
+            import Pyro4
+            cgdal = Pyro4.Proxy("PYRONAME:stem.gdalconvert")
         cgdal.initialize(sources, out, outformat)
         cgdal.write()
         if self.overwrite:

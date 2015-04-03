@@ -187,7 +187,10 @@ class STEMToolsDialog(BaseDialog):
                 except:
                     pass
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
-
+            n = int(self.Linedit.text())
+            models = [{'name': 'knn%d_w%s' % (n, self.weight),
+                       'model': KNeighborsClassifier,
+                       'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
             nfold = int(self.Linedit3.text())
@@ -205,22 +208,22 @@ class STEMToolsDialog(BaseDialog):
                 optvectsource = None
                 optvectcols = None
 
-            n = int(self.Linedit.text())
-            models = [{'name': 'knn%d_w%s' % (n, self.weight),
-                       'model': KNeighborsClassifier,
-                       'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
-
-            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                             use_columns=ncolumnschoose,
-                             raster_file=inrastsource,
-                             models=models, scoring='accuracy',
-                             n_folds=nfold, n_jobs=1,
-                             n_best=1,
-                             tvector=optvectsource, tcolumn=optvectcols,
-                             traster=None,
-                             best_strategy=getattr(np, 'mean'),
-                             scaler=None, fselector=None, decomposer=None,
-                             transform=None, untransform=None)
+            if self.LocalCheck.isChecked():
+                mltb = MLToolBox()
+            else:
+                import Pyro4
+                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource,
+                            models=models, scoring='accuracy',
+                            n_folds=nfold, n_jobs=1,
+                            n_best=1,
+                            tvector=optvectsource, tcolumn=optvectcols,
+                            traster=None,
+                            best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
             nodata = -9999
@@ -230,7 +233,7 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             print('\nExtract training samples')
             trnpath = os.path.join(home,
-                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+                                   "{p}_csvtraining.csv".format(p=prefcsv))
             if (not os.path.exists(trnpath) or overwrite):
                 print('    From:')
                 print('      - vector: %s' % mltb.vector)
@@ -259,7 +262,7 @@ class STEMToolsDialog(BaseDialog):
                 #                  dtype=np.uint32)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
-                                        "{pref}_csvtestsample.csv".format(pref=prefcsv))
+                                        "{p}_csvtest.csv".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     print('    From:')
                     print('      - vector: %s' % mltb.tvector)
@@ -286,10 +289,10 @@ class STEMToolsDialog(BaseDialog):
             print('\nCross-validation of the models')
 
             crosspath = os.path.join(home,
-                                     "{pref}_csvcross.csv".format(pref=prefcsv))
+                                     "{p}_csvcross.csv".format(p=prefcsv))
 
             bpkpath = os.path.join(home,
-                                   "{pref}_best_pickle.csv".format(pref=prefcsv))
+                                   "{p}_best_pickle.pkl".format(p=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=None)
                 np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
@@ -314,9 +317,9 @@ class STEMToolsDialog(BaseDialog):
             if Xtest is not None and ytest is not None:
                 print('\nTest models with an indipendent dataset')
                 testpath = os.path.join(home,
-                                        "{pref}_csvtestmodel.csv".format(pref=prefcsv))
+                                        "{p}_csvtest.csv".format(p=prefcsv))
                 bpkpath = os.path.join(home,
-                                       "{pref}_test_pickle.csv".format(pref=prefcsv))
+                                       "{p}_test_pickle.pkl".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=None)

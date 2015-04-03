@@ -97,7 +97,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -118,7 +118,7 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+                                  tempout, typ, False)
 
             if self.TextOut2.text():
                 STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut2.text(),

@@ -109,7 +109,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
 
             gs.import_grass(source, tempin, typ, nlayers)
 

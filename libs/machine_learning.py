@@ -33,6 +33,7 @@ try:
 except ImportError:
     from scorer import check_scoring
 
+from pyro_stem import PYROSERVER, ML_PORT
 # import greographical libraries
 from osgeo import gdal
 from osgeo import ogr
@@ -924,7 +925,7 @@ def main():
     import Pyro4
     machine_stem = MLToolBox()
     Pyro4.Daemon.serveSimple({machine_stem: "stem.machinelearning"},
-                             host='10.234.1.190', port=9093, ns=True)
+                             host=PYROSERVER, port=ML_PORT, ns=True)
 
 if __name__ == "__main__":
     main()

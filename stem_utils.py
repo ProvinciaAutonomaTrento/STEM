@@ -317,14 +317,15 @@ class STEMUtils:
 
 
     @staticmethod
-    def exportGRASS(gs, overwrite, output, tempout, typ):
+    def exportGRASS(gs, overwrite, output, tempout, typ, remove=True):
         """Export data from GRASS environment
 
         :param obj gs: a stemGRASS object
-        :param bool overwrite:
-        :param str output:
-        :param str tempout:
-        :param str typ:
+        :param bool overwrite: overwrite existing files
+        :param str output: the output path
+        :param str tempout: the temporary output inside GRASS
+        :param str typ: the type of data
+        :param bool remove: True to remove the mapset, otherwise it is kept
         """
         original_dir = os.path.dirname(output)
         if typ == 'vector' and overwrite:
@@ -355,7 +356,7 @@ class STEMUtils:
             else:
                 tmp = output
             try:
-                gs.export_grass(tempout, tmp, typ)
+                gs.export_grass(tempout, tmp, typ, remove)
             except:
                 pass
             if overwrite:

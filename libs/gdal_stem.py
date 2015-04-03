@@ -48,6 +48,7 @@ except ImportError:
 import os
 import numpy
 from types import StringType, ListType
+from pyro_stem import PYROSERVER, GDAL_PORT
 
 NP2GDAL_CONVERSION = {
   "int8": 1,
@@ -527,7 +528,7 @@ def main():
     Pyro4.Daemon.serveSimple({gdalinfo_stem: "stem.gdalinfo",
                               gdalconvert_stem: "stem.gdalconvert",
                               ogrinfo_stem: "stem.ogrinfo"},
-                              host='10.234.1.190', port=9092, ns=True)
+                             host=PYROSERVER, port=GDAL_PORT, ns=True)
 
 if __name__ == "__main__":
     main()

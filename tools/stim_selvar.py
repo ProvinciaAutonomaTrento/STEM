@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-stim_selvar.py
----------------------
-Date                 : August 2014
-Copyright            : (C) 2014 Luca Delucchi
-Email                : luca.delucchi@fmach.it
+Tool to perform variable selection
+
+It use the STEM library **machine_learning** and external *numpy*, *sklearn*
+libraries
+
+Date: August 2014
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -65,7 +70,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)
+            prefcsv = "selvar_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -79,7 +84,8 @@ class STEMToolsDialog(BaseDialog):
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
+                prefcsv += "_{rast}_{n}".format(rast=inrast,
+                                                n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
@@ -99,17 +105,32 @@ class STEMToolsDialog(BaseDialog):
             nfold = int(self.Linedit3.text())
             models = self.getModel()
 
-            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                             use_columns=ncolumnschoose,
-                             raster_file=inrastsource,
-                             models=models, scoring='accuracy',
-                             n_folds=nfold, n_jobs=1,
-                             n_best=1,
-                             tvector=None, tcolumn=None,
-                             traster=None,
-                             best_strategy=getattr(np, 'mean'),
-                             scaler=None, fselector=None, decomposer=None,
-                             transform=None, untransform=None)
+            if self.LocalCheck.isChecked():
+                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
+                                 use_columns=ncolumnschoose,
+                                 raster_file=inrastsource,
+                                 models=models, scoring='accuracy',
+                                 n_folds=nfold, n_jobs=1,
+                                 n_best=1,
+                                 tvector=None, tcolumn=None,
+                                 traster=None,
+                                 best_strategy=getattr(np, 'mean'),
+                                 scaler=None, fselector=None, decomposer=None,
+                                 transform=None, untransform=None)
+            else:
+                import Pyro4
+                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+                mltb.set_params(vector_file=invectsource, column=invectcol,
+                                use_columns=ncolumnschoose,
+                                raster_file=inrastsource,
+                                models=models, scoring='accuracy',
+                                n_folds=nfold, n_jobs=1,
+                                n_best=1,
+                                tvector=None, tcolumn=None,
+                                traster=None,
+                                best_strategy=getattr(np, 'mean'),
+                                scaler=None, fselector=None, decomposer=None,
+                                transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
             nodata = -9999

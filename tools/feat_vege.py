@@ -69,7 +69,7 @@ class STEMToolsDialog(BaseDialog):
         lm = "Selezionare l'indice di vegetazione"
         self._insertMethod(methods, lm, 0)
 
-        self.helpui.fillfromUrl(helpUrl('i.vi'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -108,7 +108,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             if mask:
                 gs.check_mask(mask)
 

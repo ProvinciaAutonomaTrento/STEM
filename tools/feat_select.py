@@ -75,7 +75,8 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)
+            prefcsv = "featsel_{vect}_{col}".format(vect=invect,
+                                                    col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -89,7 +90,8 @@ class STEMToolsDialog(BaseDialog):
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
+                prefcsv += "_{rast}_{n}".format(rast=inrast,
+                                                n=len(nlayerchoose))
                 if cut:
                     inrast = cut
                     inrastsource = cutsource
@@ -110,17 +112,22 @@ class STEMToolsDialog(BaseDialog):
             models = self.getModel()
             meth = str(self.MethodInput.currentText())
 
-            mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                             use_columns=ncolumnschoose,
-                             raster_file=inrastsource,
-                             models=models, scoring='accuracy',
-                             n_folds=nfold, n_jobs=1,
-                             n_best=1,
-                             tvector=None, tcolumn=None,
-                             traster=None,
-                             best_strategy=getattr(np, 'mean'),
-                             scaler=None, fselector=None, decomposer=None,
-                             transform=None, untransform=None)
+            if self.LocalCheck.isChecked():
+                mltb = MLToolBox()
+            else:
+                import Pyro4
+                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource,
+                            models=models, scoring='accuracy',
+                            n_folds=nfold, n_jobs=1,
+                            n_best=1,
+                            tvector=None, tcolumn=None,
+                            traster=None,
+                            best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
 

@@ -53,7 +53,7 @@ class STEMToolsDialog(BaseDialog):
 
         self.label2.setText(self.tr(name, "Input mappa training area (sia raster che vettoriale)"))
         self.label.setText(self.tr(name, "Input mappa classificata"))
-        self.helpui.fillfromUrl(helpUrl('r.kappa'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -95,7 +95,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             pid = tempin.split('_')[2]
             tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
             cut2, cutsource2, mask = self.cutInput(name2, source2, type2)

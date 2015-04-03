@@ -55,6 +55,7 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit.setText('90')
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
@@ -80,7 +81,7 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
 
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)

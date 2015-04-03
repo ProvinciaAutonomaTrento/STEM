@@ -81,7 +81,7 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             name = os.path.basename(source).replace('.las', '')
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name)
+            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             method = str(self.MethodInput.currentText())
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
