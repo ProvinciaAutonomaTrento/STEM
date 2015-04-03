@@ -37,3 +37,12 @@ Se con i moduli di classificazione ottenete degli errori provate a rimuovere
 il contenuto della cartella `$HOME/.qgis2/stem/`. Questa contiene i risultati
 delle analisi di classificazione precedenti, che servono per velocizzare
 analisi identiche, e potrebbero essere la causa di qualche malfunzionamento.
+
+Caricamento output
+------------------------
+
+Alcune volte, in modo casuale, succede che i layer di output, anche se creati
+correttamente non vengano caricati su QGIS. Questa situazione capita più
+frequentemente quando il processo è lanciato su un server. Se non si ottengono
+errori controllate la cartella selezionata per l'output e controllare se
+il file è presente.
