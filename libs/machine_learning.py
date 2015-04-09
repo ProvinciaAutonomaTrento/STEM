@@ -214,7 +214,7 @@ def get_cv(y, n_folds=5):
 
 def cross_val_model(model, X, y,
                     cv=None, n_folds=5, n_jobs=5,
-                    scoring=None, score_func=None,
+                    scoring=None,
                     verbose=0, ):
     cv = get_cv(y, n_folds) if cv is None else cv
 
@@ -230,11 +230,10 @@ def cross_val_model(model, X, y,
     return vals
 
 
-def test_model(model, Xtraining, ytraining, Xtest, ytest,
-               scoring=None, score_func=None):
+def test_model(model, Xtraining, ytraining, Xtest, ytest, scoring=None):
     model['mod'] = model['model'](**model.get('kwargs', {}))
     model['mod'].fit(Xtraining, ytraining)
-    scorer = check_scoring(model['mod'], score_func=score_func, scoring=scoring)
+    scorer = check_scoring(model['mod'], scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
     print(model['name'], model['score_test'])
     return TestResult(model.get('index', 1), model['name'], model['score_test'])
@@ -516,7 +515,7 @@ class MLToolBox(object):
     def set_params(self, raster_file=None, vector_file=None, column=None,
                    use_columns=None,
                    output_file='{0}', models=None, training_csv=None,
-                   scoring=None, score_func=None, nodata=NODATA,
+                   scoring=None, nodata=NODATA,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
@@ -581,7 +580,6 @@ class MLToolBox(object):
         self.training_csv = training_csv
         self.models = models
         self.scoring = scoring
-        self.score_func = score_func
         self.nodata = nodata
         self.n_folds = n_folds
         self.n_jobs = n_jobs
@@ -599,7 +597,7 @@ class MLToolBox(object):
 
     def get_params(self):
         keys = ('raster_file', 'vector_file', 'output_file', 'column',
-                'training_csv', 'models', 'scoring', 'score_func', 'nodata',
+                'training_csv', 'models', 'scoring', 'nodata',
                 'n_folds', 'n_jobs', 'n_best', 'tvector', 'tcolumn', 'traster',
                 'test_csv', 'scaler', 'fselector', 'decomposer',
                 'transform', 'untransform')
@@ -777,7 +775,7 @@ class MLToolBox(object):
 
 
     def cross_validation(self, models=None, X=None, y=None,
-                         scoring=None, score_func=None,
+                         scoring=None,
                          n_folds=None, n_jobs=None, cv=None,
                          transform=None, verbose=True,
                          fmt=None):
@@ -797,9 +795,6 @@ class MLToolBox(object):
             ``adjusted_rand_score``, ``mean_absolute_error``,
             ``mean_squared_error``, ``r2``
         :type scoring: str
-        :param score_func: Scoring function to use during the cross-validation
-            and test.
-        :type score_func: function
         :param n_folds: Number of folds that will be used during the
             cross-validation. If n_folds < 0 Leave One Out method is used.
         :type n_folds: int
@@ -816,7 +811,6 @@ class MLToolBox(object):
         y = y if self.transform is None else self.transform(y)
         #X = self.data_transform(X=self.X if X is None else X, y=y)
         self.scoring = self.scoring if scoring is None else scoring
-        self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
@@ -833,7 +827,7 @@ class MLToolBox(object):
         return np.array(res)
 
     def test(self, Xtest, ytest, models=None, X=None, y=None,
-             scoring=None, score_func=None, transform=None):
+             scoring=None, transform=None):
         """Return a list with the score for each model.
 
         :param Xtest: It is a 2D array with the test data.
@@ -855,9 +849,6 @@ class MLToolBox(object):
             ``adjusted_rand_score``, ``mean_absolute_error``,
             ``mean_squared_error``, ``r2``
         :type scoring: str
-        :param score_func: Scoring function to use during the cross-validation
-            and test.
-        :type score_func: function
         :param transform: Function to transform y data before use the values
             for train/test.
         :type transform: function
@@ -874,10 +865,8 @@ class MLToolBox(object):
         #X = self.data_transform(X=self.X if X is None else X, y=y)
         #Xtest = self.data_transform(X=Xtest, y=ytest)
         self.scoring = self.scoring if scoring is None else scoring
-        self.score_func = self.score_func if score_func is None else score_func
         self.models = self.models if models is None else models
-        return [test_model(model, X, y, Xtest, ytest,
-                           scoring=self.scoring, score_func=self.score_func)
+        return [test_model(model, X, y, Xtest, ytest, scoring=self.scoring)
                 for model in self.models]
 
     def select_best(self, n_best=None, best=None, order=None):
@@ -917,6 +906,7 @@ class MLToolBox(object):
         y = self.y if y is None else y
         apply_models(self.raster, self.output, best, X, y, self._trans,
                      transform=self.transform, untransform=self.untransform)
+
 
 def main():
     """This function is used in the server to activate a Pyro4 server.
