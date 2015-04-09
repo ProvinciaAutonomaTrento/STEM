@@ -105,9 +105,9 @@ ADATEMPL = 'ada_DTC_c%s_s%s_mss%d_msl%d_mf%s'
 ADABOOST = [{'name': ADATEMPL % (c, s, mss, msl,
                                  mf if isinstance(mf, str) else repr(mf)),
              'model': AdaBoostClassifier,
-             'kwargs': dict(base_estimator=DecisionTreeClassifier(compute_importances=None,
+             'kwargs': dict(base_estimator=DecisionTreeClassifier(
                             criterion=c, max_depth=1, max_features=mf,
-                            min_density=None, min_samples_leaf=msl,
+                            min_samples_leaf=msl,
                             min_samples_split=mss, random_state=None,
                             splitter=s),
                             n_estimators=ESTIMATORS, learning_rate=1.0,
