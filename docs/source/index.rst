@@ -14,6 +14,7 @@ Documentazione STEM
 .. toctree::
   :maxdepth: 2
 
+  installation
   general
   tools/toc_pre_image
   tools/toc_pre_lidar

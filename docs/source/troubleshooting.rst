@@ -1,6 +1,13 @@
 Risoluzione dei problemi noti
 ===================================
 
+Le finestre dei moduli non si aprono
+----------------------------------------
+
+Se la finestre del plugin non si aprono e non viene stampato a video
+alcun errore, procedere con l’apertura della console Python su QGIS per
+indagare più a fondo sul problema.
+
 Percorsi a GRASS GIS non corretti
 -------------------------------------
 
