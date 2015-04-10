@@ -175,6 +175,7 @@ class STEMToolsDialog(BaseDialog):
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
+            prefcsv += "_{n}".format(n=nfold)
             models = [{'name': 'gaussianNB', 'model': GaussianNB,
                        'kwargs': {}}]
             feat = str(self.MethodInput.currentText())
@@ -194,31 +195,21 @@ class STEMToolsDialog(BaseDialog):
                 optvectcols = None
 
             if self.LocalCheck.isChecked():
-                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                                 use_columns=ncolumnschoose,
-                                 raster_file=inrastsource,
-                                 models=models, scoring='accuracy',
-                                 n_folds=nfold, n_jobs=1,
-                                 n_best=1,
-                                 tvector=optvectsource, tcolumn=optvectcols,
-                                 traster=None,
-                                 best_strategy=getattr(np, 'mean'),
-                                 scaler=None, fselector=None, decomposer=None,
-                                 transform=None, untransform=None)
+                mltb = MLToolBox()
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
-                mltb.set_params(vector_file=invectsource, column=invectcol,
-                                use_columns=ncolumnschoose,
-                                raster_file=inrastsource,
-                                models=models, scoring='accuracy',
-                                n_folds=nfold, n_jobs=1,
-                                n_best=1,
-                                tvector=optvectsource, tcolumn=optvectcols,
-                                traster=None,
-                                best_strategy=getattr(np, 'mean'),
-                                scaler=None, fselector=None, decomposer=None,
-                                transform=None, untransform=None)
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource,
+                            models=models, scoring='accuracy',
+                            n_folds=nfold, n_jobs=1,
+                            n_best=1,
+                            tvector=optvectsource, tcolumn=optvectcols,
+                            traster=None,
+                            best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
             nodata = -9999
@@ -302,8 +293,8 @@ class STEMToolsDialog(BaseDialog):
                 print('      -  %s' % crosspath)
                 with open(bpkpath, 'r') as bpkl:
                     best = pkl.load(bpkl)
-                order, mods = mltb.find_best(models=best)
-                best = mltb.select_best(best=mods)
+                order, models = mltb.find_best(models=best)
+                best = mltb.select_best(best=models)
             print('\nBest models:')
             print(best)
 
@@ -328,10 +319,10 @@ class STEMToolsDialog(BaseDialog):
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
-                    order, mods = mltb.find_best(models=best,
+                    order, models = mltb.find_best(models=best,
                                                    strategy=lambda x: x,
                                                    key='score_test')
-                    best = mltb.select_best(best=mods)
+                    best = mltb.select_best(best=models)
                 print('Best models:')
                 print(best)
 
@@ -340,8 +331,8 @@ class STEMToolsDialog(BaseDialog):
 
             if self.checkbox.isChecked():
                 print('\Execute the model to the whole raster map.')
-                mltb.execute(X=X, y=y, best=best, transform=None,
-                             untransform=None, output_file=self.TextOut.text())
+                mltb.execute(X=X, y=y, output_file=self.TextOut.text(),
+                             best=best, transform=None, untransform=None)
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')

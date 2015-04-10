@@ -159,7 +159,7 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
-    def getModel(self):
+    def getModel(self, csv):
         kernel = str(self.BaseInputCombo.currentText())
         c = float(self.Linedit.text())
         if kernel in ['RBF', 'sigmoidale']:
@@ -168,22 +168,25 @@ class STEMToolsDialog(BaseDialog):
             else:
                 k = 'sigmoid'
             g = float(self.Linedit2.text())
+            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
                      'kwargs': {'kernel': k, 'C': c, 'gamma': g,
-                                'probability': True}}]
+                                'probability': True}}], csv
         elif kernel == 'lineare':
             k = 'linear'
+            csv += "_{ke}_{c}".format(ke=k, c=c)
             return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVC,
                      'kwargs': {'kernel': k, 'C': c,
-                                'probability': True}}]
+                                'probability': True}}], csv
         else:
             k = 'poly'
             g = float(self.Linedit2.text())
             d = 3 # TODO ask pietro
+            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
                      'model': SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
                                               'degree': d, 'probability': True}
-                     }]
+                     }], csv
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
@@ -193,7 +196,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "svm_{vect}_{col}".format(vect=invect , col=invectcol)
+            prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -225,7 +228,8 @@ class STEMToolsDialog(BaseDialog):
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
-            models = self.getModel()
+            prefcsv += "_{n}".format(n=nfold)
+            models, prefcsv = self.getModel(prefcsv)
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
 
@@ -243,31 +247,21 @@ class STEMToolsDialog(BaseDialog):
                 optvectcols = None
 
             if self.LocalCheck.isChecked():
-                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                                 use_columns=ncolumnschoose,
-                                 raster_file=inrastsource,
-                                 models=models, scoring='accuracy',
-                                 n_folds=nfold, n_jobs=1,
-                                 n_best=1,
-                                 tvector=optvectsource, tcolumn=optvectcols,
-                                 traster=None,
-                                 best_strategy=getattr(np, 'mean'),
-                                 scaler=None, fselector=None, decomposer=None,
-                                 transform=None, untransform=None)
+                mltb = MLToolBox()
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
-                mltb.set_params(vector_file=invectsource, column=invectcol,
-                                use_columns=ncolumnschoose,
-                                raster_file=inrastsource,
-                                models=models, scoring='accuracy',
-                                n_folds=nfold, n_jobs=1,
-                                n_best=1,
-                                tvector=optvectsource, tcolumn=optvectcols,
-                                traster=None,
-                                best_strategy=getattr(np, 'mean'),
-                                scaler=None, fselector=None, decomposer=None,
-                                transform=None, untransform=None)
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource,
+                            models=models, scoring='accuracy',
+                            n_folds=nfold, n_jobs=1,
+                            n_best=1,
+                            tvector=optvectsource, tcolumn=optvectcols,
+                            traster=None,
+                            best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
             nodata = -9999

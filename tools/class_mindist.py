@@ -188,12 +188,14 @@ class STEMToolsDialog(BaseDialog):
                     pass
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
             n = int(self.Linedit.text())
+
             models = [{'name': 'knn%d_w%s' % (n, self.weight),
                        'model': KNeighborsClassifier,
                        'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
             nfold = int(self.Linedit3.text())
+            prefcsv += "_{f}_{n}_{w}".format(f=nfold, n=n, w=self.weight)
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
