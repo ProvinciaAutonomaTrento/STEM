@@ -17,8 +17,9 @@ si possono installare tramite `pip`_
 Installazione su Windows
 ----------------------------------------
 
-Installare tramite `OSGeo4W`_ i pacchetti di `GRASS GIS 7`_, `GDAL`_,
-`numpy`_, `scikit-learn`_, `pip`_.
+Usare `OSGeo4W`_ per installare i pacchetti necessari, scegliere
+``Installazione avanzata`` nella prima schermata e poi selezionare i
+pacchetti di `GRASS GIS 7`_, `GDAL`_, `numpy`_, `scikit-learn`_, `pip`_.
 
 Tramite `pip`_ installare `psutil`_ e aggiornare `scikit-learn`_.
 
