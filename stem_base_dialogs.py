@@ -760,6 +760,7 @@ class BaseDialog(QDialog, baseDialog):
         self.mapDisplay()
         mask = STEMSettings.value("mask", "")
         bbox = self.QGISextent.isChecked()
+        mask_inverse = None
         if not bbox and not mask:
             return False, False, False
         if bbox and mask:
