@@ -1,17 +1,17 @@
-Unione file LAS
-================================
+Stimatore lineare
+=================
 
-Il modulo unisce più file .las e li salva in un unico file .las.
+Il modulo esegue la stima di parametri utilizzando uno stimatore lineare.
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/unione_file_LAS.png
+  .. image:: ../_static/tool_images/stimatore_lineare.png
 
 
 Input
 ------------
 
-**File LAS di input**: selezionare i file .las da unire.
+**File di input**: selezionare il file di input.
 
 Parametri
 ------------

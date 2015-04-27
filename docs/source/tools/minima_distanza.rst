@@ -1,8 +1,8 @@
 Minima distanza
 ================================
 
-Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata Minima Distanza.
-Gli input al classificatore saranno un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N), e (opzionale) le colonne delel feature da usare nella classificazione. Se le feature non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster.
+Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata non-parametrico Minima Distanza. L'algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell'immagine la classe corrispondente al centroide più vicino nello spazio delle feature.
+Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N), e (opzionale) l'indicazione delle feature (attributi del vettoriale) da usare nella classificazione. Se le feature non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster da cui estrarle.
 L'utente potrà anche inserire un vettoraile da usare nella fase di validazione.
 
 .. only:: latex

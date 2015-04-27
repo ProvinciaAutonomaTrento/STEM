@@ -1,7 +1,7 @@
 Maschera
 ================================
 
-Il modulo imposta (o rimuove) una maschera spaziale che verrà usata in tutti gli altri moduli. Se impostata in tutti gli altri moduli le analisi verranno effettuate solo all'interno dell'area della maschera.
+Il modulo imposta (o rimuove) una maschera spaziale che verrà usata in tutti gli altri moduli. Se impostata in tutti gli altri moduli le analisi verranno effettuate solo all'interno dell'area della maschera. La maschera é passata al software tramite uno shapefile poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l'area all'interno del poligono non é utilizzata nelle elaborazioni successive.
 
 .. only:: latex
 

@@ -1,10 +1,10 @@
-Correzione Atmosferica
+Correzione atmosferica
 ================================
 
-Il modulo esegue la correzione atmosferica sulla mappa raster di input utilizzando l'algoritmo 6S (Seconda Simulazione del segnale satellite nello spettro solare).
-Una descrizione dettagliata algoritmo è disponibile presso il sito internet "Land Surface Reflectance Science Computing Facility" (http://modis-sr.ltdri.org/).
+Il modulo esegue la correzione atmosferica sulla mappa raster di input utilizzando l'algoritmo 6S (Seconda Simulazione del segnale satellite nello spettro solare). Il modulo funziona solo con dati satellitari. Non utilizzare per dati da aereo.
+Una descrizione dettagliata dell'algoritmo è disponibile presso il sito internet "Land Surface Reflectance Science Computing Facility" (http://modis-sr.ltdri.org/).
 
-La regione viene modificata in modo da coprire la mappa raster ingresso prima che venga eseguita la correzione atmosferica. Le impostazioni precedenti vengono ripristinate dopo.
+Quando viene lanciato la regione in uso viene modificata in modo da coprire la mappa raster di ingresso prima che venga eseguita la correzione atmosferica. Le impostazioni precedenti vengono ripristinate successivamente.
 Si noti inoltre che il tempo di passaggio del satellite deve essere specificato in Greenwich Mean Time (GMT).
 
 Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `i.atcorr <http://grass.osgeo.org/grass70/manuals/i.atcorr.html>`_
@@ -18,11 +18,13 @@ Per maggiori informazioni si veda la documentazione del comando di GRASS GIS uti
 Input
 ------------
 
-**Selezionare file con i parametri 6s**: selezionare il file nel quale sono memorizzati i parametri 6s.
-Si ricorda che tale file deve essere formattato utilizzando le informazioni contentue nel sito "Land Surface Reflectance Science Computing Facility" (http://modis-sr.ltdri.org/).
+**Selezionare il file con i parametri 6s**: selezionare il file nel quale sono memorizzati i parametri dell'algoritmo 6s.
+	Si ricorda che tale file deve essere formattato utilizzando le informazioni contentue nel sito "Land Surface Reflectance Science Computing Facility" (http://modis-sr.ltdri.org/).
+	Esempio di file 6S:
 
-**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS.
-Selezionare i raster da accatastare.
+		.. image:: ../_static/tool_images/correzione_atmosferica_esempio_input_1.png
+
+**Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare il raster su cui applicare la correzione atmosferica.
 
 **Selezionare una sola banda**: selezionare la banda sulla quale eseguire la correzione atmosferica. L'algoritmo processa una banda alla volta.
 
@@ -40,7 +42,7 @@ Parametri
 Output
 ------------
 
-**Risultato**: inserire il percorso e il nome del file di output.
+**Risultato**: inserire il percorso e il nome del file raster di output.
 
 .. only:: latex
 

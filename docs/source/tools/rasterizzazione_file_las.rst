@@ -1,7 +1,8 @@
 Rasterizzazione file LAS
 ================================
 
-Il modulo converte una nuvola di punti in formato LAS in una nuova immagine raster. L'utente può scegliere tra una varietà di metodi statistici nella creazione del nuova raster. L'output sarà un'mmagine raster.
+Il modulo serve per creare immagini raster partendo da file in formato .las. I principali passaggi effettuati dall'algoritmo sono: 1) creazione di una griglia uniforme di risoluzione spaziale pari alla risoluzione scelta dall'utente; 2) per ogni cella vengono estratte le altezze (Z) dei punti LIDAR contenuti in essa; 3) ai valori di altezza (Z) estratti precedentemente viene applicato il metodo statistico scelto dall'utente (es. media); 4) partendo dai valori ottenuti al punto 3 viene creata un'immagine raster.
+L'utente può scegliere tra una varietà di metodi statistici nella creazione dell'immagine raster. L'output sarà un'immagine raster.
 
 Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `r.in.lidar <http://grass.osgeo.org/grass70/manuals/r.in.lidar.html>`_
 
@@ -12,19 +13,19 @@ Per maggiori informazioni si veda la documentazione del comando di GRASS GIS uti
 Input
 ------------
 
-**File LAS di input**: selezionare il file LAS da rasterizzare.
+**File LAS di input**: selezionare il file .las da rasterizzare.
 
 Parametri
 ------------
 
-**Selezionare il ritorno desiderato**:
+**Selezionare il ritorno desiderato**: con questo parametro si sceglie quali ritorni utilizzare nella fase di rasterizzazione.
 
 	* *all*: tutti i ritorni;
 	* *first*: solo il primo ritorno;
 	* *last*: solo l'ultimo ritorno;
 	* *mid*: solo i ritorni intermedi.
 
-**Selezionare il metodo statistico da utilizzare**:
+**Selezionare il metodo statistico da utilizzare**: con questo parametro si sceglie il metodo statistico da utilizzare nella fase di rasterizzazione
 
 	* *n*: numero di punti nel pixel;
 	* *min*: valore minimo dei punti nel pixel;

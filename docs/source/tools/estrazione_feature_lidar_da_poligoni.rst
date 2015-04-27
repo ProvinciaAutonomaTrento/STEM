@@ -1,11 +1,11 @@
-Ritaglio file LAS
-================================
+Estrazione feature LIDAR da poligoni
+====================================
 
-Il modulo permette di ritagliare un file .las in base a un rettangolo con coordinate fissate dall'utente o in base ad uno shpaefile poligonale. L'output é un file .las contente i punti ritagliati.
+Il modulo permette di estrarre feature LIDAR a partire da un file .las e uno shapefile poligonale. L'output è uno shapefile contente come attributi i parametri estratti dal file .las.
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/ritaglio_file_LAS.png
+  .. image:: ../_static/tool_images/estrazione_feature_lidar_da_poligoni.png
 
 
 Input

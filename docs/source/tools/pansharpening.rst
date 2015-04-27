@@ -28,12 +28,16 @@ Input
 Parametri
 ------------
 
-**Seleziona il tipo di Pansharpening**: si possono scegliere diversi metodi per effettuare la riduzione del rumore
+**Seleziona il tipo di Pansharpening**: si possono scegliere diversi metodi per effettuare il pansharpening:
 
-  * *brovey*: nel pansharpening Brovey, ognuna delle 3 bande a bassa risoluzione e la banda pancromatica sono combinati utilizzando il seguente algoritmo per calcolare 3 nuove band alla risoluzione più elevata (ad esempio, per la banda 1):
+  * *brovey*: nel pansharpening Brovey, ognuna delle 3 bande a bassa risoluzione e la banda pancromatica sono combinati utilizzando il seguente algoritmo per calcolare 3 nuove bande alla risoluzione più elevata (ad esempio, per la banda 1):
+
 	nuova_banda1 = [banda1/(banda1+banda2+banda3)]*pancromatica
+
   * *ihs*: nel pansharpening IHS le 3 bande a bassa risoluzione originali, selezionate come canali rosso, verde e blu per creare un'immagine composita RGB, vengono trasformate in IHS (intensità, tonalità e saturazione). La banda pancromatica viene quindi sostituita al canale intensità (I), in combinazione con la tonalità (H) e saturazione (S) originali. L'immagine IHS viene poi ritrasformata verso lo spazio colore RGB alla risoluzione spaziale della banda pancromatica. L'algoritmo può essere rappresentato come: RGB - > IHS - > [pan]HS - > RGB.
-  * *pca*: nel pansharpening PCA un'analisi delle componenti principali viene eseguita sulle 3 bande a bassa risoluzione originali per creare 3 immagini delle componenti principali (PC1, PC2 e PC3) e i  loro autovettori associati (EV), in modo tale che:
+
+  * *pca*: nel pansharpening PCA un'analisi delle componenti principali viene eseguita sulle 3 bande a bassa risoluzione originali per creare 3 immagini delle componenti principali (PC1, PC2 e PC3) e i loro autovettori associati (EV), in modo tale che:
+
 	+-------+----------+-----------+-----------+
 	|       | banda1   | banda2    | banda3    |
 	+-------+----------+-----------+-----------+
@@ -43,8 +47,15 @@ Parametri
 	+-------+----------+-----------+-----------+
 	| PC3   | EV3-1    | EV3-2     | EV3-3     |
 	+-------+----------+-----------+-----------+
-	e
-	PC1 = EV1-1 * banda1 + EV1-2 * banda2 + EV1-3 * banda3 - media(bande 1,2,3)
+
+   e
+
+    PC1 = EV1-1 * banda1 + EV1-2 * banda2 + EV1-3 * banda3 - media(bande 1,2,3)
+
+   Una PCA inversa e' poi applicata sostituendo la banda pancromatica al posto della prima componente principale (PC1). Per fare questo la matrice degli autovettori é invertita (in questo caso trasposta), le immagini delle componenti principali (PC) sono moltiplicate per gli autovettori con la banda pancromatica sostituita a PC1, ed il valore medio di ogni banda é aggiuntoad ogni immagine trasformata secondo il seguente algoritmo (as esempio per la banda 1):
+
+	nuova_banda1 = pancromatica * EV1-1 + PC2 * EV2-1 + PC3 * EV3-1 + media(banda1)
+
 
 
 Output
