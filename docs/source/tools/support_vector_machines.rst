@@ -1,9 +1,9 @@
 Support Vector Machines
 ================================
 
-Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata Support Vector Machine.
-Gli input al classificatore saranno un file vettoriale contente una colonna con l'indicazione della classe in formato numerico(1,2,...,N), e (opzionale) le colonne delel feature da usare nella classificazione. Se le feature non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster.
-L'utente potrà anche inserire un vettoraile da usare nella fase di validazione.
+Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM). La'lgoritmo SVM si basa sul principio che lo spazio delle feature di partenza puo' essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione é effettuata utilizzando una funzione kernel.
+Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico(1,2,...,N), e (opzionale) l'indicazione delle feature (attributi del vettore) da usare nella classificazione. Se le feature non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster da cui estrarle.
+L'utente potrà anche inserire un vettoriale da usare nella fase di validazione.
 
 .. only:: latex
 

@@ -1,7 +1,8 @@
 Accatastamento
 ================================
 
-Il modulo crea un nuovo raster multibanda a partire da più file mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda.
+Il modulo accatastamento (o layer stacking) crea un nuovo raster multibanda a partire da più file raster mono o multibanda aventi estensione, proiezione e dimensioni uguali tra loro. L'output sarà un nuovo file multibanda in cui ogni banda (o gruppo di bande) sarà uno dei file selezionati. L'estensione del nuovo file raster sarà pari al primo raster nella lista, oppure pari alla dimensione della maschera impostata precedentemente (modulo maschera) o pari all'estensione attuale di Qgis (se l'opzione "Utilizza estensione QGIS" e' scelta).
+
 
 .. only:: latex
 

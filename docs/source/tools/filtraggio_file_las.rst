@@ -1,7 +1,7 @@
 Filtraggio file LAS
 ================================
 
-Il modulo esegue il filtraggio dei file LAS in modo da selezionare le aree della nuvola di punti che rispettano determinate regole.
+Il modulo esegue il filtraggio dei file LAS in modo da selezionare solo i punti LIDAR che rispettano determinate regole.
 
 .. only:: latex
 

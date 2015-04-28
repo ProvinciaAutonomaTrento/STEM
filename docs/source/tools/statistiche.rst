@@ -22,22 +22,7 @@ Il modulo calcola una serie di statistiche sul raster fornito in input dall'uten
 
 Esempio del contenuto del file di testo di output:
 
-n=114921
-null_cells=0
-cells=114921
-min=-1
-max=22.7900009155273
-range=23.7900009155273
-mean=4.31631783625152
-mean_of_abs=4.75576838053844
-stddev=5.78433735414407
-variance=33.4585586265464
-coeff_var=134.010922586911
-sum=496035.562059861
-first_quartile=0
-median=0.54
-third_quartile=9.26
-percentile_90=13.38
+	.. image:: ../_static/tool_images/statistiche_esempio_input_1.png
 
 
 .. only:: latex
@@ -52,7 +37,7 @@ Input
 
 **Selezionare la banda su cui calcolare le statistiche**: selezionare la banda del raster di input su cui calcolare le statistiche.
 
-Opzioni
+Parametri
 ------------
 
 **Percentile da calcolare**: percentile da calcolare (da 1 a 99).
@@ -60,7 +45,7 @@ Opzioni
 Output
 ------------
 
-**Risultato**: file di testo in cui salvare il risultato.
+**Risultato**: file di testo in cui salvare il risultato. L'estensione .txt va specificata.
 
 
 .. only:: latex
