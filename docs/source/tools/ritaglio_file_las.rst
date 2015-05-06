@@ -13,12 +13,17 @@ Input
 
 **File LAS di input**: selezionare il file .las da ritagliare.
 
-**Dati di input**: selezionare lo shapefile da usare per ritagliare il file .las. Lo shapefile deve essere stato precedentemente aperto in Qgis.
+**Shapefile dell'area di interesse**: selezionare lo shapefile da usare per ritagliare il file .las. Lo shapefile deve essere stato precedentemente aperto in Qgis. Input opzionale
 
-Parametri
-------------
+**Coordinate della bounding box**: input opzionale. Non serve se viene dato in input uno shapefile.
 
-**XXX**:
+	* *Max North*: coordinata Y dell'angolo in alto a sinistra della bounding box.
+
+	* *Min North*: coordinata Y dell'angolo in basso a sinistra della bounding box.
+
+	* *Max East*: coordinata X dell'angolo in basso a destra della bounding box.
+
+	* *Min East*: coordinata X dell'angolo in alto a sinistra della bounding box.
 
 Output
 ------------

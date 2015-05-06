@@ -13,11 +13,6 @@ Input
 
 **File LAS di input**: selezionare i file .las da unire.
 
-Parametri
-------------
-
-**XXX**:
-
 Output
 ------------
 
