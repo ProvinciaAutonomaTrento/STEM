@@ -34,10 +34,11 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                               ("2", "Raster:Georeferenziatore:Georeferenziatore"): "&Georef",
                                               ("3", "Raster:Proiezioni:Riproiezione"): "&Ripro",
                                               ("4", "Raster:Miscellanea:Unione"): "&Union",
-                                              ("5", "Correzione atmosferica"): "image_atmo",
-                                              ("6", "Filtro riduzione del rumore"): "image_filter",
-                                              ("7", "Segmentazione"): "image_segm",
-                                              ("8", "Pansharpening"): "image_pansh"
+                                              ("5", "Raster:Raster Calculator"): "&Calc",
+                                              ("6", "Correzione atmosferica"): "image_atmo",
+                                              ("7", "Filtro riduzione del rumore"): "image_filter",
+                                              ("8", "Segmentazione"): "image_segm",
+                                              ("9", "Pansharpening"): "image_pansh"
                                               }],
          ("1", "Pre-elaborazioni LIDAR"): [{
                                            ("0", "Filtraggio file LAS"): "las_filter",
@@ -103,23 +104,36 @@ class STEMToolbox(QDockWidget, toolboxDockWidget):
         if isinstance(item, QGISTreeToolItem):
             menuTitle = []
             toolName = ':'.join([item.text(2), item.text(3), item.text(0)])
-            module = TOOLS[(item.parent().text(1),
-                            item.parent().text(0))][0][(item.text(1),
-                                                       toolName)]
+            try:
+                module = TOOLS[(item.parent().text(1),
+                                item.parent().text(0))][0][(item.text(1),
+                                                           toolName)]
+            except:
+                newToolName = ':'.join([item.text(2), item.text(3)])
+                module = TOOLS[(item.parent().text(1),
+                                item.parent().text(0))][0][(item.text(1),
+                                                           newToolName)]
+                toolName = newToolName
             if toolName.split(":")[0] == "Raster":
                 items = iface.rasterMenu()
             elif toolName.split(":")[0] in ["Vector", "Vettore"]:
                 items = iface.vectorMenu()
             for firstact in items.actions():
                 menuTitle.append(firstact.text())
-                if firstact.text().find(toolName.split(":")[1][:6]) != -1:
+                if firstact.text().find(toolName.split(":")[1][:6]) != -1 or \
+                   firstact.text().find(toolName.split(":")[1][:6].lower()) != -1:
                     secondact = firstact
-                    for act in secondact.menu().actions():
-                        if act.text().find(module[1:]) != -1:
-                            act.trigger()
+                    try:
+                        for act in secondact.menu().actions():
+                            if act.text().find(module[1:]) != -1:
+                                act.trigger()
+                    except:
+                        firstact.trigger()
 
             # check if plugin is active otherwise popup plugin manager dialog
             match = [s for s in menuTitle if toolName.split(":")[1][:6] in s]
+            if not match:
+                match = [s for s in menuTitle if toolName.split(":")[1][:6].lower() in s]
             if not match:
                 plIface = iface.pluginManagerInterface()
                 plIface.pushMessage("E' necessario attivare il plugin prima!", 1, 10)
@@ -183,8 +197,15 @@ class QGISTreeToolItem(QTreeWidgetItem):
         iconToolItem = QIcon(os.path.join(os.path.dirname(__file__),
                                           'images', 'qgis.png'))
         self.setIcon(0, iconToolItem)
-        self.setToolTip(0, toolName[1].split(":")[2])
-        self.setText(0, toolName[1].split(":")[2])
+        try:
+            self.setToolTip(0, toolName[1].split(":")[2])
+            self.setText(0, toolName[1].split(":")[2])
+        except:
+            try:
+                self.setToolTip(0, toolName[1].split(":")[1])
+                self.setText(0, toolName[1].split(":")[1])
+            except:
+                pass
         self.setText(1, toolName[0])
         self.setText(2, toolName[1].split(":")[0])
         self.setText(3, toolName[1].split(":")[1])
