@@ -1,5 +1,5 @@
 Attribuzione/modifica classi tematiche
-================================
+=========================================
 
 Il modulo permette di modificare un mappa di classificazione aggregando le classi per area o modificandole manualmente.
 Questo modulo va usato nella fase di post-classificazione, per esempio per passare da una mappa di dettaglio delle specie forestali ad una meno dettagliata contenente solo le classi "conifere" e "latifoglie". Può essere inoltre usato per aggregare mappe di classificazione a pixel in aree di interesse.
@@ -34,7 +34,8 @@ Parametri
 
 			.. image:: ../_static/tool_images/attribuzione_modifica_classi_tematiche_esempio_input_1.png
 
-			In questo caso le classi 1, 2 e 3 sono trasformate nella classe 1 che viene rinominata "conifere", le classi 4 e 5 sono trasformate nella classe 2 rinominata "latifoglie", e tutte le altre classi vengono lasciate inalterate "* = *".
+			In questo caso le classi 1, 2 e 3 sono trasformate nella classe 1 che viene rinominata "conifere", le classi 4 e 5 sono trasformate 
+                        nella classe 2 rinominata "latifoglie", e tutte le altre classi vengono lasciate inalterate " * = * ".
 
 Output
 ------------
