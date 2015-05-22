@@ -51,6 +51,14 @@ def escapeAndJoin(strList):
     return joined.strip()
 
 
+def inverse_mask():
+    inverse = STEMSettings.value("mask_inverse", "")
+    if inverse == "true":
+        return True
+    else:
+        return False
+
+
 class CheckableComboBox(QComboBox):
     """New class to create chackable QComboBox"""
     def __init__(self):
@@ -768,11 +776,7 @@ class BaseDialog(QDialog, baseDialog):
                                      "vettoriale sia una estensione di QGIS. "
                                      "Si prega di rimuoverne una delle due")
         if mask:
-            inverse = STEMSettings.value("mask", "")
-            if inverse == "true":
-                mask_inverse = True
-            else:
-                mask_inverse = False
+            mask_inverse = inverse_mask()
         path = tempfile.gettempdir()
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
