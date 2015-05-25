@@ -28,6 +28,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from grass_stem import temporaryFilesGRASS
 import traceback
 
 
@@ -81,7 +82,7 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
 
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)

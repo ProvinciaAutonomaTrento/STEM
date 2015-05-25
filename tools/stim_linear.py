@@ -112,6 +112,7 @@ class STEMToolsDialog(BaseDialog):
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
 
     def columnsChange2(self):
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
@@ -153,10 +154,10 @@ class STEMToolsDialog(BaseDialog):
             return None, None
 
     def getScoring(self):
-        if self.checkbox3.currentText() == 'R²':
-            return 'r2'
-        else:
+        if self.BaseInputCombo3.currentText() == 'MSE':
             return 'mean_squared_error'
+        else:
+            return 'r2'
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
