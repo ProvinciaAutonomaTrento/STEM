@@ -29,7 +29,8 @@ __revision__ = '$Format:%H$'
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import temporaryFilesGRASS, stats
-import os, traceback
+import os
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):

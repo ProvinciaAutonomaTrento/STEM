@@ -27,8 +27,8 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from feature_selection import SSF
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
@@ -56,7 +56,7 @@ class STEMToolsDialog(BaseDialog):
         mets = ['mean', 'min', 'median']
         self.lm = "Selezione la strategia da utilizzare"
         self._insertMethod(mets, self.lm, 0)
-        self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+        #self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

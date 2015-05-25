@@ -26,11 +26,11 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from gdal_stem import infoOGR
 from grass_stem import temporaryFilesGRASS
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):
