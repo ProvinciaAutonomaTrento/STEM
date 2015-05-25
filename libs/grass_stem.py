@@ -25,6 +25,8 @@ import sys
 import subprocess
 import itertools
 from pyro_stem import PYROSERVER, GRASS_PORT
+from stem_base_dialogs import inverse_mask
+from stem_utils import STEMMessageHandler, STEMSettings
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -60,6 +62,50 @@ def writefile(path, s):
     f.close()
 
 PIPE = subprocess.PIPE
+
+
+def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
+                     epsg=None):
+    """Read the QGIS's settings and obtain information for GRASS GIS
+
+    :param str grassdatabase: the path to grassdatabase
+    :param str location: the name of location
+    :param str grassbin: the path to grass7 binary
+    :param str epsg: the epsg code to use
+    """
+    # query GRASS 7 itself for its GISBASE
+    # we assume that GRASS GIS' start script is available and in the PATH
+    if not grassbin:
+        grassbin = str(STEMSettings.value("grasspath", ""))
+    if not grassdatabase:
+        grassdatabase = str(STEMSettings.value("grassdata", ""))
+    if not location:
+        location = str(STEMSettings.value("grasslocation", ""))
+    if not epsg:
+        epsg = str(STEMSettings.value("epsgcode", ""))
+
+    return grassdatabase, location, grassbin, epsg
+
+
+def temporaryFilesGRASS(name, local=True):
+    """Create temporary grass information (input and output data name and
+    a stemGRASS object)
+
+    :param str name: the name of input map
+    :param bool local: true to create local grass connection otherwise it
+                       try to connetc with the server
+    """
+    pid = os.getpid()
+    tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
+    tempout = 'stem_output_{pid}'.format(pid=pid)
+    grassdatabase, location, grassbin, epsg = QGISettingsGRASS()
+    if local:
+        gs = stemGRASS()
+    else:
+        import Pyro4
+        gs = Pyro4.Proxy("PYRONAME:stem.grass")
+    gs.initialize(pid, grassdatabase, location, grassbin, epsg)
+    return tempin, tempout, gs
 
 
 class stemGRASS():
@@ -114,17 +160,23 @@ class stemGRASS():
         import grass.script.setup as gsetup
         locexist = os.path.join(grassdatabase, location)
         if not os.path.exists(locexist):
+            print "dentro creation"
             if not epsg:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Manca il codice EPSG nelle impostazioni")
             startcmd = grassbin + ' -c epsg:' + epsg + ' -e ' + locexist
-            p = subprocess.Popen(startcmd, shell=False, stdin=PIPE,
+            print startcmd
+            p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
+#            from PyQt4.QtCore import *
+#            import pdb
+#            pyqtRemoveInputHook()
+#            pdb.set_trace()
             if p.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Creazione della location fallita")
-
+            print "dopo location"
         self.mapsetpath = os.path.join(grassdatabase, location, self.mapset)
         if not os.path.exists(self.mapsetpath):
             os.mkdir(self.mapsetpath)
@@ -171,13 +223,35 @@ class stemGRASS():
         else:
             name = '_'.join(os.path.split(mask)[-1].split('.')[:-1])
             vecs = list(itertools.chain(*gcore.list_grouped('vect').values()))
+            com = ['r.mask', 'vector={ma}'.format(ma=name)]
+            inv_mask = inverse_mask()
+            print inv_mask
+            if inv_mask:
+                com.append('-i')
             if name not in vecs:
-                gcore.run_command('v.in.ogr', dsn=mask, output=name)
-                gcore.run_command('r.mask', vector=name)
+                runcom = gcore.Popen(['v.in.ogr', 'input={ma}'.format(ma=mask),
+                                      'output={out}'.format(out=name)],
+                                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                out, err = runcom.communicate()
+                #  print out, err
+                if runcom.returncode != 0:
+                    raise Exception("Errore eseguendo GRASS: ",
+                                    "Errore eseguendo v.in.ogr {e}".format(e=err))
+                runcom = gcore.Popen(com,
+                                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                out, err = runcom.communicate()
+                if runcom.returncode != 0:
+                    raise Exception("Errore eseguendo GRASS: ",
+                                    "Errore eseguendo r.mask {e}".format(e=err))
             else:
                 rasts = list(itertools.chain(*gcore.list_grouped('rast').values()))
                 if 'MASK' not in rasts:
-                    gcore.run_command('r.mask', vector=name)
+                    runcom = gcore.Popen(com,
+                                         stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                    out, err = runcom.communicate()
+                    if runcom.returncode != 0:
+                        raise Exception("Errore eseguendo GRASS: ",
+                                        "Errore eseguendo r.mask {e}".format(e=err))
 
     def import_grass(self, inp, intemp, typ, nl=None):
         """Import data into GRASS database
@@ -198,7 +272,8 @@ class stemGRASS():
                                      stderr=PIPE)
             elif len(nl) == 1 and str(nl[0]) == '1':
                 runcom = gcore.Popen(['r.in.gdal', 'input={i}'.format(i=inp),
-                                      'output={o}'.format(o=intemp)],
+                                      'output={o}'.format(o=intemp),
+                                      'band=1'],
                                      stdin=PIPE, stdout=PIPE,
                                      stderr=PIPE)
             elif len(nl) == 1 and str(nl[0]) != '1':
@@ -397,6 +472,7 @@ class stemGRASS():
         """Remove mapset with all the contained data"""
         import shutil
         shutil.rmtree(self.mapsetpath)
+
 
 def main():
     """This function is used in the server to activate a Pyro4 server.

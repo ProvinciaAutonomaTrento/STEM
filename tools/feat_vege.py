@@ -26,7 +26,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from grass_stem import helpUrl
+from grass_stem import temporaryFilesGRASS
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
@@ -108,7 +108,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             if mask:
                 gs.check_mask(mask)
 
@@ -139,7 +139,8 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass([com])
 
-            gs.export_grass(tempout, self.TextOut.text(), typ, False)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:

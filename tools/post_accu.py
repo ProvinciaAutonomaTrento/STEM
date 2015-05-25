@@ -29,7 +29,8 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import helpUrl
+from grass_stem import temporaryFilesGRASS
+
 import traceback
 
 
@@ -95,7 +96,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             pid = tempin.split('_')[2]
             tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
             cut2, cutsource2, mask = self.cutInput(name2, source2, type2)

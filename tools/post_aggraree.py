@@ -30,6 +30,7 @@ import traceback
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from gdal_stem import infoOGR
+from grass_stem import temporaryFilesGRASS
 
 
 class STEMToolsDialog(BaseDialog):
@@ -94,7 +95,7 @@ class STEMToolsDialog(BaseDialog):
                 name2 = cut2
                 source2 = cutsource2
 
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             pid = tempin.split('_')[2]
 
             gs.import_grass(source, tempin, typ)

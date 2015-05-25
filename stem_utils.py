@@ -24,7 +24,6 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
 
-from grass_stem import stemGRASS
 import os
 import inspect
 import re
@@ -362,50 +361,6 @@ class STEMUtils:
             if overwrite:
                 STEMUtils.renameRast(tmp, output)
         STEMUtils.removeFiles(original_dir)
-
-    @staticmethod
-    def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
-                         epsg=None):
-        """Read the QGIS's settings and obtain information for GRASS GIS
-
-        :param str grassdatabase: the path to grassdatabase
-        :param str location: the name of location
-        :param str grassbin: the path to grass7 binary
-        :param str epsg: the epsg code to use
-        """
-        # query GRASS 7 itself for its GISBASE
-        # we assume that GRASS GIS' start script is available and in the PATH
-        if not grassbin:
-            grassbin = str(STEMSettings.value("grasspath", ""))
-        if not grassdatabase:
-            grassdatabase = str(STEMSettings.value("grassdata", ""))
-        if not location:
-            location = str(STEMSettings.value("grasslocation", ""))
-        if not epsg:
-            epsg = str(STEMSettings.value("epsgcode", ""))
-
-        return grassdatabase, location, grassbin, epsg
-
-    @staticmethod
-    def temporaryFilesGRASS(name, local=True):
-        """Create temporary grass information (input and output data name and
-        a stemGRASS object)
-
-        :param str name: the name of input map
-        :param bool local: true to create local grass connection otherwise it
-                           try to connetc with the server
-        """
-        pid = os.getpid()
-        tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
-        tempout = 'stem_output_{pid}'.format(pid=pid)
-        grassdatabase, location, grassbin, epsg = STEMUtils.QGISettingsGRASS()
-        if local:
-            gs = stemGRASS()
-        else:
-            import Pyro4
-            gs = Pyro4.Proxy("PYRONAME:stem.grass")
-        gs.initialize(pid, grassdatabase, location, grassbin, epsg)
-        return tempin, tempout, gs
 
     @staticmethod
     def getNumSubset(name):

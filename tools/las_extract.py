@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import stats, helpUrl
+from grass_stem import temporaryFilesGRASS, stats
 import os, traceback
 
 
@@ -81,7 +81,7 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             name = os.path.basename(source).replace('.las', '')
-            tempin, tempout, gs = STEMUtils.temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             method = str(self.MethodInput.currentText())
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
