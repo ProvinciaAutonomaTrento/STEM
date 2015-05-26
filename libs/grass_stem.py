@@ -401,9 +401,9 @@ class stemGRASS():
         :param str returnpulse: import points of selected return type,
                                 acpted values are first, last, mid
         :param str resolution: the resolution for outpat map
-        :param str percentile: percentile of the values
+        :param str percentile: value of percentile 1-100
         :param str trim: discard <trim> percent of the smallest and <trim>
-                         percent of the largest observations
+                         percent of the largest observations 0-50
         """
         import grass.script.core as gcore
 
@@ -435,7 +435,7 @@ class stemGRASS():
                                  'output={output}'.format(output=out),
                                  'method={met}'.format(met=method),
                                  'return_filter={pul}'.format(pul=returnpulse),
-                                 'percent=perc'.format(perc=percentile)]])
+                                 'pth={perc}'.format(perc=percentile)]])
             elif returnpulse and trim:
                 self.run_grass([['r.in.lidar', '-o',
                                  'input={input}'.format(input=inp),
@@ -448,7 +448,7 @@ class stemGRASS():
                                  'input={input}'.format(input=inp),
                                  'output={output}'.format(output=out),
                                  'method={met}'.format(met=method),
-                                 'percent=perc'.format(perc=percentile)]])
+                                 'pth={perc}'.format(perc=percentile)]])
             elif trim and not returnpulse:
                 self.run_grass([['r.in.lidar', '-o',
                                  'input={input}'.format(input=inp),
