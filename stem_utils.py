@@ -293,10 +293,10 @@ class STEMUtils:
         :param str tmp: the temporary file name
         :param str out: the final output file name
         """
-        os.rename(tmp, out)
+        shutil.move(tmp, out)
         try:
-            os.rename('{name}.aux.xml'.format(name=tmp),
-                      '{name}.aux.xml'.format(name=out))
+            shutil.move('{name}.aux.xml'.format(name=tmp),
+                        '{name}.aux.xml'.format(name=out))
         except:
             pass
 
