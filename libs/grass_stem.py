@@ -407,8 +407,18 @@ class stemGRASS():
         """
         import grass.script.core as gcore
 
-        outp = gcore.read_command('r.in.lidar', flags='go', input=inp,
-                                  output=out)
+        try:
+            runcom = gcore.Popen(['r.in.lidar', '-go',
+                                  'input={input}'.format(input=inp),
+                                  'output={output}'.format(output=out)],
+                                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            outp, errp = runcom.communicate()
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo r.in.lidar {err}".format(err=errp))
+        except:
+            raise Exception("Probabilmente r.in.lidar non è presente nella"
+                            "vostra versione di GRASS GIS")
         com = ['g.region']
         com.extend(outp.split())
         self.run_grass([com])
@@ -420,25 +430,44 @@ class stemGRASS():
         self.run_grass([com2])
         try:
             if returnpulse and percentile:
-                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, return_filter=returnpulse,
-                                  percent=percentile)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method),
+                                 'return_filter={pul}'.format(pul=returnpulse),
+                                 'percent=perc'.format(perc=percentile)]])
             elif returnpulse and trim:
-                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, return_filter=returnpulse,
-                                  trim=trim)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method),
+                                 'return_filter={pul}'.format(pul=returnpulse),
+                                 'trim={tri}'.format(tri=trim)]])
             elif percentile and not returnpulse:
-                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, percent=percentile)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method),
+                                 'percent=perc'.format(perc=percentile)]])
             elif trim and not returnpulse:
-                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, trim=trim)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method),
+                                 'trim={tri}'.format(tri=trim)]])
             elif returnpulse and not (percentile or trim):
-                gcore.run_command('r.in.lidar', flags='o', input=inp, output=out,
-                                  method=method, return_filter=returnpulse)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method),
+                                 'return_filter={pul}'.format(pul=returnpulse)
+                                 ]])
             else:
-                gcore.run_command('r.in.lidar', flags='o', input=inp,
-                                  output=out, method=method)
+                self.run_grass([['r.in.lidar', '-o',
+                                 'input={input}'.format(input=inp),
+                                 'output={output}'.format(output=out),
+                                 'method={met}'.format(met=method)]])
+
         except:
             raise Exception("Errore eseguendo l'importazione del file LAS")
 
