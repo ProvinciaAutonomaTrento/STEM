@@ -288,16 +288,17 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Errore eseguendo r.in.gdal {e}".format(e=err))
             runcom = gcore.Popen(['g.list', 'type=raster',
-                                  'pattern={n}*'.format(n=intemp)], stdin=PIPE,
-                                 stdout=PIPE, stderr=PIPE)
+                                  'pattern={n}*'.format(n=intemp),
+                                  'mapset={maps}'.format(maps=self.mapset)],
+                                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = runcom.communicate()
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo g.list {e}".format(e=err))
             listfiles = out.splitlines()
-            intemp=listfiles[0]
+            first=listfiles[0]
             runcom = gcore.Popen(['g.region',
-                                  'rast={r}'.format(r=intemp)],
+                                  'rast={r}'.format(r=first)],
                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
             out, err = runcom.communicate()
@@ -305,6 +306,7 @@ class stemGRASS():
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo g.region {e}".format(e=err))
+            self.create_group(listfiles, intemp)
 
         elif typ == 'vector':
             runcom = gcore.Popen(['v.in.ogr', 'input={i}'.format(i=inp),

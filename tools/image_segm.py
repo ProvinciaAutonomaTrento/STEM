@@ -30,6 +30,8 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
 from grass_stem import temporaryFilesGRASS
 import traceback
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -46,8 +48,10 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
         self._insertSecondOutput("Goodness of fit", 1)
-        self.BrowseButton2.clicked.connect(self.BrowseDir)
+        #self.BrowseButton2.clicked.connect(self.BrowseDir)
         self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
+        self.connect(self.BrowseButton2, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut2))
 
         self._insertThresholdDouble(0.001, 1.000, 0.001, 1, 3)
 
