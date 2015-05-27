@@ -354,7 +354,15 @@ class stemGRASS():
         """
         import grass.script.core as gcore
         if base:
-            maps = gcore.list_grouped('rast', pattern='{base}*'.format(base=maps))[self.mapset]
+            #maps = gcore.list_grouped('rast', pattern='{base}*'.format(base=maps))[self.mapset]
+            com = ['g.list', 'type=rast', 'pattern={base}*'.format(base=maps),
+                   'mapset={maps}'.format(maps=self.mapset), 'separator=,']
+            runcom = gcore.Popen(com,stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            out, err = runcom.communicate()
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo g.list {err}".format(err=err))
+            maps = out.strip().split(',')
         runcom = gcore.Popen(['i.group', 'group={name}'.format(name=gname),
                               'subgroup={name}'.format(name=gname),
                               'input={maps}'.format(maps=','.join(maps))],
@@ -387,7 +395,13 @@ class stemGRASS():
                                 "Errore eseguendo r.out.gdal {err}".format(err=err))
             # gcore.run_command('r.out.gdal', input=outemp, output=finalout)
         elif typ == 'vector':
-            gcore.run_command('v.out.ogr', input=outemp, output=finalout)
+            runcom = gcore.Popen(['v.out.ogr', 'input={ip}'.format(ip=outemp),
+                                  'output={out}'.format(out=finalout)])
+            out, err = runcom.communicate()
+            # print out,err
+            if runcom.returncode != 0:
+                raise Exception("Errore eseguendo GRASS: "
+                                "Errore eseguendo v.out.ogr {err}".format(err=err))
         if remove:
             self.removeMapset()
 
