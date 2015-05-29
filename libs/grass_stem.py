@@ -157,7 +157,6 @@ class stemGRASS():
         os.environ['PATH'] += os.pathsep + os.path.join(gisbase, 'extrabin')
 
         self.mapset = 'stem_{pid}'.format(pid=pid)
-        import grass.script.setup as gsetup
         locexist = os.path.join(grassdatabase, location)
         if not os.path.exists(locexist):
             print "dentro creation"
@@ -197,6 +196,7 @@ class stemGRASS():
         os.environ['LOCALE'] = 'C'
         ###########
         # launch session
+        import grass.script.setup as gsetup
         gsetup.init(gisbase, grassdatabase, location, self.mapset)
         if 'GRASS_PROJSHARE' not in os.environ.keys():
             os.environ['GRASS_PROJSHARE'] = 'C:\OSGeo4W\share\proj'
@@ -206,6 +206,8 @@ class stemGRASS():
 
         if 'SHELL' not in os.environ.keys():
             os.environ['SHELL'] = 'C:\Windows\system32\cmd.exe'
+        import grass.script.core as gcore
+        gcore.os.environ['GRASS_OVERWRITE'] = '1'
 
     def check_mask(self, mask):
         """Check if a mask should be used
