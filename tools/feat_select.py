@@ -85,9 +85,9 @@ class STEMToolsDialog(BaseDialog):
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
                 nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list2)
+                                                     self.layer_list)
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-                                                     self.layer_list2)
+                                                     self.layer_list)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
                                                      rasttyp)
                 prefcsv += "_{rast}_{n}".format(rast=inrast,
@@ -98,7 +98,7 @@ class STEMToolsDialog(BaseDialog):
                 ncolumnschoose = None
             else:
                 ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                       self.layer_list2, False)
+                                                       self.layer_list, False)
                 nlayerchoose = None
                 inrast = None
                 inrastsource = None
