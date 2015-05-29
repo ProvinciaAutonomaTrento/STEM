@@ -61,7 +61,7 @@ class STEMToolsDialog(BaseDialog):
         self.TextArea.setEnabled(False)
         self.LabelLinedit.setEnabled(False)
         self.Linedit.setEnabled(False)
-        self.helpui.fillfromUrl(helpUrl('r.clump'))
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
