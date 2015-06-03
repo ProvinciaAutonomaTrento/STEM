@@ -81,35 +81,32 @@ class STEMToolsDialog(BaseDialog):
                 invect = cut
                 invectsource = cutsource
             inrast = str(self.BaseInput2.currentText())
+            inrastsource = STEMUtils.getLayersSource(inrast)
+#            if inrast != "":
+#                inrastsource = STEMUtils.getLayersSource(inrast)
+#                nlayerchoose = STEMUtils.checkLayers(inrastsource,
+#                                                     self.layer_list)
+#                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
+#                                                     self.layer_list)
+#                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
+#                                                     rasttyp)
+#                prefcsv += "_{rast}_{n}".format(rast=inrast,
+#                                                n=len(nlayerchoose))
+#                if cut:
+#                    inrast = cut
+#                    inrastsource = cutsource
+#                ncolumnschoose = None
+#            else:
+            ncolumnschoose = STEMUtils.checkLayers(invectsource,
+                                                   self.layer_list, False)
+            try:
+                ncolumnschoose.remove(invectcol)
+            except:
+                pass
+            prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
-            if inrast != "":
-                inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list)
-                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-                                                     self.layer_list)
-                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-                                                     rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast,
-                                                n=len(nlayerchoose))
-                if cut:
-                    inrast = cut
-                    inrastsource = cutsource
-                ncolumnschoose = None
-            else:
-                ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                       self.layer_list, False)
-                nlayerchoose = None
-                inrast = None
-                inrastsource = None
-                try:
-                    ncolumnschoose.remove(invectcol)
-                except:
-                    pass
-                prefcsv += "_{n}".format(n=len(ncolumnschoose))
-
-            nfold = int(self.Linedit3.text())
-            models = self.getModel()
+            nfold = None
+            models = None
             meth = str(self.MethodInput.currentText())
 
             if self.LocalCheck.isChecked():
