@@ -74,19 +74,19 @@ class STEMToolsDialog(BaseDialog):
             self.TextArea.setEnabled(False)
             self.LabelLinedit.setEnabled(False)
             self.Linedit.setEnabled(True)
-            self.helpui.fillfromUrl(helpUrl('r.clump'))
+            self.helpui.fillfromUrl(self.SphinxUrl())
         elif self.BaseInputCombo.currentText() == 'manuale':
             self.LabelTextarea.setEnabled(True)
             self.TextArea.setEnabled(True)
             self.LabelLinedit.setEnabled(False)
             self.Linedit.setEnabled(False)
-            self.helpui.fillfromUrl(helpUrl('r.reclass'))
+            self.helpui.fillfromUrl(self.SphinxUrl())
         else:
             self.LabelTextarea.setEnabled(False)
             self.TextArea.setEnabled(False)
             self.LabelLinedit.setEnabled(True)
             self.Linedit.setEnabled(True)
-            self.helpui.fillfromUrl(helpUrl('r.reclass.area'))
+            self.helpui.fillfromUrl(self.SphinxUrl())
 
     def show_(self):
         self.switchClippingMode()

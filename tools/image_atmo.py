@@ -27,7 +27,6 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from grass_stem import helpUrl
 from grass_stem import temporaryFilesGRASS
 import traceback
 
@@ -53,8 +52,6 @@ class STEMToolsDialog(BaseDialog):
         label = "Seleziona l'algortimo da utilizzare"
         self._insertFirstCombobox(label, 2, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
-
-        self.helpui.fillfromUrl(helpUrl('i.atcorr'))
 
         self._insertCheckbox('Convertire la mappa di input in riflettanza '
                              '(default è radianza)', 3)
