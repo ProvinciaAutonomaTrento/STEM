@@ -28,7 +28,10 @@ import codecs
 import platform
 from functools import partial
 from types import StringType, UnicodeType
-from stem_utils import STEMMessageHandler, STEMSettings, STEMUtils
+from stem_utils import STEMMessageHandler
+from stem_utils import STEMSettings
+from stem_utils import STEMUtils
+from stem_utils import CheckableComboBox
 import gdal_stem
 
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
@@ -57,21 +60,6 @@ def inverse_mask():
         return True
     else:
         return False
-
-
-class CheckableComboBox(QComboBox):
-    """New class to create chackable QComboBox"""
-    def __init__(self):
-        super(CheckableComboBox, self).__init__()
-        self.view().pressed.connect(self.handleItemPressed)
-        self.setModel(QStandardItemModel(self))
-
-    def handleItemPressed(self, index):
-        item = self.model().itemFromIndex(index)
-        if item.checkState() == Qt.Checked:
-            item.setCheckState(Qt.Unchecked)
-        else:
-            item.setCheckState(Qt.Checked)
 
 
 class BaseDialog(QDialog, baseDialog):
@@ -144,7 +132,7 @@ class BaseDialog(QDialog, baseDialog):
         """Function for help button"""
         self.helpui.exec_()
 
-    def _insertMultipleInput(self):
+    def _insertMultipleInput(self, multi=False):
         """Function to add ListWidget where insert multiple input files name"""
         self.horizontalLayout_input = QVBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_input")
@@ -158,10 +146,16 @@ class BaseDialog(QDialog, baseDialog):
         self.BaseInput.setObjectName("BaseInput")
         self.BaseInput.setDragDropMode(QAbstractItemView.InternalMove)
         self.horizontalLayout_input.addWidget(self.BaseInput)
+        self.BrowseButtonIn = QPushButton()
+        self.BrowseButtonIn.setObjectName("BrowseButtonIn")
+        self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
         self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
         self.label.setText(self.tr("", "Dati di input"))
+        self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
+        self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
+                     partial(self.BrowseInFile, self.BaseInput, multi=multi))
 
-    def _insertFileInput(self, pos=0):
+    def _insertFileInput(self, pos=0, multi=False):
         """Function to add QLineEdit and QPushButton to select the data
         outside QGIS (for example LAS files)
 
@@ -183,7 +177,7 @@ class BaseDialog(QDialog, baseDialog):
         self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.BrowseInFile, self.TextIn))
+                     partial(self.BrowseInFile, self.TextIn, multi=multi))
 
     def _insertSingleInput(self, label="Dati di input"):
         """Function to add ComboBox Widget where insert a single input file
@@ -525,6 +519,63 @@ class BaseDialog(QDialog, baseDialog):
                                                  self.horizontalLayout_linedit3)
         self.LabelLinedit3.setText(self.tr("", label))
 
+    def _insertFourthLineEdit(self, label, posnum):
+        """Function to add a third LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
+        self.horizontalLayout_linedit4 = QHBoxLayout()
+        self.horizontalLayout_linedit4.setObjectName("horizontalLayout_linedit4")
+        self.LabelLinedit4 = QLabel()
+        self.LabelLinedit4.setObjectName("LabelLinedit4")
+        self.LabelLinedit4.setWordWrap(True)
+        self.horizontalLayout_linedit4.addWidget(self.LabelLinedit4)
+        self.Linedit4 = QLineEdit()
+        self.Linedit4.setObjectName("Linedit4")
+        self.horizontalLayout_linedit4.addWidget(self.Linedit4)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_linedit4)
+        self.LabelLinedit4.setText(self.tr("", label))
+
+    def _insertFifthLineEdit(self, label, posnum):
+        """Function to add a third LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
+        self.horizontalLayout_linedit5 = QHBoxLayout()
+        self.horizontalLayout_linedit5.setObjectName("horizontalLayout_linedit5")
+        self.LabelLinedit5 = QLabel()
+        self.LabelLinedit5.setObjectName("LabelLinedit5")
+        self.LabelLinedit5.setWordWrap(True)
+        self.horizontalLayout_linedit5.addWidget(self.LabelLinedit5)
+        self.Linedit5 = QLineEdit()
+        self.Linedit5.setObjectName("Linedit5")
+        self.horizontalLayout_linedit5.addWidget(self.Linedit5)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_linedit5)
+        self.LabelLinedit5.setText(self.tr("", label))
+
+    def _insertSixthLineEdit(self, label, posnum):
+        """Function to add a third LineEdit Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        """
+        self.horizontalLayout_linedit6 = QHBoxLayout()
+        self.horizontalLayout_linedit6.setObjectName("horizontalLayout_linedit6")
+        self.LabelLinedit6 = QLabel()
+        self.LabelLinedit6.setObjectName("LabelLinedit6")
+        self.LabelLinedit6.setWordWrap(True)
+        self.horizontalLayout_linedit6.addWidget(self.LabelLinedit6)
+        self.Linedit6 = QLineEdit()
+        self.Linedit6.setObjectName("Linedit6")
+        self.horizontalLayout_linedit6.addWidget(self.Linedit6)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_linedit6)
+        self.LabelLinedit6.setText(self.tr("", label))
+
     def _insertFirstCombobox(self, label, posnum, items=None):
         """Function to add a ComboBox Widget
 
@@ -712,17 +763,17 @@ class BaseDialog(QDialog, baseDialog):
         self.verticalLayout_options.insertLayout(pos, self.horizontalLayout_inputOpt)
         self.labelOpt.setText(self.tr("", label))
 
-    def _checkExtention(self, pref, ext, remove=True):
+    def _checkExtention(self, out, ext, remove=True):
         """Function to add extention if it was not set
 
-        :param str pref: the name to check
+        :param str out: the name to check
         :param str ext: the prefix to add if missing
         :param bool remove: if True remove the file is it exist
         """
-        if not pref.endswith(ext):
+        if not out.endswith(ext):
             out += ext
         if os.path.exists(out):
-            STEMUtils.removeFiles(path)
+            STEMUtils.removeFiles(out)
         return out
 
     def processError(self, error):
@@ -877,19 +928,32 @@ class BaseDialog(QDialog, baseDialog):
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
 
-    def BrowseInFile(self, line, filt="LAS file (*.las)"):
+    def BrowseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False):
         """Function to select existing file in a directory
 
         :param obj line: the QLineEdit object to update
         :param str filt: a string with the filter of directory
         """
-        mydir = QFileDialog.getOpenFileName(None, "Selezionare il file di"
-                                            " input", "", filt)
-        if os.path.exists(mydir):
-            line.setText(mydir)
+        if multi:
+            mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
+                                                 caption="Selezionare i file "
+                                                 "di input", directory="")
+            for fil in mydir:
+                if os.path.exists(fil):
+                    line.addItem(fil)
+                else:
+                    STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
+
             return
+
         else:
-            STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
+            mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
+                                                caption="Selezionare il file "
+                                                "di input", directory="")
+            if os.path.exists(mydir):
+                line.setText(mydir)
+                return
+        STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def BrowseDir(self, line):
         """Function to create new file in a directory

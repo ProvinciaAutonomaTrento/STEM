@@ -28,7 +28,6 @@ import os
 import inspect
 import re
 import tempfile
-import stem_base_dialogs
 import shutil
 import glob
 try:
@@ -38,6 +37,21 @@ except ImportError:
         import gdal
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
+
+
+class CheckableComboBox(QComboBox):
+    """New class to create chackable QComboBox"""
+    def __init__(self):
+        super(CheckableComboBox, self).__init__()
+        self.view().pressed.connect(self.handleItemPressed)
+        self.setModel(QStandardItemModel(self))
+
+    def handleItemPressed(self, index):
+        item = self.model().itemFromIndex(index)
+        if item.checkState() == Qt.Checked:
+            item.setCheckState(Qt.Unchecked)
+        else:
+            item.setCheckState(Qt.Checked)
 
 
 class STEMUtils:
@@ -146,7 +160,7 @@ class STEMUtils:
         :param obj form: a object containing the bands of map
         :param bool index:
         """
-        if isinstance(form, QCheckBox) or isinstance(form, stem_base_dialogs.CheckableComboBox):
+        if isinstance(form, QCheckBox) or isinstance(form, CheckableComboBox):
             itemlist = []
             for i in range(form.count()):
                 item = form.model().item(i)
