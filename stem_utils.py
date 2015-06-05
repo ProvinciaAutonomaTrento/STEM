@@ -388,6 +388,17 @@ class STEMUtils:
         STEMMessageHandler.information("STEM Plugin", 'Impostazioni salvate '
                                        'nel file {0}'.format(f.name))
 
+    @staticmethod
+    def check_wkt(wkt):
+        """Check if the Well Known Text is valid or not"""
+        try:
+            ogr.CreateGeometryFromWkt(wkt)
+            return True
+        except Exception as ex:
+            STEMMessageHandler.warning("STEM Plugin", 'WKT non valido per: '
+                                       '{err}'.format(err=ex))
+            return False
+
 
 class STEMMessageHandler:
     """
