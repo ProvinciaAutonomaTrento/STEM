@@ -151,7 +151,7 @@ class stemLAS():
 
         :param list comm: the list containing the command to run
         """
-        com = subprocess.Popen(comm, stdin=PIPE,
+        com = subprocess.Popen(comm, shell=True, stdin=PIPE,
                                stdout=PIPE, stderr=PIPE)
         out, err = com.communicate()
 
@@ -233,8 +233,8 @@ class stemLAS():
         """
         if self.pdal:
             command = ['pdal pipeline']
-            xmlfile = self.union_xml_pdal(inps, out, compressed)
-            command.extend(['-i', xmlfile])
+            self.union_xml_pdal(inps, out, compressed)
+            command.extend(['-i', self.pdalxml])
             self._run_command(command)
         else:
             raise Exception("pdal è necessario per unire più file LAS")
@@ -290,8 +290,8 @@ class stemLAS():
                 area = "POLYGON (({minx} {miny}, {minx} {maxy}, {maxx} {maxy}" \
                        ", {maxx} {miny}))".format(minx=coors[0], miny=coors[1],
                                                   maxx=coors[1], maxy=coors[1])
-            xmlfile = self.clip_xml_pdal(inp, out, area, compressed, inverted)
-            command.extend(['-i', xmlfile])
+            self.clip_xml_pdal(inp, out, area, compressed, inverted)
+            command.extend(['-i', self.pdalxml])
         self._run_command(command)
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
@@ -387,7 +387,15 @@ class stemLAS():
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
+        :param list x: a two values list with min and max value for x
+        :param list y: a two values list with min and max value for y
+        :param list z: a two values list with min and max value for z
+        :param list inte: a two values list with min and max value for intesity
+        :param list angle: a two values list with min and max value for scan
+                           angle
         :param str clas: number of class to maintain
+        :param str retur: the return to keep, the accepted values are:
+                           first, last, others
         :param str forced: liblas o pdal as value
         :param bool compressed: True to obtain a LAZ file
         """
@@ -417,9 +425,9 @@ class stemLAS():
                 command.extend(['--drop-returns',
                                 '1 {last}'.format(last=max(self.returns))])
         else:
-            xmlfile = self.filter_xml_pdal(inp, out, compressed, x, y, z,
-                                           inte, angle, clas, retur)
-            command.extend(['-i', xmlfile])
+            self.filter_xml_pdal(inp, out, compressed, x, y, z,
+                                 inte, angle, clas, retur)
+            command.extend(['-i', self.pdalxml])
         self._run_command(command)
 
 
