@@ -78,7 +78,7 @@ class stemLAS():
 
         :param str command: the bash command to run
         """
-        lasout = subprocess.Popen(command, shell=True, stdin=PIPE, stderr=PIPE,
+        lasout = subprocess.Popen(command, stdin=PIPE, stderr=PIPE,
                                   stdout=PIPE).stdout.readlines()[0].strip()
         if lasout:
             return True
@@ -138,11 +138,11 @@ class stemLAS():
         elif forced == 'liblas' and not self.liblas:
             raise Exception("LibLAS non trovato")
         elif forced == 'pdal' and self.pdal:
-            return ['pdal pipeline']
+            return ['pdal', 'pipeline']
         elif forced == 'pdal' and not self.pdal:
             raise Exception("pdal non trovato")
         elif self.pdal:
-            return ['pdal pipeline']
+            return ['pdal', 'pipeline']
         else:
             return ['las2las']
 
@@ -151,7 +151,7 @@ class stemLAS():
 
         :param list comm: the list containing the command to run
         """
-        com = subprocess.Popen(comm, shell=True, stdin=PIPE,
+        com = subprocess.Popen(comm, stdin=PIPE,
                                stdout=PIPE, stderr=PIPE)
         out, err = com.communicate()
 
@@ -232,7 +232,7 @@ class stemLAS():
         :param bool compressed: True to obtain a LAZ file
         """
         if self.pdal:
-            command = ['pdal pipeline']
+            command = ['pdal', 'pipeline']
             self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', self.pdalxml])
             self._run_command(command)
