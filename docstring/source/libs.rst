@@ -31,6 +31,20 @@ The libraries are used as backend of STEM plugin
 
     \newpage % hard pagebreak at exactly this position
 
+:mod:`las_stem` module
+--------------------------------
+
+.. automodule:: libs.las_stem
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. only:: latex
+
+  .. raw:: latex
+
+    \newpage % hard pagebreak at exactly this position
+
 :mod:`feature_selection` module
 --------------------------------
 
