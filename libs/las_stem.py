@@ -200,16 +200,17 @@ class stemLAS():
                 self.returns.extend(range(int(sta['minimum']),
                                           int(sta['maximum'])))
 
-    def union_xml_pdal(self, inps, out):
+    def union_xml_pdal(self, inps, out, compres):
         """Create the XML file to use in `pdal pipeline` to merge serveral
         LAS files
 
         :param str inp: full path for several input LAS files
         :param str out: the output LAS full path
+        :param bool compres: the output has to be compressed
         """
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
         root = self._create_xml()
-        write = self._add_write(out)
+        write = self._add_write(out, compres)
         filt = Element('Filter')
         filt.set("type", "filters.merge")
 
@@ -232,24 +233,25 @@ class stemLAS():
         """
         if self.pdal:
             command = ['pdal pipeline']
-            xmlfile = self.union_xml_pdal(inps, out)
+            xmlfile = self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', xmlfile])
             self._run_command(command)
         else:
             raise Exception("pdal è necessario per unire più file LAS")
 
-    def clip_xml_pdal(self, inp, out, bbox, inverted=False):
+    def clip_xml_pdal(self, inp, out, bbox, compres, inverted=False):
         """Clip a LAS file using a polygon
 
         :param str inp: full path for the input LAS file
         :param str out: full path for the output LAS file
         :param str bbox: a well-known text string to crop the LAS file
+        :param bool compres: the output has to be compressed
         :param bool inverted: invert the cropping logic and only take points
                               outside the cropping polygon
         """
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
         root = self._create_xml()
-        write = self._add_write(out)
+        write = self._add_write(out, compres)
         filt = Element('Filter')
         filt.set("type", "filters.crop")
 
@@ -288,20 +290,29 @@ class stemLAS():
                 area = "POLYGON (({minx} {miny}, {minx} {maxy}, {maxx} {maxy}" \
                        ", {maxx} {miny}))".format(minx=coors[0], miny=coors[1],
                                                   maxx=coors[1], maxy=coors[1])
-            xmlfile = self.clip_xml_pdal(inp, out, area, inverted)
+            xmlfile = self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', xmlfile])
         self._run_command(command)
 
-    def filter_xml_pdal(self, inp, out, x=None, y=None, z=None, inte=None,
-                        angle=None, clas=None, retur=None,):
+    def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
+                        inte=None, angle=None, clas=None, retur=None):
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
+        :param bool compres: True to obtain a LAZ file
+        :param list x: a two values list with min and max value for x
+        :param list y: a two values list with min and max value for y
+        :param list z: a two values list with min and max value for z
+        :param list inte: a two values list with min and max value for intesity
+        :param list angle: a two values list with min and max value for scan
+                           angle
         :param str clas: number of class to maintain
+        :param str retur: the return to keep, the accepted values are:
+                           first, last, others
         """
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
         root = self._create_xml()
-        write = self._add_write(out)
+        write = self._add_write(out, compres)
         filt = Element('Filter')
         filt.set("type", "filters.range")
         if x:
@@ -372,11 +383,13 @@ class stemLAS():
         return 0
 
     def filterr(self, inp, out, x=None, y=None, z=None, inte=None, angle=None,
-                clas=None, retur=None, forced=False):
+                clas=None, retur=None, forced=False, compressed=False):
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
         :param str clas: number of class to maintain
+        :param str forced: liblas o pdal as value
+        :param bool compressed: True to obtain a LAZ file
         """
         command = self._start_command(forced)
         if 'las2las' in command:
@@ -404,7 +417,8 @@ class stemLAS():
                 command.extend(['--drop-returns',
                                 '1 {last}'.format(last=max(self.returns))])
         else:
-            xmlfile = self.filter_xml_pdal(inp, out, clas)
+            xmlfile = self.filter_xml_pdal(inp, out, compressed, x, y, z,
+                                           inte, angle, clas, retur)
             command.extend(['-i', xmlfile])
         self._run_command(command)
 
