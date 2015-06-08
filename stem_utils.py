@@ -37,6 +37,13 @@ except ImportError:
         import gdal
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
+try:
+    import osgeo.ogr as ogr
+except ImportError:
+    try:
+        import ogr
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
 
 
 class CheckableComboBox(QComboBox):
