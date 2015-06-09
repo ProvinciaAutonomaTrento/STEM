@@ -420,6 +420,14 @@ class STEMUtils:
                                        '{err}'.format(err=ex))
             return False
 
+    @staticmethod
+    def splitIntoList(st, sep='-'):
+        if st:
+            st = st.strip()
+            return st.split(sep)
+        else:
+            return None
+
 
 class STEMMessageHandler:
     """
