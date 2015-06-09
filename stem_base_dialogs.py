@@ -685,7 +685,7 @@ class BaseDialog(QDialog, baseDialog):
                                                  self.horizontalLayout_textarea)
         self.LabelTextarea.setText(self.tr("Dialog", label))
 
-    def _insertCheckbox(self, label, posnum, state=False):
+    def _insertCheckbox(self, label, posnum, state=False, output=False):
         """Function to add a QCheckBox
 
         :param int posnum: the position of form in the input layout
@@ -701,8 +701,12 @@ class BaseDialog(QDialog, baseDialog):
         self.checkbox = QCheckBox()
         self.checkbox.setObjectName("checkbox")
         self.horizontalLayout_checkbox.addWidget(self.checkbox)
-        self.verticalLayout_options.insertLayout(posnum,
-                                                 self.horizontalLayout_checkbox)
+        if output:
+            self.verticalLayout_output.insertLayout(posnum,
+                                                    self.horizontalLayout_checkbox)
+        else:
+            self.verticalLayout_options.insertLayout(posnum,
+                                                     self.horizontalLayout_checkbox)
         self.LabelCheckbox.setText(self.tr("Dialog", label))
         self.checkbox.setChecked(state)
 
