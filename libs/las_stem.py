@@ -18,7 +18,7 @@ import subprocess
 from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
 from pyro_stem import PYROSERVER, LAS_PORT
-from stem_utils import STEMUtils
+from stem_utils import STEMUtils, STEMMessageHandler
 import os
 import json
 PIPE = subprocess.PIPE
@@ -78,7 +78,7 @@ class stemLAS():
 
         :param str command: the bash command to run
         """
-        lasout = subprocess.Popen(command, stdin=PIPE, stderr=PIPE,
+        lasout = subprocess.Popen(command, shell=True, stdin=PIPE, stderr=PIPE,
                                   stdout=PIPE).stdout.readlines()[0].strip()
         if lasout:
             return True
@@ -283,6 +283,10 @@ class stemLAS():
         else:
             command = self._start_command(forced)
         if 'las2las' in command:
+            if inverted:
+                STEMMessageHandler.warning("Non è possibile utilizzare "
+                                           "l'opzione 'Maschera inversa' con "
+                                           "la libreria liblas")
             command.extend(['-i', inp, '-o', out, '-e', area])
         else:
             if not wkt:
