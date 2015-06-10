@@ -283,6 +283,8 @@ class stemLAS():
         else:
             command = self._start_command(forced)
         if 'las2las' in command:
+            if compressed:
+                command.append('-c')
             if inverted:
                 STEMMessageHandler.warning("Non è possibile utilizzare "
                                            "l'opzione 'Maschera inversa' con "
@@ -292,8 +294,10 @@ class stemLAS():
             if not wkt:
                 coors = area.split()
                 area = "POLYGON (({minx} {miny}, {minx} {maxy}, {maxx} {maxy}" \
-                       ", {maxx} {miny}))".format(minx=coors[0], miny=coors[1],
-                                                  maxx=coors[1], maxy=coors[1])
+                       ", {maxx} {miny}, {minx} {miny}))".format(minx=coors[0],
+                                                                 miny=coors[1],
+                                                                 maxx=coors[1],
+                                                                 maxy=coors[1])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
         self._run_command(command)
@@ -405,6 +409,8 @@ class stemLAS():
         """
         command = self._start_command(forced)
         if 'las2las' in command:
+            if compressed:
+                command.append('-c')
             command.extend(['-i', inp, '-o', out])
             if x:
                 command.extend(['--minx', x[0], '--maxx', x[1]])
