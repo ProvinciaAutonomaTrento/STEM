@@ -120,7 +120,7 @@ class STEMToolsDialog(BaseDialog):
                    'reference={name}'.format(name=tempin2),
                    'output={outname}'.format(outname=self.TextOut.text())]
             coms.append(com)
-
+            STEMUtils.saveCommand(com)
             gs.run_grass(coms)
 
             self.finished(self.TextOut.text())

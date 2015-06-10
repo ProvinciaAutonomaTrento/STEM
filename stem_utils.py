@@ -23,7 +23,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
-
+import codecs
 import os
 import inspect
 import re
@@ -434,7 +434,7 @@ class STEMUtils:
             return None
 
     @staticmethod
-    def saveCommand(self, command):
+    def saveCommand(command):
         """Save the command history to file
 
         :param list command: the list of all parameter used

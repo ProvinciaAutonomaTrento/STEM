@@ -24,7 +24,6 @@ import os
 import sys
 import subprocess
 import tempfile
-import codecs
 import platform
 from functools import partial
 from types import StringType, UnicodeType
