@@ -156,8 +156,11 @@ class stemLAS():
         out, err = com.communicate()
 
         if com.returncode != 0 and err != '':
-            raise IOError('Problem executing "{com}", the error is :'
-                          '{er}'.format(com=' '.join(comm), er=err))
+            raise Exception('Problem executing "{com}", the error is :'
+                            '{er}'.format(com=' '.join(comm), er=err))
+        elif com.returncode == -11:
+            raise Exception('Problem executing "{com}", the error is :'
+                            'Segmantation fault'.format(com=' '.join(comm)))
         else:
             if self.pdalxml:
                 os.remove(self.pdalxml)
@@ -235,6 +238,7 @@ class stemLAS():
             command = ['pdal', 'pipeline']
             self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', self.pdalxml])
+            STEMUtils.saveCommand(command)
             self._run_command(command)
         else:
             raise Exception("pdal è necessario per unire più file LAS")
@@ -300,6 +304,7 @@ class stemLAS():
                                                                  maxy=coors[1])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
+        STEMUtils.saveCommand(command)
         self._run_command(command)
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
@@ -415,9 +420,9 @@ class stemLAS():
             if x:
                 command.extend(['--minx', x[0], '--maxx', x[1]])
             if y:
-                command.extend(['--minx', y[0], '--maxx', y[1]])
+                command.extend(['--miny', y[0], '--maxy', y[1]])
             if z:
-                command.extend(['--minx', z[0], '--maxx', z[1]])
+                command.extend(['--minz', z[0], '--maxz', z[1]])
             if clas:
                 command.extend(['--keep-classes', str(clas)])
             if inte:
@@ -438,6 +443,7 @@ class stemLAS():
             self.filter_xml_pdal(inp, out, compressed, x, y, z,
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
+        STEMUtils.saveCommand(command)
         self._run_command(command)
 
 
