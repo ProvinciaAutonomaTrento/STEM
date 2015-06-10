@@ -26,7 +26,10 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMMessageHandler, STEMSettings
+from las_stem import stemLAS
+import traceback
+from gdal_stem import infoOGR
 
 
 class STEMToolsDialog(BaseDialog):
@@ -37,9 +40,18 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertFileInput()
-        self._insertSecondSingleInput()
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+        self.AddLayerToCanvas.setText(self.tr(name, "Utilizzare la maschera"))
 
+        label_inv = "Maschera inversa"
+        self._insertSecondCheckbox(label_inv, 0)
+
+        label_lib = "Scegliere la libreria da utilizzare"
+        libs = [None, 'pdal', 'liblas']
+        self._insertMethod(libs, label_lib, 1)
+
+        label_compr = "Comprimere il file di output"
+        self._insertCheckbox(label_compr, 1, output=True)
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
@@ -51,3 +63,43 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+
+        if not self.QGISextent.isChecked() and not self.AddLayerToCanvas.isChecked():
+            STEMMessageHandler.error("Selezionare se utilizzare l'estensione "
+                                     "di QGIS o la maschera, questa è da "
+                                     "impostare con l'apposito modulo")
+        elif self.QGISextent.isChecked() and self.AddLayerToCanvas.isChecked():
+            STEMMessageHandler.error("Selezionare solo uno tra la maschera e "
+                                     "l'estensione di QGIS")
+        elif self.QGISextent.isChecked():
+            self.mapDisplay()
+            area = " ".join(self.rect_str)
+        elif self.AddLayerToCanvas.isChecked():
+            mask = STEMSettings.value("mask", "")
+            ogrinfo = infoOGR()
+            ogrinfo.initialize(mask)
+            area = ogrinfo.getWkt()
+        try:
+            source = str(self.TextIn.text())
+            out = str(self.TextOut.text())
+            if self.LocalCheck.isChecked():
+                las = stemLAS()
+            else:
+                import Pyro4
+                las = Pyro4.Proxy("PYRONAME:stem.las")
+            las.initialize()
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            if self.checkbox2.isChecked():
+                inv = True
+            else:
+                inv = False
+            las.clip(source, out, area, inverted=inv, compressed=compres,
+                     forced=self.MethodInput.currentText())
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return

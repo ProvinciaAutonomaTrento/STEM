@@ -26,7 +26,9 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from las_stem import stemLAS
+from stem_utils import STEMMessageHandler, STEMSettings
+import traceback
 
 
 class STEMToolsDialog(BaseDialog):
@@ -35,8 +37,14 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertMultipleInput()
+        self.QGISextent.hide()
+        self.AddLayerToCanvas.hide()
+        self._insertMultipleInput(multi=True)
 
+        label = "Comprimere il file di output"
+        self._insertCheckbox(label, 1, output=True)
+
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
@@ -48,3 +56,27 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        try:
+            items = []
+            if len(self.BaseInput.selectedItems()) != 0:
+                items = self.BaseInput.selectedItems()
+            else:
+                for index in xrange(self.BaseInput.count()):
+                    items.append(self.BaseInput.item(index))
+            out = self.TextOut.text()
+            if self.LocalCheck.isChecked():
+                las = stemLAS()
+            else:
+                import Pyro4
+                las = Pyro4.Proxy("PYRONAME:stem.las")
+            las.initialize()
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            las.union(items, out, compres)
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
