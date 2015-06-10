@@ -112,6 +112,30 @@ class infoOGR:
         """Return the type of vector geometry"""
         return self.lay0.GetGeomType()
 
+    def getWkt(self):
+        """Return a WKT string of features"""
+        if self.getType() not in [3, 6, -2147483645, -2147483642]:
+            raise Exception("Geometry type is not supported, please use a "
+                            "polygon vector file")
+        if self.lay0.GetFeatureCount() > 1:
+            wkt = "MULTIPOLYGON (("
+        else:
+            wkt = "POLYGON ("
+        for feature in self.lay0:
+            geom = feature.GetGeometryRef()
+            featwkt = geom.ExportToWkt()
+            if 'MULTIPOLYGON' in featwkt:
+                featwkt = featwkt.replace("MULTIPOLYGON ((", "")[:-2]
+            elif 'POLYGON' in featwkt:
+                featwkt = featwkt.replace("POLYGON (", "")[:-1]
+            wkt += "{po},".format(po=featwkt)
+        wkt = wkt.rstrip(',')
+        if self.lay0.GetFeatureCount() > 1:
+            wkt += '))'
+        else:
+            wkt += ')'
+        return wkt
+
     def cutInputInverse(self, output, erase=None, bbox=None):
         """Create an inverse mask and remove/cut the elements inside erase
         polygon
