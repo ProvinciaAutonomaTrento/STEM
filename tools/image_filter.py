@@ -159,7 +159,7 @@ class STEMToolsDialog(BaseDialog):
                         if self.checkbox.isChecked():
                             com.append('-c')
                         coms.append(com)
-                        self.saveCommand(com)
+                        STEMUtils.saveCommand(com)
                 else:
                     outnames.append(tempout)
                     com = ['r.neighbors', 'input={name}'.format(name=tempin),
@@ -171,7 +171,7 @@ class STEMToolsDialog(BaseDialog):
                     if self.checkbox.isChecked():
                         com.append('-c')
                     coms.append(com)
-                    self.saveCommand(com)
+                    STEMUtils.saveCommand(com)
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)

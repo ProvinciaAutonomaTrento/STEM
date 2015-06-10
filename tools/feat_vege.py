@@ -136,7 +136,7 @@ class STEMToolsDialog(BaseDialog):
                 else:
                     green = raster.getColorInterpretation(green)
                     com.append("green={name}.{g}".format(name=tempin, g=green))
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
 
             gs.run_grass([com])
 

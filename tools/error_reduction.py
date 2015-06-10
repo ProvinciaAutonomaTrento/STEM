@@ -110,13 +110,13 @@ class STEMToolsDialog(BaseDialog):
                                                             lay=layer),
                                 'output={outname}'.format(outname=out)])
                     coms.append(com)
-                    self.saveCommand(com)
+                    STEMUtils.saveCommand(com)
             else:
                 outnames.append(tempout)
                 startcom.extend(['input={name}'.format(name=tempin),
                                  'output={outname}'.format(outname=tempout)])
                 coms.append(startcom)
-                self.saveCommand(startcom)
+                STEMUtils.saveCommand(startcom)
 
             gs.run_grass(coms)
             if len(nlayerchoose) > 1:

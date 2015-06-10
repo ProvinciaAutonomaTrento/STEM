@@ -94,7 +94,7 @@ class STEMToolsDialog(BaseDialog):
             zs = STEMUtils.splitIntoList(self.Linedit3.text())
             ints = STEMUtils.splitIntoList(self.Linedit4.text())
             angs = STEMUtils.splitIntoList(self.Linedit5.text())
-            clas = STEMUtils.splitIntoList(self.Linedit6.text())
+            clas = self.Linedit6.text()
 
             las.filterr(source, out, xs, ys, zs, ints, angs, clas,
                         compressed=compres,

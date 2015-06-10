@@ -797,21 +797,6 @@ class BaseDialog(QDialog, baseDialog):
         """
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(enable)
 
-    def saveCommand(self, command):
-        """Save the command history to file
-
-        :param list command: the list of all parameter used
-        """
-        self.historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
-                                        "stem", "stem_command_history.txt")
-
-        try:
-            hFile = codecs.open(self.historypath, 'a', encoding='utf-8')
-            hFile.write(" ".join(command) + '\n')
-        except:
-            raise
-        hFile.close()
-
     def cutInput(self, inp, source, typ, inverse=False):
         """Cut the input data according to a bounding box or a vector geometry
 

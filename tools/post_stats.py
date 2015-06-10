@@ -96,7 +96,7 @@ class STEMToolsDialog(BaseDialog):
                 STEMMessageHandler.error("Si prega di inserire il nome del "
                                          "file di output")
             coms.append(com)
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
 
             gs.run_grass(coms)
             STEMMessageHandler.success("Il file {name} è stato scritto "

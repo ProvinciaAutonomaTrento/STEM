@@ -132,7 +132,7 @@ class STEMToolsDialog(BaseDialog):
                        'similarity=euclidean', 'minsize=1', 'iter=20',
                        'memory={val}'.format(val=memory)]
                 coms.append(com)
-                self.saveCommand(com)
+                STEMUtils.saveCommand(com)
 
             gs.run_grass(coms)
 

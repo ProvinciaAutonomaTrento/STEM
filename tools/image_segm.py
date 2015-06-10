@@ -118,7 +118,7 @@ class STEMToolsDialog(BaseDialog):
                 good = 'goodness_{name}'.format(name=tempout)
                 com.append('goodness={val}'.format(val=good))
             coms.append(com)
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
 
             gs.run_grass(coms)
 

@@ -96,7 +96,7 @@ class STEMToolsDialog(BaseDialog):
                            'size={val}'.format(val=self.Linedit.text()),
                            'method={met}'.format(met=self.MethodInput.currentText())]
                     coms.append(com)
-                    self.saveCommand(com)
+                    STEMUtils.saveCommand(com)
             else:
                 outnames.append(tempout)
                 com = ['r.texture', 'input={name}'.format(name=tempin),
@@ -104,7 +104,7 @@ class STEMToolsDialog(BaseDialog):
                        'size={val}'.format(val=self.Linedit.text()),
                        'method={met}'.format(met=self.MethodInput.currentText())]
                 coms.append(com)
-                self.saveCommand(com)
+                STEMUtils.saveCommand(com)
 
             gs.run_grass(coms)
             gs.create_group(tempout, tempout, True)

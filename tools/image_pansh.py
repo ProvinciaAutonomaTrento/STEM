@@ -146,7 +146,7 @@ class STEMToolsDialog(BaseDialog):
                 com.append('pan={name}'.format(name=namepan))
     #        pdb.set_trace()
             coms.append(com)
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),

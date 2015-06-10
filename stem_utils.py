@@ -422,11 +422,32 @@ class STEMUtils:
 
     @staticmethod
     def splitIntoList(st, sep='-'):
+        """Split a text into a list, splitting using the sep value
+
+        :param str st: the string to split
+        :param str sep: the character to use to split
+        """
         if st:
             st = st.strip()
             return st.split(sep)
         else:
             return None
+
+    @staticmethod
+    def saveCommand(self, command):
+        """Save the command history to file
+
+        :param list command: the list of all parameter used
+        """
+        historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
+                                   "stem", "stem_command_history.txt")
+
+        try:
+            hFile = codecs.open(historypath, 'a', encoding='utf-8')
+            hFile.write(" ".join(command) + '\n')
+        except:
+            raise
+        hFile.close()
 
 
 class STEMMessageHandler:

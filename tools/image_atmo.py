@@ -102,7 +102,7 @@ class STEMToolsDialog(BaseDialog):
             if self.checkbox3.isChecked():
                 com.append('-a')
             coms.append(com)
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),

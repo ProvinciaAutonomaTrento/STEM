@@ -109,7 +109,7 @@ class STEMToolsDialog(BaseDialog):
                    'stats_column=stats_{p}'.format(p=pid),
                    'method={m}'.format(m=self.MethodInput.currentText()),
                    'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
-            self.saveCommand(com)
+            STEMUtils.saveCommand(com)
             gs.run_grass([com])
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
                                   tempin2, typ)
