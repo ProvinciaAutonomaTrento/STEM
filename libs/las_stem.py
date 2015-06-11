@@ -87,7 +87,7 @@ class stemLAS():
             return True
         elif laserr:
             if second:
-                com = subprocess.Popen(command, shell=True, stdin=PIPE,
+                com = subprocess.Popen(second, shell=True, stdin=PIPE,
                                        stderr=PIPE, stdout=PIPE)
                 lasout = com.stdout.readlines()
                 laserr = com.stderr.readlines()
