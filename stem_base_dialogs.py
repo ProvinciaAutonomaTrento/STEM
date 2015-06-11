@@ -98,6 +98,7 @@ class BaseDialog(QDialog, baseDialog):
         self.overwrite = False
 
         self.helpui = helpDialog()
+        STEMUtils.stemMkdir()
 
     def _reject(self):
         """Function for reject button"""

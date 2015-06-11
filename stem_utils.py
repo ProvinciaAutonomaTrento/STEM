@@ -449,6 +449,16 @@ class STEMUtils:
             raise
         hFile.close()
 
+    @staticmethod
+    def stemMkdir():
+        """Create the directory to store some files of STEM project.
+        It's create in ~/.qgis2
+        """
+        home = os.path.join(QgsApplication.qgisSettingsDirPath(), "stem")
+        if not os.path.exists(home):
+            os.mkdir(home)
+            STEMSettings.setValue('stempath', home)
+
 
 class STEMMessageHandler:
     """
