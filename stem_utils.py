@@ -421,7 +421,7 @@ class STEMUtils:
             return False
 
     @staticmethod
-    def splitIntoList(st, sep='-'):
+    def splitIntoList(st, sep=' '):
         """Split a text into a list, splitting using the sep value
 
         :param str st: the string to split
