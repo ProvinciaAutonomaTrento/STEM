@@ -71,17 +71,34 @@ class stemLAS():
     def _check(self):
         """Check which libraries is present on the system"""
         self.pdal = self._checkLibs('pdal-config --version')
-        self.liblas = self._checkLibs('liblas-config --version')
+        self.liblas = self._checkLibs('liblas-config --version',
+                                      'las2las --help')
 
-    def _checkLibs(self, command):
+    def _checkLibs(self, command, second=None):
         """Check the single library
 
         :param str command: the bash command to run
         """
-        lasout = subprocess.Popen(command, shell=True, stdin=PIPE, stderr=PIPE,
-                                  stdout=PIPE).stdout.readlines()[0].strip()
+        com = subprocess.Popen(command, shell=True, stdin=PIPE, stderr=PIPE,
+                               stdout=PIPE)
+        lasout = com.stdout.readlines()
+        laserr = com.stderr.readlines()
         if lasout:
             return True
+        elif laserr:
+            if second:
+                com = subprocess.Popen(command, shell=True, stdin=PIPE,
+                                       stderr=PIPE, stdout=PIPE)
+                lasout = com.stdout.readlines()
+                laserr = com.stderr.readlines()
+                if lasout:
+                    return True
+                elif laserr:
+                    STEMMessageHandler.warning(laserr[0].strip())
+                    return False
+            else:
+                STEMMessageHandler.warning(laserr[0].strip())
+                return False
         else:
             return False
 
