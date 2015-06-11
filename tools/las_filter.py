@@ -74,6 +74,16 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
+    def check_return(self):
+        if self.BaseInputCombo.currentText() == '':
+            return None
+        elif self.BaseInputCombo.currentText() == 'primo':
+            return 'first'
+        elif self.BaseInputCombo.currentText() == 'ultimo':
+            return 'last'
+        elif self.BaseInputCombo.currentText() == 'altri':
+            return 'others'
+
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
@@ -95,9 +105,10 @@ class STEMToolsDialog(BaseDialog):
             ints = STEMUtils.splitIntoList(self.Linedit4.text())
             angs = STEMUtils.splitIntoList(self.Linedit5.text())
             clas = self.Linedit6.text()
+            ret = self.check_return()
 
             las.filterr(source, out, xs, ys, zs, ints, angs, clas,
-                        compressed=compres,
+                        retur=ret, compressed=compres,
                         forced=self.MethodInput.currentText())
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
