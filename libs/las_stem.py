@@ -443,11 +443,11 @@ class stemLAS():
             if clas:
                 command.extend(['--keep-classes', str(clas)])
             if inte:
-                command.extend(['--keep-intensity', '>={va}'.format(va=inte[0]),
-                                '--keep-intensity', '<={va}'.format(va=inte[1])])
+                command.extend(['--keep-intensity',
+                                '{mi}-{ma}'.format(mi=inte[0],  ma=inte[1])])
             if angle:
-                command.extend(['--keep-scan-angle', '>={va}'.format(va=angle[0]),
-                                '--keep-scan-angle', '<={va}'.format(va=angle[1])])
+                command.extend(['--keep-scan-angle',
+                                '{mi}-{ma}'.format(mi=angle[0], ma=angle[1])])
             if retur == 'first':
                 command.extend(['--first-return-only'])
             elif retur == 'last':
