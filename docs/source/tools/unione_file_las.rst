@@ -5,7 +5,7 @@ Il modulo unisce più file .las e li salva in un unico file .las.
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/unione_file_LAS.png
+  .. image:: ../_static/tool_images/unione_file_las.png
 
 
 Input

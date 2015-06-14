@@ -5,7 +5,7 @@ Il modulo permette di ritagliare un file .las in base a un rettangolo con coordi
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/ritaglio_file_LAS.png
+  .. image:: ../_static/tool_images/ritaglio_file_las.png
 
 
 Input
