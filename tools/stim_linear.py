@@ -161,6 +161,7 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -187,6 +188,7 @@ class STEMToolsDialog(BaseDialog):
                     inrast = cut
                     inrastsource = cutsource
                 ncolumnschoose = None
+                com.extend(['--raster', inrastsource])
             else:
                 ncolumnschoose = STEMUtils.checkLayers(invectsource,
                                                        self.layer_list2, False)
@@ -212,6 +214,8 @@ class STEMToolsDialog(BaseDialog):
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
+                com.extend(['--test-vector', optvectsource, '--test-column',
+                            optvectcols])
             else:
                 optvectsource = None
                 optvectcols = None
@@ -222,42 +226,42 @@ class STEMToolsDialog(BaseDialog):
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
 
+            home = STEMSettings.value("stempath")
+            trnpath = os.path.join(home,
+                                   "{p}_csvtraining.csv".format(p=prefcsv))
+            crosspath = os.path.join(home,
+                                     "{p}_csvcross.csv".format(p=prefcsv))
+
+            com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
+                        '1', '--scoring', 'accuracy', '--models', str(models),
+                        '--csv-cross', crosspath, '--csv-training', trnpath,
+                        '--best-strategy', 'mean', invectsource, invectcol])
+            if ncolumnschoose:
+                com.extend(['-u', ncolumnschoose])
+            if self.checkbox.isChecked():
+                com.extend(['-e', '--output-raster-name', self.TextOut.text()])
             if self.LocalCheck.isChecked():
-                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                                 use_columns=ncolumnschoose,
-                                 raster_file=inrastsource,
-                                 models=model, scoring=scor,
-                                 n_folds=nfold, n_jobs=1,
-                                 n_best=1,
-                                 tvector=optvectsource, tcolumn=optvectcols,
-                                 traster=None,
-                                 best_strategy=getattr(np, 'mean'),
-                                 scaler=None, fselector=None, decomposer=None,
-                                 transform=trasf, untransform=utrasf)
+                mltb = MLToolBox()
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
-                mltb.set_params(vector_file=invectsource, column=invectcol,
-                                use_columns=ncolumnschoose,
-                                raster_file=inrastsource,
-                                models=model, scoring=scor,
-                                n_folds=nfold, n_jobs=1,
-                                n_best=1,
-                                tvector=optvectsource, tcolumn=optvectcols,
-                                traster=None,
-                                best_strategy=getattr(np, 'mean'),
-                                scaler=None, fselector=None, decomposer=None,
-                                transform=trasf, untransform=utrasf)
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource, models=model,
+                            scoring=scor, n_folds=nfold, n_jobs=1,
+                            tvector=optvectsource, tcolumn=optvectcols,
+                            traster=None, n_best=1,
+                            best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=trasf, untransform=utrasf)
 
-            home = STEMSettings.value("stempath")
             nodata = -9999
             overwrite = False
             delimiter = ';'
 
             # ------------------------------------------------------------
             # Extract training samples
-            trnpath = os.path.join(home,
-                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+
             if (not os.path.exists(trnpath) or overwrite):
                 print('    From:')
                 print('      - vector: %s' % mltb.vector)
@@ -327,9 +331,6 @@ class STEMToolsDialog(BaseDialog):
             # ---------------------------------------------------------------
             # Cross Models
             print('\nCross-validation of the models')
-
-            crosspath = os.path.join(home,
-                                     "{pref}_csvcross.csv".format(pref=prefcsv))
 
             bpkpath = os.path.join(home,
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
