@@ -1,7 +1,7 @@
 Filtraggio file LAS
 ================================
 
-Il modulo esegue il filtraggio dei file .las in modo da selezionare solo i punti LIDAR che rispettano determinate regole.
+Il modulo esegue il filtraggio dei file .las (o .laz) in modo da selezionare solo i punti LIDAR che rispettano determinate regole.
 
 .. only:: latex
 
@@ -11,34 +11,45 @@ Il modulo esegue il filtraggio dei file .las in modo da selezionare solo i punti
 Input
 ------------
 
-**File LAS di input**: selezionare il file .las da filtrare.
+**File LAS di input**: selezionare il file .las (o .laz) da filtrare.
 
 Parametri
 ------------
 
-Tutti i parametri sono opzionali. Se non viene impostato nessun parametro il modulo darà in output lo stesso file .las di input.
+Tutti i parametri sono opzionali. Se non viene impostato nessun parametro il modulo darà in output lo stesso file .las (o .laz) di input.
 
-**Z max**: valore di Z al di sopra del quali i punti LIDAR vengono rimossi.
+**Selezionare il ritorno da mantenere**: se non si seleziona nulla vengono matenuti tutti i ritorni.
 
-**Z min**: valore di Z al di sotto del quali i punti LIDAR vengono rimossi.
+	* *primo*: primi ritorni;
 
-**X max**: valore di X al di sopra del quali i punti LIDAR vengono rimossi.
+	* *ultimo*: ultimi ritorni;
 
-**X min**: valore di X al di sotto del quali i punti LIDAR vengono rimossi.
+	* *altri*: ritorni intermedi;
 
-**Y max**: valore di Y al di sopra del quali i punti LIDAR vengono rimossi.
+**Inserire i valori minimo e massimo per le X**: valori minimo e massimo della X da mantenere. I valori vanno seprati da uno spazio.
 
-**Y min**: valore di Y al di sotto del quali i punti LIDAR vengono rimossi.
+**Inserire i valori minimo e massimo per le Y**: valori minimo e massimo della Y da mantenere. I valori vanno seprati da uno spazio.
 
-**Max scan angle**: valore massimo in valore assoluto dell'angolo di scansione al di sopra del quali i punti LIDAR vengono rimossi.
+**Inserire i valori minimo e massimo per le Z**: valori minimo e massimo della Z da mantenere. I valori vanno seprati da uno spazio.
 
-**Ritorni**: valore dei ritorni da mantenere nel file .las di output.
+**Inserire i valori minimo e massimo per l'intensita'**: valori minimo e massimo dell'intensita' da mantenere. I valori vanno seprati da uno spazio.
 
+**Inserire i valori minimo e massimo per l'angolo di scansione**: valori minimo e massimo per l'angolo di scansione da mantenere. I valori vanno seprati da uno spazio.
+
+**Inserire il valore della classe da tenere**: valore della classe da mantenere.
+
+**Scegliere la libreria da utilizzare**:
+
+	* *liblas*
+
+	* *pdal*
 
 Output
 ------------
 
 **Risultato**: inserire il percorso e il nome del file di output.
+
+**Comprimere il file di output**: se selzionato l'output sara' in formato .laz.
 
 .. only:: latex
 
