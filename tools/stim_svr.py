@@ -361,8 +361,15 @@ class STEMToolsDialog(BaseDialog):
             else:
                 print('    Read cross-validation results from file:')
                 print('      -  %s' % crosspath)
-                with open(bpkpath, 'r') as bpkl:
-                    best = pkl.load(bpkl)
+                try:
+                    with open(bpkpath, 'r') as bpkl:
+                        best = pkl.load(bpkl)
+                except:
+                    STEMMessageHandler.error("Problem reading file {name} "
+                                             "please remove all files with"
+                                             "prefix {pre} in {path}".format(
+                                             name=bpkpath, pre=prefcsv,
+                                             path=home))
                 order, models = mltb.find_best(models=best)
                 best = mltb.select_best(best=models)
             print('\nBest models:')
