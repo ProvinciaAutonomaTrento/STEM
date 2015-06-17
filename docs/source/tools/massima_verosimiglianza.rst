@@ -25,6 +25,8 @@ Input
 Parametri
 ------------
 
+**Selezionare il numero di fold della cross validation**: inserire il numero di subset in cui verrà diviso il training set nella cross validation. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L'accuratezza finale sarà la media delle N accuratezze.
+
 **Selezione feature**:
 
 	* *no*: nessuna selezione delle feature.
