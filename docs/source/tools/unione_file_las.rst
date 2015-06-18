@@ -11,12 +11,14 @@ Il modulo unisce più file .las e li salva in un unico file .las.
 Input
 ------------
 
-**File LAS di input**: selezionare i file .las da unire.
+**Dati di input**: selezionare i file .las da unire.
 
 Output
 ------------
 
 **Risultato**: inserire il percorso e il nome del file di output.
+
+**Comprimere il file di output**: se selzionato l'output sara' in formato .laz.
 
 .. only:: latex
 

@@ -1,7 +1,7 @@
 Ritaglio file LAS
 ================================
 
-Il modulo permette di ritagliare un file .las in base a un rettangolo con coordinate fissate dall'utente o in base ad uno shpaefile poligonale. L'output é un file .las contente i punti ritagliati.
+Il modulo permette di ritagliare un file .las in base alla maschera settata nel modulo "Maschera". L'output é un file .las contente i punti ritagliati.
 
 .. only:: latex
 
@@ -13,22 +13,20 @@ Input
 
 **File LAS di input**: selezionare il file .las da ritagliare.
 
-**Shapefile dell'area di interesse**: selezionare lo shapefile da usare per ritagliare il file .las. Lo shapefile deve essere stato precedentemente aperto in Qgis. Input opzionale
+**Maschera inversa**: se scelto verranno esclusi i punti all'interno dell'area coperto dalla maschera.
 
-**Coordinate della bounding box**: input opzionale. Non serve se viene dato in input uno shapefile.
+**Scegliere la libreria da utilizzare**:
 
-	* *Max North*: coordinata Y dell'angolo in alto a sinistra della bounding box.
+	* *liblas*
 
-	* *Min North*: coordinata Y dell'angolo in basso a sinistra della bounding box.
-
-	* *Max East*: coordinata X dell'angolo in basso a destra della bounding box.
-
-	* *Min East*: coordinata X dell'angolo in alto a sinistra della bounding box.
+	* *pdal*
 
 Output
 ------------
 
 **Risultato**: inserire il percorso e il nome del file di output.
+
+**Comprimere il file di output**: se selzionato l'output sara' in formato .laz.
 
 .. only:: latex
 
