@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+Command line tool to do classification and valuation using different methods
+
+Authors: Pietro Zambelli
+
+Date: October 2014
+"""
 from __future__ import print_function
 
 # from python standard library
@@ -74,6 +81,7 @@ def indexstr(string):
 # =======================================================================
 # Define the parser options
 def get_parser():
+    """Create the parser for running as script"""
     parser = argparse.ArgumentParser(description='Test several machine-'
                                                  'learning models.')
     parser.add_argument('vector', type=str, metavar='VECTOR',
