@@ -47,7 +47,8 @@ class STEMToolsDialog(BaseDialog):
         label = "Seleziona il metodo da utilizzare"
         self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
-        label2 = "Inserire la dimensione minima da tenere in considerazione"
+        label2 = "Inserire la dimensione minima da tenere in considerazione " \
+                 "in ettari"
         self._insertFirstLineEdit(label2, 2)
         labelText = "Regole per la classificazione manuale"
         self._insertTextArea(labelText, 3)
@@ -145,7 +146,8 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
