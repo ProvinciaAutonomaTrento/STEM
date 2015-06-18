@@ -56,6 +56,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChooseCheckBox2(self.llcc, pos=3)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
@@ -74,7 +75,7 @@ class STEMToolsDialog(BaseDialog):
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
         self.lk = 'Selezionare la trasformazione'
-        self._insertFirstCombobox(self.lk, 4, trasf)
+        self._insertFourthCombobox(self.lk, 4, trasf)
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
@@ -102,9 +103,10 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 8)
+        self._insertCheckbox(label, 10)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def indexChanged(self):
         if self.BaseInput2.currentText() != "":
@@ -164,9 +166,9 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def getTransform(self):
-        if self.BaseInputCombo.currentText() == 'logaritmo':
+        if self.BaseInputCombo4.currentText() == 'logaritmo':
             return np.log, np.exp
-        elif self.BaseInputCombo.currentText() == 'radice quadrata':
+        elif self.BaseInputCombo4.currentText() == 'radice quadrata':
             return np.sqrt, np.exp2
         else:
             return None, None
