@@ -571,12 +571,21 @@ class STEMMessageHandler:
     @staticmethod
     def messageBar(title, text, level, timeout):
         if title:
-            iface.messageBar().pushMessage(title.decode('utf-8'),
-                                           text.decode('utf-8'), level,
-                                           timeout)
+            try:
+                iface.messageBar().pushMessage(title.decode('utf-8'),
+                                               text.decode('utf-8'), level,
+                                               timeout)
+            except Exception:
+                iface.messageBar().pushMessage(title,
+                                               text, level,
+                                               timeout)
         else:
-            iface.messageBar().pushMessage(text.decode('utf-8'), level,
-                                           timeout)
+            try:
+                iface.messageBar().pushMessage(text.decode('utf-8'), level,
+                                               timeout)
+            except Exception:
+                iface.messageBar().pushMessage(text.decode('utf-8'), level,
+                                               timeout)
 
 
 class STEMSettings:
