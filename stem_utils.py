@@ -576,15 +576,14 @@ class STEMMessageHandler:
                                                text.decode('utf-8'), level,
                                                timeout)
             except Exception:
-                iface.messageBar().pushMessage(title,
-                                               text, level,
+                iface.messageBar().pushMessage(str(title), str(text), level,
                                                timeout)
         else:
             try:
                 iface.messageBar().pushMessage(text.decode('utf-8'), level,
                                                timeout)
             except Exception:
-                iface.messageBar().pushMessage(text.decode('utf-8'), level,
+                iface.messageBar().pushMessage(str(text), level,
                                                timeout)
 
 
