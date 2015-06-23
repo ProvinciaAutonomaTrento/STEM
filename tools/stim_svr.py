@@ -250,7 +250,7 @@ class STEMToolsDialog(BaseDialog):
                                      "{p}_csvcross.csv".format(p=prefcsv))
 
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
-                        '1', '--scoring', 'accuracy', '--models', str(models),
+                        '1', '--scoring', 'accuracy', '--models', str(model),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
             if ncolumnschoose:
