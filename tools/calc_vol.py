@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+
+"""
+Tool to calculate
+
+It use the **gdal_stem** library
+
+Date: June 2015
+
+Copyright: (C) 2014 Luca Delucchi
+
+Authors: Luca Delucchi
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+"""
+
+__author__ = 'Luca Delucchi'
+__date__ = 'June 2015'
+__copyright__ = '(C) 2015 Luca Delucchi'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
+
+from stem_base_dialogs import BaseDialog
+from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
+import traceback
+from gdal_stem import infoOGR
+import os
+
+
+class STEMToolsDialog(BaseDialog):
+    def __init__(self, iface, name):
+        BaseDialog.__init__(self, name, iface.mainWindow())
+        self.toolName = name
+        self.iface = iface
+
+        self._insertSingleInput()
+        STEMUtils.addLayerToComboBox(self.BaseInput, 0)
+        self.labelcol = "Seleziona la colonna con indicazione del specie"
+        self._insertLayerChooseCheckBox(self.labelcol, pos=1, combo=False)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+        self.labeldia = "Seleziona la colonna con indicazione del diametro"
+        self._insertLayerChooseCheckBox2(self.labeldia, False)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
+        self.labelalt = "Seleziona la colonna con indicazione dell'altezza"
+        self._insertLayerChooseCheckBox3(self.labelalt, False)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list3)
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.BrowseButton.hide()
+        self.LabelOut.setText(self.tr("", "Nome della nuova colonna con il "
+                                      "volume. Massimo 10 caratteri"))
+
+    def columnsChange(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list3)
+
+    def onRunLocal(self):
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        com = ['python', 'gdal_stem.py']
+        try:
+            name = str(self.BaseInput.currentText())
+            source = STEMUtils.getLayersSource(name)
+#            from PyQt4.QtCore import *
+#            import pdb
+#            pyqtRemoveInputHook()
+#            pdb.set_trace()
+            specie = STEMUtils.checkLayers(source, self.layer_list, False)
+            dia = STEMUtils.checkLayers(source, self.layer_list2, False)
+            hei = STEMUtils.checkLayers(source, self.layer_list3, False)
+            cut, cutsource, mask = self.cutInput(name, source, 'vector')
+            if cut:
+                name = cut
+                source = cutsource
+
+            out = self.TextOut.text()
+            if self.overwrite and os.path.exists(out):
+                out_pref = os.path.basename(out).replace('.shp', '')
+                out_path = os.path.dirname(out)
+                STEMUtils.removeFiles(out_path, pref=out_pref)
+
+            if self.LocalCheck.isChecked():
+                ogrinfo = infoOGR()
+            else:
+                import Pyro4
+                ogrinfo = Pyro4.Proxy("PYRONAME:stem.ogrinfo")
+            ogrinfo.initialize(source, 1)
+            ogrinfo.calc_vol(str(out), dia, hei, specie)
+
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.reloadVectorLayer(name)
+
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
