@@ -30,7 +30,8 @@ __revision__ = '$Format:%H$'
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import temporaryFilesGRASS
-
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 import traceback
 
 
@@ -51,7 +52,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(label, 0)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
         self.indexChanged()
-
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, None))
         self.label2.setText(self.tr(name, "Input mappa training area (sia raster che vettoriale)"))
         self.label.setText(self.tr(name, "Input mappa classificata"))
         self.helpui.fillfromUrl(self.SphinxUrl())

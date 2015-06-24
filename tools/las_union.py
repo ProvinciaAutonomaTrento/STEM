@@ -29,6 +29,8 @@ from stem_base_dialogs import BaseDialog
 from las_stem import stemLAS
 from stem_utils import STEMMessageHandler, STEMSettings
 import traceback
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -43,7 +45,8 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Comprimere il file di output"
         self._insertCheckbox(label, 1, output=True)
-
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, '.las'))
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

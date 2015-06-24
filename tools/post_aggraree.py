@@ -31,6 +31,8 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from gdal_stem import infoOGR
 from grass_stem import temporaryFilesGRASS
 import traceback
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -54,7 +56,8 @@ class STEMToolsDialog(BaseDialog):
                    'maximum', 'range', 'stddev', 'variance']
         lmet = "Metodo statistico di aggregazione"
         self._insertMethod(methods, lmet, 1)
-
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, None))
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
