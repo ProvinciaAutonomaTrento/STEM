@@ -218,6 +218,13 @@ class infoOGR:
         outDS = None
 
     def calc_vol(self, out_col, height, diam, specie):
+        """Function to calculate volume using allometric equations
+
+        :param str out_col: name for the output column with volume values
+        :param float height: the height of tree
+        :param float diam: the diameter of tree
+        :param str specie: the abbreviation of specie
+        """
         self.lay0.ResetReading()
 
         field = ogr.FieldDefn(out_col, ogr.OFTReal)
@@ -229,23 +236,25 @@ class infoOGR:
             spec = inFeature.GetField(str(specie))
             diameter = inFeature.GetField(str(diam))
             heig = inFeature.GetField(str(height))
-            values = CODES[spec]
-            # TODO check with province
-            #if diameter > 85:
-            #    diameter = 85
-            if heig > values['mh']:
-                heig = values['mh']
-            if spec in ['ab', 'ar', 'la', 'pc', 'pn', 'ps']:
-                if diameter > 3.69465:
-                    volu = formula_vol(values['a'], values['b'], values['c'],
-                                       values['d0'], diameter, heig)
-            elif spec in ['fa', 'al']:
-                if diameter > 4.0091:
-                    volu = formula_vol(values['a'], values['b'], values['c'],
-                                       values['d0'], diameter, heig)
-            inFeature.SetField(out_col, volu)
+            if spec in CODES.keys():
+                values = CODES[spec]
+                # TODO check with province
+                #if diameter > 85:
+                #    diameter = 85
+                if heig > values['mh']:
+                    heig = values['mh']
+                if spec in ['ab', 'ar', 'la', 'pc', 'pn', 'ps']:
+                    if diameter > 3.69465:
+                        volu = formula_vol(values['a'], values['b'], values['c'],
+                                           values['d0'], diameter, heig)
+                elif spec in ['fa', 'al']:
+                    if diameter > 4.0091:
+                        volu = formula_vol(values['a'], values['b'], values['c'],
+                                           values['d0'], diameter, heig)
+                if volu:
+                    inFeature.SetField(out_col, volu)
 
-            self.lay0.SetFeature(inFeature)
+                self.lay0.SetFeature(inFeature)
         self.lay0 = None
         self.inp = None
         return 0
@@ -619,6 +628,15 @@ def get_parser():
                         help='the path to the inputs GDAL files')
     parser.add_argument('output', metavar='output', type=str,
                         help='the path to the output GDAL file')
+    parser.add_argument('-V', '--volume', metavar='volume',
+                        help='the name of new volume column')
+    parser.add_argument('-H', '--height', metavar='height',
+                        help='the name of column with three height')
+    parser.add_argument('-D', '--diameter', metavar='diameter',
+                        help='the name of column with three diameter')
+    parser.add_argument('-S', '--specie', metavar='specie',
+                        help='the name of column with three specie '
+                        'abbreviation')
     parser.add_argument('-f', '--format', type=str,
                         help='the format to use in the output file, check'
                         ' the supported formats with `python {pr} '
@@ -648,9 +666,15 @@ def main():
                                   ogrinfo_stem: "stem.ogrinfo"},
                                  host=PYROSERVER, port=GDAL_PORT, ns=True)
     else:
-        cgdal = convertGDAL()
-        cgdal.initialize(args.inputs, args.output, args.format)
-        cgdal.write()
+        if args.volume:
+            infogr = infoOGR()
+            infogr.initialize(args.inputs)
+            infogr.calc_vol(args.volume, args.height, args.diameter,
+                            args.specie)
+        else:
+            cgdal = convertGDAL()
+            cgdal.initialize(args.inputs, args.output, args.format)
+            cgdal.write()
 
 if __name__ == "__main__":
     gdal.AllRegister()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Tool to calculate
+Tool to calculate volume using allometric equations
 
 It use the **gdal_stem** library
 
@@ -56,6 +56,7 @@ class STEMToolsDialog(BaseDialog):
                                       "volume. Massimo 10 caratteri"))
 
     def columnsChange(self):
+        """Change columns in the combobox according with the layer choosen"""
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list3)
@@ -66,10 +67,6 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-#            from PyQt4.QtCore import *
-#            import pdb
-#            pyqtRemoveInputHook()
-#            pdb.set_trace()
             specie = STEMUtils.checkLayers(source, self.layer_list, False)
             dia = STEMUtils.checkLayers(source, self.layer_list2, False)
             hei = STEMUtils.checkLayers(source, self.layer_list3, False)
@@ -78,19 +75,22 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
 
-            out = self.TextOut.text()
+            out = str(self.TextOut.text())
             if self.overwrite and os.path.exists(out):
                 out_pref = os.path.basename(out).replace('.shp', '')
                 out_path = os.path.dirname(out)
                 STEMUtils.removeFiles(out_path, pref=out_pref)
 
+            com.extend(['--volume', out, '--height', hei, '--diameter', dia,
+                        '--specie', specie])
+            STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
                 ogrinfo = infoOGR()
             else:
                 import Pyro4
                 ogrinfo = Pyro4.Proxy("PYRONAME:stem.ogrinfo")
             ogrinfo.initialize(source, 1)
-            ogrinfo.calc_vol(str(out), dia, hei, specie)
+            ogrinfo.calc_vol(out, dia, hei, specie)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.reloadVectorLayer(name)
