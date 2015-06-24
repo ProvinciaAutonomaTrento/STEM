@@ -46,6 +46,7 @@ except ImportError:
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 import os
+import sys
 import numpy
 from types import StringType, ListType
 from pyro_stem import PYROSERVER, GDAL_PORT
@@ -73,6 +74,30 @@ GDAL2NP_CONVERSION = {
   10: "complex64",
   11: "complex128",
 }
+
+CODES = {'ab': {'a': 1.62898357199892E-04, 'b': 1.70656012564636,
+                'c': 0.94190457472194, 'd0': 3.69465},
+         'ar': {'a': 1.77367991170896E-04	, 'b': 1.56425370572013,
+                'c': 1.05156473615877, 'd0': 3.69465},
+         'al': {'a': 5.52712344957134E-05, 'b': 1.94208862027426,
+                'c': 1.00642023166998, 'd0': 4.0091},
+         'fa': {'a': 5.52712344957134E-05, 'b': 1.94208862027426,
+                'c': 1.00642023166998, 'd0': 4.0091},
+         'la': {'a': 1.07820129127088E-04, 'b': 1.40775581651764,
+                'c': 1.34137722851875, 'd0': 3.69465},
+         'pc': {'a': 1.88167619876239E-04	, 'b': 1.61371288034635,
+                'c': 0.985265642143746, 'd0': 3.69465},
+         'pn': {'a': 1.28924310780902E-04, 'b': 1.76308589457555,
+                'c': 0.938444909041497, 'd0': 3.69465},
+         'ps': {'a': 1.01825735269425E-04, 'd': 1.91818421016015,
+                'c': 0.830164143958094, 'd0': 3.69465}}
+
+
+def formula_vol(a, b, c, d0, d, h):
+    """"""
+    power1 = numpy.power(d - d0, b)
+    power2 = numpy.power(h, c)
+    return a * power1 * power2
 
 
 def createMaskFromBbox(coord):
@@ -102,8 +127,8 @@ def createMaskFromBbox(coord):
 
 class infoOGR:
     """A class to work with vector data"""
-    def initialize(self, iname):
-        self.inp = ogr.Open(iname)
+    def initialize(self, iname, update=0):
+        self.inp = ogr.Open(iname, update)
         if self.inp is None:
             raise IOError('Could not open vector data: {n}'.format(n=iname))
         self.lay0 = self.inp.GetLayer(0)
@@ -192,9 +217,40 @@ class infoOGR:
         outLayer = None
         outDS = None
 
+    def calc_vol(self, out_col, height, diam, specie):
+        self.lay0.ResetReading()
+
+        field = ogr.FieldDefn(out_col, ogr.OFTReal)
+        self.lay0.CreateField(field)
+        # loop through input layer
+        for inFeature in self.lay0:
+            volu = None
+
+            spec = inFeature.GetField(str(specie))
+            diameter = inFeature.GetField(str(diam))
+            heig = inFeature.GetField(str(height))
+            if diameter > 85:
+                diameter = 85
+            if spec in ['ab', 'ar', 'la', 'pc', 'pn', 'ps']:
+                if diameter > 3.69465:
+                    values = CODES[spec]
+                    volu = formula_vol(values['a'], values['b'], values['c'],
+                                       values['d0'], diameter, heig)
+            elif spec in ['fa', 'al']:
+                if diameter > 4.0091:
+                    values = CODES[spec]
+                    volu = formula_vol(values['a'], values['b'], values['c'],
+                                       values['d0'], diameter, heig)
+            inFeature.SetField(out_col, volu)
+
+            self.lay0.SetFeature(inFeature)
+        self.lay0 = None
+        self.inp = None
+        return 0
+
 
 class convertGDAL:
-    """A class to convert modis data from hdf to GDAL formats using GDALpath of the mask"""
+    """A class to run operation on raster data from using GDAL in STEM tools"""
     def __init__(self):
         self.file_infos = []
 
@@ -415,6 +471,20 @@ class file_info:
             intval = struct.unpack('f', structval)
         print intval[0]
 
+    def getBBoxWkt(self, buff=0):
+        """Return the bounding box in wkt format
+
+        :param numeric buff: the internal buffer to apply at the bounding box
+        """
+        mix = self.ulx + buff
+        miy = self.lry + buff
+        mx = self.lrx - buff
+        may = self.uly - buff
+        wkt = "POLYGON (({minx} {miny},{minx} {maxy},{maxx} {maxy},{maxx} " \
+              "{miny},{minx} {miny}))".format(minx=mix, miny=miy, maxx=mx,
+                                              maxy=may)
+        return wkt
+
     def cutInputInverse(self, geom, output, datatype):
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
@@ -538,21 +608,50 @@ class file_info:
                         t_band, nodata_arg)
         self.s_fh = None
 
+
+def get_parser():
+    """Create the parser for running as script"""
+    import argparse
+    parser = argparse.ArgumentParser(description='Script for GDAL/OGR operations')
+    parser.add_argument('inputs', metavar='input', type=str, nargs='+',
+                        help='the path to the inputs GDAL files')
+    parser.add_argument('output', metavar='output', type=str,
+                        help='the path to the output GDAL file')
+    parser.add_argument('-f', '--format', type=str,
+                        help='the format to use in the output file, check'
+                        ' the supported formats with `python {pr} '
+                        '--formats`'.format(pr=parser.prog))
+    parser.add_argument('-s', '--server', action='store_true',
+                        dest='server', default=False,
+                        help="launch server application")
+    return parser
+
+
 def main():
     """This function is used in the server to activate three Pyro4 servers.
        It initialize the three objects and after these are used by Pyro4
     """
-    # decomment this two lines if you want activate the logging
-    #os.environ["PYRO_LOGFILE"] = "pyrogdal.log"
-    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-    import Pyro4
-    gdalinfo_stem = file_info()
-    gdalconvert_stem = convertGDAL()
-    ogrinfo_stem = infoOGR()
-    Pyro4.Daemon.serveSimple({gdalinfo_stem: "stem.gdalinfo",
-                              gdalconvert_stem: "stem.gdalconvert",
-                              ogrinfo_stem: "stem.ogrinfo"},
-                             host=PYROSERVER, port=GDAL_PORT, ns=True)
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.server:
+        # decomment this two lines if you want activate the logging
+        #os.environ["PYRO_LOGFILE"] = "pyrolas.log"
+        #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+        import Pyro4
+        gdalinfo_stem = file_info()
+        gdalconvert_stem = convertGDAL()
+        ogrinfo_stem = infoOGR()
+        Pyro4.Daemon.serveSimple({gdalinfo_stem: "stem.gdalinfo",
+                                  gdalconvert_stem: "stem.gdalconvert",
+                                  ogrinfo_stem: "stem.ogrinfo"},
+                                 host=PYROSERVER, port=GDAL_PORT, ns=True)
+    else:
+        cgdal = convertGDAL()
+        cgdal.initialize(args.inputs, args.output, args.format)
+        cgdal.write()
 
 if __name__ == "__main__":
-    main()
+    gdal.AllRegister()
+    argv = gdal.GeneralCmdLineProcessor(sys.argv)
+    if argv is not None:
+        main()
