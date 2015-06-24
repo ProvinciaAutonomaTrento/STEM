@@ -76,21 +76,21 @@ GDAL2NP_CONVERSION = {
 }
 
 CODES = {'ab': {'a': 1.62898357199892E-04, 'b': 1.70656012564636,
-                'c': 0.94190457472194, 'd0': 3.69465},
+                'c': 0.94190457472194, 'd0': 3.69465, 'mh': 38.2},
          'ar': {'a': 1.77367991170896E-04	, 'b': 1.56425370572013,
-                'c': 1.05156473615877, 'd0': 3.69465},
+                'c': 1.05156473615877, 'd0': 3.69465, 'mh': 42.3},
          'al': {'a': 5.52712344957134E-05, 'b': 1.94208862027426,
-                'c': 1.00642023166998, 'd0': 4.0091},
+                'c': 1.00642023166998, 'd0': 4.0091, 'mh': 31.4},
          'fa': {'a': 5.52712344957134E-05, 'b': 1.94208862027426,
-                'c': 1.00642023166998, 'd0': 4.0091},
+                'c': 1.00642023166998, 'd0': 4.0091, 'mh': 31.4},
          'la': {'a': 1.07820129127088E-04, 'b': 1.40775581651764,
-                'c': 1.34137722851875, 'd0': 3.69465},
+                'c': 1.34137722851875, 'd0': 3.69465, 'mh': 37.2},
          'pc': {'a': 1.88167619876239E-04	, 'b': 1.61371288034635,
-                'c': 0.985265642143746, 'd0': 3.69465},
+                'c': 0.985265642143746, 'd0': 3.69465, 'mh': 27.0},
          'pn': {'a': 1.28924310780902E-04, 'b': 1.76308589457555,
-                'c': 0.938444909041497, 'd0': 3.69465},
+                'c': 0.938444909041497, 'd0': 3.69465, 'mh': 34.1},
          'ps': {'a': 1.01825735269425E-04, 'd': 1.91818421016015,
-                'c': 0.830164143958094, 'd0': 3.69465}}
+                'c': 0.830164143958094, 'd0': 3.69465, 'mh': 34.1}}
 
 
 def formula_vol(a, b, c, d0, d, h):
@@ -229,16 +229,18 @@ class infoOGR:
             spec = inFeature.GetField(str(specie))
             diameter = inFeature.GetField(str(diam))
             heig = inFeature.GetField(str(height))
-            if diameter > 85:
-                diameter = 85
+            values = CODES[spec]
+            # TODO check with province
+            #if diameter > 85:
+            #    diameter = 85
+            if heig > values['mh']:
+                heig = values['mh']
             if spec in ['ab', 'ar', 'la', 'pc', 'pn', 'ps']:
                 if diameter > 3.69465:
-                    values = CODES[spec]
                     volu = formula_vol(values['a'], values['b'], values['c'],
                                        values['d0'], diameter, heig)
             elif spec in ['fa', 'al']:
                 if diameter > 4.0091:
-                    values = CODES[spec]
                     volu = formula_vol(values['a'], values['b'], values['c'],
                                        values['d0'], diameter, heig)
             inFeature.SetField(out_col, volu)
