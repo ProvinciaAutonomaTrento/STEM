@@ -168,7 +168,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "lin_{vect}_{col}".format(vect=invect , col=invectcol)
+            prefcsv = "lin_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource

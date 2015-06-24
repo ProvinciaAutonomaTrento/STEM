@@ -30,7 +30,7 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
-from sklearn.svm import SVC
+from sklearn.svm import SVR
 import numpy as np
 import pickle as pkl
 import os
@@ -69,41 +69,43 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(self.lk, 1, kernels)
         self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
         self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
-        self._insertSecondLineEdit(label="Inserire il valore di gamma",
+        self._insertSecondLineEdit(label="Inserire il valore di epsilon",
                                    posnum=3)
+        self._insertThirdLineEdit(label="Inserire il valore di gamma",
+                                   posnum=4)
 
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
         self.lk = 'Selezionare la trasformazione'
-        self._insertFourthCombobox(self.lk, 4, trasf)
+        self._insertFourthCombobox(self.lk, 5, trasf)
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 5)
+        self._insertMethod(mets, self.lm, 6)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 6)
+        self._insertFileInputOption(self.lio, 7)
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(7, label="Vettoriale di validazione")
+        self._insertSingleInputOption(8, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 8)
+        self._insertSecondCombobox(label, 9)
 
         ls = "Indice di accuratezza per la selezione del modello"
-        self._insertThirdCombobox(ls, 9, ['R²', 'MSE'])
+        self._insertThirdCombobox(ls, 10, ['R²', 'MSE'])
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 10)
+        self._insertCheckbox(label, 11)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -125,16 +127,16 @@ class STEMToolsDialog(BaseDialog):
 
     def kernelChanged(self):
         if self.BaseInputCombo.currentText() == 'lineare':
-            self.LabelLinedit2.setEnabled(False)
-            self.Linedit2.setEnabled(False)
+            self.LabelLinedit3.setEnabled(False)
+            self.Linedit3.setEnabled(False)
         else:
-            self.LabelLinedit2.setEnabled(True)
-            self.Linedit2.setEnabled(True)
+            self.LabelLinedit3.setEnabled(True)
+            self.Linedit3.setEnabled(True)
         if self.BaseInputCombo.currentText() == 'polinomiale':
-            self.LabelLinedit2.setText(self.tr("", "Inserire il valore del "
+            self.LabelLinedit3.setText(self.tr("", "Inserire il valore del "
                                                "grado del polinomio"))
         elif self.BaseInputCombo.currentText() in ['RBF', 'sigmoidale']:
-            self.LabelLinedit2.setText(self.tr("",
+            self.LabelLinedit3.setText(self.tr("",
                                                "Inserire il valore di gamma"))
 
     def methodChanged(self):
@@ -157,6 +159,37 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonInOpt.setEnabled(False)
             self.label_layer2.setEnabled(False)
             self.layer_list2.setEnabled(False)
+
+    def getModel(self, csv):
+        kernel = str(self.BaseInputCombo.currentText())
+        c = float(self.Linedit.text())
+        y = float(self.Linedit2.text())
+        if kernel in ['RBF', 'sigmoidale']:
+            if kernel == 'RBF':
+                k = 'rbf'
+            else:
+                k = 'sigmoid'
+            g = float(self.Linedit3.text())
+            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
+            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVR,
+                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y,
+                                'probability': True}}], csv
+        elif kernel == 'lineare':
+            k = 'linear'
+            csv += "_{ke}_{c}".format(ke=k, c=c)
+            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVR,
+                     'kwargs': {'kernel': k, 'C': c,
+                                'probability': True}}], csv
+        else:
+            k = 'poly'
+            g = float(self.Linedit3.text())
+            d = 3 # TODO ask pietro
+            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
+            return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
+                     'model': SVR, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                                              'epsilon': y, 'degree': d,
+                                              'probability': True}
+                     }], csv
 
     def show_(self):
         self.switchClippingMode()
@@ -221,6 +254,7 @@ class STEMToolsDialog(BaseDialog):
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             nfold = int(self.Linedit3.text())
+
             model = self.getModel()
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
@@ -352,7 +386,7 @@ class STEMToolsDialog(BaseDialog):
             bpkpath = os.path.join(home,
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
-                cross = mltb.cross_validation(X=X, y=y, transform=transform)
+                cross = mltb.cross_validation(X=X, y=y, transform=trasf)
                 np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
                            header=delimiter.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
