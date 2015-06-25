@@ -41,10 +41,10 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput("Dati di input (vettoriale di punti o aree)")
+        self._insertSingleInput("Vettoriale di punti")
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
 
-        self._insertSecondSingleInput(label="Dati di input (vettoriale di aree)")
+        self._insertSecondSingleInput(label="Vettoriale di aree su cui aggregare")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
 
         label = "Seleziona la colonna da considerare per le statistiche"
@@ -56,6 +56,12 @@ class STEMToolsDialog(BaseDialog):
                    'maximum', 'range', 'stddev', 'variance']
         lmet = "Metodo statistico di aggregazione"
         self._insertMethod(methods, lmet, 1)
+        labelcount = "Nome della nuova colonna con il numero di elementi " \
+                     "all'interno di ogni area. Massimo 10 caratteri"
+        self._insertFirstLineEdit(label=labelcount, posnum=2)
+        labelstats = "Nome della nuova colonna con la statistica sugli " \
+                     "elementi all'interno di ogni area. Massimo 10 caratteri"
+        self._insertSecondLineEdit(label=labelstats, posnum=3)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.TextOut, None))
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -82,7 +88,9 @@ class STEMToolsDialog(BaseDialog):
             if infoname.getType() in [1, 4, -2147483647, -2147483644]:
                 geotype = 'point'
             elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
-                geotype = 'centroid'
+                error = "Geometria non supportata, creare i centroidi con " \
+                        "lo strumento dedicato di QGIS"
+                STEMMessageHandler.error(error)
             else:
                 error = "Geometria non supportata"
                 STEMMessageHandler.error(error)
@@ -108,8 +116,8 @@ class STEMToolsDialog(BaseDialog):
                 gs.check_mask(mask)
             com = ['v.vect.stats', 'points={m}'.format(m=tempin),
                    'areas={n}'.format(n=tempin2), 'type={t}'.format(t=geotype),
-                   'count_column=count_{p}'.format(p=pid),
-                   'stats_column=stats_{p}'.format(p=pid),
+                   'count_column={p}'.format(p=str(self.Linedit.text())),
+                   'stats_column={p}'.format(p=str(self.Linedit2.text())),
                    'method={m}'.format(m=self.MethodInput.currentText()),
                    'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
             STEMUtils.saveCommand(com)
