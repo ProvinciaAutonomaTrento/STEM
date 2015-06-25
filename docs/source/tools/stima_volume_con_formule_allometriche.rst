@@ -1,5 +1,5 @@
 Stima volume con formule allometriche
-================================
+=========================================
 
 Il modulo effettua la stima del volume delle singole piante utilizzando le formule allometriche pubblicate in Scrinzi et al. (2010).
 
