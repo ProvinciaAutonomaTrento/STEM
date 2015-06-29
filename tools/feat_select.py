@@ -28,7 +28,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 from feature_selection import SSF
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
@@ -75,6 +75,8 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        log = STEMLogging()
+        com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -87,29 +89,17 @@ class STEMToolsDialog(BaseDialog):
                 invect = cut
                 invectsource = cutsource
             inrast = str(self.BaseInput2.currentText())
-            inrastsource = STEMUtils.getLayersSource(inrast)
-#            if inrast != "":
-#                inrastsource = STEMUtils.getLayersSource(inrast)
-#                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-#                                                     self.layer_list)
-#                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-#                                                     self.layer_list)
-#                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-#                                                     rasttyp)
-#                prefcsv += "_{rast}_{n}".format(rast=inrast,
-#                                                n=len(nlayerchoose))
-#                if cut:
-#                    inrast = cut
-#                    inrastsource = cutsource
-#                ncolumnschoose = None
-#            else:
-            ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                   self.layer_list, False)
-            try:
-                ncolumnschoose.remove(invectcol)
-            except:
-                pass
-            prefcsv += "_{n}".format(n=len(ncolumnschoose))
+            if inrast != "":
+                inrastsource = STEMUtils.getLayersSource(inrast)
+
+                ncolumnschoose = STEMUtils.checkLayers(invectsource, None,
+                                                       False)
+                try:
+                    ncolumnschoose.remove(invectcol)
+                except:
+                    pass
+                prefcsv += "_{n}".format(n=len(ncolumnschoose))
+                com.extend(['--raster', inrastsource])
 
             meth = str(self.MethodInput.currentText())
 
@@ -118,6 +108,9 @@ class STEMToolsDialog(BaseDialog):
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+            com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
+                        'accuracy', '--best-strategy', 'mean',
+                        '--feature-selection', 'SSF', invectsource, invectcol])
             mltb.set_params(vector_file=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster_file=inrastsource,
@@ -134,18 +127,18 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             trnpath = os.path.join(home,
                                    "{pref}_csvtraining.csv".format(pref=prefcsv))
-            print('    From:')
-            print('      - vector: %s' % mltb.vector)
-            print('      - training column: %s' % mltb.column)
+            log.debug('    From:')
+            log.debug('      - vector: %s' % mltb.vector)
+            log.debug('      - training column: %s' % mltb.column)
             if mltb.use_columns:
-                print('      - use columns: %s' % mltb.use_columns)
+                log.debug('      - use columns: %s' % mltb.use_columns)
             if mltb.raster:
-                print('      - raster: %s' % mltb.raster)
+                log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                          nodata=NODATA, dtype=np.uint32)
 
             X = X.astype(float)
-            print('\nTraining sample shape:', X.shape)
+            log.debug('\nTraining sample shape: {val}'.format(val=X.shape))
 
             # --------------------------------------------------------------
             # Feature selector

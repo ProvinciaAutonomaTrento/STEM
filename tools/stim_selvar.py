@@ -27,7 +27,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 from sklearn.linear_model import LassoLarsIC
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
@@ -74,6 +74,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
+        log = STEMLogging()
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -88,8 +89,7 @@ class STEMToolsDialog(BaseDialog):
 
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list)
+                nlayerchoose = STEMUtils.checkLayers(inrastsource)
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
@@ -140,23 +140,22 @@ class STEMToolsDialog(BaseDialog):
                             traster=None, best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
-            overwrite = False
 
             # ------------------------------------------------------------
             # Extract training samples
 
-            print('    From:')
-            print('      - vector: %s' % mltb.vector)
-            print('      - training column: %s' % mltb.column)
+            log.debug('    From:')
+            log.debug('      - vector: %s' % mltb.vector)
+            log.debug('      - training column: %s' % mltb.column)
             if mltb.use_columns:
-                print('      - use columns: %s' % mltb.use_columns)
+                log.debug('      - use columns: %s' % mltb.use_columns)
             if mltb.raster:
-                print('      - raster: %s' % mltb.raster)
+                log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                          nodata=NODATA, dtype=np.float32)
 
             X = X.astype(float)
-            print('\nTraining sample shape:', X.shape)
+            log.debug('Training sample shape:', X.shape)
 
             # ------------------------------------------------------------
             # Transform the input data
