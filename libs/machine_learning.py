@@ -137,8 +137,27 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     vect = ogr.Open(vector_file)
     rast = empty_rast(rast_file, asrast, format=format,
                       datatype=datatype, nodata=nodata)
-    gdal.RasterizeLayer(rast, [1], vect.GetLayer(), burn_values=[1],
+    layer = vect.GetLayer()
+    gdal.RasterizeLayer(rast, [1], layer, burn_values=[1],
                         options=["ATTRIBUTE=%s" % column, ])
+    arr = rast.ReadAsArray()
+    null = (arr == nodata)
+    if null.all():
+        raise TypeError("No training pixels found! all pixels are null!")
+    nfeatures = layer.GetFeatureCount()
+    npixels = (~null).sum()
+    if npixels < nfeatures:
+        # TODO: use a function to raise a warning
+        warning = ("The number of pixels extracted is less than the number "
+                   "of vector features, perhaps some of the vector features "
+                   "are smaller than the resolution of the raster.")
+        print(warning)
+    trainingset = set(arr[~null])
+    if len(trainingset) in (0, 1):
+        raise TypeError("The trainning dataset is: ", trainingset)
+    print("The trainning dataset has this classes: ", sorted(trainingset))
+    del(arr)
+    del(layer)
     vect = None
     return rast
 
@@ -245,13 +264,14 @@ def find_best(models, strategy=np.mean, key='scores'):
 
     :return: ([(score0, key0), (score1, key1), ...], {key0: Model0, key1: Model1})
     """
-    mods = {m.__name__: 0. for m in set(model['model'] for model in models)}
+    val = min([strategy(m[key]) for m in models])
+    mods = {m.__name__: val for m in set(model['model'] for model in models)}
     best = {}
     for m in models:
-        val = strategy(m[key])
+        sval = strategy(m[key])
         mkey = m['model'].__name__
-        if mods[mkey] < val:
-            mods[mkey] = val
+        if mods[mkey] <= sval:
+            mods[mkey] = sval
             best[mkey] = m
     order = sorted([(v, k) for k, v in mods.items()], reverse=True)
     return order, best
@@ -341,9 +361,6 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         #              datatype=gdal.GDT_Int32, nodata=-9999
         trst = vect2rast(vector_file=vector_file, rast_file=tmp_file,
                          asrast=rast, column=column, nodata=nodata)
-        arr = trst.ReadAsArray()
-        if (arr == nodata).all():
-            raise TypeError("No training pixels found! all pixels are null!")
         # rows, cols = rast.RasterYSize, rast.RasterXSize
         pixels = get_index_pixels(trst, nodata)
         nbands = rast.RasterCount
@@ -363,8 +380,8 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         fields = layer.schema
         itraining = columns2indexes(fields, column)
         icols = columns2indexes(fields, use_columns)
-        training = np.array(extract_vector_fields(layer, (itraining, ))).T[0]
-        dt = np.array(extract_vector_fields(layer, icols))
+        training = np.array(list(extract_vector_fields(layer, itraining))).T[0]
+        dt = np.array(list(extract_vector_fields(layer, icols)))
         data = np.concatenate((dt.T, training[None, :]), axis=0).T
         header = delimiter.join([fields[i].name for i in icols] + [column, ])
         vect = None
@@ -458,6 +475,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         ilayer = ivect.GetLayer()
         ifields = ilayer.schema
         icols = columns2indexes(ifields, use_columns)
+        limit = 10
 
         # Create the output Layer
         odriver = ogr.GetDriverByName("ESRI Shapefile")
@@ -466,18 +484,18 @@ def apply_models(input_file, output_file, models, X, y, transformations,
             odriver.DeleteDataSource(output_file)
         # Create the output shapefile
         osrc = odriver.CreateDataSource(output_file)
-        olayer = osrc.CreateLayer("states_centroids", geom_type=ogr.wkbPoint)
+        olayer = osrc.CopyLayer(ilayer, output_file)
 
         # Add a new field for each model to the output layer
         ofieldtype = ogr.OFTInteger if y.dtype == np.int else ogr.OFTReal
         for model in models:
-            olayer.CreateField(ogr.FieldDefn(model['name'], ofieldtype))
+            olayer.CreateField(ogr.FieldDefn(model['name'][:limit], ofieldtype))
 
         # read the vector input data and features splitted in chunksS
-        dchunk = split_in_chunk(extract_vector_fields(ilayer, icols))
-        fchunk = split_in_chunk(ilayer)
-
+        dchunk = split_in_chunk(extract_vector_fields(olayer, icols))
+        fchunk = split_in_chunk(olayer)
         for features, data in zip(fchunk, dchunk):
+            data = np.array(data)
             # transform the data consistently before to apply the model
             for trans in transformations:
                 data = trans.transform(data)
@@ -490,7 +508,8 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 if untransform is not None:
                     predict = untransform(predict)
 
-                col = model['name']
+                col = model['name'][:limit]
+                import ipdb; ipdb.set_trace()
                 for ofeature, value in zip(features, predict):
                     # update feature field
                     ofeature.SetField(col, value)
@@ -894,16 +913,23 @@ class MLToolBox(object):
         self.models = self.models if models is None else models
         self.best_strategy = (self.best_strategy if strategy is None
                               else strategy)
-        self.order, self.best = find_best(models, strategy=self.best_strategy,
+        self.order, self.best = find_best(self.models,
+                                          strategy=self.best_strategy,
                                           key=key)
         return self.order, self.best
 
-    def execute(self, raster_file=None, output_file=None,
+    def execute(self, input_file=None, output_file=None,
                 best=None, X=None, y=None, trans=None,
-                transform=None, untransform=None, memory_factor=None):
+                transform=None, untransform=None,
+                use_columns=None, memory_factor=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
-        self.raster = self.raster if raster_file is None else raster_file
+        self.use_columns = (self.use_columns if use_columns is None
+                            else use_columns)
+        if self.use_columns is None:
+            input_file = self.raster if input_file is None else input_file
+        else:
+            input_file = self.vector if input_file is None else input_file
         self.output = self.output if output_file is None else output_file
         self.memory_factor = (self.memory_factor if memory_factor is None
                               else memory_factor)
@@ -913,9 +939,10 @@ class MLToolBox(object):
         self.untransform = untransform if untransform is not None else self.untransform
         X = self.X if X is None else X
         y = self.y if y is None else y
-        apply_models(self.raster, self.output, best, X, y, self._trans,
+        apply_models(input_file, self.output, best, X, y, self._trans,
                      transform=self.transform, untransform=self.untransform,
-                     memory_factor=self.memory_factor)
+                     memory_factor=self.memory_factor,
+                     use_columns=self.use_columns)
 
 
 def get_parser():
