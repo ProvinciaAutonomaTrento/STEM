@@ -151,9 +151,12 @@ class STEMToolsDialog(BaseDialog):
 
             # ------------------------------------------------------------
             # Transform the input data
+            out = self.TextOut.text()
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=self.TextOut.text(), fsfit=True)
+                                    fsfile=out, fsfit=True)
+            STEMMessageHandler.success("Il file {name} è stato scritto "
+                                       "correttamente".format(name=out))
             return
         except:
             error = traceback.format_exc()

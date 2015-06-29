@@ -233,7 +233,6 @@ class STEMToolsDialog(BaseDialog):
             prefcsv += "_{n}".format(n=nfold)
             models, prefcsv = self.getModel(prefcsv)
             feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
@@ -260,6 +259,12 @@ class STEMToolsDialog(BaseDialog):
                         '1', '--scoring', 'accuracy', '--models', str(models),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
+            fscolumns = None
+            if feat == 'manuale':
+                infile = self.TextInOpt.text()
+                if os.path.exists(infile):
+                    com.extend(['--feature-selection-file', infile])
+                    fscolumns = np.loadtxt(infile)
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
@@ -274,7 +279,7 @@ class STEMToolsDialog(BaseDialog):
                             raster_file=inrastsource,
                             models=models, scoring='accuracy',
                             n_folds=nfold, n_jobs=1,
-                            n_best=1,
+                            n_best=1, fscolumns=fscolumns,
                             tvector=optvectsource, tcolumn=optvectcols,
                             traster=None,
                             best_strategy=getattr(np, 'mean'),
@@ -402,12 +407,16 @@ class STEMToolsDialog(BaseDialog):
             # execute Models and save the output raster map
             if self.checkbox.isChecked():
                 print('\Execute the model to the whole raster map.')
+                out = self.TextOut.text()
                 mltb.execute(best=best, transform=None, untransform=None,
-                             output_file=self.TextOut.text())
+                             output_file=out)
 
                 if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
-
+                    STEMUtils.addLayerIntoCanvas(out, 'raster')
+                STEMMessageHandler.success("Il file {name} è stato scritto "
+                                           "correttamente".format(name=out))
+            else:
+                STEMMessageHandler.success("Esecuzione completata")
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
