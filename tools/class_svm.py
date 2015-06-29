@@ -276,12 +276,10 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
             mltb.set_params(vector_file=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
-                            raster_file=inrastsource,
+                            raster_file=inrastsource, traster=None,
                             models=models, scoring='accuracy',
-                            n_folds=nfold, n_jobs=1,
-                            n_best=1, fscolumns=fscolumns,
+                            n_folds=nfold, n_jobs=1, n_best=1,
                             tvector=optvectsource, tcolumn=optvectcols,
-                            traster=None,
                             best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
@@ -311,6 +309,10 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             print('\nTraining sample shape:', X.shape)
 
+            if fscolumns:
+                X = mltb.data_transform(X=X, y=y, scaler=None,
+                                        fscolumns=fscolumns,
+                                        fsfile=infile, fsfit=True)
             # -----------------------------------------------------------------------
             # Extract test samples
             print('\nExtract test samples')
