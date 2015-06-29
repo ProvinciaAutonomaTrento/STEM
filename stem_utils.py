@@ -30,6 +30,7 @@ import re
 import tempfile
 import shutil
 import glob
+import logging
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -176,13 +177,15 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, form, index=True):
+    def checkLayers(inmap, form=None, index=True):
         """Function to check if layers are choosen
 
         :param str inmap: the input map
         :param obj form: a object containing the bands of map
         :param bool index:
         """
+        if not form:
+            return STEMUtils.getNumSubset(inmap)
         if isinstance(form, QCheckBox) or isinstance(form, CheckableComboBox):
             itemlist = []
             for i in range(form.count()):
@@ -713,3 +716,18 @@ class STEMSettings:
     def allKeys():
         """Return all keys of STEMSettings"""
         return STEMSettings.s.allKeys()
+
+
+class STEMLogging:
+    """Class to log information of modules in a file"""
+
+    def __init__(self):
+        stempath = STEMSettings.value("stempath")
+        logging.basicConfig(filename=os.path.join(stempath, 'stem.log'),
+                            filemode='w', level=logging.DEBUG)
+
+    def debug(self, text):
+        logging.debug(text)
+
+    def warning(self, text):
+        logging.warning(text)

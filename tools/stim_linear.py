@@ -162,6 +162,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
+        log = STEMLogging()
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -203,7 +204,6 @@ class STEMToolsDialog(BaseDialog):
 
             nfold = int(self.Linedit3.text())
             feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
@@ -222,6 +222,13 @@ class STEMToolsDialog(BaseDialog):
 
             from regressors import LINEAR
             model = LINEAR
+
+            fscolumns = None
+            if feat == 'manuale':
+                infile = self.TextInOpt.text()
+                if os.path.exists(infile):
+                    com.extend(['--feature-selection-file', infile])
+                    fscolumns = np.loadtxt(infile)
 
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
@@ -263,43 +270,33 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
 
             if (not os.path.exists(trnpath) or overwrite):
-                print('    From:')
-                print('      - vector: %s' % mltb.vector)
-                print('      - training column: %s' % mltb.column)
+                log.debug('    From:')
+                log.debug('      - vector: %s' % mltb.vector)
+                log.debug('      - training column: %s' % mltb.column)
                 if mltb.use_columns:
-                    print('      - use columns: %s' % mltb.use_columns)
+                    log.debug('      - use columns: %s' % mltb.use_columns)
                 if mltb.raster:
-                    print('      - raster: %s' % mltb.raster)
+                    log.debug('      - raster: %s' % mltb.raster)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                              dtype=np.uint32, nodata=nodata)
             else:
-                print('    Load from:')
-                print('      - %s' % trnpath)
+                log.debug('    Load from:')
+                log.debug('      - %s' % trnpath)
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
             X = X.astype(float)
-            print('\nTraining sample shape:', X.shape)
-
-            # --------------------------------------------------------------
-            # Feature selector
-            fselector = None
-            fscolumns = None
-            if args.fs:
-                if args.ff:
-                    fspath = os.path.join(home, args.ff)
-                    if (os.path.exists(fspath) and not overwrite):
-                        fscolumns = np.loadtxt(fspath)
-                fselector = fselect[args.fs]
+            log.debug('Training sample shape:', X.shape)
 
             # ------------------------------------------------------------
             # Transform the input data
-            Xt = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
-                                     decomposer=decomposer, fscolumns=fscolumns,
-                                     fsfile=args.ff)
+            if fscolumns:
+                X = mltb.data_transform(X=X, y=y, scaler=None,
+                                        fscolumns=fscolumns,
+                                        fsfile=infile, fsfit=True)
 
             # ----------------------------------------------------------------
             # Extract test samples
-            print('\nExtract test samples')
+            log.debug('Extract test samples')
             if mltb.tvector and mltb.tcolumn:
                 # extract_training(vector_file, column, csv_file, raster_file=None,
                 #                  use_columns=None, delimiter=SEP, nodata=None,
@@ -308,29 +305,29 @@ class STEMToolsDialog(BaseDialog):
                 testpath = os.path.join(home,
                                         "{pref}_csvtestsample.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
-                    print('    From:')
-                    print('      - vector: %s' % mltb.tvector)
-                    print('      - training column: %s' % mltb.tcolumn)
+                    log.debug('    From:')
+                    log.debug('      - vector: %s' % mltb.tvector)
+                    log.debug('      - training column: %s' % mltb.tcolumn)
                     if mltb.use_columns:
-                        print('      - use columns: %s' % mltb.use_columns)
+                        log.debug('      - use columns: %s' % mltb.use_columns)
                     if mltb.raster:
-                        print('      - raster: %s' % mltb.traster)
+                        log.debug('      - raster: %s' % mltb.traster)
                     Xtest, ytest = mltb.extract_test(csv_file=testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
                     np.savetxt(testpath, dt, delimiter=SEP,
                                header="# last column is the training.")
                 else:
-                    print('    Load from:')
-                    print('      - %s' % trnpath)
+                    log.debug('    Load from:')
+                    log.debug('      - %s' % trnpath)
                     dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
                     Xtest, ytest = dt[:, :-1], dt[:, -1]
                 Xtest = Xtest.astype(float)
-                print('Training sample shape:', Xtest.shape)
+                log.debug('Training sample shape:', Xtest.shape)
 
             # ---------------------------------------------------------------
             # Cross Models
-            print('\nCross-validation of the models')
+            log.debug('Cross-validation of the models')
 
             bpkpath = os.path.join(home,
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
@@ -344,8 +341,8 @@ class STEMToolsDialog(BaseDialog):
                 with open(bpkpath, 'w') as bpkl:
                     pkl.dump(best, bpkl)
             else:
-                print('    Read cross-validation results from file:')
-                print('      -  %s' % crosspath)
+                log.debug('    Read cross-validation results from file:')
+                log.debug('      -  %s' % crosspath)
                 try:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
@@ -357,13 +354,13 @@ class STEMToolsDialog(BaseDialog):
                                              path=home))
                 order, models = mltb.find_best(models=best)
                 best = mltb.select_best(best=models)
-            print('\nBest models:')
-            print(best)
+            log.debug('Best models:')
+            log.debug(best)
 
             # ---------------------------------------------------------------
             # test Models
             if Xtest is not None and ytest is not None:
-                print('\nTest models with an indipendent dataset')
+                log.debug('Test models with an indipendent dataset')
                 testpath = os.path.join(home,
                                         "{pref}_csvtestmodel.csv".format(pref=prefcsv))
                 bpkpath = os.path.join(home,
@@ -385,13 +382,13 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=lambda x: x,
                                                    key='score_test')
                     best = mltb.select_best(best=models)
-                print('Best models:')
-                print(best)
+                log.debug('Best models:')
+                log.debug(best)
 
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
             if self.checkbox.isChecked():
-                print('\Execute the model to the whole raster map.')
+                log.debug('Execute the model to the whole raster map.')
                 mltb.execute(best=best, transform=transform,
                              untransform=untransform,
                              output_file=self.TextOut.text())

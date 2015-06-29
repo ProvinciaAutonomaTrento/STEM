@@ -28,12 +28,14 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 from feature_selection import SSF
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import numpy as np
 import os
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -48,7 +50,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        #self.BaseInput.currentIndexChanged.connect(self.columnsChange)
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
@@ -56,7 +58,8 @@ class STEMToolsDialog(BaseDialog):
         mets = ['mean', 'min', 'median']
         self.lm = "Selezione la strategia da utilizzare"
         self._insertMethod(mets, self.lm, 0)
-        #self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, '.txt'))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -64,11 +67,16 @@ class STEMToolsDialog(BaseDialog):
         self.switchClippingMode()
         self.show_(self)
 
+    def columnsChange(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+
     def onClosing(self):
         self.onClosing(self)
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        log = STEMLogging()
+        com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -81,32 +89,18 @@ class STEMToolsDialog(BaseDialog):
                 invect = cut
                 invectsource = cutsource
             inrast = str(self.BaseInput2.currentText())
-            inrastsource = STEMUtils.getLayersSource(inrast)
-#            if inrast != "":
-#                inrastsource = STEMUtils.getLayersSource(inrast)
-#                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-#                                                     self.layer_list)
-#                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-#                                                     self.layer_list)
-#                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-#                                                     rasttyp)
-#                prefcsv += "_{rast}_{n}".format(rast=inrast,
-#                                                n=len(nlayerchoose))
-#                if cut:
-#                    inrast = cut
-#                    inrastsource = cutsource
-#                ncolumnschoose = None
-#            else:
-            ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                   self.layer_list, False)
-            try:
-                ncolumnschoose.remove(invectcol)
-            except:
-                pass
-            prefcsv += "_{n}".format(n=len(ncolumnschoose))
+            if inrast != "":
+                inrastsource = STEMUtils.getLayersSource(inrast)
 
-            nfold = None
-            models = None
+                ncolumnschoose = STEMUtils.checkLayers(invectsource, None,
+                                                       False)
+                try:
+                    ncolumnschoose.remove(invectcol)
+                except:
+                    pass
+                prefcsv += "_{n}".format(n=len(ncolumnschoose))
+                com.extend(['--raster', inrastsource])
+
             meth = str(self.MethodInput.currentText())
 
             if self.LocalCheck.isChecked():
@@ -114,14 +108,15 @@ class STEMToolsDialog(BaseDialog):
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+            com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
+                        'accuracy', '--best-strategy', 'mean',
+                        '--feature-selection', 'SSF', invectsource, invectcol])
             mltb.set_params(vector_file=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster_file=inrastsource,
-                            models=models, scoring='accuracy',
-                            n_folds=nfold, n_jobs=1,
-                            n_best=1,
-                            tvector=None, tcolumn=None,
-                            traster=None,
+                            models=None, scoring='accuracy',
+                            n_folds=None, n_jobs=1, n_best=1,
+                            tvector=None, tcolumn=None, traster=None,
                             best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
@@ -132,18 +127,18 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             trnpath = os.path.join(home,
                                    "{pref}_csvtraining.csv".format(pref=prefcsv))
-            print('    From:')
-            print('      - vector: %s' % mltb.vector)
-            print('      - training column: %s' % mltb.column)
+            log.debug('    From:')
+            log.debug('      - vector: %s' % mltb.vector)
+            log.debug('      - training column: %s' % mltb.column)
             if mltb.use_columns:
-                print('      - use columns: %s' % mltb.use_columns)
+                log.debug('      - use columns: %s' % mltb.use_columns)
             if mltb.raster:
-                print('      - raster: %s' % mltb.raster)
+                log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                          nodata=NODATA, dtype=np.uint32)
 
             X = X.astype(float)
-            print('\nTraining sample shape:', X.shape)
+            log.debug('\nTraining sample shape: {val}'.format(val=X.shape))
 
             # --------------------------------------------------------------
             # Feature selector
@@ -151,9 +146,12 @@ class STEMToolsDialog(BaseDialog):
 
             # ------------------------------------------------------------
             # Transform the input data
+            out = self.TextOut.text()
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=self.TextOut.text(), fsfit=True)
+                                    fsfile=out, fsfit=True)
+            STEMMessageHandler.success("Il file {name} è stato scritto "
+                                       "correttamente".format(name=out))
             return
         except:
             error = traceback.format_exc()
