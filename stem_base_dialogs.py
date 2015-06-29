@@ -153,7 +153,7 @@ class BaseDialog(QDialog, baseDialog):
         self.label.setText(self.tr("", "Dati di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.BrowseInFile, self.BaseInput, multi=multi))
+                     partial(self.browseInFile, self.BaseInput, multi=multi))
 
     def _insertFileInput(self, pos=0, multi=False):
         """Function to add QLineEdit and QPushButton to select the data
@@ -173,11 +173,32 @@ class BaseDialog(QDialog, baseDialog):
         self.BrowseButtonIn = QPushButton()
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
-        self.verticalLayout_input.insertLayout(pos, self.horizontalLayout_input)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_input)
         self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.BrowseInFile, self.TextIn, multi=multi))
+                     partial(self.browseInFile, self.TextIn, multi=multi))
+
+    def _insertDirectory(self, label, pos=0):
+        self.horizontalLayout_input = QHBoxLayout()
+        self.horizontalLayout_input.setObjectName("horizontalLayout_output")
+        self.labelD = QLabel()
+        self.labelD.setObjectName("LabelOut")
+        self.labelD.setWordWrap(True)
+        self.horizontalLayout_input.addWidget(self.labelD)
+        self.TextIn = QLineEdit()
+        self.TextIn.setObjectName("TextIn")
+        self.horizontalLayout_input.addWidget(self.TextIn)
+        self.BrowseButtonIn = QPushButton()
+        self.BrowseButtonIn.setObjectName("BrowseButtonIn")
+        self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
+        self.verticalLayout_input.insertLayout(pos,
+                                               self.horizontalLayout_input)
+        self.labelD.setText(self.tr("", label))
+        self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
+        self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextIn, multi=multi))
 
     def _insertSingleInput(self, label="Dati di input"):
         """Function to add ComboBox Widget where insert a single input file
@@ -240,7 +261,7 @@ class BaseDialog(QDialog, baseDialog):
         self.labelFO.setText(self.tr("", label))
         self.BrowseButtonInOpt.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonInOpt, SIGNAL("clicked()"),
-                     partial(self.BrowseInFile, self.TextInOpt))
+                     partial(self.browseInFile, self.TextInOpt))
 
     def _insertLayerChoose(self, pos=2):
         """Function to add a LineEdit Widget for the layers list
@@ -940,7 +961,18 @@ class BaseDialog(QDialog, baseDialog):
         self.setCursor(Qt.ArrowCursor)
         self.process.kill()
 
-    def BrowseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False):
+    def chooseDirectory(self, line, caption):
+        """Function to select a directory
+
+        :param obj line: the QLineEdit object to update
+        """
+        mydir = QFileDialog.getExistingDirectory(parent=None,
+                                                 caption=caption, directory="")
+        if os.path.exists(mydir):
+            line.setText(mydir)
+            return
+
+    def browseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False):
         """Function to select existing file in a directory
 
         :param obj line: the QLineEdit object to update
