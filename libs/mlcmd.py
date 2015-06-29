@@ -299,11 +299,11 @@ if __name__ == "__main__":
     fselector = None
     fscolumns = None
     fspath = None
+    if args.ff:
+        fspath = os.path.join(args.odir, args.ff)
+        if (os.path.exists(fspath) and not args.overwrite):
+            fscolumns = np.loadtxt(fspath)
     if args.fs != 'None':
-        if args.ff:
-            fspath = os.path.join(args.odir, args.ff)
-            if (os.path.exists(fspath) and not args.overwrite):
-                fscolumns = np.loadtxt(fspath)
         fselector = fselect[args.fs]
 
     # -----------------------------------------------------------------------
