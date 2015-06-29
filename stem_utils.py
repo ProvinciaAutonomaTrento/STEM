@@ -30,6 +30,7 @@ import re
 import tempfile
 import shutil
 import glob
+import logging
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -713,3 +714,18 @@ class STEMSettings:
     def allKeys():
         """Return all keys of STEMSettings"""
         return STEMSettings.s.allKeys()
+
+
+class STEMLogging:
+    """Class to log information of modules in a file"""
+
+    def __init__(self):
+        stempath = STEMSettings.value("stempath")
+        logging.basicConfig(filename=os.path.join(stempath, 'stem.log'),
+                            filemode='w', level=logging.DEBUG)
+
+    def debug(self, text):
+        logging.debug(text)
+
+    def warning(self, text):
+        logging.warning(text)
