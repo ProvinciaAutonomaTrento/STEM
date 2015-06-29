@@ -37,6 +37,8 @@ import os
 import pickle as pkl
 import numpy as np
 
+from stem_utils import STEMLogging
+
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
