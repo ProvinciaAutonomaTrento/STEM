@@ -39,6 +39,8 @@ from osgeo import gdal
 from osgeo import ogr
 gdal.UseExceptions()
 
+from stem_utils import STEMLogging
+
 SEP = ';'
 NODATA = -9999
 
@@ -154,6 +156,7 @@ def estimate_best_row_buffer(rast, dtype, memory_factor=1):
     :param factor: factor that reduce the memory consumption: $memory//factor$
     :type dtyype: numeric
     """
+    log = STEMLogging()
     intfactor = 6   # internal factor => further reduction for safety reasons
     nbands = rast.RasterCount
     rows, cols = rast.RasterYSize, rast.RasterXSize
@@ -163,6 +166,9 @@ def estimate_best_row_buffer(rast, dtype, memory_factor=1):
     if onerow * intfactor > mem.free:
         raise MemoryError("Not possible to allocate enough memory")
     brows = int(mem.free // onerow // intfactor // memory_factor)
+    log.debug('memory factors: %f' % float(memory_factor))
+    log.debug('raster rows: %d, cols: %d' % (rows, cols))
+    log.debug('free memory: %d, nbytes per row %d, bufferrows: %d, memory used per chunk: %d' % (mem.free, onerow, brows, onerow * brows))
     return rows if brows > rows else brows
 
 
@@ -402,6 +408,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
     :param y: training classes/values, each row correspond to a pixel.
     :type y: numpy arrax (1D)
     """
+    log = STEMLogging()
     if not isinstance(models, list):
         raise TypeError("models parameter must be a list.")
 
@@ -414,7 +421,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         start = time.time()
         model['mod'].fit(X, y)
         model['training_time'] = time.time() - start
-        print("trained: %s [%.2fs]" % (model['name'], model['training_time']))
+        log.debug("trained: %s [%.2fs]" % (model['name'], model['training_time']))
         model['execution_time'] = 0.
 
     if use_columns is None:
@@ -429,11 +436,13 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         brows = estimate_best_row_buffer(rast, np.float32, memory_factor)
         # compute the number of chunks
         nchunks = rysize // brows + (1 if rysize % brows else 0)
-        print('number of chunks: %d' % nchunks)
+        log.debug('raster rows: %d, cols: %d' % (rysize, rxsize))
+        log.debug('number of chunks: %d (buffer of rows: %d)' % (nchunks, brows))
         # TODO: fix read_chunks to read and use only the selected
         # features and not all bands
         for chunk, data in enumerate(read_chunks(rast, nchunks, brows)):
             # trasform input data following the users options
+            log.debug('data shape: {}'.format(data.shape))
             for trans in transformations:
                 data = trans.transform(data)
 
@@ -521,7 +530,7 @@ class MLToolBox(object):
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
-                   transform=None, untransform=None, memory_factor=1.):
+                   transform=None, untransform=None, memory_factor=20.):
         """Method to set class attributes, the attributes are:
 
         :param raster_file: Raster file with the pixel bands to be classified.
