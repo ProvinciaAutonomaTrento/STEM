@@ -177,13 +177,15 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, form, index=True):
+    def checkLayers(inmap, form=None, index=True):
         """Function to check if layers are choosen
 
         :param str inmap: the input map
         :param obj form: a object containing the bands of map
         :param bool index:
         """
+        if not form:
+            return STEMUtils.getNumSubset(inmap)
         if isinstance(form, QCheckBox) or isinstance(form, CheckableComboBox):
             itemlist = []
             for i in range(form.count()):

@@ -27,8 +27,8 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-from sklearn.svm import LinearSVC
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
+from sklearn.linear_model import LassoLarsIC
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import os
@@ -49,9 +49,13 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
+
+        mets = ['bic', 'aic']
+        self.lm = "Selezione il criterio da utilizzare"
+        self._insertMethod(mets, self.lm, 0)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.TextOut, '.txt'))
 
@@ -61,12 +65,16 @@ class STEMToolsDialog(BaseDialog):
         self.switchClippingMode()
         self.show_(self)
 
+    def columnsChange(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+
     def onClosing(self):
         self.onClosing(self)
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
+        log = STEMLogging()
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -81,8 +89,7 @@ class STEMToolsDialog(BaseDialog):
 
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list)
+                nlayerchoose = STEMUtils.checkLayers(inrastsource)
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
@@ -106,23 +113,19 @@ class STEMToolsDialog(BaseDialog):
                     pass
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
-            nfold = int(self.Linedit3.text())
-            models = self.getModel()
+            method = str(self.MethodInput.currentText())
             # --------------------------------------------------------------
             # Feature selector
-            fselector = LinearSVC(C=0.01, penalty="l1", dual=False)
+            fselector = LassoLarsIC(criterion=method)
 
             home = STEMSettings.value("stempath")
             trnpath = os.path.join(home,
                                    "{pr}_csvtraining.csv".format(pr=prefcsv))
-            com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
-                        '1', '--scoring', 'accuracy', '--models', str(models),
-                        '--csv-training', trnpath,
+            com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
+                        'accuracy', '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
-            if self.checkbox.isChecked():
-                com.extend(['-e', '--output-raster-name', self.TextOut.text()])
 
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
@@ -131,29 +134,28 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
             mltb.set_params(vector_file=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
-                            raster_file=inrastsource, models=models,
-                            scoring='accuracy', n_folds=nfold, n_jobs=1,
+                            raster_file=inrastsource, models=None,
+                            scoring='accuracy', n_folds=None, n_jobs=1,
                             n_best=1, tvector=None, tcolumn=None,
                             traster=None, best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
-            overwrite = False
 
             # ------------------------------------------------------------
             # Extract training samples
 
-            print('    From:')
-            print('      - vector: %s' % mltb.vector)
-            print('      - training column: %s' % mltb.column)
+            log.debug('    From:')
+            log.debug('      - vector: %s' % mltb.vector)
+            log.debug('      - training column: %s' % mltb.column)
             if mltb.use_columns:
-                print('      - use columns: %s' % mltb.use_columns)
+                log.debug('      - use columns: %s' % mltb.use_columns)
             if mltb.raster:
-                print('      - raster: %s' % mltb.raster)
+                log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=NODATA, dtype=np.uint32)
+                                         nodata=NODATA, dtype=np.float32)
 
             X = X.astype(float)
-            print('\nTraining sample shape:', X.shape)
+            log.debug('Training sample shape:', X.shape)
 
             # ------------------------------------------------------------
             # Transform the input data
