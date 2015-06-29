@@ -143,7 +143,7 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     return rast
 
 
-def estimate_best_row_buffer(rast, dtype, factor=1):
+def estimate_best_row_buffer(rast, dtype, memory_factor=1):
     """Estimates the best number of rows to use the system.
     Return the number of rows.
 
@@ -154,7 +154,7 @@ def estimate_best_row_buffer(rast, dtype, factor=1):
     :param factor: factor that reduce the memory consumption: $memory//factor$
     :type dtyype: numeric
     """
-    intfactor = 4   # internal factor => further reduction for safety reasons
+    intfactor = 6   # internal factor => further reduction for safety reasons
     nbands = rast.RasterCount
     rows, cols = rast.RasterYSize, rast.RasterXSize
     ctype = dtype()
@@ -162,7 +162,7 @@ def estimate_best_row_buffer(rast, dtype, factor=1):
     onerow = cols * ctype.nbytes * nbands
     if onerow * intfactor > mem.free:
         raise MemoryError("Not possible to allocate enough memory")
-    brows = mem.free // onerow // intfactor // factor
+    brows = int(mem.free // onerow // intfactor // memory_factor)
     return rows if brows > rows else brows
 
 
@@ -374,6 +374,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
 
 def run_model(model, data):
     """Execute the model and return the predicted data"""
+    print('data shape:', data.shape)
     start = time.time()
     model['predict'] = model['mod'].predict(data)
     model['execution_time'] += time.time() - start
@@ -381,7 +382,8 @@ def run_model(model, data):
 
 
 def apply_models(input_file, output_file, models, X, y, transformations,
-                 transform=None, untransform=None, use_columns=None):
+                 transform=None, untransform=None, use_columns=None,
+                 memory_factor=1.):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -420,10 +422,11 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         rast = read_raster(input_file)
         # create the raster outputs
         for model in models:
+            print(output_file.format(model['name']))
             model['out'] = empty_rast(output_file.format(model['name']), rast)
             model['band'] = model['out'].GetRasterBand(1)
         rxsize, rysize = rast.RasterXSize, rast.RasterYSize
-        brows = estimate_best_row_buffer(rast, np.float32, 1)  # len(models))
+        brows = estimate_best_row_buffer(rast, np.float32, memory_factor)
         # compute the number of chunks
         nchunks = rysize // brows + (1 if rysize % brows else 0)
         print('number of chunks: %d' % nchunks)
@@ -519,7 +522,7 @@ class MLToolBox(object):
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
-                   transform=None, untransform=None):
+                   transform=None, untransform=None, memory_factor=1.):
         """Method to set class attributes, the attributes are:
 
         :param raster_file: Raster file with the pixel bands to be classified.
@@ -569,6 +572,10 @@ class MLToolBox(object):
         :param untrasform: Set a function to remove the transformation before write
                            the model result.
         :type untrasform: function
+        :param memory_factor: Set a factor to prevent MemoryError, the number
+                              of rows loaded into memory is divided by this
+                              factor.
+        :type memory_factor: number
         """
         self.X = None
         self.y = None
@@ -594,13 +601,14 @@ class MLToolBox(object):
         self.decomposer = decomposer
         self.transform = transform
         self.untransform = untransform
+        self.memory_factor = memory_factor
 
     def get_params(self):
         keys = ('raster_file', 'vector_file', 'output_file', 'column',
                 'training_csv', 'models', 'scoring', 'nodata',
                 'n_folds', 'n_jobs', 'n_best', 'tvector', 'tcolumn', 'traster',
                 'test_csv', 'scaler', 'fselector', 'decomposer',
-                'transform', 'untransform')
+                'transform', 'untransform', 'memory_factor')
         return {key: getattr(self, key) for key in keys}
 
     def extract_training(self, vector_file=None, column=None, use_columns=None,
@@ -893,11 +901,13 @@ class MLToolBox(object):
 
     def execute(self, raster_file=None, output_file=None,
                 best=None, X=None, y=None, trans=None,
-                transform=None, untransform=None):
+                transform=None, untransform=None, memory_factor=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
         self.raster = self.raster if raster_file is None else raster_file
         self.output = self.output if output_file is None else output_file
+        self.memory_factor = (self.memory_factor if memory_factor is None
+                              else memory_factor)
         best = self.select_best() if best is None else best
         self._trans = self._trans if trans is None else trans
         self.transform = transform if transform is not None else self.transform
@@ -905,7 +915,8 @@ class MLToolBox(object):
         X = self.X if X is None else X
         y = self.y if y is None else y
         apply_models(self.raster, self.output, best, X, y, self._trans,
-                     transform=self.transform, untransform=self.untransform)
+                     transform=self.transform, untransform=self.untransform,
+                     memory_factor=self.memory_factor)
 
 
 def main():
