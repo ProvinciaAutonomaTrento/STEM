@@ -8,6 +8,10 @@ Il file di output e' uguale al file delle aree di input, in cui viene aggiunta u
 
 Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `v.vect.stats <http://grass.osgeo.org/grass70/manuals/v.vect.stats.html>`_
 
+.. warning::
+
+    Se il primo dato di input da aggregare è poligonale il tempo richiesto per il calcolo è esponenzialmente più lento. Si consiglia di estrarre i centroidi utilizzando lo strumento di QGIS `Vettore -> Strumenti di geometria -> Centroidi del poligono`
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/aggregazione_ad_aree.png
@@ -16,10 +20,10 @@ Per maggiori informazioni si veda la documentazione del comando di GRASS GIS uti
 Input
 ------------
 
-**Dati di input (vettoriale di punti o aree)**: nella finestra compaiono i file vettoriali attualmente aperti in QGIS.
+**Vettoriale di punti**: nella finestra compaiono i file vettoriali attualmente aperti in QGIS.
 Selezionare il vettoriale relativo ai parametri di interesse.
 
-**Dati di input (vettoriale di aree)**: nella finestra compaiono i file vettoriali attualmente aperti in QGIS. Selezionare il vettoriale relativo alla suddivisione in aree di interesse.
+**Vettoriale di aree su cui aggregare**: nella finestra compaiono i file vettoriali attualmente aperti in QGIS. Selezionare il vettoriale relativo alla suddivisione in aree di interesse.
 
 Parametri
 ------------

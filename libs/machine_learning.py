@@ -502,7 +502,6 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         osrc.Destroy()
 
 
-
 class MLToolBox(object):
     def __init__(self, *args, **kwargs):
         """The MLToolBox class can be instantiate without any argument,
@@ -919,17 +918,33 @@ class MLToolBox(object):
                      memory_factor=self.memory_factor)
 
 
+def get_parser():
+    """Create the parser for running as script"""
+    import argparse
+    parser = argparse.ArgumentParser(description='Script for machine learning '
+                                                 'operations on the server')
+    parser.add_argument('-s', '--server', action='store_true',
+                        dest='server', default=False,
+                        help="launch server application")
+    return parser
+
+
 def main():
     """This function is used in the server to activate a Pyro4 server.
        It initialize the MLToolBox objects and it is used by Pyro4
     """
-    # decomment this two lines if you want activate the logging
-    #os.environ["PYRO_LOGFILE"] = "pyromachine.log"
-    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-    import Pyro4
-    machine_stem = MLToolBox()
-    Pyro4.Daemon.serveSimple({machine_stem: "stem.machinelearning"},
-                             host=PYROSERVER, port=ML_PORT, ns=True)
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.server:
+        # decomment this two lines if you want activate the logging
+        #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
+        #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+        import Pyro4
+        machine_stem = MLToolBox()
+        Pyro4.Daemon.serveSimple({machine_stem: "stem.machinelearning"},
+                                 host=PYROSERVER, port=ML_PORT, ns=True)
+    else:
+        parser.error("--server option is required")
 
 if __name__ == "__main__":
     main()

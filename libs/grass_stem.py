@@ -209,6 +209,17 @@ class stemGRASS():
         import grass.script.core as gcore
         gcore.os.environ['GRASS_OVERWRITE'] = '1'
 
+    def list_maps(self, typ):
+        com = ['g.list', 'type={ty}'.format(ty=typ)]
+        runcom = subprocess.Popen(com, stdin=PIPE, stdout=PIPE,
+                                  stderr=PIPE)
+        out, err = runcom.communicate()
+        if runcom.returncode != 0:
+            raise Exception("Errore eseguendo GRASS: ",
+                            "Errore eseguendo g.list {e}".format(e=err))
+        else:
+            return out.split()
+
     def check_mask(self, mask):
         """Check if a mask should be used
 
@@ -224,10 +235,10 @@ class stemGRASS():
                                 "Errore eseguendo r.mask {e}".format(e=err))
         else:
             name = '_'.join(os.path.split(mask)[-1].split('.')[:-1])
-            vecs = list(itertools.chain(*gcore.list_grouped('vect').values()))
+            #vecs = list(itertools.chain(gcore.list_grouped('vect').values()))
             com = ['r.mask', 'vector={ma}'.format(ma=name)]
+            vecs = self.list_maps('vector')
             inv_mask = inverse_mask()
-            print inv_mask
             if inv_mask:
                 com.append('-i')
             if name not in vecs:
@@ -246,7 +257,8 @@ class stemGRASS():
                     raise Exception("Errore eseguendo GRASS: ",
                                     "Errore eseguendo r.mask {e}".format(e=err))
             else:
-                rasts = list(itertools.chain(*gcore.list_grouped('rast').values()))
+                rasts = self.list_maps('raster')
+                #rasts = list(itertools.chain(*gcore.list_grouped('rast').values()))
                 if 'MASK' not in rasts:
                     runcom = gcore.Popen(com,
                                          stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -521,17 +533,33 @@ class stemGRASS():
         shutil.rmtree(self.mapsetpath)
 
 
+def get_parser():
+    """Create the parser for running as script"""
+    import argparse
+    parser = argparse.ArgumentParser(description='Script for GRASS operations'
+                                                 'on the server')
+    parser.add_argument('-s', '--server', action='store_true',
+                        dest='server', default=False,
+                        help="launch server application")
+    return parser
+
+
 def main():
     """This function is used in the server to activate a Pyro4 server.
        It initialize the stemGRASS objects and it is used by Pyro4
     """
-    # decomment this two lines if you want activate the logging
-    #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
-    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-    import Pyro4
-    grass_stem = stemGRASS()
-    Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host=PYROSERVER,
-                             port=GRASS_PORT, ns=True)
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.server:
+        # decomment this two lines if you want activate the logging
+        #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
+        #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+        import Pyro4
+        grass_stem = stemGRASS()
+        Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host=PYROSERVER,
+                                 port=GRASS_PORT, ns=True)
+    else:
+        parser.error("--server option is required")
 
 if __name__ == "__main__":
     main()

@@ -64,6 +64,7 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -90,6 +91,7 @@ class STEMToolsDialog(BaseDialog):
                     inrast = cut
                     inrastsource = cutsource
                 ncolumnschoose = None
+                com.extend(['--raster', inrastsource])
             else:
                 ncolumnschoose = STEMUtils.checkLayers(invectsource,
                                                        self.layer_list, False)
@@ -104,43 +106,40 @@ class STEMToolsDialog(BaseDialog):
 
             nfold = int(self.Linedit3.text())
             models = self.getModel()
+            # --------------------------------------------------------------
+            # Feature selector
+            fselector = LinearSVC(C=0.01, penalty="l1", dual=False)
+
+            home = STEMSettings.value("stempath")
+            trnpath = os.path.join(home,
+                                   "{pr}_csvtraining.csv".format(pr=prefcsv))
+            com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
+                        '1', '--scoring', 'accuracy', '--models', str(models),
+                        '--csv-training', trnpath,
+                        '--best-strategy', 'mean', invectsource, invectcol])
+            if ncolumnschoose:
+                com.extend(['-u', ncolumnschoose])
+            if self.checkbox.isChecked():
+                com.extend(['-e', '--output-raster-name', self.TextOut.text()])
 
             if self.LocalCheck.isChecked():
-                mltb = MLToolBox(vector_file=invectsource, column=invectcol,
-                                 use_columns=ncolumnschoose,
-                                 raster_file=inrastsource,
-                                 models=models, scoring='accuracy',
-                                 n_folds=nfold, n_jobs=1,
-                                 n_best=1,
-                                 tvector=None, tcolumn=None,
-                                 traster=None,
-                                 best_strategy=getattr(np, 'mean'),
-                                 scaler=None, fselector=None, decomposer=None,
-                                 transform=None, untransform=None)
+                mltb = MLToolBox()
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
-                mltb.set_params(vector_file=invectsource, column=invectcol,
-                                use_columns=ncolumnschoose,
-                                raster_file=inrastsource,
-                                models=models, scoring='accuracy',
-                                n_folds=nfold, n_jobs=1,
-                                n_best=1,
-                                tvector=None, tcolumn=None,
-                                traster=None,
-                                best_strategy=getattr(np, 'mean'),
-                                scaler=None, fselector=None, decomposer=None,
-                                transform=None, untransform=None)
-
-            home = STEMSettings.value("stempath")
-            nodata = -9999
+            mltb.set_params(vector_file=invectsource, column=invectcol,
+                            use_columns=ncolumnschoose,
+                            raster_file=inrastsource, models=models,
+                            scoring='accuracy', n_folds=nfold, n_jobs=1,
+                            n_best=1, tvector=None, tcolumn=None,
+                            traster=None, best_strategy=getattr(np, 'mean'),
+                            scaler=None, fselector=None, decomposer=None,
+                            transform=None, untransform=None)
             overwrite = False
-            delimiter = ';'
 
             # ------------------------------------------------------------
             # Extract training samples
-            trnpath = os.path.join(home,
-                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+
             print('    From:')
             print('      - vector: %s' % mltb.vector)
             print('      - training column: %s' % mltb.column)
@@ -153,10 +152,6 @@ class STEMToolsDialog(BaseDialog):
 
             X = X.astype(float)
             print('\nTraining sample shape:', X.shape)
-
-            # --------------------------------------------------------------
-            # Feature selector
-            fselector = LinearSVC(C=0.01, penalty="l1", dual=False)
 
             # ------------------------------------------------------------
             # Transform the input data

@@ -644,6 +644,29 @@ class BaseDialog(QDialog, baseDialog):
             [self.BaseInputCombo3.addItem(m) for m in items]
         self.LabelCombo3.setText(self.tr("", label))
 
+    def _insertFourthCombobox(self, label, posnum, items=None):
+        """Function to add a third ComboBox Widget
+
+        :param int posnum: the position of form in the input layout
+        :param str label: the label of form
+        :param list items: the list of elements to add in the ComboBox
+        """
+        self.horizontalLayout_combo4 = QHBoxLayout()
+        self.horizontalLayout_combo4.setObjectName("horizontalLayout_combo4")
+        self.LabelCombo4 = QLabel()
+        self.LabelCombo4.setObjectName("LabelCombo4")
+        self.LabelCombo4.setWordWrap(True)
+        self.horizontalLayout_combo4.addWidget(self.LabelCombo4)
+        self.BaseInputCombo4 = QComboBox()
+        self.BaseInputCombo4.setEditable(True)
+        self.BaseInputCombo4.setObjectName("BaseInputCombo4")
+        self.horizontalLayout_combo4.addWidget(self.BaseInputCombo4)
+        self.verticalLayout_options.insertLayout(posnum,
+                                                 self.horizontalLayout_combo4)
+        if items:
+            [self.BaseInputCombo4.addItem(m) for m in items]
+        self.LabelCombo4.setText(self.tr("", label))
+
     def _insertSecondOutput(self, label, posnum):
         """Function to add a second output
 
@@ -944,13 +967,16 @@ class BaseDialog(QDialog, baseDialog):
                 return
         STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
-    def BrowseDir(self, line):
+    def BrowseDir(self, line, suffix='.tif'):
         """Function to create new file in a directory
 
         :param obj line: the QLineEdit object to update
         """
         fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
         if fileName:
+            if suffix:
+                if fileName.rfind(suffix) == -1:
+                    fileName += suffix
             try:
                 self.save(fileName)
                 line.setText(fileName)
@@ -1001,6 +1027,7 @@ class BaseDialog(QDialog, baseDialog):
         """Create the local url for the tool"""
         filename = "{tool}.html".format(tool=self.toolname.lower().replace(" ",
                                                                            "_"))
+        filename = filename.replace("/", "_")
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'docs',
                             'build', 'html', 'tools', filename)
         if platform.system().startswith('linux') or platform.system().startswith('darwin'):
@@ -1125,6 +1152,22 @@ class helpDialog(QDialog, helpDialog):
         """Set up the help user interface"""
         self.dialog = helpDialog
         self.setupUi(self)
+        self.backButton.clicked.connect(self._back)
+        self.forwardButton.clicked.connect(self._forward)
+
+    def _back(self):
+        """Function to go back to previous page"""
+        try:
+            self.webView.back()
+        except Exception:
+            pass
+
+    def _forward(self):
+        """Function to go forward to next page"""
+        try:
+            self.webView.forward()
+        except Exception:
+            pass
 
     def fillfromUrl(self, url):
         """Load a url in the Help window

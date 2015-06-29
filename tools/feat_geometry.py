@@ -123,7 +123,7 @@ class STEMToolsDialog(BaseDialog):
             memory = str(self.Linedit2.text())
 
             outputs = []
-            for i in numpy.arange(minthre, maxthre, step):
+            for i in numpy.arange(minthre, maxthre + step, step):
                 output = '{outname}_{thre}'.format(outname=tempout, thre=i)
                 outputs.append(output)
                 com = ['i.segment', '-d', 'group={name}'.format(name=tempin),
@@ -138,7 +138,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.create_group(outputs, tempout)
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+                                  tempout, typ, False)
             gs.removeMapset()
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

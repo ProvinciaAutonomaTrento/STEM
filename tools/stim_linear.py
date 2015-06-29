@@ -168,7 +168,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "lin_{vect}_{col}".format(vect=invect , col=invectcol)
+            prefcsv = "lin_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -233,7 +233,7 @@ class STEMToolsDialog(BaseDialog):
                                      "{p}_csvcross.csv".format(p=prefcsv))
 
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
-                        '1', '--scoring', 'accuracy', '--models', str(models),
+                        '1', '--scoring', 'accuracy', '--models', str(model),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
             if ncolumnschoose:

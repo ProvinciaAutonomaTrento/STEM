@@ -69,8 +69,9 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                          ("1", "Filtro maggioranza"): "error_reduction"
                                          }],
          ("6", "Stima di parametri"): [{
-                                       ("1", "Stimatore lineare"): "stim_linear",
-                                       ("2", "Support Vector Regression"): "stim_svr"
+                                       ("1", "Stima volume con formule allometriche"): "calc_vol",
+                                       ("2", "Stimatore lineare"): "stim_linear",
+                                       ("3", "Support Vector Regression"): "stim_svr"
                                        }],
          ("7", "Post-elaborazione stima"): [{
                                             ("0", "Aggregazione ad aree"): "post_aggraree",

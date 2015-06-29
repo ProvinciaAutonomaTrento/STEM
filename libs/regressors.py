@@ -153,11 +153,11 @@ RANDFOR = [dict(name='RandomForestRegressor_e%03d_f%s' % (e, f),
 
 # SVR(kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=0.001, C=1.0, epsilon=0.1, shrinking=True, probability=False, cache_size=200, verbose=False, max_iter=-1, random_state=None)
 SVRLIN = [dict(name='SVR_k%s_C%f' % (k, c), model=SVR,
-               kwargs={'C': c, 'kernel': k, 'probability': True})
+               kwargs={'C': c, 'kernel': k, 'epsilon': y, 'probability': True})
           for c in ALPHAS for k in ('linear', )]
 
 SVRSIGRBF = [dict(name='SVR_k%s_C%f_g%f' % (k, c, g), model=SVR,
-                  kwargs={'C': c, 'gamma': g, 'kernel': k,
+                  kwargs={'C': c, 'gamma': g, 'kernel': k, 'epsilon': y,
                           'probability': True})
              for c in ALPHAS
              for g in ALPHAS

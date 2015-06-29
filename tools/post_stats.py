@@ -30,6 +30,8 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import temporaryFilesGRASS
 import traceback
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -54,7 +56,8 @@ class STEMToolsDialog(BaseDialog):
         label = "Percentile da calcolare"
         self._insertFirstLineEdit(label, 0)
         self.Linedit.setText('90')
-
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, None))
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 

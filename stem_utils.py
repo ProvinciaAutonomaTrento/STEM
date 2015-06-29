@@ -128,6 +128,22 @@ class STEMUtils:
             return None
 
     @staticmethod
+    def reloadVectorLayer(layerName):
+        """Return the type of the layer
+
+        :param str layerName: the name of layer
+        """
+        layer = STEMUtils.getLayer(layerName)
+        source = layer.source()
+        STEMUtils.registry.instance().removeMapLayer(layer.id())
+        newlayer = QgsVectorLayer(source, layerName, "ogr")
+        if newlayer.isValid():
+            STEMUtils.registry.instance().addMapLayer(newlayer)
+        else:
+            STEMMessageHandler.warning("STEM Plugin", "Problema ricaricando "
+                                       "il layer {na}".format(na=layerName))
+
+    @staticmethod
     def addLayerIntoCanvas(filename, typ):
         """Add the output in the QGIS canvas
 
@@ -571,12 +587,20 @@ class STEMMessageHandler:
     @staticmethod
     def messageBar(title, text, level, timeout):
         if title:
-            iface.messageBar().pushMessage(title.decode('utf-8'),
-                                           text.decode('utf-8'), level,
-                                           timeout)
+            try:
+                iface.messageBar().pushMessage(title.decode('utf-8'),
+                                               text.decode('utf-8'), level,
+                                               timeout)
+            except Exception:
+                iface.messageBar().pushMessage(str(title), str(text), level,
+                                               timeout)
         else:
-            iface.messageBar().pushMessage(text.decode('utf-8'), level,
-                                           timeout)
+            try:
+                iface.messageBar().pushMessage(text.decode('utf-8'), level,
+                                               timeout)
+            except Exception:
+                iface.messageBar().pushMessage(str(text), level,
+                                               timeout)
 
 
 class STEMSettings:
