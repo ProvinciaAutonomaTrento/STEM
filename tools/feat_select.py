@@ -50,7 +50,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        #self.BaseInput.currentIndexChanged.connect(self.columnsChange)
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
@@ -66,6 +66,9 @@ class STEMToolsDialog(BaseDialog):
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
+
+    def columnsChange(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
 
     def onClosing(self):
         self.onClosing(self)
@@ -108,8 +111,6 @@ class STEMToolsDialog(BaseDialog):
                 pass
             prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
-            nfold = None
-            models = None
             meth = str(self.MethodInput.currentText())
 
             if self.LocalCheck.isChecked():
@@ -120,11 +121,9 @@ class STEMToolsDialog(BaseDialog):
             mltb.set_params(vector_file=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster_file=inrastsource,
-                            models=models, scoring='accuracy',
-                            n_folds=nfold, n_jobs=1,
-                            n_best=1,
-                            tvector=None, tcolumn=None,
-                            traster=None,
+                            models=None, scoring='accuracy',
+                            n_folds=None, n_jobs=1, n_best=1,
+                            tvector=None, tcolumn=None, traster=None,
                             best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
