@@ -34,6 +34,8 @@ import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import numpy as np
 import os
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -56,7 +58,8 @@ class STEMToolsDialog(BaseDialog):
         mets = ['mean', 'min', 'median']
         self.lm = "Selezione la strategia da utilizzare"
         self._insertMethod(mets, self.lm, 0)
-        #self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, '.txt'))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

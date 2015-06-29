@@ -31,9 +31,10 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from sklearn.svm import LinearSVC
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
-import pickle as pkl
 import os
 import numpy as np
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -48,10 +49,11 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        #self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
+        self.connect(self.BrowseButton, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.TextOut, '.txt'))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
