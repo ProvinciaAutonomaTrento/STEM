@@ -257,7 +257,6 @@ class STEMToolsDialog(BaseDialog):
 
             model = self.getModel()
             feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
@@ -287,6 +286,12 @@ class STEMToolsDialog(BaseDialog):
                         '1', '--scoring', 'accuracy', '--models', str(model),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
+            fscolumns = None
+            if feat == 'manuale':
+                infile = self.TextInOpt.text()
+                if os.path.exists(infile):
+                    com.extend(['--feature-selection-file', infile])
+                    fscolumns = np.loadtxt(infile)
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
@@ -332,21 +337,11 @@ class STEMToolsDialog(BaseDialog):
             print('\nTraining sample shape:', X.shape)
 
             # ----------------------------------------------------------------
-            # Feature selector
-            fselector = None
-            fscolumns = None
-            if args.fs:
-                if args.ff:
-                    fspath = os.path.join(home, args.ff)
-                    if (os.path.exists(fspath) and not overwrite):
-                        fscolumns = np.loadtxt(fspath)
-                fselector = fselect[args.fs]
-
-            # ----------------------------------------------------------------
             # Transform the input data
-            Xt = mltb.data_transform(X=X, y=y, scaler=scaler, fselector=fselector,
-                                     decomposer=decomposer, fscolumns=fscolumns,
-                                     fsfile=args.ff)
+            if fscolumns:
+                X = mltb.data_transform(X=X, y=y, scaler=None,
+                                        fscolumns=fscolumns,
+                                        fsfile=infile, fsfit=True)
 
             # ----------------------------------------------------------------
             # Extract test samples
