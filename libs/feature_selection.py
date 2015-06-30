@@ -24,7 +24,7 @@ def read(finput, delimiter=None, skip_header=1):
     """Read a file of input and return classes and data"""
     sdata = np.genfromtxt(finput, dtype=str, delimiter=delimiter,
                           skip_header=skip_header)
-    return sdata.T[-1], sdata[:, :-1].astype(float)
+    return sdata.T[-1].astype(float).astype(int), sdata[:, :-1].astype(float)
 
 
 def fgroup(classes, data, func, labels=None):
@@ -65,12 +65,17 @@ def v2m(arr, id0, id1):
     return arr[x, y].reshape((len(id0), len(id1)))
 
 
-def info(numb_of_features, dist, fs, verbose=False):
-    if verbose:
-        print("Feature to select: %d" % (numb_of_features))
-        print("Maximum minimum distance: %.4f" % dist)
-        print("Features selected: %r" % fs)
-        print()
+def info(numb_of_features, dist, fs, verbose=False, logging=None):
+    def function(msg):
+        if verbose:
+            print(msg)
+        if logging:
+            logging.info(msg)
+
+    function("SSF(%d) Feature to select: %d" % (numb_of_features, numb_of_features))
+    function("SSF(%d) Maximum minimum distance: %.4f" % (numb_of_features, dist))
+    function("SSF(%d) Features selected: %r" % (numb_of_features, fs))
+    function("")
 
 
 def bhat1(f_id, mua, cva, mub, cvb):
@@ -107,11 +112,11 @@ def backword(fs, mu, cv, strategy, comb=None):
 
 
 def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
-                            verbose=False):
+                            n_features=None, logging=None, verbose=False):
     """Sequential Forward Floating Feature Selection with
     Jeffries-Matusita Distance.
     """
-    labels = sorted(set(classes))
+    #labels = sorted(set(classes))
     nrows, ncols = data.shape
     mu = fgroup(classes, data, mean)
     cv = fgroup(classes, data, cov)
@@ -126,7 +131,7 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
                      for f_id in range(ncols)])
     idistmax = dist.argmax()
     res = {1: dict(features=idistmax, distance=dist[idistmax])}
-    info(1, dist[idistmax], [idistmax, ], verbose)
+    info(1, dist[idistmax], [idistmax, ], verbose, logging)
 
     # computing JM for two features
     features_comb = np.array(list(combinations(range(ncols), 2)))
@@ -140,11 +145,11 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
     fs = features_comb[idistmax]
     res[2] = dict(features=fs, distance=dist[idistmax])
 
-    info(2, dist[idistmax], fs, verbose)
+    info(2, dist[idistmax], fs, verbose, logging)
 
     # computing JM for N features
     i = 3
-    nfeat = ncols - i
+    nfeat = ncols - i if n_features is None else n_features + 1
     check = round(sqrt(2), precision)
     while (i < nfeat):
         fslist = list(fs)
@@ -157,7 +162,7 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
 
         idistmax = dist.argmax()
         fs = features_comb[idistmax]
-        info(i, dist[idistmax], fs, verbose)
+        info(i, dist[idistmax], fs, verbose, logging)
         bw = backword(fs, mu, cv, strategy, classes_comb)
         if bw != -1:
             fs = np.array([f for e, f in enumerate(fs) if e != bw])
@@ -176,12 +181,14 @@ class SSF(object):
     """Sequential Forward Floating Feature Selection with
     Jeffries-Matusita Distance.
     """
-    def __init__(self, strategy=np.mean, precision=6):
+    def __init__(self, strategy=np.mean, precision=6, n_features=None,
+                 logfile=None):
         self.strategy = strategy
         self.precision = precision
-        self.n_features_ = 0
+        self.n_features_ = n_features
         self.support_ = None
         self.ranking_ = None
+        self.logfile = logfile
 
     def __repr__(self):
         return "SSF(strategy=%r, precision=%r)" % (self.strategy,
@@ -191,6 +198,8 @@ class SSF(object):
         """Fit the RFE model and automatically tune the number of
         selected features."""
         res = seq_forward_floating_fs(X, y, strategy=self.strategy,
+                                      n_features=self.n_features_,
+                                      logfile=self.logfile,
                                       verbose=verbose)
         self.n_features_ = max(res.keys())
         self.selected = res[self.n_features_]['features'] - 1
@@ -253,9 +262,27 @@ if __name__ == "__main__":
                         help='Feature selection method')
     parser.add_argument('-d', '--delimiter', type=str, default=' ',
                         dest='delimiter', help='CSV delimiter')
+    parser.add_argument('-n', '--n-features', type=int, default=None,
+                        dest='n_features',
+                        help='Number of features to be selected')
     parser.add_argument('-s', '--skip-header', type=int, default=1,
                         dest='skip_header', help='Skip header rows')
+    parser.add_argument('-l', type=str, dest='log',
+                        help='Log file with features data selection log')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        dest='verbose', default=False,
+                        help='Verbose, print or log the process steps')
     args = parser.parse_args()
 
+    #import ipdb; ipdb.set_trace()
     classes, data = read(args.data, args.delimiter, args.skip_header)
-    seq_forward_floating_fs(classes, data, strategy=getattr(np, args.method))
+    if args.log:
+        import logging
+
+        logging.basicConfig(filename=args.log, filemode='w',
+                            level=logging.DEBUG)
+    else:
+        logging = None
+    seq_forward_floating_fs(data, classes, strategy=getattr(np, args.method),
+                            n_features=args.n_features,
+                            verbose=args.verbose, logging=logging)
