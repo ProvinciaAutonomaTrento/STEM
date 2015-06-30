@@ -29,7 +29,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 from sklearn.svm import SVC
