@@ -314,7 +314,6 @@ class STEMToolsDialog(BaseDialog):
 
             nodata = -9999
             overwrite = False
-            delimiter = ';'
             # ---------------------------------------------------------------
             # Extract training samples
             log.debug('Extract training samples')
@@ -383,10 +382,10 @@ class STEMToolsDialog(BaseDialog):
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=trasf)
-                np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
-                           header=delimiter.join(['id', 'name', 'mean', 'max',
+                np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
+                           header=SEP.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
-                mltb.find_best(models)
+                mltb.find_best(model)
                 best = mltb.select_best()
                 with open(bpkpath, 'w') as bpkl:
                     pkl.dump(best, bpkl)
@@ -418,8 +417,8 @@ class STEMToolsDialog(BaseDialog):
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=trasf)
-                    np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
-                               header=delimiter.join(test[0].__dict__.keys()))
+                    np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
+                               header=SEP.join(test[0].__dict__.keys()))
                     mltb.find_best(models, strategy=lambda x: x,
                                    key='score_test')
                     best = mltb.select_best()
