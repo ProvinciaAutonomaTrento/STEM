@@ -62,42 +62,47 @@ class STEMToolsDialog(BaseDialog):
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
+        labelc = "Effettuare la cross validation"
+        self._insertSecondCheckbox(labelc, 0)
+        self.checkbox2.stateChanged.connect(self.crossVali)
+
         self._insertThirdLineEdit(label="Inserire il numero di fold della "
-                                  "cross validation", posnum=0)
+                                  "cross validation maggiore di 2", posnum=1)
+        self.Linedit3.setEnabled(False)
 
         kernels = ['RBF', 'lineare', 'polinomiale', 'sigmoidale']
 
         self.lk = 'Selezionare il kernel da utilizzare'
-        self._insertFirstCombobox(self.lk, 1, kernels)
+        self._insertFirstCombobox(self.lk, 2, kernels)
         self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
-        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
+        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=3)
         self._insertSecondLineEdit(label="Inserire il valore di gamma",
-                                   posnum=3)
+                                   posnum=4)
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 4, "Text file (*.txt)")
+        self._insertMethod(mets, self.lm, 5)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 5)
+        self._insertFileInputOption(self.lio, 6)
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(6, label="Vettoriale di validazione")
+        self._insertSingleInputOption(7, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 7)
+        self._insertSecondCombobox(label, 8)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 8)
+        self._insertCheckbox(label, 9)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -151,6 +156,12 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonInOpt.setEnabled(False)
             self.label_layer2.setEnabled(False)
             self.layer_list2.setEnabled(False)
+
+    def crossVali(self):
+        if self.checkbox2.isChecked():
+            self.Linedit3.setEnabled(True)
+        else:
+            self.Linedit3.setEnabled(False)
 
     def show_(self):
         self.switchClippingMode()
@@ -347,35 +358,36 @@ class STEMToolsDialog(BaseDialog):
 
             # ---------------------------------------------------------------
             # Cross Models
-            log.debug('Cross-validation of the models')
+            if self.checkbox2.isChecked():
+                log.debug('Cross-validation of the models')
 
-            bpkpath = os.path.join(home,
-                                   "{p}_best_pickle.pkl".format(p=prefcsv))
-            if (not os.path.exists(crosspath) or overwrite):
-                cross = mltb.cross_validation(X=X, y=y, transform=None)
-                np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
-                           header=SEP.join(['id', 'name', 'mean', 'max',
-                                                  'min', 'std', 'time']))
-                mltb.find_best(models)
-                best = mltb.select_best()
-                with open(bpkpath, 'w') as bpkl:
-                    pkl.dump(best, bpkl)
-            else:
-                log.debug('    Read cross-validation results from file:')
-                log.debug('      -  %s' % crosspath)
-                try:
-                    with open(bpkpath, 'r') as bpkl:
-                        best = pkl.load(bpkl)
-                except:
-                    STEMMessageHandler.error("Problem reading file {name} "
-                                             "please remove all files with"
-                                             "prefix {pre} in {path}".format(
-                                             name=bpkpath, pre=prefcsv,
-                                             path=home))
-                order, models = mltb.find_best(models=best)
-                best = mltb.select_best(best=models)
-            log.debug('Best models:')
-            log.debug(best)
+                bpkpath = os.path.join(home,
+                                       "{p}_best_pickle.pkl".format(p=prefcsv))
+                if (not os.path.exists(crosspath) or overwrite):
+                    cross = mltb.cross_validation(X=X, y=y, transform=None)
+                    np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
+                               header=SEP.join(['id', 'name', 'mean', 'max',
+                                                      'min', 'std', 'time']))
+                    mltb.find_best(models)
+                    best = mltb.select_best()
+                    with open(bpkpath, 'w') as bpkl:
+                        pkl.dump(best, bpkl)
+                else:
+                    log.debug('    Read cross-validation results from file:')
+                    log.debug('      -  %s' % crosspath)
+                    try:
+                        with open(bpkpath, 'r') as bpkl:
+                            best = pkl.load(bpkl)
+                    except:
+                        STEMMessageHandler.error("Problem reading file {name} "
+                                                 "please remove all files with"
+                                                 "prefix {pre} in {path}".format(
+                                                 name=bpkpath, pre=prefcsv,
+                                                 path=home))
+                    order, models = mltb.find_best(models=best)
+                    best = mltb.select_best(best=models)
+                log.debug('Best models:')
+                log.debug(best)
 
             # ---------------------------------------------------------------
             # test Models
