@@ -25,6 +25,8 @@ Input
 Parametri
 ------------
 
+**Numero massimo di feature da selezionare**: numero massimo di feature da selezionare.
+
 **Selezionare la strategia da utilizzare**:
 
 	* *min*: distanza di Jeffries-Matusita minima tra le classi;

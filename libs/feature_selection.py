@@ -163,7 +163,10 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
                          for f_id in features_comb])
 
         if np.isnan(dist.max()):
-            communicate("WARNING: Maximum distance is NaN, exit!", verbose=verbose, logging=logging)
+            communicate(("WARNING: Distace is NaN, this could happen when"
+                         " the number of training for a class is too low"
+                         " and the covariance matrix is not invertible."),
+                        verbose=verbose, logging=logging)
             info(i, np.nan, fs, verbose, logging)
             return res
 
