@@ -133,6 +133,9 @@ def get_parser():
                         dest='odir', default='',
                         help='Specify the directory that will contain all the'
                              'outputs')
+    parser.add_argument('-of', '--output-file', type=str,
+                        dest='ofile', default=None,
+                        help='Specify the output filename')
     parser.add_argument('-w', '--output-raster-name', type=str,
                         dest='rname', default='%s',
                         help='Specify the name of the output raster map that'
@@ -404,10 +407,10 @@ if __name__ == "__main__":
         pprint(best)
 
     # -----------------------------------------------------------------------
-    # execute Models and save the output raster map
+    # execute Models and save the output raster/vector map
     if args.execute:
         print('\Execute the model to the whole raster map.')
-        mltb.execute(X=X, y=y, best=best,
+        mltb.execute(X=X, y=y, best=best, output_file=args.ofile,
                      transform=transform, untransform=untransform)
 
     print('Finished!')
