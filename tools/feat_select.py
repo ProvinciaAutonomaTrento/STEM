@@ -98,6 +98,10 @@ class STEMToolsDialog(BaseDialog):
 
             meth = str(self.MethodInput.currentText())
 
+            if self.Linedit.text() != "":
+                nfeat = None
+            else:
+                nfeat = int(self.Linedit.text())
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
             else:
@@ -138,7 +142,7 @@ class STEMToolsDialog(BaseDialog):
             # --------------------------------------------------------------
             # Feature selector
             fselector = SSF(strategy=getattr(np, meth),
-                            n_features=int(self.Linedit.text()))
+                            n_features=nfeat)
 
             # ------------------------------------------------------------
             # Transform the input data
