@@ -239,7 +239,8 @@ class BaseDialog(QDialog, baseDialog):
                                                self.horizontalLayout_input2)
         self.label2.setText(self.tr("", label))
 
-    def _insertFileInputOption(self, label, pos=0):
+    def _insertFileInputOption(self, label, pos=0,
+                               filt="LAS file (*.las *.laz)"):
         """Function to add a second output
 
         :param int pos: the position of form in the input layout
@@ -261,7 +262,7 @@ class BaseDialog(QDialog, baseDialog):
         self.labelFO.setText(self.tr("", label))
         self.BrowseButtonInOpt.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonInOpt, SIGNAL("clicked()"),
-                     partial(self.browseInFile, self.TextInOpt))
+                     partial(self.browseInFile, self.TextInOpt, filt))
 
     def _insertLayerChoose(self, pos=2):
         """Function to add a LineEdit Widget for the layers list

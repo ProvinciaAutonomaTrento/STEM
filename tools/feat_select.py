@@ -89,17 +89,10 @@ class STEMToolsDialog(BaseDialog):
                 invect = cut
                 invectsource = cutsource
             inrast = str(self.BaseInput2.currentText())
-            if inrast != "":
-                inrastsource = STEMUtils.getLayersSource(inrast)
 
-                ncolumnschoose = STEMUtils.checkLayers(invectsource, None,
-                                                       False)
-                try:
-                    ncolumnschoose.remove(invectcol)
-                except:
-                    pass
-                prefcsv += "_{n}".format(n=len(ncolumnschoose))
-                com.extend(['--raster', inrastsource])
+            inrastsource = STEMUtils.getLayersSource(inrast)
+
+            com.extend(['--raster', inrastsource])
 
             meth = str(self.MethodInput.currentText())
 
@@ -112,7 +105,7 @@ class STEMToolsDialog(BaseDialog):
                         'accuracy', '--best-strategy', 'mean',
                         '--feature-selection', 'SSF', invectsource, invectcol])
             mltb.set_params(vector_file=invectsource, column=invectcol,
-                            use_columns=ncolumnschoose,
+                            use_columns=None,
                             raster_file=inrastsource,
                             models=None, scoring='accuracy',
                             n_folds=None, n_jobs=1, n_best=1,

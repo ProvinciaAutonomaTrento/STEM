@@ -76,7 +76,7 @@ class STEMToolsDialog(BaseDialog):
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 4)
+        self._insertMethod(mets, self.lm, 4, "Text file (*.txt)")
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
@@ -255,7 +255,7 @@ class STEMToolsDialog(BaseDialog):
                                    "{p}_csvtraining.csv".format(p=prefcsv))
             crosspath = os.path.join(home,
                                      "{p}_csvcross.csv".format(p=prefcsv))
-
+            out = self.TextOut.text()
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
                         '1', '--scoring', 'accuracy', '--models', str(models),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
@@ -383,7 +383,7 @@ class STEMToolsDialog(BaseDialog):
                 log.debug('Test models with an indipendent dataset')
                 testpath = os.path.join(home, "{p}_csvtest_{vect}_{col}."
                                         "csv".format(p=prefcsv,
-                                                     vect=optvectsource,
+                                                     vect=optvect,
                                                      col=optvectcols))
                 bpkpath = os.path.join(home,
                                        "{p}_test_pickle.pkl".format(p=prefcsv))
@@ -397,6 +397,7 @@ class STEMToolsDialog(BaseDialog):
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
                         pkl.dump(best, bpkl)
+                    STEMUtils.copyFile(testpath, out)
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
@@ -411,7 +412,6 @@ class STEMToolsDialog(BaseDialog):
             # execute Models and save the output raster map
             if self.checkbox.isChecked():
                 log.debug('Execute the model to the whole raster map.')
-                out = self.TextOut.text()
                 mltb.execute(best=best, transform=None, untransform=None,
                              output_file=out)
 

@@ -6,6 +6,10 @@ Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo d
 Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N), e (opzionale) l'indicazione delle feature (attributi del vettore) da usare nella classificazione. Se le feature non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster da cui estrarre i valori delle feature.
 L'utente potrà anche inserire un vettoraile da usare nella fase di validazione.
 
+.. warning::
+
+  Ogni classe deve avere un numero di pixel superiore al numero totale di feature. Se questo vincolo non è soddisfatto il classificatore si blocca a acusa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Questo problema si può evitare riducendo il numero di feature o aumentando il numero di campioni.
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/massima_verosimiglianza.png

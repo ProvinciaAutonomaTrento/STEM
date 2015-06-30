@@ -209,7 +209,7 @@ class SSF(object):
         selected features."""
         res = seq_forward_floating_fs(X, y, strategy=self.strategy,
                                       n_features=self.n_features_,
-                                      logfile=self.logfile,
+                                      logging=self.logfile,
                                       verbose=verbose)
         self.n_features_ = max(res.keys())
         self.selected = res[self.n_features_]['features'] - 1
