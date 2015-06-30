@@ -65,17 +65,21 @@ def v2m(arr, id0, id1):
     return arr[x, y].reshape((len(id0), len(id1)))
 
 
-def info(numb_of_features, dist, fs, verbose=False, logging=None):
-    def function(msg):
-        if verbose:
-            print(msg)
-        if logging:
-            logging.info(msg)
+def communicate(msg, verbose=False, logging=None):
+    if verbose:
+        print(msg)
+    if logging:
+        logging.info(msg)
 
-    function("SSF(%d) Feature to select: %d" % (numb_of_features, numb_of_features))
-    function("SSF(%d) Maximum minimum distance: %.4f" % (numb_of_features, dist))
-    function("SSF(%d) Features selected: %r" % (numb_of_features, fs))
-    function("")
+
+def info(numb_of_features, dist, fs, verbose=False, logging=None):
+    communicate("SSF(%d) Feature to select: %d" % (numb_of_features, numb_of_features),
+                verbose, logging)
+    communicate("SSF(%d) Maximum minimum distance: %.4f" % (numb_of_features, dist),
+                verbose, logging)
+    communicate("SSF(%d) Features selected: %r" % (numb_of_features, fs),
+                verbose, logging)
+    communicate("", verbose, logging)
 
 
 def bhat1(f_id, mua, cva, mub, cvb):
@@ -157,7 +161,10 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
                                   for j in range(ncols) if j not in fs])
         dist = np.array([jm(f_id, mu, cv, strategy, classes_comb, bhatN)
                          for f_id in features_comb])
-        if dist.max() is np.NaN:
+
+        if np.isnan(dist.max()):
+            communicate("WARNING: Maximum distance is NaN, exit!", verbose=verbose, logging=logging)
+            info(i, np.nan, fs, verbose, logging)
             return res
 
         idistmax = dist.argmax()
