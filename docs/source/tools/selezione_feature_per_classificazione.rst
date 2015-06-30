@@ -1,11 +1,16 @@
-Selezione feature per la classificazione
+Selezione feature per classificazione
 =========================================
 
 Il modulo esegue la selezione delle feature per la classificazione. La selezione verrà effettuata utilizzando l'algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vi sarà un file di testo con l'indicazione delle feature da utilizzare.
 
+.. warning::
+
+  Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a acusa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato.
+
+
 .. only:: latex
 
-  .. image:: ../_static/tool_images/selezione_feature_per_la_classificazione.png
+  .. image:: ../_static/tool_images/selezione_feature_per_classificazione.png
 
 
 Input
@@ -22,14 +27,14 @@ Parametri
 
 **Selezionare la strategia da utilizzare**:
 
-	* *min*: distanza minima;
-	* *mean*: distanza media;
-	* *median*: distanza mediana.
+	* *min*: distanza di Jeffries-Matusita minima tra le classi;
+	* *mean*: distanza di Jeffries-Matusita media tra le classi;
+	* *median*: distanza di Jeffries-Matusita mediana tra le classi.
 
 Output
 ------------
 
-**Risultato**: inserire il percorso e il nome del file di output.
+**Risultato**: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete l'indicazione della selezione (1) o non selezione (0) delle feature del file di input.
 
 .. only:: latex
 
