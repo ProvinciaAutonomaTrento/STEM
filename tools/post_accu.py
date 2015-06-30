@@ -115,7 +115,7 @@ class STEMToolsDialog(BaseDialog):
 
 #            pdb.set_trace()
 
-            com = ['r.kappa', '-w'
+            com = ['r.kappa', '-w',
                    'classification={name}'.format(name=tempin),
                    'reference={name}'.format(name=tempin2),
                    'output={outname}'.format(outname=self.TextOut.text())]
