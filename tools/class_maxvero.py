@@ -365,7 +365,7 @@ class STEMToolsDialog(BaseDialog):
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')
-
+                STEMUtils.copyFile(crosspath, out)
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))
             else:

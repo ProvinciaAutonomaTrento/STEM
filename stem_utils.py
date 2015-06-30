@@ -479,7 +479,7 @@ class STEMUtils:
             STEMSettings.setValue('stempath', home)
 
     @staticmethod
-    def copyfile(inp, outfile):
+    def copyFile(inp, outfile):
         """Copy a file in the same directory of output file"""
         path = os.path.dirname(outfile)
         if os.path.exists(path):
