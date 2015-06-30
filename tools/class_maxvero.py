@@ -236,7 +236,6 @@ class STEMToolsDialog(BaseDialog):
 
             nodata = -9999
             overwrite = False
-            delimiter = ';'
             # ---------------------------------------------------------------
             # Extract training samples
             log.debug('Extract training samples')
@@ -303,8 +302,8 @@ class STEMToolsDialog(BaseDialog):
                                    "{p}_best_pickle.pkl".format(p=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=None)
-                np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
-                           header=delimiter.join(['id', 'name', 'mean', 'max',
+                np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
+                           header=SEP.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
                 mltb.find_best(models)
                 best = mltb.select_best()
@@ -331,15 +330,17 @@ class STEMToolsDialog(BaseDialog):
             # test Models
             if Xtest is not None and ytest is not None:
                 log.debug('Test models with an indipendent dataset')
-                testpath = os.path.join(home,
-                                        "{p}_csvtest.csv".format(p=prefcsv))
+                testpath = os.path.join(home, "{p}_csvtest_{vect}_{col}."
+                                        "csv".format(p=prefcsv,
+                                                     vect=optvectsource,
+                                                     col=optvectcols))
                 bpkpath = os.path.join(home,
                                        "{p}_test_pickle.pkl".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=None)
-                    np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
-                               header=delimiter.join(test[0].__dict__.keys()))
+                    np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
+                               header=SEP.join(test[0].__dict__.keys()))
                     mltb.find_best(models, strategy=lambda x: x,
                                    key='score_test')
                     best = mltb.select_best()
@@ -366,6 +367,7 @@ class STEMToolsDialog(BaseDialog):
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')
+                STEMUtils.copyFile(crosspath, out)
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))
             else:

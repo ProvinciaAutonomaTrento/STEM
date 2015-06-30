@@ -478,6 +478,13 @@ class STEMUtils:
             os.mkdir(home)
             STEMSettings.setValue('stempath', home)
 
+    @staticmethod
+    def copyFile(inp, outfile):
+        """Copy a file in the same directory of output file"""
+        path = os.path.dirname(outfile)
+        if os.path.exists(path):
+            shutil.copy2(inp, path)
+
 
 class STEMMessageHandler:
     """

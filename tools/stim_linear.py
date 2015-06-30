@@ -30,7 +30,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 from sklearn.svm import SVC
@@ -264,8 +264,6 @@ class STEMToolsDialog(BaseDialog):
 
             nodata = -9999
             overwrite = False
-            delimiter = ';'
-
             # ------------------------------------------------------------
             # Extract training samples
 
@@ -333,8 +331,8 @@ class STEMToolsDialog(BaseDialog):
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
                 cross = mltb.cross_validation(X=X, y=y, transform=transform)
-                np.savetxt(crosspath, cross, delimiter=delimiter, fmt='%s',
-                           header=delimiter.join(['id', 'name', 'mean', 'max',
+                np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
+                           header=SEP.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
                 mltb.find_best(models)
                 best = mltb.select_best()
@@ -361,15 +359,17 @@ class STEMToolsDialog(BaseDialog):
             # test Models
             if Xtest is not None and ytest is not None:
                 log.debug('Test models with an indipendent dataset')
-                testpath = os.path.join(home,
-                                        "{pref}_csvtestmodel.csv".format(pref=prefcsv))
+                testpath = os.path.join(home, "{p}_csvtest_{vect}_{col}."
+                                        "csv".format(p=prefcsv,
+                                                     vect=optvectsource,
+                                                     col=optvectcols))
                 bpkpath = os.path.join(home,
                                        "{pref}_test_pickle.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=transform)
-                    np.savetxt(testpath, test, delimiter=delimiter, fmt='%s',
-                               header=delimiter.join(test[0].__dict__.keys()))
+                    np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
+                               header=SEP.join(test[0].__dict__.keys()))
                     mltb.find_best(models, strategy=lambda x: x,
                                    key='score_test')
                     best = mltb.select_best()
@@ -388,14 +388,17 @@ class STEMToolsDialog(BaseDialog):
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
             if self.checkbox.isChecked():
+                out = self.TextOut.text()
                 log.debug('Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=transform,
-                             untransform=untransform,
-                             output_file=self.TextOut.text())
-
+                mltb.execute(best=best, transform=trasf,
+                             untransform=utrasf, output_file=out)
+                STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
-
+                    STEMUtils.addLayerIntoCanvas(out, 'raster')
+                STEMMessageHandler.success("Il file {name} è stato scritto "
+                                           "correttamente".format(name=out))
+            else:
+                STEMMessageHandler.success("Esecuzione completata")
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
