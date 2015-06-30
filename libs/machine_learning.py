@@ -7,7 +7,8 @@ Authors: Pietro Zambelli
 Date: October 2014
 """
 
-from __future__ import print_function
+from __future__ import (nested_scopes, generators, division, absolute_import,
+                        with_statement, print_function)
 
 # from python standard library
 import gc
@@ -17,6 +18,7 @@ import tempfile
 import random
 import itertools
 from collections import namedtuple
+import logging as log
 
 
 # to check the amount of free memory available for the analisys
@@ -39,7 +41,13 @@ from osgeo import gdal
 from osgeo import ogr
 gdal.UseExceptions()
 
-from stem_utils import STEMLogging
+
+# TODO: use STEMLogging
+log.basicConfig(filename=(os.path.join(
+                              os.path.dirname(
+                                  os.path.abspath(__file__)), 'ml.log')),
+                filemode='w', level=log.DEBUG)
+
 
 SEP = ';'
 NODATA = -9999
@@ -175,7 +183,6 @@ def estimate_best_row_buffer(rast, dtype, memory_factor=1):
     :param factor: factor that reduce the memory consumption: $memory//factor$
     :type dtyype: numeric
     """
-    log = STEMLogging()
     intfactor = 6   # internal factor => further reduction for safety reasons
     nbands = rast.RasterCount
     rows, cols = rast.RasterYSize, rast.RasterXSize
@@ -425,7 +432,6 @@ def apply_models(input_file, output_file, models, X, y, transformations,
     :param y: training classes/values, each row correspond to a pixel.
     :type y: numpy arrax (1D)
     """
-    log = STEMLogging()
     if not isinstance(models, list):
         raise TypeError("models parameter must be a list.")
 
@@ -485,7 +491,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         ifields = ilayer.schema
         icols = columns2indexes(ifields, use_columns)
         limit = 10
-
+        import ipdb; ipdb.set_trace()
         # Create the output Layer
         odriver = ogr.GetDriverByName("ESRI Shapefile")
         # Remove output shapefile if it already exists
