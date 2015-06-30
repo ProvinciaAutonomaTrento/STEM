@@ -491,10 +491,10 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         ifields = ilayer.schema
         icols = columns2indexes(ifields, use_columns)
         limit = 10
-        import ipdb; ipdb.set_trace()
         # Create the output Layer
         odriver = ogr.GetDriverByName("ESRI Shapefile")
         # Remove output shapefile if it already exists
+        print('output_file: %s' % output_file)
         if os.path.exists(output_file):
             odriver.DeleteDataSource(output_file)
         # Create the output shapefile
@@ -511,23 +511,28 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         fchunk = split_in_chunk(olayer)
         for features, data in zip(fchunk, dchunk):
             data = np.array(data)
+            print(data.shape)
             # transform the data consistently before to apply the model
             for trans in transformations:
                 data = trans.transform(data)
 
             for model in models:
                 # apply the model to the data chunk
-                predict = run_model(model, data).astype(dtype=np.uint32)
+                predict = run_model(model, data).astype(int if y.dtype == np.int else float)
                 # if the data were transformed, then traform them back
                 # to original values
                 if untransform is not None:
                     predict = untransform(predict)
-
+                #import ipdb; ipdb.set_trace()
                 col = model['name'][:limit]
-                import ipdb; ipdb.set_trace()
                 for ofeature, value in zip(features, predict):
                     # update feature field
                     ofeature.SetField(col, value)
+                    # TODO: remove after debug from here =>
+                    items = ofeature.items()
+                    vals = [items[c] for c in use_columns] + [value, ]
+                    print(';'.join(['%5.2f' % v for v in vals]))
+                    # until <= here
             # save feature to the new vector map
             for ofeature in features:
                 olayer.CreateFeature(ofeature)
