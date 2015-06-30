@@ -37,7 +37,7 @@ import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), '.txt')
         self.toolName = name
         self.iface = iface
 
@@ -52,8 +52,6 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(label, 0)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
         self.indexChanged()
-        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, None))
         self.label2.setText(self.tr(name, "Input mappa training area (sia raster che vettoriale)"))
         self.label.setText(self.tr(name, "Input mappa classificata"))
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -117,7 +115,7 @@ class STEMToolsDialog(BaseDialog):
 
 #            pdb.set_trace()
 
-            com = ['r.kappa',
+            com = ['r.kappa', '-w'
                    'classification={name}'.format(name=tempin),
                    'reference={name}'.format(name=tempin2),
                    'output={outname}'.format(outname=self.TextOut.text())]
