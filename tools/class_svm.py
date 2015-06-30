@@ -308,7 +308,7 @@ class STEMToolsDialog(BaseDialog):
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
             X = X.astype(float)
-            log.debug('Training sample shape: {val}'.format(X.shape))
+            log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             if fscolumns:
                 X = mltb.data_transform(X=X, y=y, scaler=None,
