@@ -58,6 +58,8 @@ class STEMToolsDialog(BaseDialog):
         mets = ['mean', 'min', 'median']
         self.lm = "Selezione la strategia da utilizzare"
         self._insertMethod(mets, self.lm, 0)
+        labeln = "Numero massimo di feature da selezionare"
+        self. _insertFirstLineEdit(labeln, 1)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.TextOut, '.txt'))
 
@@ -96,6 +98,10 @@ class STEMToolsDialog(BaseDialog):
 
             meth = str(self.MethodInput.currentText())
 
+            if self.Linedit.text() != "":
+                nfeat = None
+            else:
+                nfeat = int(self.Linedit.text())
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
             else:
@@ -119,7 +125,7 @@ class STEMToolsDialog(BaseDialog):
             # ------------------------------------------------------------
             # Extract training samples
             trnpath = os.path.join(home,
-                                   "{pref}_csvtraining.csv".format(pref=prefcsv))
+                                   "{pr}_csvtraining.csv".format(pr=prefcsv))
             log.debug('    From:')
             log.debug('      - vector: %s' % mltb.vector)
             log.debug('      - training column: %s' % mltb.column)
@@ -135,7 +141,8 @@ class STEMToolsDialog(BaseDialog):
 
             # --------------------------------------------------------------
             # Feature selector
-            fselector = SSF(strategy=getattr(np, meth))
+            fselector = SSF(strategy=getattr(np, meth),
+                            n_features=nfeat)
 
             # ------------------------------------------------------------
             # Transform the input data
