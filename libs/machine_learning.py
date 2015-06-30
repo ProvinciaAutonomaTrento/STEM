@@ -523,19 +523,11 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 # to original values
                 if untransform is not None:
                     predict = untransform(predict)
-                #import ipdb; ipdb.set_trace()
                 col = model['name'][:limit]
                 for ofeature, value in zip(features, predict):
                     # update feature field
                     ofeature.SetField(col, value)
-                    # TODO: remove after debug from here =>
-                    items = ofeature.items()
-                    vals = [items[c] for c in use_columns] + [value, ]
-                    print(';'.join(['%5.2f' % v for v in vals]))
-                    # until <= here
-            # save feature to the new vector map
-            for ofeature in features:
-                olayer.CreateFeature(ofeature)
+                    olayer.SetFeature(ofeature)
 
         # Close DataSources
         osrc.Destroy()
