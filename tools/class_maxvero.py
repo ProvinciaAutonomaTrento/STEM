@@ -330,8 +330,10 @@ class STEMToolsDialog(BaseDialog):
             # test Models
             if Xtest is not None and ytest is not None:
                 log.debug('Test models with an indipendent dataset')
-                testpath = os.path.join(home,
-                                        "{p}_csvtest.csv".format(p=prefcsv))
+                testpath = os.path.join(home, "{p}_csvtest_{vect}_{col}."
+                                        "csv".format(p=prefcsv,
+                                                     vect=optvectsource,
+                                                     col=optvectcols))
                 bpkpath = os.path.join(home,
                                        "{p}_test_pickle.pkl".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
