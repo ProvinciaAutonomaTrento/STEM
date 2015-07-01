@@ -68,7 +68,7 @@ class BaseDialog(QDialog, baseDialog):
 
     :param str title: the name of the tool
     """
-    def __init__(self, title, parent=None):
+    def __init__(self, title, parent=None, suffix='.tif'):
         QDialog.__init__(self, parent)
         self.dialog = baseDialog
         self.setAttribute(Qt.WA_DeleteOnClose)
@@ -87,7 +87,7 @@ class BaseDialog(QDialog, baseDialog):
         # self.connect(self.buttonBox, SIGNAL("accepted()"), self._accept)
         self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut))
+                     partial(self.BrowseDir, self.TextOut, suffix))
         # self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
         self.toolname = title

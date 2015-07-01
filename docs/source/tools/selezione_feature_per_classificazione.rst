@@ -5,7 +5,7 @@ Il modulo esegue la selezione delle feature per la classificazione. La selezione
 
 .. warning::
 
-  Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a acusa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato.
+  Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a causa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Il modulo da comunque in output la selezione con un numero di bande non ottimale.
 
 
 .. only:: latex
@@ -25,13 +25,13 @@ Input
 Parametri
 ------------
 
-**Numero massimo di feature da selezionare**: numero massimo di feature da selezionare.
-
 **Selezionare la strategia da utilizzare**:
 
 	* *min*: distanza di Jeffries-Matusita minima tra le classi;
 	* *mean*: distanza di Jeffries-Matusita media tra le classi;
 	* *median*: distanza di Jeffries-Matusita mediana tra le classi.
+
+**Numero massimo di feature da selezionare**: numero massimo di feature da selezionare. Se il campo rimane vuoto viene usato il numero totale di bande meno 1.
 
 Output
 ------------
