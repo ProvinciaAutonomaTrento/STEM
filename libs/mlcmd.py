@@ -217,12 +217,25 @@ def get_parser():
                         dest='nodata',
                         help='Name of the columns containing the data that '
                              'will be used instad of the raster input map.')
+    parser.add_argument('--memory-factor', type=float, dest='memory',
+                        default=1.,
+                        help='Memory factor to reduce the memory consumption')
+    parser.add_argument('--log', type=str, dest='log',
+                        help='Log file with features data selection log')
     return parser
 
 
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
+
+    if args.log:
+        import logging
+
+        logging.basicConfig(filename=args.log, filemode='w',
+                            level=logging.DEBUG)
+    else:
+        logging = None
 
     if args.odir and not os.path.isdir(args.odir):
         os.mkdir(args.odir)
@@ -244,8 +257,8 @@ if __name__ == "__main__":
 
     # =======================================================================
     # Instantiate the class
-    mltb = MLToolBox(vector_file=args.vector, column=args.column,
-                     use_columns=args.use_columns, raster_file=args.raster,
+    mltb = MLToolBox(vector=args.vector, column=args.column,
+                     use_columns=args.use_columns, raster=args.raster,
                      models=models, scoring=args.scoring,
                      n_folds=args.n_folds, n_jobs=args.n_jobs,
                      n_best=args.n_best, nodata=args.nodata,
@@ -253,7 +266,8 @@ if __name__ == "__main__":
                      traster=args.traster,
                      best_strategy=getattr(np, args.best_strategy),
                      scaler=None, fselector=None, decomposer=None,
-                     transform=None, untransform=None)
+                     transform=None, untransform=None,
+                     memory_factor=args.memory, logging=logging)
 
     # -----------------------------------------------------------------------
     # Extract training samples

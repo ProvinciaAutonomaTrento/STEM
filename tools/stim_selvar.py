@@ -132,9 +132,9 @@ class STEMToolsDialog(BaseDialog):
             else:
                 import Pyro4
                 mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
-            mltb.set_params(vector_file=invectsource, column=invectcol,
+            mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
-                            raster_file=inrastsource, models=None,
+                            raster=inrastsource, models=None,
                             scoring='accuracy', n_folds=None, n_jobs=1,
                             n_best=1, tvector=None, tcolumn=None,
                             traster=None, best_strategy=getattr(np, 'mean'),

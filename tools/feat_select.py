@@ -110,7 +110,7 @@ class STEMToolsDialog(BaseDialog):
             com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
                         'accuracy', '--best-strategy', 'mean',
                         '--feature-selection', 'SSF', invectsource, invectcol])
-            mltb.set_params(vector_file=invectsource, column=invectcol,
+            mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
                             raster_file=inrastsource,
                             models=None, scoring='accuracy',

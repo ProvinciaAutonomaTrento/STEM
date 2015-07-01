@@ -18,8 +18,8 @@ import tempfile
 import random
 import itertools
 from collections import namedtuple
-import logging as log
-
+import logging as logg
+from pprint import pformat
 
 # to check the amount of free memory available for the analisys
 import psutil
@@ -40,13 +40,6 @@ from pyro_stem import PYROSERVER, ML_PORT
 from osgeo import gdal
 from osgeo import ogr
 gdal.UseExceptions()
-
-
-# TODO: use STEMLogging
-log.basicConfig(filename=(os.path.join(
-                              os.path.dirname(
-                                  os.path.abspath(__file__)), 'ml.log')),
-                filemode='w', level=log.DEBUG)
 
 
 SEP = ';'
@@ -172,7 +165,7 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     return rast
 
 
-def estimate_best_row_buffer(rast, dtype, memory_factor=1):
+def estimate_best_row_buffer(rast, dtype, memory_factor=1, logging=None):
     """Estimates the best number of rows to use the system.
     Return the number of rows.
 
@@ -192,9 +185,10 @@ def estimate_best_row_buffer(rast, dtype, memory_factor=1):
     if onerow * intfactor > mem.free:
         raise MemoryError("Not possible to allocate enough memory")
     brows = int(mem.free // onerow // intfactor // memory_factor)
-    log.debug('memory factors: %f' % float(memory_factor))
-    log.debug('raster rows: %d, cols: %d' % (rows, cols))
-    log.debug('free memory: %d, nbytes per row %d, bufferrows: %d, memory used per chunk: %d' % (mem.free, onerow, brows, onerow * brows))
+    if logging:
+        logging.debug('memory factors: %f' % float(memory_factor))
+        logging.debug('raster rows: %d, cols: %d' % (rows, cols))
+        logging.debug('free memory: %d, nbytes per row %d, bufferrows: %d, memory used per chunk: %d' % (mem.free, onerow, brows, onerow * brows))
     return rows if brows > rows else brows
 
 
@@ -247,7 +241,7 @@ def get_cv(y, n_folds=5):
 def cross_val_model(model, X, y,
                     cv=None, n_folds=5, n_jobs=5,
                     scoring=None,
-                    verbose=0, ):
+                    verbose=0, logging=None):
     cv = get_cv(y, n_folds) if cv is None else cv
 
     start = time.time()
@@ -259,19 +253,28 @@ def cross_val_model(model, X, y,
     model['score_time'] = scoretime
     vals = CVResult(model.get('index', 1), model['name'], scores.mean(),
                     scores.max(), scores.min(), scores.std(), scoretime)
+    if logging:
+        msg = '\ncross_val_model:\n    model: {}\n    result: {}'
+        logging.debug(msg.format(pformat(model), vals))
     return vals
 
 
-def test_model(model, Xtraining, ytraining, Xtest, ytest, scoring=None):
+def test_model(model, Xtraining, ytraining, Xtest, ytest, scoring=None,
+               logging=None):
     model['mod'] = model['model'](**model.get('kwargs', {}))
     model['mod'].fit(Xtraining, ytraining)
     scorer = check_scoring(model['mod'], scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
     print(model['name'], model['score_test'])
-    return TestResult(model.get('index', 1), model['name'], model['score_test'])
+    test = TestResult(model.get('index', 1), model['name'],
+                      model['score_test'])
+    if logging:
+        msg = '\ntest_model:\n    model: {}\n    result: {}'
+        logging.debug(msg.format(pformat(model), test))
+    return test
 
 
-def find_best(models, strategy=np.mean, key='scores'):
+def find_best(models, strategy=np.mean, key='scores', logging=None):
     """Return a tuple with the order of the best model and a dictionary with
     the models parameters.
 
@@ -287,6 +290,9 @@ def find_best(models, strategy=np.mean, key='scores'):
             mods[mkey] = sval
             best[mkey] = m
     order = sorted([(v, k) for k, v in mods.items()], reverse=True)
+    if logging:
+        msg = '\nfind_best:\n    order: {}\n    best: {}'
+        logging.debug(msg.format(order, pformat(best)))
     return order, best
 
 
@@ -344,7 +350,7 @@ def extract_vector_fields(layer, icols):
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
                      use_columns=None, delimiter=SEP, nodata=None,
-                     dtype=np.uint32):
+                     dtype=np.uint32, logging=None):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
 
@@ -365,6 +371,9 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
     :return: A tuple with two array: X and y
     """
     if raster_file:
+        if logging:
+            msg = 'extract_trining: raster_file={}, vector_file={}, column={}'
+            logging.debug(msg.format(raster_file, vector_file, column))
         rast = read_raster(raster_file)
         band = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue() if nodata is None else nodata
@@ -388,6 +397,9 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         os.remove(tmp_file)
         gc.collect()  # force to free memory of unreferenced objects
     else:
+        if logging:
+            msg = 'extract_trining: vector_file={}, column={}'
+            logging.debug(msg.format(vector_file, column))
         vect = ogr.Open(vector_file)
         layer = vect.GetLayer()
         fields = layer.schema
@@ -398,22 +410,31 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         data = np.concatenate((dt.T, training[None, :]), axis=0).T
         header = delimiter.join([fields[i].name for i in icols] + [column, ])
         vect = None
+    if logging:
+        msg = 'extract_trining: csv_file={}, delimiter={}, header={}'
+        logging.debug(msg.format(csv_file, delimiter, header))
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
     return data[:, :-1].astype(float), data[:, -1]  # X, y
 
 
-def run_model(model, data):
+def run_model(model, data, logging=None):
     """Execute the model and return the predicted data"""
     print('data shape:', data.shape)
     start = time.time()
-    model['predict'] = model['mod'].predict(data)
+    predict = model['mod'].predict(data)
+    model['predict'] = predict
     model['execution_time'] += time.time() - start
-    return model['predict']
+    if logging:
+        msg = 'run_model: data: dtype={}, shape={}'
+        logging.debug(msg.format(data.dtype, data.shape))
+        msg = 'run_model: predict: dtype={}, shape={}'
+        logging.debug(msg.format(predict.dtype, predict.shape))
+    return predict
 
 
 def apply_models(input_file, output_file, models, X, y, transformations,
                  transform=None, untransform=None, use_columns=None,
-                 memory_factor=1.):
+                 memory_factor=1., logging=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -444,7 +465,9 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         start = time.time()
         model['mod'].fit(X, y)
         model['training_time'] = time.time() - start
-        log.debug("trained: %s [%.2fs]" % (model['name'], model['training_time']))
+        if logging:
+            msg = "apply_models:trained: %s [%.2fs]"
+            logging.debug(msg % (model['name'], model['training_time']))
         model['execution_time'] = 0.
 
     if use_columns is None:
@@ -456,16 +479,20 @@ def apply_models(input_file, output_file, models, X, y, transformations,
             model['out'] = empty_rast(output_file.format(model['name']), rast)
             model['band'] = model['out'].GetRasterBand(1)
         rxsize, rysize = rast.RasterXSize, rast.RasterYSize
-        brows = estimate_best_row_buffer(rast, np.float32, memory_factor)
+        brows = estimate_best_row_buffer(rast, np.float32, memory_factor,
+                                         logging=logging)
         # compute the number of chunks
         nchunks = rysize // brows + (1 if rysize % brows else 0)
-        log.debug('raster rows: %d, cols: %d' % (rysize, rxsize))
-        log.debug('number of chunks: %d (buffer of rows: %d)' % (nchunks, brows))
+        if logging:
+            logging.debug('apply_models: use_columns is None')
+            logging.debug('apply_models:raster rows: %d, cols: %d' % (rysize,
+                                                                      rxsize))
+            logging.debug(('apply_models:number of chunks: %d '
+                           '(buffer of rows: %d)') % (nchunks, brows))
         # TODO: fix read_chunks to read and use only the selected
         # features and not all bands
         for chunk, data in enumerate(read_chunks(rast, nchunks, brows)):
             # trasform input data following the users options
-            log.debug('data shape: {}'.format(data.shape))
             for trans in transformations:
                 data = trans.transform(data)
 
@@ -474,12 +501,16 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 yoff = chunk * brows
                 ysize = brows if chunk < (nchunks - 1) else rysize - yoff
                 # predict
-                predict = run_model(model, data).astype(dtype=np.uint32)
+                predict = run_model(model, data, logging=logging
+                                    ).astype(dtype=np.uint32)
                 if untransform is not None:
                     predict = untransform(predict)
                 # write_chunk(band, data, yoff, rxsize, ysize)
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
+
+        if logging:
+            logging.debug('apply_models: closing data sources')
 
         # Close DataSources
         for model in models:
@@ -491,10 +522,13 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         ifields = ilayer.schema
         icols = columns2indexes(ifields, use_columns)
         limit = 10
+        if logging:
+            logging.debug('apply_models: use_columns={}'.format(use_columns))
+            logging.debug('apply_models: input_file={}'.format(input_file))
+            logging.debug('apply_models: output_file={}'.format(output_file))
         # Create the output Layer
         odriver = ogr.GetDriverByName("ESRI Shapefile")
         # Remove output shapefile if it already exists
-        print('output_file: %s' % output_file)
         if os.path.exists(output_file):
             odriver.DeleteDataSource(output_file)
         # Create the output shapefile
@@ -504,29 +538,38 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         # Add a new field for each model to the output layer
         ofieldtype = ogr.OFTInteger if y.dtype == np.int else ogr.OFTReal
         for model in models:
-            olayer.CreateField(ogr.FieldDefn(model['name'][:limit], ofieldtype))
+            model['field'] = model.get('field',
+                                       (model['name'][:limit]
+                                        if len(model['name']) > limit else
+                                        model['name']))
+            if logging:
+                logging.debug(('apply_models: create field: {}'
+                               ).format(model['field']))
+            olayer.CreateField(ogr.FieldDefn(model['field'], ofieldtype))
 
         # read the vector input data and features splitted in chunksS
         dchunk = split_in_chunk(extract_vector_fields(olayer, icols))
         fchunk = split_in_chunk(olayer)
         for features, data in zip(fchunk, dchunk):
             data = np.array(data)
-            print(data.shape)
+            if logging:
+                logging.debug(('apply_models: chunk shape: {}'
+                               ).format(data.shape))
             # transform the data consistently before to apply the model
             for trans in transformations:
                 data = trans.transform(data)
 
             for model in models:
                 # apply the model to the data chunk
-                predict = run_model(model, data).astype(int if y.dtype == np.int else float)
+                predict = run_model(model, data, logging=logging
+                                    ).astype(int if y.dtype == np.int else float)
                 # if the data were transformed, then traform them back
                 # to original values
                 if untransform is not None:
                     predict = untransform(predict)
-                col = model['name'][:limit]
                 for ofeature, value in zip(features, predict):
                     # update feature field
-                    ofeature.SetField(col, value)
+                    ofeature.SetField(model['field'], value)
                     olayer.SetFeature(ofeature)
 
         # Close DataSources
@@ -545,14 +588,15 @@ class MLToolBox(object):
         # set values
         self.set_params(*args, **kwargs)
 
-    def set_params(self, raster_file=None, vector_file=None, column=None,
+    def set_params(self, raster=None, vector=None, column=None,
                    use_columns=None,
-                   output_file='{0}', models=None, training_csv=None,
+                   output='{0}', models=None, training_csv=None,
                    scoring=None, nodata=NODATA,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
-                   transform=None, untransform=None, memory_factor=20.):
+                   transform=None, untransform=None, memory_factor=20.,
+                   logging=None):
         """Method to set class attributes, the attributes are:
 
         :param raster_file: Raster file with the pixel bands to be classified.
@@ -609,9 +653,9 @@ class MLToolBox(object):
         """
         self.X = None
         self.y = None
-        self.raster = raster_file
-        self.vector = vector_file
-        self.output = output_file
+        self.raster = raster
+        self.vector = vector
+        self.output = output
         self.column = column
         self.use_columns = use_columns
         self.training_csv = training_csv
@@ -632,18 +676,30 @@ class MLToolBox(object):
         self.transform = transform
         self.untransform = untransform
         self.memory_factor = memory_factor
+        self.logging = logging if logging else logg
+        self._attributes = ('raster', 'vector',
+                            'output', 'column',
+                            'training_csv', 'models',
+                            'scoring', 'nodata',
+                            'n_folds', 'n_jobs', 'n_best',
+                            'tvector', 'tcolumn', 'traster',
+                            'test_csv', 'scaler',
+                            'fselector', 'decomposer',
+                            'transform', 'untransform',
+                            'memory_factor', 'logging')
+        if self.logging:
+            msg = 'MLToolBox.set_params({})'
+            params = self.get_params()
+            par = ', '.join(['{}={}'.format(k, params[k])
+                             for k in self._attributes])
+            self.logging.debug(msg.format(par))
 
     def get_params(self):
-        keys = ('raster_file', 'vector_file', 'output_file', 'column',
-                'training_csv', 'models', 'scoring', 'nodata',
-                'n_folds', 'n_jobs', 'n_best', 'tvector', 'tcolumn', 'traster',
-                'test_csv', 'scaler', 'fselector', 'decomposer',
-                'transform', 'untransform', 'memory_factor')
-        return {key: getattr(self, key) for key in keys}
+        return {key: getattr(self, key) for key in self._attributes}
 
     def extract_training(self, vector_file=None, column=None, use_columns=None,
                          csv_file=None, raster_file=None, delimiter=SEP,
-                         nodata=None, dtype=np.uint32):
+                         nodata=None, dtype=np.uint32, logging=None):
         """Return the data and classes array for the training, and save them on
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
@@ -669,6 +725,7 @@ class MLToolBox(object):
         self.raster = self.raster if raster_file is None else raster_file
         self.vector = self.vector if vector_file is None else vector_file
         self.column = self.column if column is None else column
+        self.logging = logging if logging else self.logging
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
         self.training_csv = self.training_csv if csv_file is None else csv_file
@@ -679,12 +736,12 @@ class MLToolBox(object):
                                           csv_file=self.training_csv,
                                           raster_file=self.raster,
                                           delimiter=delimiter, nodata=nodata,
-                                          dtype=dtype)
+                                          dtype=dtype, logging=self.logging)
         return self.X, self.y
 
     def extract_test(self, vector_file=None, column=None, use_columns=None,
                      csv_file=None, raster_file=None, delimiter=SEP,
-                     nodata=None, dtype=np.uint32):
+                     nodata=None, dtype=np.uint32, logging=None):
         """Return the data and classes array for testing and save them on
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
@@ -715,6 +772,7 @@ class MLToolBox(object):
                             else use_columns)
         self.test_csv = self.test_csv if csv_file is None else csv_file
         self.nodata = nodata
+        self.logging = logging if logging else self.logging
         self.Xtest, self.ytest = extract_training(vector_file=self.tvector,
                                                   column=self.tcolumn,
                                                   use_columns=self.use_columns,
@@ -727,7 +785,7 @@ class MLToolBox(object):
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
                        decomposer=None, trans=None, fscolumns=None,
-                       fsfile=None, fsfit=False):
+                       fsfile=None, fsfit=False, logging=None):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
@@ -770,6 +828,7 @@ class MLToolBox(object):
         X = self.X if X is None else X
         y = self.y if y is None else y
         fsfit = fsfit if fsfit else self.fsfit
+        self.logging = logging if logging else self.logging
         Xt = X
         if trans is None:
             self.scaler = scaler if scaler else self.scaler
@@ -798,12 +857,16 @@ class MLToolBox(object):
                     self._trans.append(self.decomposer)
         else:
             self._trans = trans
+        self.logging.debug(('MLToolBox:data_transform:self._trans: {}'
+                            ).format(self._trans))
 
         # apply transformation to the data
         for transform in self._trans:
             Xt = transform.transform(X)
 
         if fsfile is not None:
+            self.logging.debug(('MLToolBox:data_transform:fsfile: {}'
+                                ).format(fsfile))
             try:
                 np.savetxt(fsfile, self.fselector.support_)
             except AttributeError:
@@ -816,7 +879,7 @@ class MLToolBox(object):
                          scoring=None,
                          n_folds=None, n_jobs=None, cv=None,
                          transform=None, verbose=True,
-                         fmt=None):
+                         fmt=None, logging=None):
         """Return a numpy array with the scoring results for each model.
 
         :param models: List of dictionaries, see classifiers.py and
@@ -853,19 +916,20 @@ class MLToolBox(object):
         self.n_folds = n_folds if n_folds else self.n_folds
         self.n_jobs = n_jobs if n_jobs else self.n_jobs
         self.cv = cv if cv else get_cv(y, n_folds=self.n_folds)
+        self.logging = logging if logging else self.logging
         res = []
         info = (cvbar(len(self.models), fill='#', empty='-', barsize=30)
                 if verbose else lambda x, y: '')
         print('\n' * 3)
         for i, mod in enumerate(self.models):
             cross = cross_val_model(mod, X, y, self.cv, n_jobs=self.n_jobs,
-                                    scoring=self.scoring)
+                                    scoring=self.scoring, logging=self.logging)
             res.append(cross)
             info(i, cross)
         return np.array(res)
 
     def test(self, Xtest, ytest, models=None, X=None, y=None,
-             scoring=None, transform=None):
+             scoring=None, transform=None, logging=None):
         """Return a list with the score for each model.
 
         :param Xtest: It is a 2D array with the test data.
@@ -904,7 +968,9 @@ class MLToolBox(object):
         #Xtest = self.data_transform(X=Xtest, y=ytest)
         self.scoring = self.scoring if scoring is None else scoring
         self.models = self.models if models is None else models
-        return [test_model(model, X, y, Xtest, ytest, scoring=self.scoring)
+        self.logging = logging if logging else self.logging
+        return [test_model(model, X, y, Xtest, ytest, scoring=self.scoring,
+                           logging=self.logging)
                 for model in self.models]
 
     def select_best(self, n_best=None, best=None, order=None):
@@ -918,26 +984,29 @@ class MLToolBox(object):
                      if n_best > 0 or n_best < len(order) else order)]
         return [self.best[b] for b in best_mods]
 
-    def find_best(self, models=None, strategy=None, key='scores'):
+    def find_best(self, models=None, strategy=None, key='scores',
+                  logging=None):
         """Return a list of tuple ``(score, key)`` and a dictionary
         with ``{key: model}``.
         """
         self.models = self.models if models is None else models
         self.best_strategy = (self.best_strategy if strategy is None
                               else strategy)
+        self.logging = logging if logging else self.logging
         self.order, self.best = find_best(self.models,
                                           strategy=self.best_strategy,
-                                          key=key)
+                                          key=key, logging=self.logging)
         return self.order, self.best
 
     def execute(self, input_file=None, output_file=None,
                 best=None, X=None, y=None, trans=None,
                 transform=None, untransform=None,
-                use_columns=None, memory_factor=None):
+                use_columns=None, memory_factor=None, logging=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
+        self.logging = logging if logging else self.logging
         if self.use_columns is None:
             input_file = self.raster if input_file is None else input_file
         else:
@@ -954,7 +1023,7 @@ class MLToolBox(object):
         apply_models(input_file, self.output, best, X, y, self._trans,
                      transform=self.transform, untransform=self.untransform,
                      memory_factor=self.memory_factor,
-                     use_columns=self.use_columns)
+                     use_columns=self.use_columns, logging=self.logging)
 
 
 def get_parser():
