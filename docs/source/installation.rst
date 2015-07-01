@@ -17,11 +17,46 @@ si possono installare tramite `pip`_
 Installazione su Windows
 ----------------------------------------
 
-Usare `OSGeo4W`_ per installare i pacchetti necessari, scegliere
-``Installazione avanzata`` nella prima schermata e poi selezionare i
-pacchetti di `GRASS GIS 7`_, `GDAL`_, `numpy`_, `scikit-learn`_, `pip`_.
+**STEP1**: installazione qgis e dipendenze:
 
-Tramite `pip`_ installare `psutil`_, `Pyro4`_ e aggiornare `scikit-learn`_.
+	1.	download eseguibile OSGeo4W dal sito: http://trac.osgeo.org/osgeo4w/. Scaricare la versione a 32bit!
+	2.	lanciare l’eseguibile di OSGeo4W come amministartore;
+	3.	scegliere “Advanced Install” e cliccare su “Next”;
+	4.	scegliere “Install from Internet” e cliccare su “Next”;
+	5.	mantenere le opzioni di default e cliccare su “Next”;
+	6.	mantenere le opzioni di default e cliccare su “Next”;
+	7.	mantenere le opzioni di default e cliccare su “Next”;
+	8.	selezionare il sito da cui fare il download (dovrebe gia’ essere selezionato) e cliccare su “Next”;
+	9.	selezionare i pacchetti da installare:
+		a.	Qgis;
+		b.	grass 7.0;
+		c.	scipy;
+		d.	numpy;
+		e.	scikit-learn;
+	10.	una volta scelti cliccare su “Next”;
+	11.	a questo punto OSGeo4W installera’ i pacchetti necessari. Al termine uscire.
+
+
+**STEP2**: installazione di pip:
+
+	1.	dal sito https://pip.pypa.io/en/latest/installing.html scaricare “get-pip.py”;
+	2.	aprire la Shell OSGeo4W in modalità amministratore;
+	3.	dalla shell andare nella cartella in cui si e’ salvato “get-pip.py”;
+	4.	digitare il comando: “python get-pip.py”;
+	5.	se va a buon fine, digitare poi il comando: “pip install -U setuptools”.
+
+
+**STEP3**: installazione delle librerie:
+
+	1.	aprire la Shell OSGeo4W in modalità amministratore.
+	2.	installare “psutil” digitando il comando: “pip install psutil --upgrade”;
+	3.	installare “numpy” digitando il comando: “pip install numpy --upgrade”;
+	4.	installare “scipy” digitando il comando: “pip install scipy --upgrade”;
+	5.	installare “scikit-learn” digitando il comando: “pip install scikit-learn --upgrade”.
+
+
+**STEP4**: copiare la cartella del plug-in STEM nella cartella dei plugin di Qgis. Esempio: “C:\\Users\\Angelo\\.qgis2\\python\\plugins”.
+
 
 Risoluzione dei problemi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
