@@ -419,7 +419,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
 
 def run_model(model, data, logging=None):
     """Execute the model and return the predicted data"""
-    print('data shape:', data.shape)
+    print('data shape: {val}'.format(val=data.shape))
     start = time.time()
     predict = model['mod'].predict(data)
     model['predict'] = predict
