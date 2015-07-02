@@ -23,10 +23,9 @@ __revision__ = '$Format:%H$'
 import os
 import sys
 import subprocess
-import itertools
 from pyro_stem import PYROSERVER, GRASS_PORT
 from stem_base_dialogs import inverse_mask
-from stem_utils import STEMMessageHandler, STEMSettings
+from stem_utils import STEMSettings
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -115,18 +114,7 @@ class stemGRASS():
         self.mapsetpath = None
 
     def initialize(self, pid, grassdatabase, location, grassbin, epsg):
-#        s = QSettings()
-#        # query GRASS 7 itself for its GISBASE
-#        # we assume that GRASS GIS' start script is available and in the PATH
-#        if not grassbin:
-#            grassbin = str(s.value("stem/grasspath", ""))
-#        if not grassdatabase:
-#            grassdatabase = str(s.value("stem/grassdata", ""))
-#        if not location:
-#            location = str(s.value("stem/grasslocation", ""))
         startcmd = [grassbin, '--config', 'path']
-        #p = subprocess.Popen(startcmd, shell=True, stdin=subprocess.PIPE,
-        #                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p = subprocess.Popen(startcmd, shell=False, stdin=PIPE,
                              stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
@@ -168,10 +156,6 @@ class stemGRASS():
             p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-#            from PyQt4.QtCore import *
-#            import pdb
-#            pyqtRemoveInputHook()
-#            pdb.set_trace()
             if p.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Creazione della location fallita")
@@ -235,7 +219,6 @@ class stemGRASS():
                                 "Errore eseguendo r.mask {e}".format(e=err))
         else:
             name = '_'.join(os.path.split(mask)[-1].split('.')[:-1])
-            #vecs = list(itertools.chain(gcore.list_grouped('vect').values()))
             com = ['r.mask', 'vector={ma}'.format(ma=name)]
             vecs = self.list_maps('vector')
             inv_mask = inverse_mask()
@@ -258,7 +241,6 @@ class stemGRASS():
                                     "Errore eseguendo r.mask {e}".format(e=err))
             else:
                 rasts = self.list_maps('raster')
-                #rasts = list(itertools.chain(*gcore.list_grouped('rast').values()))
                 if 'MASK' not in rasts:
                     runcom = gcore.Popen(com,
                                          stdin=PIPE, stdout=PIPE, stderr=PIPE)
