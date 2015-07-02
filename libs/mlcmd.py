@@ -229,6 +229,8 @@ if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
 
+    best = None
+
     if args.log:
         import logging
 
@@ -423,6 +425,10 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------
     # execute Models and save the output raster/vector map
     if args.execute:
+        if best is None:
+            order, models = mltb.find_best(models, strategy=lambda x: x, key='score')
+            best = mltb.select_best(best=models)
+
         print('\Execute the model to the whole raster map.')
         mltb.execute(X=X, y=y, best=best, output_file=args.ofile,
                      transform=transform, untransform=untransform)
