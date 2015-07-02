@@ -280,9 +280,17 @@ def find_best(models, strategy=np.mean, key='scores', logging=None):
 
     :return: ([(score0, key0), (score1, key1), ...], {key0: Model0, key1: Model1})
     """
+    best = {}
+    if len(models) == 1:
+        if logging:
+            logging.debug('find_best models: len(models) == 1')
+        sval = strategy(models[0].get(key, np.zeros((2, ))))
+        mkey = models[0]['model'].__name__
+        best[mkey] = models[0]
+        return [(sval, mkey), ], best
+
     val = min([strategy(m[key]) for m in models])
     mods = {m.__name__: val for m in set(model['model'] for model in models)}
-    best = {}
     for m in models:
         sval = strategy(m[key])
         mkey = m['model'].__name__
