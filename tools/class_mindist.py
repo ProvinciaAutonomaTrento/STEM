@@ -325,6 +325,7 @@ class STEMToolsDialog(BaseDialog):
 
             # ---------------------------------------------------------------
             # Cross Models
+            best = None
             if self.checkbox2.isChecked():
                 log.debug('Cross-validation of the models')
 

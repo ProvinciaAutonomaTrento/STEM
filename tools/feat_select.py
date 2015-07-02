@@ -112,7 +112,7 @@ class STEMToolsDialog(BaseDialog):
                         '--feature-selection', 'SSF', invectsource, invectcol])
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
-                            raster_file=inrastsource,
+                            raster=inrastsource,
                             models=None, scoring='accuracy',
                             n_folds=None, n_jobs=1, n_best=1,
                             tvector=None, tcolumn=None, traster=None,
