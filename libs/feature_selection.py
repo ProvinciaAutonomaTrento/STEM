@@ -212,9 +212,13 @@ class SSF(object):
                                           n_features=self.n_features_,
                                           logging=self.logfile,
                                           verbose=verbose)
-        except:
-            raise Exception("Problem with Sequential Forward Floating Feature"
-                            " Selection")
+        except Exception as exc:
+            if self.logging:
+                msg = 'seq_forward_floating_fs raise {}'
+                logging.exception(msg.format(repr(exc)))
+            raise RuntimeError("Problem with the execution of the "
+                               "Sequential Forward Floating Feature"
+                               " Selection")
         self.n_features_ = max(res.keys())
         self.selected = res[self.n_features_]['features'] - 1
         #rank = np.empty((self.n_features_, ))
