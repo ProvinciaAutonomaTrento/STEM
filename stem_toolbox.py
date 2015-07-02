@@ -66,18 +66,20 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                                    }],
          ("5", "Post-classificazione"): [{
                                          ("0", "Attribuzione/modifica classi tematiche"): "clas_mod",
-                                         ("1", "Filtro maggioranza"): "error_reduction"
+                                         ("1", "Filtro maggioranza"): "error_reduction",
+                                         ("2", "Metriche di accuratezza"): "post_accu",
                                          }],
          ("6", "Stima di parametri"): [{
                                        ("1", "Stima volume con formule allometriche"): "calc_vol",
                                        ("2", "Stimatore lineare"): "stim_linear",
                                        ("3", "Support Vector Regression"): "stim_svr"
                                        }],
-         ("7", "Post-elaborazione stima"): [{
+         ("7", "Post-elaborazione"): [{
                                             ("0", "Aggregazione ad aree"): "post_aggraree",
-                                            ("1", "Metriche di accuratezza"): "post_accu",
+                                            ##("1", "Metriche di accuratezza"): "post_accu",
                                             ##("2", "K-fold cross validation"): "post_kfold",
-                                            ("2", "Statistiche"): "post_stats"
+                                            ("1", "Statistiche singolo raster"): "post_stats",
+                                            ("2", "Statistiche su due raster"): "post_stats2"
                                             }],
          ("8", "Struttura bosco"): [{("0", "Struttura bosco"): "bosco"}]
          }
