@@ -196,7 +196,15 @@ class STEMUtils:
                     else:
                         itemlist.append(str(item.text()))
             if len(itemlist) == 0:
-                return STEMUtils.getNumSubset(inmap)
+                try:
+                    return STEMUtils.getNumSubset(inmap)
+                except:
+                    for i in range(form.count()):
+                        item = form.model().item(i)
+                        if index:
+                            itemlist.append(str(i + 1))
+                        else:
+                            itemlist.append(str(item.text()))
             return itemlist
         elif isinstance(form, QComboBox):
             first = form.itemText(0)
