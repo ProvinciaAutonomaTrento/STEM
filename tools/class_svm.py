@@ -281,6 +281,8 @@ class STEMToolsDialog(BaseDialog):
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
                 com.extend(['-e', '--output-raster-name', self.TextOut.text()])
+            log.debug(' '.join(com))
+            STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
             else:
