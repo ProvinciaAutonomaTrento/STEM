@@ -169,7 +169,7 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "lin_{vect}_{col}".format(vect=invect, col=invectcol)
+            prefcsv = "stimlin_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -238,15 +238,23 @@ class STEMToolsDialog(BaseDialog):
                                    "{p}_csvtraining.csv".format(p=prefcsv))
             crosspath = os.path.join(home,
                                      "{p}_csvcross.csv".format(p=prefcsv))
-            out = self.TextOut.text()
+            out = str(self.TextOut.text())
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
-                        '1', '--scoring', 'accuracy', '--models', str(model),
+                        '1', '--scoring', scor, '--models', str(model),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
             if ncolumnschoose:
-                com.extend(['-u', ncolumnschoose])
+                com.extend(['-u', ' '.join(ncolumnschoose)])
             if self.checkbox.isChecked():
-                com.extend(['-e', '--output-raster-name', self.TextOut.text()])
+                if inrast != "":
+                    com.extend(['-e', '--output-raster-name',
+                                self.TextOut.text()])
+                    outtype = 'raster'
+                else:
+                    com.extend(['-e', '--output-file', self.TextOut.text()])
+                    outtype = 'vector'
+            log.debug(' '.join(com))
+            STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
             else:
@@ -283,7 +291,7 @@ class STEMToolsDialog(BaseDialog):
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
             X = X.astype(float)
-            log.debug('Training sample shape:', X.shape)
+            log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             # ------------------------------------------------------------
             # Transform the input data
@@ -294,6 +302,7 @@ class STEMToolsDialog(BaseDialog):
 
             # ----------------------------------------------------------------
             # Extract test samples
+            Xtest, ytest = None, None
             log.debug('Extract test samples')
             if mltb.tvector and mltb.tcolumn:
                 # extract_training(vector_file, column, csv_file, raster_file=None,
@@ -321,20 +330,20 @@ class STEMToolsDialog(BaseDialog):
                     dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
                     Xtest, ytest = dt[:, :-1], dt[:, -1]
                 Xtest = Xtest.astype(float)
-                log.debug('Training sample shape:', Xtest.shape)
+                log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             # ---------------------------------------------------------------
             # Cross Models
             log.debug('Cross-validation of the models')
-
+            best = None
             bpkpath = os.path.join(home,
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
-                cross = mltb.cross_validation(X=X, y=y, transform=transform)
+                cross = mltb.cross_validation(X=X, y=y, transform=trasf)
                 np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
                            header=SEP.join(['id', 'name', 'mean', 'max',
                                                   'min', 'std', 'time']))
-                mltb.find_best(models)
+                mltb.find_best(model)
                 best = mltb.select_best()
                 with open(bpkpath, 'w') as bpkl:
                     pkl.dump(best, bpkl)
@@ -367,7 +376,7 @@ class STEMToolsDialog(BaseDialog):
                                        "{pref}_test_pickle.csv".format(pref=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
-                                     transform=transform)
+                                     transform=trasf)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0].__dict__.keys()))
                     mltb.find_best(models, strategy=lambda x: x,

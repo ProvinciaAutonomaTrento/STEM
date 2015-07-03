@@ -71,7 +71,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
         self._insertSecondLineEdit(label="Inserire il valore di epsilon",
                                    posnum=3)
-        self._insertThirdLineEdit(label="Inserire il valore di gamma",
+        self._insertFourthLineEdit(label="Inserire il valore di gamma",
                                    posnum=4)
 
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
@@ -169,7 +169,7 @@ class STEMToolsDialog(BaseDialog):
                 k = 'rbf'
             else:
                 k = 'sigmoid'
-            g = float(self.Linedit3.text())
+            g = float(self.Linedit4.text())
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVR,
                      'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y,
@@ -182,7 +182,7 @@ class STEMToolsDialog(BaseDialog):
                                 'probability': True}}], csv
         else:
             k = 'poly'
-            g = float(self.Linedit3.text())
+            g = float(self.Linedit4.text())
             d = 3 # TODO ask pietro
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
@@ -207,10 +207,10 @@ class STEMToolsDialog(BaseDialog):
             return None, None
 
     def getScoring(self):
-        if self.checkbox3.currentText() == 'R²':
-            return 'r2'
-        else:
+        if self.BaseInputCombo3.currentText() == 'MSE':
             return 'mean_squared_error'
+        else:
+            return 'r2'
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
@@ -222,7 +222,8 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "svr_{vect}_{col}".format(vect=invect , col=invectcol)
+            prefcsv = "stimsvr_{vect}_{col}".format(vect=invect ,
+                                                    col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -256,7 +257,7 @@ class STEMToolsDialog(BaseDialog):
 
             nfold = int(self.Linedit3.text())
 
-            model = self.getModel()
+            model, prefcsv = self.getModel(prefcsv)
             feat = str(self.MethodInput.currentText())
 
             optvect = str(self.BaseInputOpt.currentText())
@@ -282,7 +283,7 @@ class STEMToolsDialog(BaseDialog):
                                    "{p}_csvtraining.csv".format(p=prefcsv))
             crosspath = os.path.join(home,
                                      "{p}_csvcross.csv".format(p=prefcsv))
-            out = self.TextOut.text()
+            out = str(self.TextOut.text())
 
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
                         '1', '--scoring', 'accuracy', '--models', str(model),
@@ -295,9 +296,17 @@ class STEMToolsDialog(BaseDialog):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
             if ncolumnschoose:
-                com.extend(['-u', ncolumnschoose])
+                com.extend(['-u', ' '.format(ncolumnschoose)])
             if self.checkbox.isChecked():
-                com.extend(['-e', '--output-raster-name', self.TextOut.text()])
+                if inrast != "":
+                    com.extend(['-e', '--output-raster-name',
+                                self.TextOut.text()])
+                    outtype = 'raster'
+                else:
+                    com.extend(['-e', '--output-file', self.TextOut.text()])
+                    outtype = 'vector'
+            log.debug(com)
+            STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
             else:
@@ -335,7 +344,7 @@ class STEMToolsDialog(BaseDialog):
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
             X = X.astype(float)
-            log.debug('Training sample shape:', X.shape)
+            log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             # ----------------------------------------------------------------
             # Transform the input data
@@ -346,6 +355,7 @@ class STEMToolsDialog(BaseDialog):
 
             # ----------------------------------------------------------------
             # Extract test samples
+            Xtest, ytest = None, None
             log.debug('Extract test samples')
             if mltb.tvector and mltb.tcolumn:
                 # extract_training(vector_file, column, csv_file, raster_file=None,
@@ -373,12 +383,12 @@ class STEMToolsDialog(BaseDialog):
                     dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
                     Xtest, ytest = dt[:, :-1], dt[:, -1]
                 Xtest = Xtest.astype(float)
-                log.debug('Training sample shape:', Xtest.shape)
+                log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             # ---------------------------------------------------------------
             # Cross Models
             log.debug('Cross-validation of the models')
-
+            best = None
             bpkpath = os.path.join(home,
                                    "{pref}_best_pickle.csv".format(pref=prefcsv))
             if (not os.path.exists(crosspath) or overwrite):
@@ -450,7 +460,7 @@ class STEMToolsDialog(BaseDialog):
                              untransform=utrasf, output_file=out)
                 STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(out, 'raster')
+                    STEMUtils.addLayerIntoCanvas(out, outtype)
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))
             else:
