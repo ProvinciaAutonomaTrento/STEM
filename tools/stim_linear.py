@@ -389,6 +389,10 @@ class STEMToolsDialog(BaseDialog):
             # ----------------------------------------------------------------
             # execute Models and save the output raster map
             if self.checkbox.isChecked():
+                if best is None:
+                    order, models = mltb.find_best(models, key='score',
+                                                   strategy=lambda x: x)
+                    best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
                 mltb.execute(best=best, transform=trasf,
                              untransform=utrasf, output_file=out)
