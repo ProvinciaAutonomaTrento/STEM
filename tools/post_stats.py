@@ -36,7 +36,7 @@ from PyQt4.QtCore import SIGNAL
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.txt')
         self.toolName = name
         self.iface = iface
 
@@ -56,8 +56,6 @@ class STEMToolsDialog(BaseDialog):
         label = "Percentile da calcolare"
         self._insertFirstLineEdit(label, 0)
         self.Linedit.setText('90')
-        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, None))
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 

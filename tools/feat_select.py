@@ -40,7 +40,7 @@ from PyQt4.QtCore import SIGNAL
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.txt')
         self.toolName = name
         self.iface = iface
 
@@ -60,8 +60,6 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(mets, self.lm, 0)
         labeln = "Numero massimo di feature da selezionare"
         self. _insertFirstLineEdit(labeln, 1)
-        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, '.txt'))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

@@ -36,7 +36,7 @@ from PyQt4.QtCore import SIGNAL
 class STEMToolsDialog(BaseDialog):
 
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.las')
         self.toolName = name
         self.iface = iface
 
@@ -66,8 +66,6 @@ class STEMToolsDialog(BaseDialog):
 
         label_compr = "Comprimere il file di output"
         self._insertCheckbox(label_compr, 1, output=True)
-        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, '.las'))
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 

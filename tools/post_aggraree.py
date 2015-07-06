@@ -37,7 +37,7 @@ from PyQt4.QtCore import SIGNAL
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), None)
         self.toolName = name
         self.iface = iface
 
@@ -62,8 +62,7 @@ class STEMToolsDialog(BaseDialog):
         labelstats = "Nome della nuova colonna con la statistica sugli " \
                      "elementi all'interno di ogni area. Massimo 10 caratteri"
         self._insertSecondLineEdit(label=labelstats, posnum=3)
-        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, None))
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
