@@ -155,7 +155,7 @@ class STEMToolsDialog(BaseDialog):
                                          nodata=NODATA, dtype=np.float32)
 
             X = X.astype(float)
-            log.debug('Training sample shape:', X.shape)
+            log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             # ------------------------------------------------------------
             # Transform the input data
