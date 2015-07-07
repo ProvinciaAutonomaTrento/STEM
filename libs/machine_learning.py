@@ -29,7 +29,7 @@ import numpy as np
 
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score, LeaveOneOut
-
+from sklearn.linear_model import LassoLarsIC
 try:
     from sklearn.cross_validation import check_scoring
 except ImportError:
@@ -869,8 +869,15 @@ class MLToolBox(object):
                             ).format(self._trans))
 
         # apply transformation to the data
+#        from PyQt4.QtCore import *
+#        import ipdb
+#        pyqtRemoveInputHook()
+#        ipdb.set_trace()
         for transform in self._trans:
-            Xt = transform.transform(X)
+            if not isinstance(transform, LassoLarsIC):
+                Xt = transform.transform(X)
+            else:
+                Xt = X
 
         if fsfile is not None:
             self.logging.debug(('MLToolBox:data_transform:fsfile: {}'
