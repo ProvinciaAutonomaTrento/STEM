@@ -33,8 +33,7 @@ import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import os
 import numpy as np
-from functools import partial
-from PyQt4.QtCore import SIGNAL
+from gdal_stem import infoOGR
 
 
 class STEMToolsDialog(BaseDialog):
@@ -100,17 +99,20 @@ class STEMToolsDialog(BaseDialog):
                 ncolumnschoose = None
                 com.extend(['--raster', inrastsource])
             else:
-                ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                       self.layer_list, False)
+                infovect = infoOGR()
+                infovect.initialize(invectsource)
+                ncolumnschoose = infovect.getColumns(invectcol)
+
                 nlayerchoose = None
                 inrast = None
                 inrastsource = None
-                try:
-                    ncolumnschoose.remove(invectcol)
-                except:
-                    pass
+
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
+#            from PyQt4.QtCore import *
+#            import ipdb
+#            pyqtRemoveInputHook()
+#            ipdb.set_trace()
             method = str(self.MethodInput.currentText())
             # --------------------------------------------------------------
             # Feature selector

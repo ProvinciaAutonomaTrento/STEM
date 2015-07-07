@@ -132,10 +132,25 @@ class infoOGR:
         if self.inp is None:
             raise IOError('Could not open vector data: {n}'.format(n=iname))
         self.lay0 = self.inp.GetLayer(0)
+        # get the FeatureDefn for the output shapefile
+        self.featureDefn = self.lay0.GetLayerDefn()
 
     def getType(self):
         """Return the type of vector geometry"""
         return self.lay0.GetGeomType()
+
+    def getColumns(self, exc=None):
+        """Return the list of column in the attribute table of vector
+
+        :param str exc: The name of colum to don't append in the list
+        """
+        self.columns = []
+        for n in range(self.featureDefn.GetFieldCount()):
+            field = self.featureDefn.GetFieldDefn(n)
+            name = field.GetName()
+            if name != exc:
+                self.columns.append(name)
+        return self.columns
 
     def getWkt(self):
         """Return a WKT string of features"""
@@ -194,13 +209,11 @@ class infoOGR:
             raise IOError('Could not create file for inverse mask')
         outLayer = outDS.CreateLayer('inverse_mask', geom_type=self.getType(),
                                      srs=self.lay0.GetSpatialRef())
-        # get the FeatureDefn for the output shapefile
-        featureDefn = self.lay0.GetLayerDefn()
 
         # loop through input layer
         for inFeature in self.lay0:
             # create a new feature
-            outFeature = ogr.Feature(featureDefn)
+            outFeature = ogr.Feature(self.featureDefn)
 
             # copy the attributes and set geometry
             outFeature.SetFrom(inFeature)
