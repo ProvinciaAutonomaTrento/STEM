@@ -490,8 +490,13 @@ class STEMUtils:
     def copyFile(inp, outfile):
         """Copy a file in the same directory of output file"""
         path = os.path.dirname(outfile)
-        if os.path.exists(path):
-            shutil.copy2(inp, path)
+        inp = str(inp)
+        if os.path.exists(inp):
+            if os.path.exists(path):
+                shutil.copy2(inp, path)
+            else:
+                os.makedirs(path)
+                shutil.copy2(inp, path)
 
 
 class STEMMessageHandler:
