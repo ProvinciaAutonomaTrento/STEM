@@ -1,9 +1,9 @@
-Post-elaborazione stima
+Post-elaborazione
 =========================
 
 .. toctree::
   :maxdepth: 2
 
   aggregazione_ad_aree
-  metriche_di_accuratezza
-  statistiche
+  statistiche_singolo_raster
+  statistiche_su_due_raster

@@ -1,4 +1,4 @@
-Statistiche
+Statistiche singolo raster
 ================================
 
 Il modulo calcola una serie di statistiche sul raster fornito in input dall'utente. Fornisce in uscita un file di testo con le statistiche. Le statistiche calcolate sono:
