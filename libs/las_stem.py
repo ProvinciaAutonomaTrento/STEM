@@ -18,6 +18,7 @@ import subprocess
 from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
 from pyro_stem import PYROSERVER, LAS_PORT
+from gdal_stem import file_info
 from stem_utils import STEMUtils, STEMMessageHandler
 import os
 import json
@@ -34,6 +35,53 @@ def filter(ins,outs):
     rets = np.equal(ret, ret_no)
 
     outs['Mask'] = rets
+    return True
+"""
+
+CHM = """
+import numpy as np
+import struct
+import osgeo.gdal as gdal
+
+def get_value(x,y, band, band_type, geomt):
+    px = int((x - geomt[0]) / geomt[1])  # x pixel
+    py = int((y - geomt[3]) / geomt[5])  # y pixel
+    try:
+        structval = band.ReadRaster(px, py, 1, 1, buf_type=band_type)
+        if band_type in [1, 3, 5, 8, 9]:
+            intval = struct.unpack('i', structval)
+        elif band_type in [2, 4]:
+            intval = struct.unpack('I', structval)
+        elif band_type in [6, 7]:
+            intval = struct.unpack('f', structval)
+    except:
+        return None
+    return intval[0]
+
+def chm(ins,outs):
+    inrast = '{NAME}'
+    rast = gdal.Open(inrast)
+    band = rast.GetRasterBand(1)
+    geomtransf = rast.GetGeoTransform()
+    band_type = band.DataType
+    Zs = ins['Z']
+    Xs = ins['X']
+    Ys = ins['Y']
+    newZ = []
+    newX = []
+    newY = []
+    for i in range(len(Xs)):
+        z = get_value(Xs[i], Ys[i], band, band_type, geomtransf)
+        if z:
+            nz = Zs[i] - z
+            print Zs[i], z, nz
+            newZ.append(nz)
+            newX.append(Xs[i])
+            newY.append(Ys[i])
+
+    outs['Z'] = np.array(newZ)
+    outs['X'] = np.array(newX)
+    outs['Y'] = np.array(newY)
     return True
 """
 
@@ -220,6 +268,60 @@ class stemLAS():
                 self.returns.extend(range(int(sta['minimum']),
                                           int(sta['maximum'])))
 
+    def chm_xml_pdal(self, inp, out, dtm, bbox, compres=False):
+        """Create the XML file to use in `pdal pipeline` to obtain CHM
+
+        :param str inp: full path for several input LAS files
+        :param str out: the output LAS full path
+        :param str dtm: the path to DTM file
+        :param bool compres: the output has to be compressed
+        """
+        tmp_file = tempfile.NamedTemporaryFile(delete=False)
+        root = self._create_xml()
+        write = self._add_write(out, compres)
+        filt = Element('Filter')
+        filt.set("type", "filters.crop")
+
+        clip = self._add_option_file(bbox, 'polygon')
+        filt.append(clip)
+        write.append(filt)
+        filt = Element('Filter')
+        filt.set("type", "filters.programmable")
+        funct = self._add_option_file('chm', val='function')
+        modu = self._add_option_file('anything', val='module')
+        python = CHM.format(NAME=dtm)
+        source = self._add_option_file(python, val='source')
+        filt.append(funct)
+        filt.append(modu)
+        filt.append(source)
+        filt.append(self._add_reader(inp))
+        write.append(filt)
+        root.append(write)
+        tmp_file.write(tostring(root, 'utf-8'))
+        tmp_file.close()
+        self.pdalxml = tmp_file.name
+        return 0
+
+    def chm(self, inp, out, dtm, compressed=False):
+        """Merge several LAS file into one LAS file
+
+        :param str inp: full path for the input LAS file
+        :param str out: full path for the output LAS file
+        :param str dtm: the path to DTM file
+        :param bool compressed: True to obtain a LAZ file
+        """
+        if self.pdal:
+            command = ['pdal', 'pipeline']
+            fi = file_info()
+            fi.init_from_name(dtm)
+            bbox = fi.getBBoxWkt()
+            self.chm_xml_pdal(inp, out, dtm, bbox, compressed)
+            command.extend(['-i', self.pdalxml])
+            STEMUtils.saveCommand(command)
+            self._run_command(command)
+        else:
+            raise Exception("pdal è necessario per unire più file LAS")
+
     def union_xml_pdal(self, inps, out, compres):
         """Create the XML file to use in `pdal pipeline` to merge serveral
         LAS files
@@ -376,7 +478,7 @@ class stemLAS():
             else:
                 filt_ret = Element('Filter')
                 filt_ret.set("type", "filters.predicate")
-                funct = self._add_option_file('filter_class', val='function')
+                funct = self._add_option_file('filter', val='function')
                 modu = self._add_option_file('anything', val='module')
                 if retur == 'last':
                     source = self._add_option_file(LAST_RETURN, val='source')
@@ -464,17 +566,39 @@ class stemLAS():
         self._run_command(command)
 
 
+def get_parser():
+    """Create the parser for running as script"""
+    import argparse
+    parser = argparse.ArgumentParser(description='Script for LAS operations')
+    parser.add_argument('input', metavar='input', type=str, nargs='+',
+                        help='the path to the input LAS file')
+    parser.add_argument('output', metavar='output', type=str, nargs='+',
+                        help='the path to the output LAS file')
+    parser.add_argument('-c', '--clip', dest='clip', type=str,
+                        help='sum the integers (default: find the max)')
+    parser.add_argument('-s', '--server', action='store_true',
+                        dest='server', default=False,
+                        help="launch server application")
+    return parser
+
+
 def main():
     """This function is used in the server to activate three Pyro4 servers.
        It initialize the three objects and after these are used by Pyro4
     """
-    # decomment this two lines if you want activate the logging
-    #os.environ["PYRO_LOGFILE"] = "pyrolas.log"
-    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-    import Pyro4
-    las_stem = stemLAS()
-    Pyro4.Daemon.serveSimple({las_stem: "stem.las"},
-                             host=PYROSERVER, port=LAS_PORT, ns=True)
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.server:
+        # decomment this two lines if you want activate the logging
+        #os.environ["PYRO_LOGFILE"] = "pyrolas.log"
+        #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+        import Pyro4
+        las_stem = stemLAS()
+        Pyro4.Daemon.serveSimple({las_stem: "stem.las"},
+                                 host=PYROSERVER, port=LAS_PORT, ns=True)
+    else:
+        print args
 
 if __name__ == "__main__":
+
     main()
