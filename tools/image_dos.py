@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-Tool to perform CHM from LAS file
+Tool to calculate DOS for Landsat images
 
-It use the **las_stem** library
+It use the **grass_stem** library and it run several times *r.univar* GRASS
+command.
 
-Date: August 2014
+Date: July 2015
 
-Copyright: (C) 2014 Luca Delucchi
+Copyright: (C) 2015 Luca Delucchi
 
 Authors: Luca Delucchi
 
@@ -27,29 +28,14 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
-
+from grass_stem import temporaryFilesGRASS
+import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.las')
+        BaseDialog.__init__(self, name, iface.mainWindow())
         self.toolName = name
         self.iface = iface
 
-        self._insertFileInput()
-        self._insertSecondSingleInput()
-        self.label2.setText(self.tr(name, "Input DTM"))
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
-
-        self.label2.setText(self.tr(name, "Input DTM"))
-
-        STEMSettings.restoreWidgetsValue(self, self.toolName)
-
-    def show_(self):
-        self.switchClippingMode()
-        self.show_(self)
-
-    def onClosing(self):
-        self.onClosing(self)
-
-    def onRunLocal(self):
-        STEMSettings.saveWidgetsValue(self, self.toolName)
+        label = ""
+        self._insertDirectory(label)
