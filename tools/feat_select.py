@@ -96,7 +96,7 @@ class STEMToolsDialog(BaseDialog):
 
             meth = str(self.MethodInput.currentText())
 
-            if self.Linedit.text() != "":
+            if self.Linedit.text() == "":
                 nfeat = None
             else:
                 nfeat = int(self.Linedit.text())
@@ -139,12 +139,13 @@ class STEMToolsDialog(BaseDialog):
 
             # --------------------------------------------------------------
             # Feature selector
+            out = self.TextOut.text()
+            outputlog = STEMLogging(logname='.'.join([out, 'log']))
             fselector = SSF(strategy=getattr(np, meth),
-                            n_features=nfeat)
+                            n_features=nfeat, logfile=outputlog)
 
             # ------------------------------------------------------------
             # Transform the input data
-            out = self.TextOut.text()
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
                                     fsfile=out, fsfit=True)
