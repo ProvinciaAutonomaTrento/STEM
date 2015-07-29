@@ -155,11 +155,14 @@ class BaseDialog(QDialog, baseDialog):
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.browseInFile, self.BaseInput, multi=multi))
 
-    def _insertFileInput(self, pos=0, multi=False):
+    def _insertFileInput(self, pos=0, multi=False,
+                         filterr="LAS file (*.las *.laz)"):
         """Function to add QLineEdit and QPushButton to select the data
         outside QGIS (for example LAS files)
 
         :param int pos: the position of form in the input layout
+        :param bool multi: True to select more files
+        :param str filterr: the file to select files
         """
         self.horizontalLayout_input = QHBoxLayout()
         self.horizontalLayout_input.setObjectName("horizontalLayout_output")
@@ -178,7 +181,8 @@ class BaseDialog(QDialog, baseDialog):
         self.labelF.setText(self.tr("", "File LAS di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.browseInFile, self.TextIn, multi=multi))
+                     partial(self.browseInFile, self.TextIn, multi=multi,
+                             filt=filterr))
 
     def _insertDirectory(self, label, pos=0):
         self.horizontalLayout_input = QHBoxLayout()
@@ -187,9 +191,9 @@ class BaseDialog(QDialog, baseDialog):
         self.labelD.setObjectName("LabelOut")
         self.labelD.setWordWrap(True)
         self.horizontalLayout_input.addWidget(self.labelD)
-        self.TextIn = QLineEdit()
-        self.TextIn.setObjectName("TextIn")
-        self.horizontalLayout_input.addWidget(self.TextIn)
+        self.TextDir = QLineEdit()
+        self.TextDir.setObjectName("TextDir")
+        self.horizontalLayout_input.addWidget(self.TextDir)
         self.BrowseButtonIn = QPushButton()
         self.BrowseButtonIn.setObjectName("BrowseButtonIn")
         self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
@@ -198,7 +202,7 @@ class BaseDialog(QDialog, baseDialog):
         self.labelD.setText(self.tr("", label))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextIn, multi=multi))
+                     partial(self.browseInFile, self.TextDir, dire=True))
 
     def _insertSingleInput(self, label="Dati di input"):
         """Function to add ComboBox Widget where insert a single input file
@@ -973,11 +977,14 @@ class BaseDialog(QDialog, baseDialog):
             line.setText(mydir)
             return
 
-    def browseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False):
+    def browseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False,
+                     dire=False):
         """Function to select existing file in a directory
 
         :param obj line: the QLineEdit object to update
         :param str filt: a string with the filter of directory
+        :param bool multi: True to select more files
+        :param bool dire: True to select a directory instead a file
         """
         if multi:
             mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
@@ -992,9 +999,16 @@ class BaseDialog(QDialog, baseDialog):
             return
 
         else:
-            mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
-                                                caption="Selezionare il file "
-                                                "di input", directory="")
+            if dire:
+                label = "Selezionare la directory dei files"
+                mydir = QFileDialog.getExistingDirectory(parent=None,
+                                                         caption=label,
+                                                         directory="")
+            else:
+                mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
+                                                    caption="Selezionare il "
+                                                    "file di input",
+                                                    directory="")
             if os.path.exists(mydir):
                 line.setText(mydir)
                 return
