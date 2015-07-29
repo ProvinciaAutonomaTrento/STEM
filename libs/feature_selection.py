@@ -213,9 +213,9 @@ class SSF(object):
                                           logging=self.logfile,
                                           verbose=verbose)
         except Exception as exc:
-            if self.logging:
+            if self.logfile:
                 msg = 'seq_forward_floating_fs raise {}'
-                logging.exception(msg.format(repr(exc)))
+                self.logfile.warning(msg.format(repr(exc)))
             raise RuntimeError("Problem with the execution of the "
                                "Sequential Forward Floating Feature"
                                " Selection")
