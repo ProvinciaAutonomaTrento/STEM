@@ -741,13 +741,20 @@ class STEMSettings:
 class STEMLogging:
     """Class to log information of modules in a file"""
 
-    def __init__(self):
-        stempath = STEMSettings.value("stempath")
-        logging.basicConfig(filename=os.path.join(stempath, 'stem.log'),
-                            filemode='w', level=logging.DEBUG)
+    def __init__(self, logname=None):
+        if logname:
+            logfile = logname
+        else:
+            stempath = STEMSettings.value("stempath")
+            logfile = os.path.join(stempath, 'stem.log')
+        logging.basicConfig(filename=logfile, filemode='w',
+                            level=logging.DEBUG)
 
     def debug(self, text):
         logging.debug(text)
 
     def warning(self, text):
         logging.warning(text)
+
+    def info(self, text):
+        logging.info(text)
