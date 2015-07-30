@@ -47,16 +47,13 @@ def get_value(x,y, band, band_type, geomt):
     px = int((x - geomt[0]) / geomt[1])  # x pixel
     py = int((y - geomt[3]) / geomt[5])  # y pixel
     try:
-        structval = band.ReadRaster(px, py, 1, 1, buf_type=band_type)
-        if band_type in [1, 3, 5, 8, 9]:
-            intval = struct.unpack('i', structval)
-        elif band_type in [2, 4]:
-            intval = struct.unpack('I', structval)
-        elif band_type in [6, 7]:
-            intval = struct.unpack('f', structval)
+        structval = band.ReadAsArray(px, py, 1, 1)
+        val = structval[0][0]
+        if cmp(val, 0) == -1:
+            val = 0
+        return val
     except:
         return None
-    return intval[0]
 
 def chm(ins,outs):
     inrast = '{NAME}'
@@ -68,20 +65,19 @@ def chm(ins,outs):
     Xs = ins['X']
     Ys = ins['Y']
     newZ = []
-    newX = []
-    newY = []
+    #import pdb; pdb.set_trace()
     for i in range(len(Xs)):
-        z = get_value(Xs[i], Ys[i], band, band_type, geomtransf)
+        try:
+            z = get_value(Xs[i], Ys[i], band, band_type, geomtransf)
+        except:
+            z = None
         if z:
             nz = Zs[i] - z
-            print Zs[i], z, nz
             newZ.append(nz)
-            newX.append(Xs[i])
-            newY.append(Ys[i])
-
+        else:
+            newZ.append(None)
+    #pdb.set_trace()
     outs['Z'] = np.array(newZ)
-    outs['X'] = np.array(newX)
-    outs['Y'] = np.array(newY)
     return True
 """
 
@@ -283,7 +279,7 @@ class stemLAS():
         filt.set("type", "filters.crop")
 
         clip = self._add_option_file(bbox, 'polygon')
-        filt.append(clip)
+
         write.append(filt)
         filt = Element('Filter')
         filt.set("type", "filters.programmable")
@@ -291,10 +287,11 @@ class stemLAS():
         modu = self._add_option_file('anything', val='module')
         python = CHM.format(NAME=dtm)
         source = self._add_option_file(python, val='source')
-        filt.append(funct)
-        filt.append(modu)
-        filt.append(source)
-        filt.append(self._add_reader(inp))
+        clip.append(funct)
+        clip.append(modu)
+        clip.append(source)
+        clip.append(self._add_reader(inp))
+        filt.append(clip)
         write.append(filt)
         root.append(write)
         tmp_file.write(tostring(root, 'utf-8'))
@@ -320,7 +317,7 @@ class stemLAS():
             STEMUtils.saveCommand(command)
             self._run_command(command)
         else:
-            raise Exception("pdal è necessario per unire più file LAS")
+            raise Exception("pdal è necessario per calcolare il CHM")
 
     def union_xml_pdal(self, inps, out, compres):
         """Create the XML file to use in `pdal pipeline` to merge serveral

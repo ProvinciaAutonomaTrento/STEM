@@ -27,6 +27,8 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+import traceback
+from las_stem import stemLAS
 
 
 class STEMToolsDialog(BaseDialog):
@@ -35,12 +37,11 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
+        self.QGISextent.hide()
+        self.AddLayerToCanvas.hide()
         self._insertFileInput()
-        self._insertSecondSingleInput()
-        self.label2.setText(self.tr(name, "Input DTM"))
+        self._insertSecondSingleInput(label="Input DTM")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
-
-        self.label2.setText(self.tr(name, "Input DTM"))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -53,3 +54,24 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        try:
+            source = str(self.TextIn.text())
+            dtm_name = str(self.BaseInput2.text())
+            dtm_source = STEMUtils.getLayersSource(dtm_name)
+            out = str(self.TextOut.text())
+            if self.LocalCheck.isChecked():
+                las = stemLAS()
+            else:
+                import Pyro4
+                las = Pyro4.Proxy("PYRONAME:stem.las")
+            las.initialize()
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            las.chm(source, out, dtm_source, compressed=compres)
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+        except:
+            error = traceback.format_exc()
+            STEMMessageHandler.error(error)
+            return
