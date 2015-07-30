@@ -34,8 +34,6 @@ import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import numpy as np
 import os
-from functools import partial
-from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -108,6 +106,8 @@ class STEMToolsDialog(BaseDialog):
             com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
                         'accuracy', '--best-strategy', 'mean',
                         '--feature-selection', 'SSF', invectsource, invectcol])
+            out = self.TextOut.text()
+            outputlog = STEMLogging(logname='.'.join([out, 'log']))
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
                             raster=inrastsource,
@@ -116,7 +116,8 @@ class STEMToolsDialog(BaseDialog):
                             tvector=None, tcolumn=None, traster=None,
                             best_strategy=getattr(np, 'mean'),
                             scaler=None, fselector=None, decomposer=None,
-                            transform=None, untransform=None)
+                            transform=None, untransform=None,
+                            logging=outputlog)
 
             home = STEMSettings.value("stempath")
 
@@ -132,15 +133,14 @@ class STEMToolsDialog(BaseDialog):
             if mltb.raster:
                 log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=NODATA, dtype=np.uint32)
+                                         nodata=NODATA, dtype=np.uint32,
+                                         logging=outputlog)
 
             X = X.astype(float)
             log.debug('\nTraining sample shape: {val}'.format(val=X.shape))
 
             # --------------------------------------------------------------
             # Feature selector
-            out = self.TextOut.text()
-            outputlog = STEMLogging(logname='.'.join([out, 'log']))
             fselector = SSF(strategy=getattr(np, meth),
                             n_features=nfeat, logfile=outputlog)
 
@@ -148,7 +148,7 @@ class STEMToolsDialog(BaseDialog):
             # Transform the input data
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=out, fsfit=True)
+                                    fsfile=out, fsfit=True, logging=outputlog)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
             return
