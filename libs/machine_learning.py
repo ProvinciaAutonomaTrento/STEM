@@ -140,7 +140,10 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     vect = ogr.Open(vector_file)
     rast = empty_rast(rast_file, asrast, format=format,
                       datatype=datatype, nodata=nodata)
-    layer = vect.GetLayer()
+    if vect:
+        layer = vect.GetLayer()
+    else:
+        raise ValueError("Vector file {name} not found or not valid".format(name=vector_file))
     gdal.RasterizeLayer(rast, [1], layer, burn_values=[1],
                         options=["ATTRIBUTE=%s" % column, ])
     arr = rast.ReadAsArray()
