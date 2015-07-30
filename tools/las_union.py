@@ -29,8 +29,6 @@ from stem_base_dialogs import BaseDialog
 from las_stem import stemLAS
 from stem_utils import STEMMessageHandler, STEMSettings
 import traceback
-from functools import partial
-from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):

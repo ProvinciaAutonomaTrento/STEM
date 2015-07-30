@@ -30,8 +30,6 @@ from stem_utils import STEMMessageHandler, STEMSettings
 from las_stem import stemLAS
 import traceback
 from gdal_stem import infoOGR
-from functools import partial
-from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
