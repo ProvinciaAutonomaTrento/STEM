@@ -42,7 +42,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFileInput()
         self._insertSecondSingleInput(label="Input DTM")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
-
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):

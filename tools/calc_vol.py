@@ -52,6 +52,7 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.BrowseButton.hide()
+        self.helpui.fillfromUrl(self.SphinxUrl())
         self.LabelOut.setText(self.tr("", "Nome della nuova colonna con il "
                                       "volume. Massimo 10 caratteri"))
 

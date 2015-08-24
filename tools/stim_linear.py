@@ -98,7 +98,7 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Creare output"
         self._insertCheckbox(label, 8)
-
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):

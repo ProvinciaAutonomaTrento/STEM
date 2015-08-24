@@ -72,6 +72,7 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit4.setEnabled(False)
 
         self.LabelOut.setText('Selezionare prefisso per salvare i risultati')
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def methodChanged(self):

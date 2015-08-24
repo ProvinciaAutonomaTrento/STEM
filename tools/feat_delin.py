@@ -33,7 +33,7 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertSingleInput()
-
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):

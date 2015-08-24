@@ -58,7 +58,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(mets, self.lm, 0)
         labeln = "Numero massimo di feature da selezionare"
         self. _insertFirstLineEdit(labeln, 1)
-
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
