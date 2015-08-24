@@ -39,7 +39,7 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                               ("7", "Filtro riduzione del rumore"): "image_filter",
                                               ("8", "Segmentazione"): "image_segm",
                                               ("9", "Pansharpening"): "image_pansh",
-                                              ("9", "Dark opbject subtraction"): "image_dos"
+                                              ("9", "Dark object subtraction"): "image_dos"
                                               }],
          ("1", "Pre-elaborazioni LIDAR"): [{
                                            ("0", "Filtraggio file LAS"): "las_filter",
