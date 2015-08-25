@@ -886,7 +886,10 @@ class MLToolBox(object):
             self.logging.debug(('MLToolBox:data_transform:fsfile: {}'
                                 ).format(fsfile))
             try:
-                np.savetxt(fsfile, self.fselector.support_)
+                if hasattr(self.fselector, 'support_'):
+                    np.savetxt(fsfile, self.fselector.support_)
+                else:
+                    np.savetxt(fsfile, self.fselector.get_support())
             except AttributeError:
                 print("Selected feature are not saved in: %s" % fsfile)
                 pass

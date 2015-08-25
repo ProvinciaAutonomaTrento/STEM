@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
-from sklearn.linear_model import LassoLarsIC
+from sklearn.feature_selection import SelectKBest, f_regression
 import traceback
 from machine_learning import MLToolBox, SEP, NODATA
 import os
@@ -52,10 +52,10 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
 
-        mets = ['bic', 'aic']
-        self.lm = "Selezione il criterio da utilizzare"
-        self._insertMethod(mets, self.lm, 0)
+        self._insertFirstLineEdit(label="Numero variabili da selezionare",
+                                  posnum=0)
 
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
@@ -79,6 +79,15 @@ class STEMToolsDialog(BaseDialog):
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
             prefcsv = "selvar_{vect}_{col}".format(vect=invect, col=invectcol)
+            infovect = infoOGR()
+            infovect.initialize(invectsource)
+            ncolumnschoose = infovect.getColumns(invectcol)
+            num_var = int(self.Linedit.text())
+            if num_var >= len(ncolumnschoose):
+                STEMMessageHandler.error("Numero di variabili selezionato "
+                                         "maggiore o uguale al numero delle "
+                                         "colonne")
+                return
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -99,24 +108,14 @@ class STEMToolsDialog(BaseDialog):
                 ncolumnschoose = None
                 com.extend(['--raster', inrastsource])
             else:
-                infovect = infoOGR()
-                infovect.initialize(invectsource)
-                ncolumnschoose = infovect.getColumns(invectcol)
-
                 nlayerchoose = None
                 inrast = None
                 inrastsource = None
-
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
-#            from PyQt4.QtCore import *
-#            import ipdb
-#            pyqtRemoveInputHook()
-#            ipdb.set_trace()
-            method = str(self.MethodInput.currentText())
             # --------------------------------------------------------------
             # Feature selector
-            fselector = LassoLarsIC(criterion=method)
+            fselector = SelectKBest(f_regression, num_var)
 
             home = STEMSettings.value("stempath")
             trnpath = os.path.join(home,
