@@ -9,4 +9,5 @@ Pre-elaborazione immagini
   correzione_atmosferica
   filtro_riduzione_del_rumore
   segmentazione
+  dark_object_subtraction
   pansharpening
