@@ -42,6 +42,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertFileInput()
         self._insertSecondSingleInput(label="Input DTM")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
+        label = "Comprimere il file di output"
+        self._insertCheckbox(label, 1, output=True)
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -56,7 +58,7 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             source = str(self.TextIn.text())
-            dtm_name = str(self.BaseInput2.text())
+            dtm_name = str(self.BaseInput2.currentText())
             dtm_source = STEMUtils.getLayersSource(dtm_name)
             out = str(self.TextOut.text())
             if self.LocalCheck.isChecked():

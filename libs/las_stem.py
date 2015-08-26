@@ -38,6 +38,20 @@ def filter(ins,outs):
     return True
 """
 
+FILTER_NONE = """
+import numpy as np
+
+def filter(ins,outs):
+   cls = ins['Z']
+
+   excluded_classes = [None]
+
+   keep = np.not_equal(cls, excluded_classes[0])
+
+   outs['Mask'] = keep
+   return True
+"""
+
 CHM = """
 import numpy as np
 import struct
@@ -65,18 +79,16 @@ def chm(ins,outs):
     Xs = ins['X']
     Ys = ins['Y']
     newZ = []
-    #import pdb; pdb.set_trace()
     for i in range(len(Xs)):
         try:
             z = get_value(Xs[i], Ys[i], band, band_type, geomtransf)
         except:
             z = None
         if z:
-            nz = Zs[i] - z
-            newZ.append(nz)
-        else:
-            newZ.append(None)
-    #pdb.set_trace()
+            z = Zs[i] - z
+            if cmp(z,0) == -1:
+                z = 0
+        newZ.append(z)
     outs['Z'] = np.array(newZ)
     return True
 """
@@ -270,29 +282,47 @@ class stemLAS():
         :param str inp: full path for several input LAS files
         :param str out: the output LAS full path
         :param str dtm: the path to DTM file
+        :param str bbox: a WKT string rappresenting a polygon
         :param bool compres: the output has to be compressed
         """
+        # create a temporal file
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
+        # create xml file
         root = self._create_xml()
+        # add Writer element
         write = self._add_write(out, compres)
-        filt = Element('Filter')
-        filt.set("type", "filters.crop")
-
-        clip = self._add_option_file(bbox, 'polygon')
-
-        write.append(filt)
-        filt = Element('Filter')
-        filt.set("type", "filters.programmable")
+        # first we add predicate to remove values with None value
+        filt_ret = Element('Filter')
+        filt_ret.set("type", "filters.predicate")
+        funct = self._add_option_file('filter', val='function')
+        modu = self._add_option_file('anything', val='module')
+        source = self._add_option_file(FILTER_NONE, val='source')
+        filt_ret.append(funct)
+        filt_ret.append(modu)
+        filt_ret.append(source)
+        # second if the function to calculate the CHM
+        filt_prog = Element('Filter')
+        filt_prog.set("type", "filters.programmable")
         funct = self._add_option_file('chm', val='function')
         modu = self._add_option_file('anything', val='module')
         python = CHM.format(NAME=dtm)
         source = self._add_option_file(python, val='source')
-        clip.append(funct)
-        clip.append(modu)
-        clip.append(source)
-        clip.append(self._add_reader(inp))
+        filt_prog.append(funct)
+        filt_prog.append(modu)
+        filt_prog.append(source)
+        # last is the crop filter to cut the LAS file with the bounding box of
+        # raster
+        filt = Element('Filter')
+        filt.set("type", "filters.crop")
+        clip = self._add_option_file(bbox, val='polygon')
         filt.append(clip)
-        write.append(filt)
+        # add reader element for input LAS file
+        filt.append(self._add_reader(inp))
+        # add the crop filter to programmable
+        filt_prog.append(filt)
+        # add the programmable filter to the predicate one
+        filt_ret.append(filt_prog)
+        write.append(filt_ret)
         root.append(write)
         tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
@@ -375,7 +405,7 @@ class stemLAS():
         filt = Element('Filter')
         filt.set("type", "filters.crop")
 
-        clip = self._add_option_file(bbox, 'polygon')
+        clip = self._add_option_file(bbox, val='polygon')
         if inverted:
             clip.set("outside", "true")
         filt.append(clip)
