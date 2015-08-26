@@ -13,7 +13,7 @@ Input
 
 **File LAS di input**: selezionare il file .las da ritagliare.
 
-**Maschera inversa**: se scelto verranno esclusi i punti all'interno dell'area coperto dalla maschera.
+**Maschera inversa**: se scelto verranno esclusi i punti all'interno dell'area coperta dalla maschera.
 
 **Scegliere la libreria da utilizzare**:
 
@@ -26,7 +26,7 @@ Output
 
 **Risultato**: inserire il percorso e il nome del file di output.
 
-**Comprimere il file di output**: se selzionato l'output sara' in formato .laz.
+**Comprimere il file di output**: se selzionato l'output sarà in formato .laz.
 
 .. only:: latex
 

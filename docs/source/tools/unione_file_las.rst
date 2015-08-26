@@ -18,7 +18,7 @@ Output
 
 **Risultato**: inserire il percorso e il nome del file di output.
 
-**Comprimere il file di output**: se selzionato l'output sara' in formato .laz.
+**Comprimere il file di output**: se selzionato l'output sarà in formato .laz.
 
 .. only:: latex
 
