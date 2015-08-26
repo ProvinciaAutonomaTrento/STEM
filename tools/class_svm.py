@@ -85,7 +85,8 @@ class STEMToolsDialog(BaseDialog):
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 6)
+        self._insertFileInputOption(self.lio, 6,
+                                    filt="Text file (*.txt *.text)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
