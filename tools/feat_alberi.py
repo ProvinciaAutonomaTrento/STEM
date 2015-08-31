@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Wed Aug 26 11:50:05 2015
+
+@author: lucadelu
+"""
 
 """
+Tool to patch plus LAS file in one
+
+It use the **las_stem** library
 
 Date: August 2014
 
@@ -23,24 +31,20 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from gdal_stem import definizione_chiome
+from gdal_stem import position_alberi
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 
 
-
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.las')
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput(label="CHM utilizzato per calcolare le cime"
-                                      " degli alberi")
+        self._insertSingleInput(label="CHM di input")
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
-        self._insertSecondSingleInput(label="Vettoriale contenente le cime"
-                                      " degli alberi")
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+
         min_label = "Valore minimo della moving windows per trovare gli alberi"
         self._insertFirstLineEdit(min_label, 0)
 
@@ -50,27 +54,13 @@ class STEMToolsDialog(BaseDialog):
         min_height = "Valore minimo dell'altezza degli alberi"
         self._insertThirdLineEdit(min_height, 2)
 
-        self.helpui.fillfromUrl(self.SphinxUrl())
-        STEMSettings.restoreWidgetsValue(self, self.toolName)
-
-    def show_(self):
-        self.switchClippingMode()
-        self.show_(self)
-
-    def onClosing(self):
-        self.onClosing(self)
-
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            name2 = str(self.BaseInput2.currentText())
-            source2 = STEMUtils.getLayersSource(name2)
-            definizione_chiome(source, source2, self.TextOut.text(),
-                               int(self.Linedit.text()),
-                               int(self.Linedit2.text()),
-                               int(self.Linedit3.text()))
+            position_alberi(source, self.TextOut.text(), int(self.Linedit.text()),
+                            int(self.Linedit2.text()), int(self.Linedit3.text()))
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:

@@ -48,7 +48,6 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                            ("3", "Estrazione CHM"): "las_removedtm"
                                            }],
          ("2", "Estrazione feature"): [{
-                                       ("0", "Delimitazione chiome"): "feat_delin",
                                        ("1", "Feature di tessitura"): "feat_texture",
                                        ("2", "Feature geometriche"): "feat_geometry",
                                        ("3", "Indici di vegetazione"): "feat_vege",
@@ -82,7 +81,11 @@ TOOLS = {("0", "Pre-elaborazione immagini"): [{
                                             ("1", "Statistiche singolo raster"): "post_stats",
                                             ("2", "Statistiche su due raster"): "post_stats2"
                                             }],
-         ("8", "Struttura bosco"): [{("0", "Struttura bosco"): "bosco"}]
+         ("8", "Struttura bosco"): [{
+                                    ("0", "Individuazione alberi"): "feat_alberi",
+                                    ("1", "Delimitazione chiome"): "feat_delin",
+                                    ("2", "Struttura bosco"): "bosco",
+                                    }]
          }
 
 
