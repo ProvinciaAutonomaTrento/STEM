@@ -4,7 +4,6 @@ Estrazione feature
 .. toctree::
   :maxdepth: 2
 
-  delimitazione_chiome
   feature_di_tessitura
   feature_geometriche
   indici_di_vegetazione
