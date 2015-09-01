@@ -31,7 +31,7 @@ import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.shp')
         self.toolName = name
         self.iface = iface
 
@@ -41,14 +41,18 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondSingleInput(label="Vettoriale contenente le cime"
                                       " degli alberi")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
-        min_label = "Valore minimo della moving windows per trovare gli alberi"
+        min_label = "Valore minimo del raggio massimo della chioma"
         self._insertFirstLineEdit(min_label, 0)
 
-        max_label = "Valore massimo della moving windows per trovare gli alberi"
+        max_label = "Valore massimo del raggio massimo della chioma"
         self._insertSecondLineEdit(max_label, 1)
 
-        min_height = "Valore minimo dell'altezza degli alberi"
+        min_height = "Valore minimo dell'altezza della chioma"
         self._insertThirdLineEdit(min_height, 2)
+
+        min_cre = "Soglia di crescita della chioma"
+        self._insertFourthLineEdit(min_cre, 2)
+        self.Linedit4.setText('0.65')
 
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -70,7 +74,8 @@ class STEMToolsDialog(BaseDialog):
             definizione_chiome(source, source2, self.TextOut.text(),
                                int(self.Linedit.text()),
                                int(self.Linedit2.text()),
-                               int(self.Linedit3.text()))
+                               int(self.Linedit3.text()),
+                               float(self.Linedit4.text()))
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:

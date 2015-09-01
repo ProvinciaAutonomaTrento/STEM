@@ -38,17 +38,17 @@ import traceback
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.las')
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.shp')
         self.toolName = name
         self.iface = iface
 
         self._insertSingleInput(label="CHM di input")
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        min_label = "Valore minimo della moving windows per trovare gli alberi"
+        min_label = "Valore minimo della finestra mobile per trovare gli alberi"
         self._insertFirstLineEdit(min_label, 0)
 
-        max_label = "Valore massimo della moving windows per trovare gli alberi"
+        max_label = "Valore massimo della finestra mobile per trovare gli alberi"
         self._insertSecondLineEdit(max_label, 1)
 
         min_height = "Valore minimo dell'altezza degli alberi"
