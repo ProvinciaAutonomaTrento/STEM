@@ -49,9 +49,7 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
 
         self._insertSecondSingleInput(pos=2, label="Raster delle aree su cui "
-                                      "calcolare le statistiche.\nDeve essere"
-                                      " un raster con valori interi, controlla"
-                                      "re in `Proprietà -> Metadati`")
+                                                   "calcolare le statistiche")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
         self._insertLayerChooseCheckBox2(label="Selezionare la banda delle aree"
                                         "da utilizzare" , combo=False)
