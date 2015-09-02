@@ -30,8 +30,6 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from grass_stem import temporaryFilesGRASS
 import traceback
-from functools import partial
-from PyQt4.QtCore import SIGNAL
 
 
 class STEMToolsDialog(BaseDialog):
@@ -51,8 +49,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondSingleInput(pos=2, label="Raster delle aree su cui "
                                                    "calcolare le statistiche")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
-        self._insertLayerChooseCheckBox2(label="Selezionare la banda delle aree"
-                                        "da utilizzare" , combo=False)
+        self._insertLayerChooseCheckBox2(label="Selezionare la banda delle "
+                                               "aree da utilizzare",
+                                         combo=False)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
         self.AddLayerToCanvas.hide()
