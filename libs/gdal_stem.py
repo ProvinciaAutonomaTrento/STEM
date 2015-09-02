@@ -228,12 +228,15 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     fieldIdName = 'id'
     filedIdType = ogr.OFTInteger
     fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
+    fieldHeightName = 'height'
+    fieldHeightType = ogr.OFTReal
+    fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
     srs = osr.SpatialReference()
     srs.ImportFromWkt(fi.projection)
     driver = ogr.GetDriverByName(ogrdriver)
     shapeData = driver.CreateDataSource(outvect)
     layer = shapeData.CreateLayer('trees', srs, ogr.wkbPolygon)
-    layer.CreateField(fieldId)
+    layer.CreateFields([fieldId, fieldHeight])
     layerDefinition = layer.GetLayerDefn()
     coordinate = {}
     while it:
@@ -243,8 +246,6 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
             row = indexes[0][ind]
             col = indexes[1][ind]
             treeid = crowns[row, col]
-            if not treeid in coordinate.keys():
-                coordinate[treeid] = ogr.Geometry(ogr.wkbMultiPoint)
             coordSeed = numpy.where(trees_indices == treeid)
             coordCrown = numpy.where(crowns == treeid)
             rvSeed = data[coordSeed[0],coordSeed[1]][0]
@@ -253,6 +254,8 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
             distances = [x - rvSeed for x in thSearchFilSize]
             dist = stepsSearchFilSize[distances.index(min(distances))]
             fildata = numpy.zeros([4, 3])
+            if not treeid in coordinate.keys():
+                coordinate[treeid] = [ogr.Geometry(ogr.wkbMultiPoint), rvSeed]
             try:
                 fildata[0, 0] = row - 1
                 fildata[0, 1] = col
@@ -283,15 +286,16 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
                     x, y = fi.indexes_to_coors(kk, rr)
                     poi = ogr.Geometry(ogr.wkbPoint)
                     poi.AddPoint(x, y)
-                    coordinate[treeid].AddGeometry(poi)
+                    coordinate[treeid][0].AddGeometry(poi)
                     it = True
         checks = old_crowns.copy()
         old_crowns = crowns.copy()
-    for fid, geom in coordinate.iteritems():
+    for fid, vals in coordinate.iteritems():
         outFeature = ogr.Feature(layerDefinition)
-        hull = geom.ConvexHull()
+        hull = vals[0].ConvexHull()
         hull.Segmentize(0.1)
         outFeature.SetField(fieldIdName, int(fid))
+        outFeature.SetField(fieldHeightName, float(vals[1]))
         outFeature.SetGeometry(hull)
         layer.CreateFeature(outFeature)
         outFeature.Destroy()
