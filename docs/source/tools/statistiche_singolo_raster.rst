@@ -1,4 +1,4 @@
-Statistiche singolo raster
+Statistiche su singolo raster
 ================================
 
 Il modulo calcola una serie di statistiche sul raster fornito in input dall'utente. Fornisce in uscita un file di testo con le statistiche. Le statistiche calcolate sono:
@@ -27,7 +27,7 @@ Esempio del contenuto del file di testo di output:
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/statistiche.png
+  .. image:: ../_static/tool_images/statistiche_singolo_raster.png
 
 
 Input
