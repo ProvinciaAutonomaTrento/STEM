@@ -4,7 +4,6 @@ Attribuzione/modifica classi tematiche
 Il modulo permette di modificare un mappa di classificazione aggregando le classi per area o modificandole manualmente.
 Questo modulo va usato nella fase di post-classificazione, per esempio per passare da una mappa di dettaglio delle specie forestali ad una meno dettagliata contenente solo le classi "conifere" e "latifoglie". Può essere inoltre usato per aggregare mappe di classificazione a pixel in aree di interesse.
 
-
 .. only:: latex
 
   .. image:: ../_static/tool_images/attribuzione_modifica_classi_tematiche.png
@@ -19,8 +18,6 @@ Parametri
 ------------
 
 **Selezionare il metodo da utilizzare**:
-
- * *Automatico*: utilizzando questa modalità ad ogni gruppo di pixels aventi la stessa etichetta viene assegnata una nuova classe. Questo fa aumentare il numeri di classi che diventa pari al numero di cluster di pixels aventi la stessa etichetta nella mappa iniziale. Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `r.clump <http://grass.osgeo.org/grass70/manuals/r.clump.html>`_
 
  * *Area*:  Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato `r.reclass.area <http://grass.osgeo.org/grass70/manuals/r.reclass.area.html>`_
 
