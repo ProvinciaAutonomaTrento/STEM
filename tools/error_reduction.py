@@ -31,6 +31,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 from gdal_stem import file_info
 from grass_stem import temporaryFilesGRASS
 import traceback
+import types
 
 
 class STEMToolsDialog(BaseDialog):
@@ -87,7 +88,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked)
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -95,8 +96,8 @@ class STEMToolsDialog(BaseDialog):
                 startcom = ['r.neighbors', 'method=mode',
                             'size={val}'.format(val=self.Linedit.text())]
             else:
-                startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
-                            'value={val}'.format(val=self.Linedit.text())]
+                startcom = {'val': float(self.Linedit.text()), 'inps': [],
+                            'outs': []}
 
             if len(nlayerchoose) > 1:
                 raster = file_info()
@@ -106,23 +107,37 @@ class STEMToolsDialog(BaseDialog):
                     com = startcom[:]
                     out = '{name}_{lay}'.format(name=tempout, lay=layer)
                     outnames.append(out)
-                    com.extend(['input={name}.{lay}'.format(name=tempin,
-                                                            lay=layer),
-                                'output={outname}'.format(outname=out)])
-                    coms.append(com)
-                    STEMUtils.saveCommand(com)
+                    inp = '{name}.{lay}'.format(name=tempin, lay=layer)
+                    if isinstance(startcom, types.ListType):
+                        com.extend(['input={inpn}'.format(inpn=inp),
+                                    'output={outn}'.format(outn=out)])
+                        coms.append(com)
+                        STEMUtils.saveCommand(com)
+                    else:
+                        startcom['inps'].append(inp)
+                        startcom['outs'].append(out)
             else:
                 outnames.append(tempout)
-                startcom.extend(['input={name}'.format(name=tempin),
-                                 'output={outname}'.format(outname=tempout)])
-                coms.append(startcom)
-                STEMUtils.saveCommand(startcom)
+                if isinstance(startcom, types.ListType):
+                    startcom.extend(['input={name}'.format(name=tempin),
+                                     'output={outn}'.format(outn=tempout)])
+                    coms.append(startcom)
+                    STEMUtils.saveCommand(startcom)
+                else:
+                    startcom['inps'].append(tempin)
+                    startcom['outs'].append(tempout)
 
-            gs.run_grass(coms)
+            if isinstance(startcom, types.ListType):
+                gs.run_grass(coms)
+            else:
+                for num in range(len(startcom['inps'])):
+                    gs.rmarea(startcom['inps'][num], startcom['outs'][num],
+                              startcom['val'])
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(), tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

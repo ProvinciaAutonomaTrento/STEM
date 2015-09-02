@@ -496,6 +496,27 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo il comando {err}".format(err=err))
 
+    def rmarea(self, infile, outfile, thresh):
+        # transform user input from hectares to map units (kept this for future)
+        # thresh = thresh * 10000.0 / (float(coef)**2)
+        # grass.debug("Threshold: %d, coeff linear: %s, coef squared: %d" % (thresh, coef, (float(coef)**2)), 0)
+
+        # transform user input from hectares to meters because currently v.clean
+        # rmarea accept only meters as threshold
+        thresh = thresh * 10000.0
+        vectfile = "%s_vect_%s" % (infile.split('@')[0], outfile)
+        self.run_grass([['r.to.vect', 'input={inp}'.format(inp=infile),
+                         'output={vect}'.format(vect=vectfile), 'type=area']])
+        cleanfile = "%s_clean_%s" % (infile.split('@')[0], outfile)
+        self.run_grass([['v.clean', 'input={vect}'.format(vect=vectfile),
+                         'output={clea}'.format(clea=cleanfile), 'tool=rmarea',
+                         'threshold={thre}'.format(thre=thresh)]])
+
+        self.run_grass([['v.to.rast', 'input={clea}'.format(clea=cleanfile),
+                         'output={out}'.format(out=outfile),
+                         'use=attr', 'attrcolumn=value']])
+        self.removeMaps(names=[vectfile, cleanfile])
+
     def print_grass(self, comm):
         """Print a GRASS module"""
         import grass.script.core as gcore
@@ -508,6 +529,26 @@ class stemGRASS():
                                 "Errore eseguendo il comando {err}".format(err=err))
             else:
                 return out
+
+    def removeMaps(self, names=None, pattern=None, typ='raster'):
+        """Remove maps from mapset
+        :param list names: names of maps to remove
+        :param str pattern: a string containing the pattern of maps to remove
+        :param str typ: type of data: raster or vector to remove
+        """
+        com = ['g.remove', 'type={name}'.format(name=typ)]
+        if not names and not pattern:
+            raise Exception("Errore eseguendo GRASS: Impostare almeno "
+                            "una tra le variabili names o pattern")
+        elif names and pattern:
+            raise Exception("Errore eseguendo GRASS: Impostare almeno "
+                            "una tra le variabili names o pattern")
+        elif names:
+            com.append('name={inps}'.format(inps=','.join(names)))
+
+        elif pattern:
+            com.append('pattern={inp}'.format(inp=pattern))
+        self.run_grass([com])
 
     def removeMapset(self):
         """Remove mapset with all the contained data"""

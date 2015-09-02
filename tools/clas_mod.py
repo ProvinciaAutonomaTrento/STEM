@@ -28,6 +28,7 @@ from grass_stem import temporaryFilesGRASS
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 from gdal_stem import file_info
+import types
 
 
 class STEMToolsDialog(BaseDialog):
@@ -43,7 +44,7 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
-        items = ['automatico', 'area', 'manuale']
+        items = ['area', 'manuale']
         label = "Seleziona il metodo da utilizzare"
         self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
@@ -113,14 +114,13 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
-            if self.BaseInputCombo.currentText() == 'automatico':
-                startcom = ['r.clump']
-            elif self.BaseInputCombo.currentText() == 'manuale':
+
+            if self.BaseInputCombo.currentText() == 'manuale':
                 fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
                 startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
             else:
-                startcom = ['r.reclass.area', 'mode=lesser', 'method=rmarea',
-                            'value={val}'.format(val=self.Linedit.text())]
+                startcom = {'val': float(self.Linedit.text()), 'inps': [],
+                            'outs': []}
 
             if len(nlayerchoose) > 1:
                 raster = file_info()
@@ -130,19 +130,33 @@ class STEMToolsDialog(BaseDialog):
                     layer = raster.getColorInterpretation(n)
                     out = '{name}_{lay}'.format(name=tempout, lay=layer)
                     outnames.append(out)
-                    com.extend(['input={name}.{lay}'.format(name=tempin,
-                                                            lay=layer),
-                                'output={outname}'.format(outname=out)])
-                    coms.append(com)
-                    STEMUtils.saveCommand(com)
+                    inp = '{name}.{lay}'.format(name=tempin, lay=layer)
+                    if isinstance(startcom, types.ListType):
+                        com.extend(['input={inpn}'.format(inpn=inp),
+                                    'output={outn}'.format(outn=out)])
+                        coms.append(com)
+                        STEMUtils.saveCommand(com)
+                    else:
+                        startcom['inps'].append(inp)
+                        startcom['outs'].append(out)
+
             else:
                 outnames.append(tempout)
-                startcom.extend(['input={name}'.format(name=tempin),
-                                 'output={outname}'.format(outname=tempout)])
-                coms.append(startcom)
-                STEMUtils.saveCommand(startcom)
+                if isinstance(startcom, types.ListType):
+                    startcom.extend(['input={name}'.format(name=tempin),
+                                     'output={outn}'.format(outn=tempout)])
+                    coms.append(startcom)
+                    STEMUtils.saveCommand(startcom)
+                else:
+                    startcom['inps'].append(tempin)
+                    startcom['outs'].append(tempout)
 
-            gs.run_grass(coms)
+            if isinstance(startcom, types.ListType):
+                gs.run_grass(coms)
+            else:
+                for num in range(len(startcom['inps'])):
+                    gs.rmarea(startcom['inps'][num], startcom['outs'][num],
+                              startcom['val'])
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
