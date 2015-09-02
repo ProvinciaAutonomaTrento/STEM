@@ -2,6 +2,7 @@ Selezione feature per classificazione
 =========================================
 
 Il modulo esegue la selezione delle feature per la classificazione. La selezione verrà effettuata utilizzando l'algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vi sarà un file di testo con l'indicazione delle feature da utilizzare.
+La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade.
 
 .. warning::
 
