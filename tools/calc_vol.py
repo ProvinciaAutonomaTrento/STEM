@@ -91,7 +91,7 @@ class STEMToolsDialog(BaseDialog):
                 import Pyro4
                 ogrinfo = Pyro4.Proxy("PYRONAME:stem.ogrinfo")
             ogrinfo.initialize(source, 1)
-            ogrinfo.calc_vol(out, dia, hei, specie)
+            ogrinfo.calc_vol(out, hei, dia, specie)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.reloadVectorLayer(name)

@@ -136,6 +136,7 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
         raise 'Python gdal_array library not found, please install python-gdal'
     fi = file_info()
     fi.init_from_name(inrast)
+    resolution = fi.geotransform[1]
     data = gdal_array.DatasetReadAsArray(fi.s_fh)
     Hmax = data.max()
     border = int(numpy.ceil(minsearch / 2))
@@ -176,26 +177,31 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
                 x, y = fi.indexes_to_coors(colind, rowind)
                 point = ogr.Geometry(ogr.wkbPoint)
                 point.SetPoint(0, x, y)
-                feature = ogr.Feature(layerDefinition)
-                feature.SetField(fieldHeightName, float(val))
-                feature.SetField(fieldIdName, fid)
-                feature.SetGeometry(point)
-                layer.CreateFeature(feature)
-                fid += 1
-                output = True
+                buf = point.Buffer(val_moving / 2 * resolution)
+                layer.SetSpatialFilter(buf)
+                if layer.GetFeatureCount() == 0:
+                    feature = ogr.Feature(layerDefinition)
+                    feature.SetField(fieldHeightName, float(val))
+                    feature.SetField(fieldIdName, fid)
+                    feature.SetGeometry(point)
+                    layer.CreateFeature(feature)
+                    fid += 1
+                    output = True
+                layer.SetSpatialFilter(None)
     shapeData.Destroy()
     if not output:
         raise 'No points found in the give CHM'
 
 
 def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
-                       tresh_crown=0.65, ogrdriver='ESRI Shapefile'):
+                       tresh_crown=0.65, tresh_seed=0.65,
+                       ogrdriver='ESRI Shapefile'):
     """Function to extract """
     try:
         import osgeo.gdal_array as gdal_array
     except ImportError:
         raise 'Python gdal_array library not found, please install python-gdal'
-    TRESHSeed = 0.65
+    TRESHSeed = tresh_seed
     TRESHCrown = tresh_crown
     fi = file_info()
     fi.init_from_name(inrast)
@@ -228,31 +234,34 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     fieldIdName = 'id'
     filedIdType = ogr.OFTInteger
     fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
+    fieldHeightName = 'height'
+    fieldHeightType = ogr.OFTReal
+    fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
     srs = osr.SpatialReference()
     srs.ImportFromWkt(fi.projection)
     driver = ogr.GetDriverByName(ogrdriver)
     shapeData = driver.CreateDataSource(outvect)
     layer = shapeData.CreateLayer('trees', srs, ogr.wkbPolygon)
-    layer.CreateField(fieldId)
+    layer.CreateFields([fieldId, fieldHeight])
     layerDefinition = layer.GetLayerDefn()
     coordinate = {}
     while it:
         it = False
         indexes = ((crowns != 0) * (checks == 0)).nonzero()
-        for ind in range(1,len(indexes[0])):
+        for ind in range(1, len(indexes[0])):
             row = indexes[0][ind]
             col = indexes[1][ind]
             treeid = crowns[row, col]
-            if not treeid in coordinate.keys():
-                coordinate[treeid] = ogr.Geometry(ogr.wkbMultiPoint)
             coordSeed = numpy.where(trees_indices == treeid)
             coordCrown = numpy.where(crowns == treeid)
-            rvSeed = data[coordSeed[0],coordSeed[1]][0]
-            Crownvals = data[coordCrown[0],coordCrown[1]]
+            rvSeed = data[coordSeed[0], coordSeed[1]][0]
+            Crownvals = data[coordCrown[0], coordCrown[1]]
             rvCrown = Crownvals.mean()
             distances = [x - rvSeed for x in thSearchFilSize]
             dist = stepsSearchFilSize[distances.index(min(distances))]
             fildata = numpy.zeros([4, 3])
+            if not treeid in coordinate.keys():
+                coordinate[treeid] = [ogr.Geometry(ogr.wkbMultiPoint), rvSeed]
             try:
                 fildata[0, 0] = row - 1
                 fildata[0, 1] = col
@@ -283,15 +292,16 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
                     x, y = fi.indexes_to_coors(kk, rr)
                     poi = ogr.Geometry(ogr.wkbPoint)
                     poi.AddPoint(x, y)
-                    coordinate[treeid].AddGeometry(poi)
+                    coordinate[treeid][0].AddGeometry(poi)
                     it = True
         checks = old_crowns.copy()
         old_crowns = crowns.copy()
-    for fid, geom in coordinate.iteritems():
+    for fid, vals in coordinate.iteritems():
         outFeature = ogr.Feature(layerDefinition)
-        hull = geom.ConvexHull()
+        hull = vals[0].ConvexHull()
         hull.Segmentize(0.1)
         outFeature.SetField(fieldIdName, int(fid))
+        outFeature.SetField(fieldHeightName, float(vals[1]))
         outFeature.SetGeometry(hull)
         layer.CreateFeature(outFeature)
         outFeature.Destroy()
