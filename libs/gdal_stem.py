@@ -212,8 +212,8 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     # define parameters for the new raster
     xcount = int((fi.lrx - fi.ulx) / fi.geotransform[1])
     ycount = int((fi.uly - fi.lry) / fi.geotransform[1])
-    target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount,
-                                                   gdal.GDT_Byte)
+    target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1,
+                                                   gdal.GDT_UInt32)
     target_ds.SetGeoTransform((fi.ulx, fi.geotransform[1], 0, fi.uly, 0,
                                fi.geotransform[5]))
     shape_datasource = ogr.Open(invect)
