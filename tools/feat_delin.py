@@ -28,7 +28,6 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
 import traceback
 
 
-
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.shp')
@@ -75,7 +74,8 @@ class STEMToolsDialog(BaseDialog):
                                int(self.Linedit.text()),
                                int(self.Linedit2.text()),
                                int(self.Linedit3.text()),
-                               float(self.Linedit4.text()))
+                               float(self.Linedit4.text()),
+                               overwrite=self.overwrite)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:

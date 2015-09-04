@@ -127,7 +127,7 @@ def createMaskFromBbox(coord):
 
 
 def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
-                    ogrdriver='ESRI Shapefile'):
+                    ogrdriver='ESRI Shapefile', overwrite=False):
     """Function to calculate the position of three from CHM
 
     """
@@ -153,6 +153,8 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
     srs = osr.SpatialReference()
     srs.ImportFromWkt(fi.projection)
     driver = ogr.GetDriverByName(ogrdriver)
+    if overwrite:
+        driver.DeleteDataSource(outvect)
     shapeData = driver.CreateDataSource(outvect)
     layer = shapeData.CreateLayer('trees_pos', srs, ogr.wkbPoint)
     layer.CreateFields([fieldId, fieldHeight])
@@ -196,7 +198,7 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
 
 def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
                        tresh_crown=0.65, tresh_seed=0.65,
-                       ogrdriver='ESRI Shapefile'):
+                       ogrdriver='ESRI Shapefile', overwrite=False):
     """Function to extract """
     try:
         import osgeo.gdal_array as gdal_array
@@ -238,6 +240,8 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     srs = osr.SpatialReference()
     srs.ImportFromWkt(fi.projection)
     driver = ogr.GetDriverByName(ogrdriver)
+    if overwrite:
+        driver.DeleteDataSource(outvect)
     shapeData = driver.CreateDataSource(outvect)
     layer = shapeData.CreateLayer('trees', srs, ogr.wkbPolygon)
     layer.CreateFields([fieldId, fieldHeight])

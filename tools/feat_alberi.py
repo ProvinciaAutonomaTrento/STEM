@@ -60,8 +60,11 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            position_alberi(source, self.TextOut.text(), int(self.Linedit.text()),
-                            int(self.Linedit2.text()), int(self.Linedit3.text()))
+            position_alberi(source, self.TextOut.text(),
+                            int(self.Linedit.text()),
+                            int(self.Linedit2.text()),
+                            int(self.Linedit3.text()),
+                            overwrite=self.overwrite)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:
