@@ -50,6 +50,7 @@ import sys
 import numpy
 from types import StringType, ListType
 from pyro_stem import PYROSERVER, GDAL_PORT
+import gc
 
 NP2GDAL_CONVERSION = {
   "int8": 1,
@@ -154,7 +155,7 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
     driver = ogr.GetDriverByName(ogrdriver)
     shapeData = driver.CreateDataSource(outvect)
     layer = shapeData.CreateLayer('trees_pos', srs, ogr.wkbPoint)
-    layer.CreateFields([fieldId,fieldHeight])
+    layer.CreateFields([fieldId, fieldHeight])
     layerDefinition = layer.GetLayerDefn()
     output = False
     fid = 1
@@ -226,10 +227,7 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     gdal.RasterizeLayer(target_ds, [1], shape_layer, None, None, [1],
                         ['ATTRIBUTE=id', 'ALL_TOUCHED=TRUE'])
     trees_indices = gdal_array.DatasetReadAsArray(target_ds)
-    crowns = trees_indices.copy()
-    old_crowns = trees_indices.copy()
-    checks = trees_indices.copy()
-    checks[:] = 0
+    target_ds = None
     it = True
     fieldIdName = 'id'
     filedIdType = ogr.OFTInteger
@@ -245,6 +243,11 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     layer.CreateFields([fieldId, fieldHeight])
     layerDefinition = layer.GetLayerDefn()
     coordinate = {}
+    gc.collect()
+    crowns = trees_indices.copy()
+    old_crowns = trees_indices.copy()
+    checks = trees_indices.copy()
+    checks[:] = 0
     while it:
         it = False
         indexes = ((crowns != 0) * (checks == 0)).nonzero()
@@ -260,7 +263,7 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
             distances = [x - rvSeed for x in thSearchFilSize]
             dist = stepsSearchFilSize[distances.index(min(distances))]
             fildata = numpy.zeros([4, 3])
-            if not treeid in coordinate.keys():
+            if treeid not in coordinate.keys():
                 coordinate[treeid] = [ogr.Geometry(ogr.wkbMultiPoint), rvSeed]
             try:
                 fildata[0, 0] = row - 1
