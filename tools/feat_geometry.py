@@ -42,22 +42,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        self._insertLayerChooseCheckBox(label="Selezionare la banda per il canale rosso",
-                                        combo=False)
+        self._insertLayerChooseCheckBox()
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-
-        self._insertLayerChooseCheckBox2(label="Selezionare la banda per il canale verde",
-                                         combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
-
-        self._insertLayerChooseCheckBox3(label="Selezionare la banda per il canale blu",
-                                         combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
-
-        self._insertLayerChooseCheckBox4(label="Selezionare la banda per il canale infrarosso",
-                                         combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4)
 
         self._insertThresholdDouble(0.1, 1.00, 0.1, 1, 1,
                                     "Selezionare il threshold minimo")
@@ -95,13 +82,7 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-
-            red = str(self.layer_list.currentIndex() + 1)
-            green = str(self.layer_list2.currentIndex() + 1)
-            blu = str(self.layer_list3.currentIndex() + 1)
-            pan = str(self.layer_list4.currentIndex() + 1)
-            nlayers = [red, green, blu, pan]
-
+            nlayers = STEMUtils.checkLayers(source, self.layer_list)
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             coms = []
 
