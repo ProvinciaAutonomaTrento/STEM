@@ -18,14 +18,7 @@ Input
 
 **Dati di input**: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare il raster su cui eseguire l'estrazione delle feature geometriche.
 
-**Selezionare la banda per il canale rosso**: selezionare dall'immagine di input la banda corrispondente al rosso.
-
-**Selezionare la banda per il canale verde**: selezionare dall'immagine di input la banda corrispondente al verde.
-
-**Selezionare la banda per il canale blu**: selezionare dall'immagine di input la banda corrispondente al blu.
-
-**Selezionare la banda per il canale infrarosso**: selezionare dall'immagine di input la banda corrispondente al infrarosso.
-
+**Selezionare le bande da utilizzae cliccandoci sopra**: selezionare le bande dell'immagine su cui effettuare la segmentazione.
 
 Parametri
 ------------
