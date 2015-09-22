@@ -332,7 +332,10 @@ class stemLAS():
         filt_ret.append(filt_prog)
         write.append(filt_ret)
         root.append(write)
-        tmp_file.write(tostring(root, 'utf-8'))
+        if sys.platform == 'win32':
+            tmp_file.write(tostring(root, 'iso-8859-1'))
+        else:
+            tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
         self.pdalxml = tmp_file.name
         return 0
@@ -378,7 +381,7 @@ class stemLAS():
         write.append(filt)
         root.append(write)
         if sys.platform == 'win32':
-            tmp_file.write(tostring(root))
+            tmp_file.write(tostring(root, 'iso-8859-1'))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
@@ -425,7 +428,7 @@ class stemLAS():
         write.append(filt)
         root.append(write)
         if sys.platform == 'win32':
-            tmp_file.write(tostring(root))
+            tmp_file.write(tostring(root, 'iso-8859-1'))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
@@ -491,31 +494,39 @@ class stemLAS():
         filt.set("type", "filters.range")
         if x:
             x_opt = self._add_option_file('X', val='dimension')
+            options = Element('Options')
             minxval = self._add_option_file(x[0], val='min')
             maxxval = self._add_option_file(x[1], val='max')
-            x_opt.append(minxval)
-            x_opt.append(maxxval)
+            options.append(minxval)
+            options.append(maxxval)
+            x_opt.append(options)
             filt.append(x_opt)
         if y:
             y_opt = self._add_option_file('Y', val='dimension')
+            options = Element('Options')
             minyval = self._add_option_file(y[0], val='min')
             maxyval = self._add_option_file(y[1], val='max')
-            y_opt.append(minyval)
-            y_opt.append(maxyval)
+            options.append(minyval)
+            options.append(maxyval)
+            y_opt.append(options)
             filt.append(y_opt)
         if z:
             z_opt = self._add_option_file('Z', val='dimension')
+            options = Element('Options')
             minzval = self._add_option_file(z[0], val='min')
             maxzval = self._add_option_file(z[1], val='max')
-            z_opt.append(minzval)
-            z_opt.append(maxzval)
+            options.append(minzval)
+            options.append(maxzval)
+            z_opt.append(options)
             filt.append(z_opt)
         if retur:
             if retur == 'first':
                 first_opt = self._add_option_file('ReturnNumber',
                                                   val='dimension')
+                options = Element('Options')
                 firstval = self._add_option_file(1, val='uquals')
-                first_opt.append(firstval)
+                options.append(firstval)
+                first_opt.append(options)
                 filt.append(first_opt)
             else:
                 filt_ret = Element('Filter')
@@ -531,28 +542,34 @@ class stemLAS():
                 filt_ret.append(source)
         if clas:
             clas_opt = self._add_option_file('Classification', val='dimension')
+            options = Element('Options')
             clasval = self._add_option_file(clas, val='uquals')
-            clas_opt.append(clasval)
+            options.append(clasval)
+            clas_opt.append(options)
             filt.append(clas_opt)
         if inte:
             int_opt = self._add_option_file('Intensity', val='dimension')
+            options = Element('Options')
             minintval = self._add_option_file(inte[0], val='min')
             maxintval = self._add_option_file(inte[1], val='max')
-            int_opt.append(minintval)
-            int_opt.append(maxintval)
+            options.append(minintval)
+            options.append(maxintval)
+            int_opt.append(options)
             filt.append(int_opt)
         if angle:
             ang_opt = self._add_option_file('ScanAngleRank', val='dimension')
+            options = Element('Options')
             minangval = self._add_option_file(angle[0], val='min')
             maxangval = self._add_option_file(angle[1], val='max')
-            ang_opt.append(minangval)
-            ang_opt.append(maxangval)
+            options.append(minangval)
+            options.append(maxangval)
+            ang_opt.append(options)
             filt.append(ang_opt)
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
         if sys.platform == 'win32':
-            tmp_file.write(tostring(root))
+            tmp_file.write(tostring(root, 'iso-8859-1'))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
