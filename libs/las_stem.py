@@ -377,7 +377,7 @@ class stemLAS():
 
         write.append(filt)
         root.append(write)
-        if sys.platform != 'win32':
+        if sys.platform == 'win32':
             tmp_file.write(tostring(root))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
@@ -424,7 +424,7 @@ class stemLAS():
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
-        if sys.platform != 'win32':
+        if sys.platform == 'win32':
             tmp_file.write(tostring(root))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
@@ -551,7 +551,7 @@ class stemLAS():
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
-        if sys.platform != 'win32':
+        if sys.platform == 'win32':
             tmp_file.write(tostring(root))
         else:
             tmp_file.write(tostring(root, 'utf-8'))
