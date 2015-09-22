@@ -68,9 +68,11 @@ class STEMToolsDialog(BaseDialog):
             STEMMessageHandler.error("Selezionare se utilizzare l'estensione "
                                      "di QGIS o la maschera, questa è da "
                                      "impostare con l'apposito modulo")
+            return
         elif self.QGISextent.isChecked() and self.AddLayerToCanvas.isChecked():
             STEMMessageHandler.error("Selezionare solo uno tra la maschera e "
                                      "l'estensione di QGIS")
+            return
         elif self.QGISextent.isChecked():
             self.mapDisplay()
             area = " ".join(self.rect_str)
