@@ -120,6 +120,8 @@ class stemLAS():
         self.liblas = None
         self.returns = []
         self.classes = []
+        self.mins = []
+        self.maxs = []
 
     def initialize(self):
         """Initialization of class"""
@@ -127,13 +129,8 @@ class stemLAS():
 
     def _check(self):
         """Check which libraries is present on the system"""
-        if sys.platform != 'win32':
-            self.pdal = True
-            self.liblas = True
-        else:
-            self.pdal = self._checkLibs('pdal-config --version')
-            self.liblas = self._checkLibs('liblas-config --version',
-                                          'las2las --help')
+        self.pdal = self._checkLibs('pdal --version')
+        self.liblas = self._checkLibs('las2las --help')
 
     def _checkLibs(self, command, second=None):
         """Check the single library
@@ -212,29 +209,17 @@ class stemLAS():
                            values are 'liblas' and 'pdal'
         """
         if forced == 'liblas' and self.liblas:
-            if sys.platform != 'win32':
-                return ['las2las.exe']
-            else:
-                return ['las2las']
+            return ['las2las']
         elif forced == 'liblas' and not self.liblas:
             raise Exception("LibLAS non trovato")
         elif forced == 'pdal' and self.pdal:
-            if sys.platform != 'win32':
-                return ['pdal.exe', 'pipeline']
-            else:
-                return ['pdal', 'pipeline']
+            return ['pdal', 'pipeline']
         elif forced == 'pdal' and not self.pdal:
             raise Exception("pdal non trovato")
         elif self.pdal:
-            if sys.platform != 'win32':
-                return ['pdal.exe', 'pipeline']
-            else:
-                return ['pdal', 'pipeline']
+            return ['pdal', 'pipeline']
         else:
-            if sys.platform != 'win32':
-                return ['las2las.exe']
-            else:
-                return ['las2las']
+            raise Exception('Not able to find a library to work with LAS files')
 
     def _run_command(self, comm):
         """Run the command and return the output
@@ -266,6 +251,12 @@ class stemLAS():
         xml = self._run_command(comm)
         tree = fromstring(xml)
         header = tree.find('header')
+        mins = header.find('minimum')
+        self.mins = [mins.find('x').text, mins.find('y').text,
+                     mins.find('z').text]
+        maxs = header.find('maximum')
+        self.maxs = [maxs.find('x').text, maxs.find('y').text,
+                     maxs.find('z').text]
         returns = header.find('returns')
         for ret in returns.findall('return'):
             self.returns.append(ret.find('id').text)
@@ -356,6 +347,7 @@ class stemLAS():
         """
         if self.pdal:
             command = ['pdal', 'pipeline']
+
             fi = file_info()
             fi.init_from_name(dtm)
             bbox = fi.getBBoxWkt()
@@ -385,7 +377,10 @@ class stemLAS():
 
         write.append(filt)
         root.append(write)
-        tmp_file.write(tostring(root, 'utf-8'))
+        if sys.platform != 'win32':
+            tmp_file.write(tostring(root))
+        else:
+            tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
         self.pdalxml = tmp_file.name
         return 0
@@ -429,7 +424,10 @@ class stemLAS():
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
-        tmp_file.write(tostring(root, 'utf-8'))
+        if sys.platform != 'win32':
+            tmp_file.write(tostring(root))
+        else:
+            tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
         self.pdalxml = tmp_file.name
         return 0
@@ -555,7 +553,10 @@ class stemLAS():
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
-        tmp_file.write(tostring(root, 'utf-8'))
+        if sys.platform != 'win32':
+            tmp_file.write(tostring(root))
+        else:
+            tmp_file.write(tostring(root, 'utf-8'))
         tmp_file.close()
         self.pdalxml = tmp_file.name
         return 0
@@ -582,12 +583,24 @@ class stemLAS():
             if compressed:
                 command.append('-c')
             command.extend(['-i', inp, '-o', out])
+            self.lasinfo(inp)
             if x:
-                command.extend(['--minx', x[0], '--maxx', x[1]])
+                command.extend(['-e', "{minx} {miny} {minz} {maxx} {maxy} "
+                                "{maxz}".format(minx=x[0], miny=self.mins[1],
+                                                minz=self.mins[2], maxx=x[0],
+                                                maxy=self.maxs[1],
+                                                maxz=self.maxs[2])])
             if y:
-                command.extend(['--miny', y[0], '--maxy', y[1]])
+                command.extend(['-e', "{minx} {miny} {minz} {maxx} {maxy} "
+                                "{maxz}".format(minx=self.mins[0], miny=y[0],
+                                                minz=self.mins[2], maxx=self.maxs[0],
+                                                maxy=y[1], maxz=self.maxs[2])])
             if z:
-                command.extend(['--minz', z[0], '--maxz', z[1]])
+                command.extend(['-e', "{minx} {miny} {minz} {maxx} {maxy} "
+                                "{maxz}".format(minx=self.mins[0],
+                                                miny=self.mins[1], minz=z[0],
+                                                maxx=self.maxs[0], maxy=self.maxs[1],
+                                                maxz=z[1])])
             if clas:
                 command.extend(['--keep-classes', str(clas)])
             if inte:
