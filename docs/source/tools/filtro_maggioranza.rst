@@ -56,7 +56,7 @@ Parametri
 
 **Dimensione del neighborhood** (opzionale): valore numerico dispari indicativo della dimensione della finestra mobile del filtro. Il valore deve essere dispari. Attivo solo se il metodo selezionato è "vicinanza". Valori alti del neighborhood comportano una maggiore "smussatura" dell'immagine classificata.
 
-**Inserire la dimensione minima da tenere in considerazione** (opzionale): valore numerico indicativo della dimensione minima da tenere in considerazione nel filtraggio. Attivo solo se il metodo selezionato è "area".
+**Inserire la dimensione minima da tenere in considerazione (in ettari)** (opzionale): valore numerico indicativo della dimensione minima in ettari da tenere in considerazione nel filtraggio. Attivo solo se il metodo selezionato è "area".
 
 Output
 ------------

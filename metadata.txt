@@ -5,7 +5,7 @@ description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'a
 about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di Trento, Italian language is used for plugin interface
 category=
 version=0.4.1
-author=Luca Delucchi, Pietro Zambelli, Salvatore La Rosa, Michele Dalponte, Francesco Nex
+author=Luca Delucchi, Pietro Zambelli, Salvatore Larosa, Michele Dalponte, Francesco Nex
 email=luca.delucchi@fmach.it
 
 repository=https://gitlab.com/lucadelu/stem
