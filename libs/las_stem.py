@@ -22,6 +22,7 @@ from gdal_stem import file_info
 from stem_utils import STEMUtils, STEMMessageHandler
 import os
 import json
+import sys
 PIPE = subprocess.PIPE
 
 LAST_RETURN = """
@@ -126,9 +127,13 @@ class stemLAS():
 
     def _check(self):
         """Check which libraries is present on the system"""
-        self.pdal = self._checkLibs('pdal-config --version')
-        self.liblas = self._checkLibs('liblas-config --version',
-                                      'las2las --help')
+        if sys.platform != 'win32':
+            self.pdal = True
+            self.liblas = True
+        else:
+            self.pdal = self._checkLibs('pdal-config --version')
+            self.liblas = self._checkLibs('liblas-config --version',
+                                          'las2las --help')
 
     def _checkLibs(self, command, second=None):
         """Check the single library
@@ -207,17 +212,29 @@ class stemLAS():
                            values are 'liblas' and 'pdal'
         """
         if forced == 'liblas' and self.liblas:
-            return ['las2las']
+            if sys.platform != 'win32':
+                return ['las2las.exe']
+            else:
+                return ['las2las']
         elif forced == 'liblas' and not self.liblas:
             raise Exception("LibLAS non trovato")
         elif forced == 'pdal' and self.pdal:
-            return ['pdal', 'pipeline']
+            if sys.platform != 'win32':
+                return ['pdal.exe', 'pipeline']
+            else:
+                return ['pdal', 'pipeline']
         elif forced == 'pdal' and not self.pdal:
             raise Exception("pdal non trovato")
         elif self.pdal:
-            return ['pdal', 'pipeline']
+            if sys.platform != 'win32':
+                return ['pdal.exe', 'pipeline']
+            else:
+                return ['pdal', 'pipeline']
         else:
-            return ['las2las']
+            if sys.platform != 'win32':
+                return ['las2las.exe']
+            else:
+                return ['las2las']
 
     def _run_command(self, comm):
         """Run the command and return the output
@@ -432,6 +449,8 @@ class stemLAS():
             command = self._start_command('pdal')
         else:
             command = self._start_command(forced)
+        import ipdb
+        ipdb.set_trace()
         if 'las2las' in command:
             if compressed:
                 command.append('-c')
