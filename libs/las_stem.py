@@ -447,8 +447,6 @@ class stemLAS():
             command = self._start_command('pdal')
         else:
             command = self._start_command(forced)
-        import ipdb
-        ipdb.set_trace()
         if 'las2las' in command:
             if compressed:
                 command.append('-c')
