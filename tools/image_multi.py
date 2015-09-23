@@ -32,7 +32,7 @@ from gdal_stem import convertGDAL
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='')
         self.toolName = name
         self.iface = iface
 
