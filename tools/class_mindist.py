@@ -208,8 +208,13 @@ class STEMToolsDialog(BaseDialog):
                        'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
             feat = str(self.MethodInput.currentText())
             infile = self.TextInOpt.text()
-            nfold = int(self.Linedit3.text())
-            prefcsv += "_{f}_{n}_{w}".format(f=nfold, n=n, w=self.weight)
+            prefcsv += "_{n}_{w}".format(n=n, w=self.weight)
+
+            if self.checkbox2.isChecked():
+                nfold = int(self.Linedit3.text())
+                prefcsv += "_{n}".format(n=nfold)
+            else:
+                nfold = None
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:

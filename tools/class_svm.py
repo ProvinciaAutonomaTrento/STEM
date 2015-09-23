@@ -242,8 +242,11 @@ class STEMToolsDialog(BaseDialog):
                     pass
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
-            nfold = int(self.Linedit3.text())
-            prefcsv += "_{n}".format(n=nfold)
+            if self.checkbox2.isChecked():
+                nfold = int(self.Linedit3.text())
+                prefcsv += "_{n}".format(n=nfold)
+            else:
+                nfold = None
             models, prefcsv = self.getModel(prefcsv)
             feat = str(self.MethodInput.currentText())
 
