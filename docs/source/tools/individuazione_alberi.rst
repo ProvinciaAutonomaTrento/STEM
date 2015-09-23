@@ -6,7 +6,7 @@ Se il raster del CHM di partenza ha una risoluzione spaziale molto alta (es. 0.2
 
 .. only:: latex
 
-  .. image:: ../_static/tool_images/delimitazione_chiome.png
+  .. image:: ../_static/tool_images/individuazione_alberi.png
 
 
 Input
