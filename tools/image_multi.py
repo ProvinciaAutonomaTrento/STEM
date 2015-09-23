@@ -26,7 +26,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMSettings
+from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
 from gdal_stem import convertGDAL
 
 
@@ -42,6 +42,13 @@ class STEMToolsDialog(BaseDialog):
         formats = ['GTIFF', 'ENVI']
         self._insertFirstCombobox('Formato di output', 0, formats)
 
+        mets = ['Selezionare il formato di output', 'numeri interi',
+                'numeri decimali']
+        self.digit = None
+        self.lm = "Selezionare la tipologia del formato di output"
+        self._insertMethod(mets, self.lm, 1)
+        self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -50,10 +57,23 @@ class STEMToolsDialog(BaseDialog):
         self.switchClippingMode()
         self.show_(self)
 
+    def methodChanged(self):
+        if self.MethodInput.currentText() == 'numeri interi':
+            # int32
+            self.digit = 5
+        elif self.MethodInput.currentText() == 'numeri decimali':
+            # float32
+            self.digit = 6
+        else:
+            self.digit = None
+
     def onClosing(self):
         self.onClosing(self)
 
     def onRunLocal(self):
+        if not self.digit:
+            STEMMessageHandler.error("Selezionare il formato di output")
+            return
         STEMSettings.saveWidgetsValue(self, self.toolName)
         items = []
 
@@ -65,7 +85,7 @@ class STEMToolsDialog(BaseDialog):
         names = [i.text() for i in items]
         sources = [STEMUtils.getLayersSource(i) for i in names]
         outformat = str(self.BaseInputCombo.currentText())
-        cut, cutsource = self.cutInputMulti(names, sources, 'raster')
+        cut, cutsource = self.cutInputMulti(names, sources)
         if cut:
                 items = cut
                 sources = cutsource
@@ -78,7 +98,7 @@ class STEMToolsDialog(BaseDialog):
         else:
             import Pyro4
             cgdal = Pyro4.Proxy("PYRONAME:stem.gdalconvert")
-        cgdal.initialize(sources, out, outformat)
+        cgdal.initialize(sources, out, outformat, self.digit)
         cgdal.write()
         if self.overwrite:
             STEMUtils.renameRast(out, self.TextOut.text())
