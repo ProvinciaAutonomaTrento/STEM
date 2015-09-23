@@ -35,7 +35,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from stem_base_dialogs import SettingsDialog, helpDialog
 from stem_toolbox import STEMToolbox
-from stem_utils import STEMSettings, STEMMessageHandler
+from stem_utils import STEMSettings, STEMMessageHandler, STEMUtils
 
 
 class STEMPlugin:
