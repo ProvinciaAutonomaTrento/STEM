@@ -468,7 +468,8 @@ class convertGDAL:
     def __init__(self):
         self.file_infos = []
 
-    def initialize(self, innames, output=None, outformat='GTIFF'):
+    def initialize(self, innames, output=None, outformat='GTIFF',
+                   bandtype=None):
         """Function for the initialize the object
 
        :param str inname: name of input data
@@ -482,7 +483,7 @@ class convertGDAL:
         if self.driver is None:
             raise IOError('Format driver %s not found, pick a supported '
                           'driver.' % outformat)
-        self._checkPara()
+        self._checkPara(bandtype)
         outbands = self._checkOutputBands()
         self.output = self.driver.Create(output, self.xsize, self.ysize,
                                          outbands, self.bandtype)
@@ -504,14 +505,17 @@ class convertGDAL:
             #else:
                 # return error
 
-    def _checkPara(self):
+    def _checkPara(self, btype):
         """Set information from the first raster"""
         self._names_to_fileinfos()
         self.xsize = self.file_infos[0].xsize
         self.ysize = self.file_infos[0].ysize
         self.proj = self.file_infos[0].projection
         self.geotrasf = self.file_infos[0].geotransform
-        self.bandtype = self.file_infos[0].band_type
+        if btype:
+            self.bandtype = btype
+        else:
+            self.bandtype = self.file_infos[0].band_type
 
     def _checkOutputBands(self):
         """Set the number of bands for the output file"""
