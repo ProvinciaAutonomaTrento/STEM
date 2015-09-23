@@ -153,7 +153,8 @@ class BaseDialog(QDialog, baseDialog):
         self.label.setText(self.tr("", "Dati di input"))
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
-                     partial(self.browseInFile, self.BaseInput, multi=multi))
+                     partial(self.browseInFile, self.BaseInput, multi=multi,
+                             filt='*'))
 
     def _insertFileInput(self, pos=0, multi=False,
                          filterr="LAS file (*.las *.laz)"):
@@ -1105,12 +1106,10 @@ class SettingsDialog(QDialog, settingsDialog):
                      partial(self.BrowseBin, self.lineEdit_grass))
         self.connect(self.pushButton_grassdata, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_grassdata))
-        self.connect(self.pushButton_gdal, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_gdal))
-        self.connect(self.pushButton_liblas, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_liblas))
-        self.connect(self.pushButton_pdal, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_pdal))
+        self.connect(self.pushButton_grassserver, SIGNAL("clicked()"),
+                     partial(self.BrowseBin, self.lineEdit_grassserver))
+        self.connect(self.pushButton_grassdataserver, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.lineEdit_grassdataserver))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
@@ -1133,11 +1132,11 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                        "")))
         self.lineEdit_grasslocation.setText(self._check(STEMSettings.value("grasslocation",
                                                                            "")))
-        self.lineEdit_liblas.setText(self._check(STEMSettings.value("liblaspath",
+        self.lineEdit_grassserver.setText(self._check(STEMSettings.value("grasspathserver",
                                                                     "")))
-        self.lineEdit_gdal.setText(self._check(STEMSettings.value("gdalpath",
+        self.lineEdit_grassdataserver.setText(self._check(STEMSettings.value("grassdataserver",
                                                                   "")))
-        self.lineEdit_pdal.setText(self._check(STEMSettings.value("pdalpath",
+        self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
         if sys.platform != 'win32':
@@ -1187,10 +1186,14 @@ class SettingsDialog(QDialog, settingsDialog):
         """Save the variable in STEM Settings"""
         STEMSettings.setValue("grasspath", self.lineEdit_grass.text())
         STEMSettings.setValue("grassdata", self.lineEdit_grassdata.text())
-        STEMSettings.setValue("grasslocation", self.lineEdit_grasslocation.text())
-        STEMSettings.setValue("liblaspath",  self.lineEdit_liblas.text())
-        STEMSettings.setValue("gdalpath", self.lineEdit_gdal.text())
-        STEMSettings.setValue("pdalpath", self.lineEdit_pdal.text())
+        STEMSettings.setValue("grasslocation",
+                              self.lineEdit_grasslocation.text())
+        STEMSettings.setValue("grassserver",
+                              self.lineEdit_grassserver.text())
+        STEMSettings.setValue("grassdataserver",
+                              self.lineEdit_grassdataserver.text())
+        STEMSettings.setValue("grasslocationserver",
+                              self.lineEdit_grasslocationserver.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
 
 

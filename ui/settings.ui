@@ -21,7 +21,7 @@
        <item>
         <widget class="QLabel" name="label_grass">
          <property name="text">
-          <string>Percorso all'eseguibile di GRASS GIS 7</string>
+          <string>Percorso all'eseguibile GRASS GIS 7 locale</string>
          </property>
         </widget>
        </item>
@@ -42,7 +42,7 @@
        <item>
         <widget class="QLabel" name="label_grassdata">
          <property name="text">
-          <string>Percorso alla GRASSDATA directory</string>
+          <string>Percorso alla GRASSDATA directory server</string>
          </property>
         </widget>
        </item>
@@ -63,7 +63,7 @@
        <item>
         <widget class="QLabel" name="label_grasslocation">
          <property name="text">
-          <string>Nome della location da utilizzare</string>
+          <string>Nome della location da utilizzare locale</string>
          </property>
         </widget>
        </item>
@@ -75,17 +75,17 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="label_gdal">
+        <widget class="QLabel" name="label_grassserver">
          <property name="text">
-          <string>Percorso all'eseguibile di GDAL</string>
+          <string>Percorso all'eseguibile GRASS GIS 7 server</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_gdal"/>
+        <widget class="QLineEdit" name="lineEdit_grassserver"/>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_gdal">
+        <widget class="QPushButton" name="pushButton_grassserver">
          <property name="text">
           <string>Sfoglia</string>
          </property>
@@ -96,17 +96,17 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="label_liblas">
+        <widget class="QLabel" name="label_grassdataserver">
          <property name="text">
-          <string>Percorso all'eseguibile di libLAS</string>
+          <string>Percorso alla GRASSDATA directory server</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_liblas"/>
+        <widget class="QLineEdit" name="lineEdit_grassdataserver"/>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_liblas">
+        <widget class="QPushButton" name="pushButton_grassdataserver">
          <property name="text">
           <string>Sfoglia</string>
          </property>
@@ -117,21 +117,14 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QLabel" name="label_pdal">
+        <widget class="QLabel" name="label_grasslocationserver">
          <property name="text">
-          <string>Percorso all'eseguibile di PDAL</string>
+          <string>Nome della location da utilizzare server</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_pdal"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_pdal">
-         <property name="text">
-          <string>Sfoglia</string>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="lineEdit_grasslocationserver"/>
        </item>
       </layout>
      </item>

@@ -64,7 +64,7 @@ PIPE = subprocess.PIPE
 
 
 def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
-                     epsg=None):
+                     epsg=None, local=True):
     """Read the QGIS's settings and obtain information for GRASS GIS
 
     :param str grassdatabase: the path to grassdatabase
@@ -74,14 +74,24 @@ def QGISettingsGRASS(grassdatabase=None, location=None, grassbin=None,
     """
     # query GRASS 7 itself for its GISBASE
     # we assume that GRASS GIS' start script is available and in the PATH
-    if not grassbin:
-        grassbin = str(STEMSettings.value("grasspath", ""))
-    if not grassdatabase:
-        grassdatabase = str(STEMSettings.value("grassdata", ""))
-    if not location:
-        location = str(STEMSettings.value("grasslocation", ""))
-    if not epsg:
-        epsg = str(STEMSettings.value("epsgcode", ""))
+    if local:
+        if not grassbin:
+            grassbin = str(STEMSettings.value("grasspath", ""))
+        if not grassdatabase:
+            grassdatabase = str(STEMSettings.value("grassdata", ""))
+        if not location:
+            location = str(STEMSettings.value("grasslocation", ""))
+        if not epsg:
+            epsg = str(STEMSettings.value("epsgcode", ""))
+    else:
+        if not grassbin:
+            grassbin = str(STEMSettings.value("grasspathserver", ""))
+        if not grassdatabase:
+            grassdatabase = str(STEMSettings.value("grassdataserver", ""))
+        if not location:
+            location = str(STEMSettings.value("grasslocationserver", ""))
+        if not epsg:
+            epsg = str(STEMSettings.value("epsgcode", ""))
 
     return grassdatabase, location, grassbin, epsg
 
@@ -97,7 +107,7 @@ def temporaryFilesGRASS(name, local=True):
     pid = os.getpid()
     tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
     tempout = 'stem_output_{pid}'.format(pid=pid)
-    grassdatabase, location, grassbin, epsg = QGISettingsGRASS()
+    grassdatabase, location, grassbin, epsg = QGISettingsGRASS(local=local)
     if local:
         gs = stemGRASS()
     else:
