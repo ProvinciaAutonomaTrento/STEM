@@ -483,7 +483,7 @@ class STEMUtils:
         home = os.path.join(QgsApplication.qgisSettingsDirPath(), "stem")
         if not os.path.exists(home):
             os.mkdir(home)
-            STEMSettings.setValue('stempath', home)
+        STEMSettings.setValue('stempath', home)
 
     @staticmethod
     def copyFile(inp, outfile):

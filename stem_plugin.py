@@ -44,6 +44,7 @@ class STEMPlugin:
     def __init__(self, iface):
         self.iface = iface
         self.stemMenu = None
+        STEMUtils.stemMkdir()
 
     def initGui(self):
         """Function used to initialize the gui."""
