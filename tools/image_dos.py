@@ -104,7 +104,7 @@ class STEMToolsDialog(BaseDialog):
             sources = [os.path.join(sourcedir, fi) for fi in files if fi.find('aux') == -1 and fi.find('txt') == -1]
             method = str(self.MethodInput.currentText())
             suffix = 'dos'
-            cut, cutsource = self.cutInputMulti(files, sources, 'raster')
+            cut, cutsource = self.cutInputMulti(files, sources)
             if cut:
                 files = cut
                 sources = cutsource

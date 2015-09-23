@@ -924,7 +924,7 @@ class BaseDialog(QDialog, baseDialog):
 
         return outname.strip(), out, mask
 
-    def cutInputMulti(self, inp, source, typ):
+    def cutInputMulti(self, inp, source):
         """Cut multiple data according to a bounding box or a vector geometry
 
         :param str inp: the name of input data
@@ -936,6 +936,8 @@ class BaseDialog(QDialog, baseDialog):
         newinp = []
         newsource = []
         for n in range(len(inp)):
+            layer = STEMUtils.getLayersSource(source[n])
+            typ = STEMUtils.checkMultiRaster(source[n], layer)
             newn, news, newm = self.cutInput(inp[n], source[n], typ)
             if not newn:
                 return False, False
