@@ -66,9 +66,6 @@ class STEMToolsDialog(BaseDialog):
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4)
 
     def show_(self):
         self.switchClippingMode()
