@@ -436,7 +436,7 @@ class STEMToolsDialog(BaseDialog):
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
                 mltb.execute(best=best, transform=None, untransform=None,
-                             output_file=out)
+                             output_file=out, format='GTiff')
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')

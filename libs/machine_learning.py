@@ -445,7 +445,7 @@ def run_model(model, data, logging=None):
 
 def apply_models(input_file, output_file, models, X, y, transformations,
                  transform=None, untransform=None, use_columns=None,
-                 memory_factor=1., logging=None):
+                 memory_factor=1., logging=None, format=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -487,7 +487,8 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         # create the raster outputs
         for model in models:
             print(output_file.format(model['name']))
-            model['out'] = empty_rast(output_file.format(model['name']), rast)
+            model['out'] = empty_rast(output_file.format(model['name']), rast,
+                                      format=format)
             model['band'] = model['out'].GetRasterBand(1)
         rxsize, rysize = rast.RasterXSize, rast.RasterYSize
         brows = estimate_best_row_buffer(rast, np.float32, memory_factor,
@@ -1019,10 +1020,10 @@ class MLToolBox(object):
                                           key=key, logging=self.logging)
         return self.order, self.best
 
-    def execute(self, input_file=None, output_file=None,
-                best=None, X=None, y=None, trans=None,
-                transform=None, untransform=None,
-                use_columns=None, memory_factor=None, logging=None):
+    def execute(self, input_file=None, output_file=None, best=None, X=None,
+                y=None, trans=None, transform=None, untransform=None,
+                use_columns=None, memory_factor=None, logging=None,
+                format=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
         self.use_columns = (self.use_columns if use_columns is None
@@ -1044,7 +1045,8 @@ class MLToolBox(object):
         apply_models(input_file, self.output, best, X, y, self._trans,
                      transform=self.transform, untransform=self.untransform,
                      memory_factor=self.memory_factor,
-                     use_columns=self.use_columns, logging=self.logging)
+                     use_columns=self.use_columns, logging=self.logging,
+                     format=format)
 
 
 def get_parser():

@@ -401,7 +401,7 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=lambda x: x)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                mltb.execute(X=X, y=y, output_file=out,
+                mltb.execute(X=X, y=y, output_file=out, format='GTiff',
                              best=best, transform=None, untransform=None)
 
                 if self.AddLayerToCanvas.isChecked():
