@@ -44,13 +44,7 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
-        items = ['area', 'manuale']
-        label = "Seleziona il metodo da utilizzare"
-        self._insertFirstCombobox(label, 1, items)
-        self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
-        label2 = "Inserire la dimensione minima da tenere in considerazione " \
-                 "in ettari"
-        self._insertFirstLineEdit(label2, 2)
+
         labelText = "Regole per la classificazione manuale"
         self._insertTextArea(labelText, 3)
         tooltip = self.tr(name, "Inserire le regole per la riclassificazione "
@@ -59,36 +53,14 @@ class STEMToolsDialog(BaseDialog):
                                 "informazioni consultare l'help")
         self.TextArea.setToolTip(tooltip)
         self.LabelTextarea.setToolTip(tooltip)
-        self.LabelTextarea.setEnabled(False)
-        self.TextArea.setEnabled(False)
-        self.LabelLinedit.setEnabled(False)
-        self.Linedit.setEnabled(False)
+        self.LabelTextarea.setEnabled(True)
+        self.TextArea.setEnabled(True)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-
-    def operatorChanged(self):
-        if self.BaseInputCombo.currentText() == 'automatico':
-            self.LabelTextarea.setEnabled(False)
-            self.TextArea.setEnabled(False)
-            self.LabelLinedit.setEnabled(False)
-            self.Linedit.setEnabled(True)
-            self.helpui.fillfromUrl(self.SphinxUrl())
-        elif self.BaseInputCombo.currentText() == 'manuale':
-            self.LabelTextarea.setEnabled(True)
-            self.TextArea.setEnabled(True)
-            self.LabelLinedit.setEnabled(False)
-            self.Linedit.setEnabled(False)
-            self.helpui.fillfromUrl(self.SphinxUrl())
-        else:
-            self.LabelTextarea.setEnabled(False)
-            self.TextArea.setEnabled(False)
-            self.LabelLinedit.setEnabled(True)
-            self.Linedit.setEnabled(True)
-            self.helpui.fillfromUrl(self.SphinxUrl())
 
     def show_(self):
         self.switchClippingMode()
@@ -115,12 +87,8 @@ class STEMToolsDialog(BaseDialog):
             if mask:
                 gs.check_mask(mask)
 
-            if self.BaseInputCombo.currentText() == 'manuale':
-                fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
-                startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
-            else:
-                startcom = {'val': float(self.Linedit.text()), 'inps': [],
-                            'outs': []}
+            fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
+            startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
 
             if len(nlayerchoose) > 1:
                 raster = file_info()
