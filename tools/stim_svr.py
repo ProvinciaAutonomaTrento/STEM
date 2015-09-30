@@ -50,74 +50,64 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
-        self._insertSecondSingleInput(pos=2, label="Dati di input raster")
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
-        self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
+        self.llcc = "Colonne delle feature da utilizzare"
         self._insertLayerChooseCheckBox2(self.llcc, pos=3)
-        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
-
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
-        self._insertThirdLineEdit(label="Inserire il numero di fold della "
-                                  "cross validation", posnum=0)
+        labelc = "Effettuare la cross validation"
+        self._insertSecondCheckbox(labelc, 0)
+        self.checkbox2.stateChanged.connect(self.crossVali)
 
+        self._insertThirdLineEdit(label="Inserire il numero di fold della "
+                                  "cross validation", posnum=1)
+        self.Linedit3.setEnabled(False)
         kernels = ['RBF', 'lineare', 'polinomiale', 'sigmoidale']
 
         self.lk = 'Selezionare il kernel da utilizzare'
-        self._insertFirstCombobox(self.lk, 1, kernels)
+        self._insertFirstCombobox(self.lk, 2, kernels)
         self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
-        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=2)
+        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=3)
         self._insertSecondLineEdit(label="Inserire il valore di epsilon",
-                                   posnum=3)
-        self._insertFourthLineEdit(label="Inserire il valore di gamma",
                                    posnum=4)
+        self._insertFourthLineEdit(label="Inserire il valore di gamma",
+                                   posnum=5)
 
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
         self.lk = 'Selezionare la trasformazione'
-        self._insertFourthCombobox(self.lk, 5, trasf)
+        self._insertFourthCombobox(self.lk, 6, trasf)
 
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 6)
+        self._insertMethod(mets, self.lm, 7)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 7, "Text file (*.txt)")
+        self._insertFileInputOption(self.lio, 8, "Text file (*.txt)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(8, label="Vettoriale di validazione")
+        self._insertSingleInputOption(9, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 9)
+        self._insertSecondCombobox(label, 10)
 
         ls = "Indice di accuratezza per la selezione del modello"
-        self._insertThirdCombobox(ls, 10, ['R²', 'MSE'])
+        self._insertThirdCombobox(ls, 11, ['R²', 'MSE'])
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 11)
+        self._insertCheckbox(label, 12)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
-
-    def indexChanged(self):
-        if self.BaseInput2.currentText() != "":
-            STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
-            self.label_layer2.setText(self.tr("", self.llcc))
-        else:
-            STEMUtils.addColumnsName(self.BaseInput, self.layer_list2, True)
-            self.label_layer2.setText(self.tr("", "Colonne delle feature da "
-                                              "utilizzare"))
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
@@ -191,6 +181,12 @@ class STEMToolsDialog(BaseDialog):
                                               'probability': True}
                      }], csv
 
+    def crossVali(self):
+        if self.checkbox2.isChecked():
+            self.Linedit3.setEnabled(True)
+        else:
+            self.Linedit3.setEnabled(False)
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
@@ -227,35 +223,22 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 invect = cut
                 invectsource = cutsource
-            inrast = str(self.BaseInput2.currentText())
 
-            if inrast != "":
-                inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list2)
-                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-                                                     self.layer_list2)
-                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-                                                     rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
-                if cut:
-                    inrast = cut
-                    inrastsource = cutsource
-                ncolumnschoose = None
-                com.extend(['--raster', inrastsource])
+            ncolumnschoose = STEMUtils.checkLayers(invectsource,
+                                                   self.layer_list2, False)
+            inrast = None
+            inrastsource = None
+            try:
+                ncolumnschoose.remove(invectcol)
+            except:
+                pass
+            prefcsv += "_{n}".format(n=len(ncolumnschoose))
+
+            if self.checkbox2.isChecked():
+                nfold = int(self.Linedit3.text())
+                prefcsv += "_{n}".format(n=nfold)
             else:
-                ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                       self.layer_list2, False)
-                nlayerchoose = None
-                inrast = None
-                inrastsource = None
-                try:
-                    ncolumnschoose.remove(invectcol)
-                except:
-                    pass
-                prefcsv += "_{n}".format(n=len(ncolumnschoose))
-
-            nfold = int(self.Linedit3.text())
+                nfold = None
 
             model, prefcsv = self.getModel(prefcsv)
             feat = str(self.MethodInput.currentText())
@@ -296,7 +279,7 @@ class STEMToolsDialog(BaseDialog):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
             if ncolumnschoose:
-                com.extend(['-u', ' '.format(ncolumnschoose)])
+                com.extend(['-u', ' '.join(ncolumnschoose)])
             if self.checkbox.isChecked():
                 if inrast != "":
                     com.extend(['-e', '--output-raster-name',
@@ -305,7 +288,7 @@ class STEMToolsDialog(BaseDialog):
                 else:
                     com.extend(['-e', '--output-file', self.TextOut.text()])
                     outtype = 'vector'
-            log.debug(com)
+            log.debug(' '.join(com))
             STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
                 mltb = MLToolBox()
