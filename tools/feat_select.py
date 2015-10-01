@@ -141,7 +141,7 @@ class STEMToolsDialog(BaseDialog):
 
             # --------------------------------------------------------------
             # Feature selector
-            fselector = SSF(strategy=getattr(np, meth),
+            fselector = SSF(strategy=getattr(np, meth), precision=4,
                             n_features=nfeat, logfile=outputlog)
 
             # ------------------------------------------------------------
