@@ -20,16 +20,18 @@ Lo shapefile di input ("Dati di input vettoriale") avra' per esempio una tabella
 Input
 ------------
 
-**Dati di input vettoriale**: file vettoriale contente le aree di training e l'indicazione dei target.
+**Dati di input vettoriale**: file vettoriale contente le aree di training e l'indicazione del parametro da stimare.
 
-**Seleziona la colonna con indicazione del target**: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.
+**Seleziona la colonna con indicazione del parametro da stimare**: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.
 
-**Dati di input raster** (opzionale): immagine da cui estrarre le variabili e da stimare (opzionale).
-
-**Colonne delle feature da utilizzare** (opzionale): selezionare le bande da utilizzare. Se non si seleziona nulla vengono usate tutte le bande.
+**Colonne delle feature da utilizzare** (opzionale): selezionare le varaibili da utilizzare. Se non si seleziona nulla vengono usate tutte le variabili. Attivo solo se la selezione varaibili *manuale* è selezionata.
 
 Parametri
 ------------
+
+**Effettuare la cross-validation**: se scelto viene effettuata la cross validation.
+
+**Inserire il numero di fold della cross-validation**: inserire il numero di fold della cross-validation.
 
 **Selezione variabili**:
 
@@ -39,15 +41,16 @@ Parametri
 
 **File di selezione** (opzionale): inserire il file ottenuto in output dal modulo "Selezione variabili per la stima". Attivato solo se l'opzione "file" viene scelta nel menu "selezione variabili".
 
-**Vettoriale di validazione** (opzionale): file vettoriale contenente le aree di validazione e l'indicazione del target.
+**Vettoriale di validazione** (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.
 
-**Seleziona la colonna per la validazione** (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target.
+**Seleziona la colonna per la validazione** (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.
 
 **Indice di accuratezza per la selezione del modello** (opzionale):
 
 	* *MSE*: Mean Square Error.
 	* *R2*: R2.
 
+**Creare output**: se scelto viene creato l'output, ovvero un vettoriale uguiale a quello di validazione/mappatura con un campo aggiuntivo col parametro stimato. Se non viene dato nessun input alla voce *Vettoriale di validazione* l'output verrà creato partendo dal vettoriale di training.
 
 Output
 ------------
