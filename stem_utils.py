@@ -269,7 +269,7 @@ class STEMUtils:
             item.setCheckState(Qt.Unchecked)
 
     @staticmethod
-    def addColumnsName(combo, checkCombo, multi=False):
+    def addColumnsName(combo, checkCombo, multi=False, empty=False):
         """Add the column's name to a ComboBox
 
         :param obj combo: a ComboBox containing the list of vector files
@@ -286,6 +286,8 @@ class STEMUtils:
             layer = STEMUtils.getLayer(layerName)
             data = layer.dataProvider()
             fields = data.fields()
+            if empty:
+                fields.insert(0, '')
             if multi:
                 for i in range(len(fields)):
                     model = checkCombo.model()
