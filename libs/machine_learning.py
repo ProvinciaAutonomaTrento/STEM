@@ -857,6 +857,10 @@ class MLToolBox(object):
                     ##Xt = self.fselector.transform(Xt)
                 if fsfit:
                     self.fselector.fit(Xt, y)
+                    if (hasattr(self.fselector, 'scores_') and
+                            hasattr(self.fselector, 'pvalues_')):
+                        #TODO: save to external file
+                        print(self.fselector.scores_, self.fselector.pvalues_)
                     ##Xt = self.fselector.transform(Xt)
                 if self.fselector not in self._trans:
                     self._trans.append(self.fselector)
