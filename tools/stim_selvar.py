@@ -44,13 +44,11 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput(label='Dati di input vettoriale')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
-        self.labelcol = "Seleziona la colonna con indicazione della classe"
+        self.labelcol = "Seleziona la colonna con indicazione del parametro da stimare"
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
-        self._insertSecondSingleInput(pos=2, label="Dati di input raster")
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
 
         self._insertFirstLineEdit(label="Numero variabili da selezionare",
                                   posnum=0)
@@ -91,27 +89,9 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 invect = cut
                 invectsource = cutsource
-            inrast = str(self.BaseInput2.currentText())
 
-            if inrast != "":
-                inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource)
-                rasttyp = STEMUtils.checkMultiRaster(inrastsource,
-                                                     self.layer_list)
-                cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-                                                     rasttyp)
-                prefcsv += "_{rast}_{n}".format(rast=inrast,
-                                                n=len(nlayerchoose))
-                if cut:
-                    inrast = cut
-                    inrastsource = cutsource
-                ncolumnschoose = None
-                com.extend(['--raster', inrastsource])
-            else:
-                nlayerchoose = None
-                inrast = None
-                inrastsource = None
-                prefcsv += "_{n}".format(n=len(ncolumnschoose))
+            inrastsource = None
+            prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
             # --------------------------------------------------------------
             # Feature selector
