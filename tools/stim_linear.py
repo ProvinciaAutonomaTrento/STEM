@@ -70,7 +70,6 @@ class STEMToolsDialog(BaseDialog):
         self.lk = 'Selezionare la trasformazione'
         self._insertFirstCombobox(self.lk, 2, kernels)
 
-
         mets = ['no', 'manuale', 'file']
         self.lm = "Selezione variabili"
         self._insertMethod(mets, self.lm, 3)
@@ -93,7 +92,8 @@ class STEMToolsDialog(BaseDialog):
         ls = "Indice di accuratezza per la selezione del modello"
         self._insertThirdCombobox(ls, 7, ['R²', 'MSE'])
 
-        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
+                                 empty=True)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
@@ -103,13 +103,14 @@ class STEMToolsDialog(BaseDialog):
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
 
     def columnsChange2(self):
-        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
+                                 empty=True)
 
     def methodChanged(self):
         if self.MethodInput.currentText() == 'file':
+            self.layer_list2.clear()
             self.labelFO.setEnabled(True)
             self.TextInOpt.setEnabled(True)
             self.BrowseButtonInOpt.setEnabled(True)
@@ -121,8 +122,10 @@ class STEMToolsDialog(BaseDialog):
             self.labelFO.setEnabled(False)
             self.TextInOpt.setEnabled(False)
             self.BrowseButtonInOpt.setEnabled(False)
-            self.indexChanged()
+            STEMUtils.addColumnsName(self.BaseInput, self.layer_list2,
+                                     multi=True)
         else:
+            self.layer_list2.clear()
             self.labelFO.setEnabled(False)
             self.TextInOpt.setEnabled(False)
             self.BrowseButtonInOpt.setEnabled(False)
@@ -172,7 +175,7 @@ class STEMToolsDialog(BaseDialog):
                 invectsource = cutsource
 
             ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                   self.layer_list2, False)
+                                                   self.layer_list, False)
             inrast = None
             inrastsource = None
             try:
@@ -192,14 +195,18 @@ class STEMToolsDialog(BaseDialog):
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
                 optvectsource = STEMUtils.getLayersSource(optvect)
-                optvectcols = str(self.BaseInputCombo2.currentText())
+                com.extend(['--test-vector', optvectsource])
+                if str(self.BaseInputCombo2.currentText()) == '':
+                    optvectcols = None
+                else:
+                    optvectcols = str(self.BaseInputCombo2.currentText())
+                    com.extend(['--test-column', optvectcols])
                 cut, cutsource, mask = self.cutInput(optvect, optvectsource,
                                                      'vector')
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
-                com.extend(['--test-vector', optvectsource, '--test-column',
-                            optvectcols])
+
             else:
                 optvectsource = None
                 optvectcols = None
@@ -387,7 +394,11 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=lambda x: x)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                mltb.execute(best=best, transform=trasf,
+                if optvect:
+                    finalinp = optvectsource
+                else:
+                    finalinp = None
+                mltb.execute(input_file=finalinp, best=best, transform=trasf,
                              untransform=utrasf, output_file=out)
                 STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():

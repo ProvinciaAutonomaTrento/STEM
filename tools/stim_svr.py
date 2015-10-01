@@ -100,7 +100,8 @@ class STEMToolsDialog(BaseDialog):
         ls = "Indice di accuratezza per la selezione del modello"
         self._insertThirdCombobox(ls, 11, ['R²', 'MSE'])
 
-        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
+                                 empty=True)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
@@ -113,7 +114,8 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
 
     def columnsChange2(self):
-        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
+        STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
+                                 empty=True)
 
     def kernelChanged(self):
         if self.BaseInputCombo.currentText() == 'lineare':
@@ -131,6 +133,7 @@ class STEMToolsDialog(BaseDialog):
 
     def methodChanged(self):
         if self.MethodInput.currentText() == 'file':
+            self.layer_list2.clear()
             self.labelFO.setEnabled(True)
             self.TextInOpt.setEnabled(True)
             self.BrowseButtonInOpt.setEnabled(True)
@@ -142,8 +145,10 @@ class STEMToolsDialog(BaseDialog):
             self.labelFO.setEnabled(False)
             self.TextInOpt.setEnabled(False)
             self.BrowseButtonInOpt.setEnabled(False)
-            self.indexChanged()
+            STEMUtils.addColumnsName(self.BaseInput, self.layer_list2,
+                                     multi=True)
         else:
+            self.layer_list2.clear()
             self.labelFO.setEnabled(False)
             self.TextInOpt.setEnabled(False)
             self.BrowseButtonInOpt.setEnabled(False)
@@ -218,14 +223,14 @@ class STEMToolsDialog(BaseDialog):
             invectcol = str(self.layer_list.currentText())
             cut, cutsource, mask = self.cutInput(invect, invectsource,
                                                  'vector')
-            prefcsv = "stimsvr_{vect}_{col}".format(vect=invect ,
+            prefcsv = "stimsvr_{vect}_{col}".format(vect=invect,
                                                     col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
 
             ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                   self.layer_list2, False)
+                                                   self.layer_list, False)
             inrast = None
             inrastsource = None
             try:
@@ -246,7 +251,10 @@ class STEMToolsDialog(BaseDialog):
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
                 optvectsource = STEMUtils.getLayersSource(optvect)
-                optvectcols = str(self.BaseInputCombo2.currentText())
+                if str(self.BaseInputCombo2.currentText()) == '':
+                    optvectcols = None
+                else:
+                    optvectcols = str(self.BaseInputCombo2.currentText())
                 cut, cutsource, mask = self.cutInput(optvect, optvectsource,
                                                      'vector')
                 if cut:
@@ -443,7 +451,7 @@ class STEMToolsDialog(BaseDialog):
                              untransform=utrasf, output_file=out)
                 STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(out, outtype)
+                    STEMUtils.addLayerIntoCanvas(out, 'vector')
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))
             else:
