@@ -286,9 +286,11 @@ class STEMUtils:
             layer = STEMUtils.getLayer(layerName)
             data = layer.dataProvider()
             fields = data.fields()
-            if empty:
-                fields.insert(0, '')
             if multi:
+                if empty:
+                    checkCombo.addItem("")
+                    item = model.item(i)
+                    item.setCheckState(Qt.Unchecked)
                 for i in range(len(fields)):
                     model = checkCombo.model()
                     name = fields[i].name()
@@ -296,6 +298,8 @@ class STEMUtils:
                     item = model.item(i)
                     item.setCheckState(Qt.Unchecked)
             else:
+                if empty:
+                    cols.append("")
                 [cols.append(i.name()) for i in fields]
                 checkCombo.addItems(cols)
             return
