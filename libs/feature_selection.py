@@ -159,8 +159,15 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
         fslist = list(fs)
         features_comb = np.array([fslist + [j, ]
                                   for j in range(ncols) if j not in fs])
-        dist = np.array([jm(f_id, mu, cv, strategy, classes_comb, bhatN)
-                         for f_id in features_comb])
+        try:
+            dist = np.array([jm(f_id, mu, cv, strategy, classes_comb, bhatN)
+                             for f_id in features_comb])
+        except:
+            raise RuntimeError("WARNING: Distace is NaN, this could happen"
+                               " when the number of training for a class is"
+                               "  too lowand the covariance matrix is not "
+                               "invertible or in some bands there are too "
+                               "equal values")
 
         if np.isnan(dist.max()):
             communicate(("WARNING: Distace is NaN, this could happen when"
@@ -218,7 +225,9 @@ class SSF(object):
                 self.logfile.warning(msg.format(repr(exc)))
             raise RuntimeError("Problem with the execution of the "
                                "Sequential Forward Floating Feature"
-                               " Selection")
+                               " Selection: Distace is NaN, this could happen "
+                               "when the number of training for a class is too"
+                               " lowand the covariance matrix is not invertible")
         self.n_features_ = max(res.keys())
         self.selected = res[self.n_features_]['features'] - 1
         #rank = np.empty((self.n_features_, ))
