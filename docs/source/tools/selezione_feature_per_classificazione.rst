@@ -9,6 +9,10 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
   Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a causa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Il modulo da comunque in output la selezione con un numero di bande non ottimale.
 
 
+.. warning::
+
+  Se una banda del file di input contiene valori dei pixel tutti uguali è probabile che la selezione si blocchi alla prima iterazione. Si consiglia di verificare quindi i valori delle bande, e semmai rimuovere le bande corrotte, per evitare questo problema.
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/selezione_feature_per_classificazione.png

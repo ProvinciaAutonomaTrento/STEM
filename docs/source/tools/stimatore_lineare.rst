@@ -2,15 +2,14 @@ Stimatore lineare
 =================
 
 Il modulo esegue la stima di parametri utilizzando uno stimatore lineare.
-Gli input allo stimatore sono un file vettoriale contente una colonna con l'indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l'indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). Se le variabili non sono già contenute nel file vettoriale dovrà essere data in input un'immagine raster da cui estrarle.
-L'utente potrà anche inserire un vettoriale da usare nella fase di validazione.
+Gli input allo stimatore sono un file vettoriale contente una colonna con l'indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l'indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). L'utente potrà anche inserire un vettoriale da usare nella fase di validazione o per mappare un'area più ampia (es. vettoriale di una griglia).
 
 .. only:: latex
 
   .. image:: ../_static/tool_images/stimatore_lineare.png
 
 *Esempio*: stima diametro singoli alberi
-Lo shapefile di input ("Dati di input vettoriale") avra' per esempio una tabella degli attributidi questo tipo:
+Lo shapefile di input ("Dati di input vettoriale") avrà per esempio una tabella degli attributidi questo tipo:
 
   .. image:: ../_static/tool_images/stimatore_lineare_esempio_input.png
 
@@ -56,6 +55,8 @@ Output
 ------------
 
 **Risultato**: inserire il percorso e il nome del file di output.
+
+**Colonna per i valori della stima**: nome della colonna dove verranno salvati i valori stimati. Al nome indicato viene aggiunta in fondo una *L* per indicare ceh la stima è stata effettuata mediante stimatore lineare.
 
 .. only:: latex
 
