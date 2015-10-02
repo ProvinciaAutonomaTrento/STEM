@@ -168,7 +168,7 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     return rast
 
 
-def estimate_best_row_buffer(rast, dtype, memory_factor=1, logging=None):
+def estimate_best_row_buffer(rast, dtype, memory_factor=1., logging=None):
     """Estimates the best number of rows to use the system.
     Return the number of rows.
 
@@ -187,7 +187,7 @@ def estimate_best_row_buffer(rast, dtype, memory_factor=1, logging=None):
     onerow = cols * ctype.nbytes * nbands
     if onerow * intfactor > mem.free:
         raise MemoryError("Not possible to allocate enough memory")
-    brows = int(mem.free // onerow // intfactor // memory_factor)
+    brows = int(mem.free // onerow // intfactor * memory_factor)
     if logging:
         logging.debug('memory factors: %f' % float(memory_factor))
         logging.debug('raster rows: %d, cols: %d' % (rows, cols))
@@ -624,7 +624,7 @@ class MLToolBox(object):
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
-                   transform=None, untransform=None, memory_factor=20.,
+                   transform=None, untransform=None, memory_factor=1.,
                    logging=None):
         """Method to set class attributes, the attributes are:
 
