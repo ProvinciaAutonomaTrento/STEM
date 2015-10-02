@@ -269,6 +269,10 @@ def test_model(model, Xtraining, ytraining, Xtest, ytest, scoring=None,
     scorer = check_scoring(model['mod'], scoring=scoring)
     model['score_test'] = scorer(model['mod'], Xtest, ytest)
     print(model['name'], model['score_test'])
+    try:
+        print("coef : {co}".format(co=model['mod'].coef_))
+    except ValueError:
+        pass
     test = TestResult(model.get('index', 1), model['name'],
                       model['score_test'])
     if logging:
@@ -445,7 +449,7 @@ def run_model(model, data, logging=None):
 
 def apply_models(input_file, output_file, models, X, y, transformations,
                  transform=None, untransform=None, use_columns=None,
-                 memory_factor=1., logging=None, format=None):
+                 memory_factor=1., logging=None, format=None, fieldname=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -475,6 +479,12 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         model['mod'] = model['model'](**model.get('kwargs', {}))
         start = time.time()
         model['mod'].fit(X, y)
+        try:
+            print("\n coef: {co}, inter: {i}".format(co=model['mod'].coef_,
+                                                     i=model['mod'].intercept_))
+        except ValueError:
+            pass
+
         model['training_time'] = time.time() - start
         if logging:
             msg = "apply_models:trained: %s [%.2fs]"
@@ -533,7 +543,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         ilayer = ivect.GetLayer()
         ifields = ilayer.schema
         icols = columns2indexes(ifields, use_columns)
-        limit = 10
+        limit = 9
         if logging:
             logging.debug('apply_models: use_columns={}'.format(use_columns))
             logging.debug('apply_models: input_file={}'.format(input_file))
@@ -550,10 +560,17 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         # Add a new field for each model to the output layer
         ofieldtype = ogr.OFTInteger if y.dtype == np.int else ogr.OFTReal
         for model in models:
-            model['field'] = model.get('field',
-                                       (model['name'][:limit]
-                                        if len(model['name']) > limit else
-                                        model['name']))
+            if fieldname:
+                if len(fieldname) > limit:
+                    fname = fieldname[:limit] + model['name'][0]
+                else:
+                    fname = fieldname + model['name'][0]
+            else:
+                fname = model.get('field',
+                                  (model['name'][:limit]
+                                   if len(model['name']) > limit else
+                                   model['name']))
+            model['field'] = fname
             if logging:
                 logging.debug(('apply_models: create field: {}'
                                ).format(model['field']))
@@ -1027,7 +1044,7 @@ class MLToolBox(object):
     def execute(self, input_file=None, output_file=None, best=None, X=None,
                 y=None, trans=None, transform=None, untransform=None,
                 use_columns=None, memory_factor=None, logging=None,
-                format=None):
+                format=None, field=None):
         """Apply the best method or the list of model selected to the input
         raster map."""
         self.use_columns = (self.use_columns if use_columns is None
@@ -1050,7 +1067,7 @@ class MLToolBox(object):
                      transform=self.transform, untransform=self.untransform,
                      memory_factor=self.memory_factor,
                      use_columns=self.use_columns, logging=self.logging,
-                     format=format)
+                     format=format, fieldname=field)
 
 
 def get_parser():
