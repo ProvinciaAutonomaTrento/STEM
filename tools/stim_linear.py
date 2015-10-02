@@ -26,14 +26,12 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
 import traceback
-from machine_learning import MLToolBox, SEP, NODATA
-from sklearn.svm import SVC
+from machine_learning import MLToolBox, SEP
 import numpy as np
 import pickle as pkl
 import os
@@ -98,8 +96,19 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Creare output"
         self._insertCheckbox(label, 8)
-        self.helpui.fillfromUrl(self.SphinxUrl())
+
+        self.horizontalLayout_field = QHBoxLayout()
+        self.labelfield = QLabel()
+        self.labelfield.setObjectName("labelfield")
+        self.labelfield.setText(self.tr(name, "Colonna per i valori della stima"))
+        self.horizontalLayout_field.addWidget(self.labelfield)
+        self.TextOutField = QLineEdit()
+        self.TextOutField.setObjectName("TextOutField")
+        self.horizontalLayout_field.addWidget(self.TextOutField)
+        self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.helpui.fillfromUrl(self.SphinxUrl())
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
@@ -174,9 +183,7 @@ class STEMToolsDialog(BaseDialog):
                 invect = cut
                 invectsource = cutsource
 
-            ncolumnschoose = STEMUtils.checkLayers(invectsource,
-                                                   self.layer_list, False)
-            inrast = None
+            ncolumnschoose = [self.layer_list.itemText(i) for i in range(self.layer_list.count())]
             inrastsource = None
             try:
                 ncolumnschoose.remove(invectcol)
@@ -184,13 +191,22 @@ class STEMToolsDialog(BaseDialog):
                 pass
             prefcsv += "_{n}".format(n=len(ncolumnschoose))
 
+            feat = str(self.MethodInput.currentText())
+            fscolumns = None
+            if feat == 'file':
+                infile = self.TextInOpt.text()
+                if os.path.exists(infile):
+                    com.extend(['--feature-selection-file', infile])
+                    fscolumns = np.loadtxt(infile)
+            elif feat == 'manuale':
+                ncolumnschoose = STEMUtils.checkLayers(invectsource,
+                                                       self.layer_list2, False)
+
             if self.checkbox2.isChecked():
                 nfold = int(self.Linedit3.text())
                 prefcsv += "_{n}".format(n=nfold)
             else:
                 nfold = None
-
-            feat = str(self.MethodInput.currentText())
 
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
@@ -214,13 +230,6 @@ class STEMToolsDialog(BaseDialog):
             from regressors import LINEAR
             model = LINEAR
 
-            fscolumns = None
-            if feat == 'manuale':
-                infile = self.TextInOpt.text()
-                if os.path.exists(infile):
-                    com.extend(['--feature-selection-file', infile])
-                    fscolumns = np.loadtxt(infile)
-
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
 
@@ -230,20 +239,17 @@ class STEMToolsDialog(BaseDialog):
             crosspath = os.path.join(home,
                                      "{p}_csvcross.csv".format(p=prefcsv))
             out = str(self.TextOut.text())
+
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
                         '1', '--scoring', scor, '--models', str(model),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
+
             if ncolumnschoose:
                 com.extend(['-u', ' '.join(ncolumnschoose)])
             if self.checkbox.isChecked():
-                if inrast != "":
-                    com.extend(['-e', '--output-raster-name',
-                                self.TextOut.text()])
-                    outtype = 'raster'
-                else:
-                    com.extend(['-e', '--output-file', self.TextOut.text()])
-                    outtype = 'vector'
+                com.extend(['-e', '--output-file', self.TextOut.text()])
+
             log.debug(' '.join(com))
             STEMUtils.saveCommand(com)
             if self.LocalCheck.isChecked():
@@ -286,7 +292,7 @@ class STEMToolsDialog(BaseDialog):
 
             # ------------------------------------------------------------
             # Transform the input data
-            if fscolumns:
+            if fscolumns is not None:
                 X = mltb.data_transform(X=X, y=y, scaler=None,
                                         fscolumns=fscolumns,
                                         fsfile=infile, fsfit=True)
@@ -398,8 +404,13 @@ class STEMToolsDialog(BaseDialog):
                     finalinp = optvectsource
                 else:
                     finalinp = None
+                if self.TextOutField.text():
+                    fname = str(self.TextOutField.text())
+                else:
+                    fname = None
                 mltb.execute(input_file=finalinp, best=best, transform=trasf,
-                             untransform=utrasf, output_file=out)
+                             untransform=utrasf, output_file=out,
+                             field=fname)
                 STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'vector')
@@ -407,7 +418,9 @@ class STEMToolsDialog(BaseDialog):
                                            "correttamente".format(name=out))
             else:
                 STEMMessageHandler.success("Esecuzione completata")
+            STEMUtils.removeFiles(home, prefcsv)
         except:
+            STEMUtils.removeFiles(home, prefcsv)
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return
