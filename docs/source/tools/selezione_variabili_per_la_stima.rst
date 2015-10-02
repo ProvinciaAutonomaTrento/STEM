@@ -13,9 +13,7 @@ Input
 
 **Dati di input vettoriale**: selezionare il file di input vettoriale contente le aree di training.
 
-**Seleziona la colonna con l'indicazione del target**: selezionare la colonna con l'indicazione del target.
-
-**Dati di input raster**: selezionare il file raster da cui estrarre i valori dei pixel.
+**Seleziona la colonna con l'indicazione del parametro da stimare**: selezionare la colonna con l'indicazione del target.
 
 
 Parametri
