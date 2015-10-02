@@ -23,6 +23,8 @@ Please look the source code to know more about the regressors available.
 """
 import numpy as np
 
+import sklearn
+
 from sklearn.svm import SVR
 
 from sklearn.linear_model import (LinearRegression,
@@ -152,17 +154,31 @@ RANDFOR = [dict(name='RandomForestRegressor_e%03d_f%s' % (e, f),
           for e in (10, 100, 500) for f in ('auto', 'sqrt', 'log2')]
 
 # SVR(kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=0.001, C=1.0, epsilon=0.1, shrinking=True, probability=False, cache_size=200, verbose=False, max_iter=-1, random_state=None)
-SVRLIN = [dict(name='SVR_k%s_C%f' % (k, c), model=SVR,
-               kwargs={'C': c, 'kernel': k, 'epsilon': y, 'probability': True})
-          for c in ALPHAS for y in ALPHAS for k in ('linear', )]
 
-SVRSIGRBF = [dict(name='SVR_k%s_C%f_g%f' % (k, c, g), model=SVR,
-                  kwargs={'C': c, 'gamma': g, 'kernel': k, 'epsilon': y,
-                          'probability': True})
-             for c in ALPHAS
-             for g in ALPHAS
-             for y in ALPHAS
-             for k in ('rbf', 'sigmoid')]
+if sklearn.__version__ <= '0.15.2':
+    SVRLIN = [dict(name='SVR_k%s_C%f' % (k, c), model=SVR,
+                   kwargs={'C': c, 'kernel': k, 'epsilon': y,
+                           'probability': True})
+              for c in ALPHAS for y in ALPHAS for k in ('linear', )]
+else:
+    SVRLIN = [dict(name='SVR_k%s_C%f' % (k, c), model=SVR,
+                   kwargs={'C': c, 'kernel': k, 'epsilon': y})
+              for c in ALPHAS for y in ALPHAS for k in ('linear', )]
+if sklearn.__version__ <= '0.15.2':
+    SVRSIGRBF = [dict(name='SVR_k%s_C%f_g%f' % (k, c, g), model=SVR,
+                      kwargs={'C': c, 'gamma': g, 'kernel': k, 'epsilon': y,
+                              'probability': True})
+                 for c in ALPHAS
+                 for g in ALPHAS
+                 for y in ALPHAS
+                 for k in ('rbf', 'sigmoid')]
+else:
+    SVRSIGRBF = [dict(name='SVR_k%s_C%f_g%f' % (k, c, g), model=SVR,
+                      kwargs={'C': c, 'gamma': g, 'kernel': k, 'epsilon': y})
+                 for c in ALPHAS
+                 for g in ALPHAS
+                 for y in ALPHAS
+                 for k in ('rbf', 'sigmoid')]
 
 
 RCV = [{'name': 'ridgeCV', 'classifier': RidgeCV,
