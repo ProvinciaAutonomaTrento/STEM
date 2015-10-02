@@ -363,10 +363,14 @@ class STEMUtils:
         """
         files = glob.glob1(path, pref)
         for f in files:
+            f = os.path.join(path, f)
             try:
                 shutil.rmtree(f)
             except:
-                continue
+                try:
+                    os.remove(f)
+                except:
+                    continue
 
 
     @staticmethod
