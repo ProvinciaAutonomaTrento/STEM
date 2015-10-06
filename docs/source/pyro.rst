@@ -3,8 +3,8 @@ Avvio applicativi lato server
 
 Per la comunicazione client-server viene utilizzato Pyro4,
 
-Dopo aver installto Pyro4 sul server, bisogna scaricare il
-codice sorgente di STEM (basta anche solo la cartella `libs`).
+Dopo aver installato Pyro4 sul server, bisogna scaricare il
+codice sorgente di STEM sul server (basta anche solo la cartella `libs`).
 
 A questo punto ci si sposta dentro la cartella `libs` e si modifica il file
 `pyro_stem.py` settando i parametri corretti alle variabili presenti.
@@ -22,7 +22,7 @@ Salvare il file e avviare il server di Pyro4 con ::
     localmente e non sarà visibile ai client
 
 A questo punto bisognerà lanciare gli script delle librerie (`grass_stem.py`,
-`gdal_stem.py`, `machine_learning.py`).
+`gdal_stem.py`, `machine_learning.py`, `las_stem.py`).
 
 Per lanciare tutti i vari processi in contemporanea si può utilizzare
 l'utility `screen` oppure `python grass_stem.py &`.
