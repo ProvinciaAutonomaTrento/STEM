@@ -524,7 +524,7 @@ class convertGDAL:
             output += fi.bands
         return output
 
-    def write(self):
+    def write(self, res=None):
         """Write the output file"""
         targetband = 0
         for f in range(len(self.file_infos)):
@@ -532,10 +532,10 @@ class convertGDAL:
             if fi.bands > 1:
                 for b in range(fi.bands):
                     targetband += 1
-                    fi.copy_into(self.output, targetband, b + 1)
+                    fi.copy_into(self.output, targetband, b + 1, res=res)
             else:
                 targetband += 1
-                fi.copy_into(self.output, targetband)
+                fi.copy_into(self.output, targetband, res=res)
         self.output = None
 
     def cutInputInverse(self, erase=None, bbox=None):
@@ -554,13 +554,12 @@ class convertGDAL:
                 raise IOError('Could not open vector data: {n}'.format(n=erase))
 
             laymask = mask.GetLayer()
-            featmask = laymask.GetFeature(0)
-            geom = featmask.GetGeometryRef()
-        elif bbox:
-            geom = createMaskFromBbox(bbox)
+            bbox = laymask.GetExtent()
+
+        geom = createMaskFromBbox(bbox)
         for f in range(len(self.file_infos)):
             fi = self.file_infos[f]
-            fi.cutInputInverse(geom, self.output, numpytype)
+            fi.cutInputInverse(geom, self.output, numpytype, laymask)
         self.output = None
 
 
@@ -715,7 +714,7 @@ class file_info:
                                               maxy=may)
         return wkt
 
-    def cutInputInverse(self, geom, output, datatype):
+    def cutInputInverse(self, geom, output, datatype, layer):
         """Create an inverted mask, returning a raster containing only data
         external to the given polygon
 
@@ -750,7 +749,7 @@ class file_info:
         target_ds.SetProjection(raster_srs.ExportToWkt())
         # rasterize zone polygon to raster
         #TODO check for laymask
-        gdal.RasterizeLayer(target_ds, [1], laymask, burn_values=[1])
+        gdal.RasterizeLayer(target_ds, [1], layer, burn_values=[1])
         bandmask = target_ds.GetRasterBand(1)
         datamask = bandmask.ReadAsArray(0, 0, xcount, ycount)
 
@@ -762,12 +761,11 @@ class file_info:
             outband = numpy.ma.masked_array(dataraster, datamask)
             outband_null = numpy.ma.filled(outband.astype(float), numpy.nan)
             outband_null = outband_null.astype(datatype, copy=False)
-            pdb.set_trace()
             t_band = output.GetRasterBand(b)
 
             t_band.WriteArray(outband_null)
 
-    def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None):
+    def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None, res=None):
         """Copy this files image into target file.
 
         This method will compute the overlap area of the file_info objects
@@ -789,15 +787,19 @@ class file_info:
 
         """
         t_geotransform = t_fh.GetGeoTransform()
+        if res:
+            reseo, resns = res, res
+        else:
+            reseo, resns = t_geotransform[1], t_geotransform[5]
         t_ulx = t_geotransform[0]
         t_uly = t_geotransform[3]
-        t_lrx = t_geotransform[0] + t_fh.RasterXSize * t_geotransform[1]
-        t_lry = t_geotransform[3] + t_fh.RasterYSize * t_geotransform[5]
+        t_lrx = t_geotransform[0] + t_fh.RasterXSize * reseo
+        t_lry = t_geotransform[3] + t_fh.RasterYSize * resns
 
         # figure out intersection region
         tgw_ulx = max(t_ulx, self.ulx)
         tgw_lrx = min(t_lrx, self.lrx)
-        if t_geotransform[5] < 0:
+        if resns < 0:
             tgw_uly = min(t_uly, self.uly)
             tgw_lry = max(t_lry, self.lry)
         else:
@@ -807,16 +809,16 @@ class file_info:
         # do they even intersect?
         if tgw_ulx >= tgw_lrx:
             return 1
-        if t_geotransform[5] < 0 and tgw_uly <= tgw_lry:
+        if resns < 0 and tgw_uly <= tgw_lry:
             return 1
-        if t_geotransform[5] > 0 and tgw_uly >= tgw_lry:
+        if resns > 0 and tgw_uly >= tgw_lry:
             return 1
 
         # compute target window in pixel coordinates.
-        tw_xoff = int((tgw_ulx - t_geotransform[0]) / t_geotransform[1] + 0.1)
-        tw_yoff = int((tgw_uly - t_geotransform[3]) / t_geotransform[5] + 0.1)
-        tw_xsize = int((tgw_lrx - t_geotransform[0]) / t_geotransform[1] + 0.5) - tw_xoff
-        tw_ysize = int((tgw_lry - t_geotransform[3]) / t_geotransform[5] + 0.5) - tw_yoff
+        tw_xoff = int((tgw_ulx - t_geotransform[0]) / reseo + 0.1)
+        tw_yoff = int((tgw_uly - t_geotransform[3]) / resns + 0.1)
+        tw_xsize = int((tgw_lrx - t_geotransform[0]) / reseo + 0.5) - tw_xoff
+        tw_ysize = int((tgw_lry - t_geotransform[3]) / resns + 0.5) - tw_yoff
 
         if tw_xsize < 1 or tw_ysize < 1:
             return 1
