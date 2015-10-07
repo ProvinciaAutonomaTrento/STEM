@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>275</height>
+    <height>292</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -160,6 +160,20 @@
        </item>
        <item>
         <widget class="QLineEdit" name="epsg"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="labelMemory">
+         <property name="text">
+          <string>Impostare il valore di memoria da utilizzare compreso tra 0 e 1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEditMemory"/>
        </item>
       </layout>
      </item>

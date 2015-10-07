@@ -865,6 +865,7 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.error("Sono state impostate sia una maschera "
                                      "vettoriale sia una estensione di QGIS. "
                                      "Si prega di rimuoverne una delle due")
+            return
         if mask:
             mask_inverse = inverse_mask()
         path = tempfile.gettempdir()
@@ -922,7 +923,6 @@ class BaseDialog(QDialog, baseDialog):
                 STEMMessageHandler.error("Errore eseguendo il ritaglio del "
                                          "file di input. Errore eseguendo il "
                                          "comando {err}".format(err=err))
-
         return outname.strip(), out, mask
 
     def cutInputMulti(self, inp, source):
@@ -1139,6 +1139,8 @@ class SettingsDialog(QDialog, settingsDialog):
         self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
+        self.lineEditMemory.setText(self._check(STEMSettings.value("memory",
+                                                                   "")))
         if sys.platform != 'win32':
             self.pushButton_proj.setEnabled(False)
             self.lineEdit_proj.setEnabled(False)
@@ -1195,6 +1197,7 @@ class SettingsDialog(QDialog, settingsDialog):
         STEMSettings.setValue("grasslocationserver",
                               self.lineEdit_grasslocationserver.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
+        STEMSettings.setValue("epsgcode", self.lineEditMemory.text())
 
 
 class helpDialog(QDialog, helpDialog):
