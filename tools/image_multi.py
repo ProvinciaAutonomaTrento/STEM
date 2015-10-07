@@ -48,6 +48,8 @@ class STEMToolsDialog(BaseDialog):
         self.lm = "Selezionare la tipologia del formato di output"
         self._insertMethod(mets, self.lm, 1)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
+        #label = "Risoluzione per tutte le bande del file di output"
+        #self._insertFirstLineEdit(label, 2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -99,6 +101,10 @@ class STEMToolsDialog(BaseDialog):
             import Pyro4
             cgdal = Pyro4.Proxy("PYRONAME:stem.gdalconvert")
         cgdal.initialize(sources, out, outformat, self.digit)
+        #if self.Linedit.text():
+        #    resolution = float(self.Linedit.text())
+        #else:
+        #    resolution = None
         cgdal.write()
         if self.overwrite:
             STEMUtils.renameRast(out, self.TextOut.text())
