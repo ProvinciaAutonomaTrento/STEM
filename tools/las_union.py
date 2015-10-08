@@ -27,7 +27,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from las_stem import stemLAS
-from stem_utils import STEMMessageHandler
+from stem_utils import STEMMessageHandler, STEMUtils
 from stem_utils_server import STEMSettings
 import traceback
 
@@ -74,7 +74,8 @@ class STEMToolsDialog(BaseDialog):
                 compres = True
             else:
                 compres = False
-            las.union(items, out, compres)
+            com = las.union(items, out, compres)
+            STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
             error = traceback.format_exc()

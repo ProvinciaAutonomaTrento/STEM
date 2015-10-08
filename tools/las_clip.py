@@ -26,7 +26,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMMessageHandler
+from stem_utils import STEMMessageHandler, STEMUtils
 from stem_utils_server import STEMSettings
 from las_stem import stemLAS
 import traceback
@@ -99,8 +99,9 @@ class STEMToolsDialog(BaseDialog):
                 inv = True
             else:
                 inv = False
-            las.clip(source, out, area, inverted=inv, compressed=compres,
-                     forced=self.MethodInput.currentText())
+            com = las.clip(source, out, area, inverted=inv, compressed=compres,
+                           forced=self.MethodInput.currentText())
+            STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
             error = traceback.format_exc()

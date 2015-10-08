@@ -108,9 +108,10 @@ class STEMToolsDialog(BaseDialog):
             clas = self.Linedit6.text()
             ret = self.check_return()
 
-            las.filterr(source, out, xs, ys, zs, ints, angs, clas,
-                        retur=ret, compressed=compres,
-                        forced=self.MethodInput.currentText())
+            com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
+                              retur=ret, compressed=compres,
+                              forced=self.MethodInput.currentText())
+            STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
             error = traceback.format_exc()

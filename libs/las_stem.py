@@ -354,8 +354,8 @@ class stemLAS():
             bbox = fi.getBBoxWkt()
             self.chm_xml_pdal(inp, out, dtm, bbox, compressed)
             command.extend(['-i', self.pdalxml])
-            # STEMUtils.saveCommand(command)
             self._run_command(command)
+            return command
         else:
             raise Exception("pdal è necessario per calcolare il CHM")
 
@@ -397,8 +397,8 @@ class stemLAS():
             command = ['pdal', 'pipeline']
             self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', self.pdalxml])
-            # STEMUtils.saveCommand(command)
             self._run_command(command)
+            return command
         else:
             raise Exception("pdal è necessario per unire più file LAS")
 
@@ -465,8 +465,8 @@ class stemLAS():
                                                                  maxy=coors[1])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
-        # STEMUtils.saveCommand(command)
         self._run_command(command)
+        return command
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
                         inte=None, angle=None, clas=None, retur=None):
@@ -633,8 +633,8 @@ class stemLAS():
             self.filter_xml_pdal(inp, out, compressed, x, y, z,
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
-        # STEMUtils.saveCommand(command)
         self._run_command(command)
+        return command
 
 
 def get_parser():

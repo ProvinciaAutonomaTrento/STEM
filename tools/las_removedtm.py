@@ -72,7 +72,8 @@ class STEMToolsDialog(BaseDialog):
                 compres = True
             else:
                 compres = False
-            las.chm(source, out, dtm_source, compressed=compres)
+            com = las.chm(source, out, dtm_source, compressed=compres)
+            STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
             error = traceback.format_exc()
