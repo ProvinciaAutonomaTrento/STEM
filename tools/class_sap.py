@@ -30,6 +30,7 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 import traceback
+from grass_stem import temporaryFilesGRASS
 
 
 class STEMToolsDialog(BaseDialog):
@@ -45,8 +46,8 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
 
-        self._insertSecondSingleInput()
-        STEMUtils.addLayerToComboBox(self.BaseInput2, 0)
+        self.lio = "File di selezione delle matrici"
+        self._insertFileInputOption(self.lio, 5, "Text file (*.txt)")
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -67,13 +68,32 @@ class STEMToolsDialog(BaseDialog):
             source = STEMUtils.getLayersSource(name)
             nlayerchoose = STEMUtils.checkLayers(source, self.layer_list)
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
+            matrixfile = self.TextInOpt.text()
             coms = []
-            outnames = []
             cut, cutsource, mask = self.cutInput(name, source, typ)
             if cut:
                 name = cut
                 source = cutsource
-            # TODO finish
+            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            gs.import_grass(source, tempin, typ, nlayerchoose)
+            if mask:
+                gs.check_mask(mask)
+            gs.find_program('i.spec.sam', '--help')
+            com = ['i.spec.sam', 'group={name}'.format(name=tempin),
+                   'matrix={name}'.forma(name=matrixfile),
+                   'output={outname}'.format(outname=tempout)]
+
+            coms.append(com)
+            STEMUtils.saveCommand(com)
+
+            gs.run_grass(coms)
+
+            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+                                  tempout, typ, False)
+            gs.removeMapset()
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+            # TODO test
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
