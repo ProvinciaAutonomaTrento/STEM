@@ -24,7 +24,8 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from gdal_stem import definizione_chiome
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils_server import STEMSettings
 import traceback
 
 

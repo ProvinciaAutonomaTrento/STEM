@@ -29,9 +29,10 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
+from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
+from stem_utils_server import STEMSettings
 import traceback
-from machine_learning import MLToolBox, SEP, NODATA
+from machine_learning import MLToolBox, SEP
 from sklearn.svm import SVC
 import numpy as np
 import pickle as pkl

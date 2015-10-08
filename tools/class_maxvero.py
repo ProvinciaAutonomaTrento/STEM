@@ -29,14 +29,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
+from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
+from stem_utils_server import STEMSettings
 import traceback
 from sklearn.naive_bayes import GaussianNB
 from machine_learning import MLToolBox, SEP
 import os
 import pickle as pkl
 import numpy as np
-from functools import partial
 
 
 class STEMToolsDialog(BaseDialog):

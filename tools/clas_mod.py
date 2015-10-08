@@ -25,7 +25,8 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from grass_stem import temporaryFilesGRASS
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils_server import STEMSettings
 import traceback
 from gdal_stem import file_info
 import types

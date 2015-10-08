@@ -482,7 +482,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         try:
             print("\n coef: {co}, inter: {i}".format(co=model['mod'].coef_,
                                                      i=model['mod'].intercept_))
-        except ValueError:
+        except Exception:
             pass
 
         model['training_time'] = time.time() - start

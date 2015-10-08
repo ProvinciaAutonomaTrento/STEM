@@ -19,10 +19,10 @@ from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
 from pyro_stem import PYROSERVER, LAS_PORT
 from gdal_stem import file_info
-from stem_utils import STEMUtils, STEMMessageHandler
 import os
 import json
 import sys
+from stem_utils_server import check_wkt
 PIPE = subprocess.PIPE
 
 LAST_RETURN = """
@@ -152,11 +152,9 @@ class stemLAS():
                 if lasout:
                     return True
                 elif laserr:
-                    STEMMessageHandler.warning(laserr[0].strip())
-                    return False
+                    raise Exception(laserr[0].strip())
             else:
-                STEMMessageHandler.warning(laserr[0].strip())
-                return False
+                raise Exception(laserr[0].strip())
         else:
             return False
 
@@ -356,7 +354,7 @@ class stemLAS():
             bbox = fi.getBBoxWkt()
             self.chm_xml_pdal(inp, out, dtm, bbox, compressed)
             command.extend(['-i', self.pdalxml])
-            STEMUtils.saveCommand(command)
+            # STEMUtils.saveCommand(command)
             self._run_command(command)
         else:
             raise Exception("pdal è necessario per calcolare il CHM")
@@ -399,7 +397,7 @@ class stemLAS():
             command = ['pdal', 'pipeline']
             self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', self.pdalxml])
-            STEMUtils.saveCommand(command)
+            # STEMUtils.saveCommand(command)
             self._run_command(command)
         else:
             raise Exception("pdal è necessario per unire più file LAS")
@@ -445,7 +443,7 @@ class stemLAS():
         :param str forced: liblas o pdal as value
         :param bool compressed: True to obtain a LAZ file
         """
-        wkt = STEMUtils.check_wkt(area)
+        wkt = check_wkt(area)
         if wkt:
             command = self._start_command('pdal')
         else:
@@ -454,9 +452,8 @@ class stemLAS():
             if compressed:
                 command.append('-c')
             if inverted:
-                STEMMessageHandler.warning("Non è possibile utilizzare "
-                                           "l'opzione 'Maschera inversa' con "
-                                           "la libreria liblas")
+                print("Non è possibile utilizzare l'opzione 'Maschera inversa'"
+                      " con la libreria liblas")
             command.extend(['-i', inp, '-o', out, '-e', area])
         else:
             if not wkt:
@@ -468,7 +465,7 @@ class stemLAS():
                                                                  maxy=coors[1])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
-        STEMUtils.saveCommand(command)
+        # STEMUtils.saveCommand(command)
         self._run_command(command)
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
@@ -636,7 +633,7 @@ class stemLAS():
             self.filter_xml_pdal(inp, out, compressed, x, y, z,
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
-        STEMUtils.saveCommand(command)
+        # STEMUtils.saveCommand(command)
         self._run_command(command)
 
 

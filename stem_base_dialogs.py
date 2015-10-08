@@ -28,9 +28,10 @@ import platform
 from functools import partial
 from types import StringType, UnicodeType
 from stem_utils import STEMMessageHandler
-from stem_utils import STEMSettings
 from stem_utils import STEMUtils
 from stem_utils import CheckableComboBox
+from stem_utils_server import STEMSettings, inverse_mask
+
 import gdal_stem
 
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
@@ -51,14 +52,6 @@ def escapeAndJoin(strList):
             escaped = s
         joined += escaped + " "
     return joined.strip()
-
-
-def inverse_mask():
-    inverse = STEMSettings.value("mask_inverse", "")
-    if inverse == "true":
-        return True
-    else:
-        return False
 
 
 class BaseDialog(QDialog, baseDialog):

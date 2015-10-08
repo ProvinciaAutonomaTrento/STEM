@@ -29,7 +29,8 @@ __revision__ = '$Format:%H$'
 from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings, STEMLogging
+from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
+from stem_utils_server import STEMSettings
 import traceback
 from machine_learning import MLToolBox, SEP
 from sklearn.svm import SVR

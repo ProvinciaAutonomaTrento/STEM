@@ -26,7 +26,8 @@ __copyright__ = '(C) 2015 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMSettings, STEMMessageHandler
+from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils_server import STEMSettings
 import traceback
 from gdal_stem import infoOGR
 import os

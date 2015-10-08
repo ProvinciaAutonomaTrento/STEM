@@ -28,10 +28,9 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from stem_utils import STEMUtils, STEMMessageHandler, STEMSettings
+from stem_utils import STEMUtils, STEMMessageHandler
+from stem_utils_server import STEMSettings
 from grass_stem import temporaryFilesGRASS
-from functools import partial
-from PyQt4.QtCore import SIGNAL
 import traceback
 
 

@@ -24,8 +24,7 @@ import os
 import sys
 import subprocess
 from pyro_stem import PYROSERVER, GRASS_PORT
-from stem_base_dialogs import inverse_mask
-from stem_utils import STEMSettings
+from stem_utils_server import STEMSettings, inverse_mask
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
