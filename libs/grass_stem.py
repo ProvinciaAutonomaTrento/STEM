@@ -564,6 +564,17 @@ class stemGRASS():
         import shutil
         shutil.rmtree(self.mapsetpath)
 
+    def find_program(self, command, param):
+        """Return if a command exist or not"""
+        import grass.script.core as gcore
+        check = gcore.find_program(command, param)
+        if check:
+            return True
+        else:
+            err = "Errore eseguendo GRASS: il comdando {co} non sembra " \
+                  "essere presente, si prega di installarlo".format(co=command)
+            raise Exception(err)
+
 
 def get_parser():
     """Create the parser for running as script"""
