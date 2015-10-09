@@ -164,13 +164,14 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
+        home = STEMSettings.value("stempath")
+        invect = str(self.BaseInput.currentText())
+        invectsource = STEMUtils.getLayersSource(invect)
+        invectcol = str(self.layer_list.currentText())
+        cut, cutsource, mask = self.cutInput(invect, invectsource,
+                                             'vector')
+        prefcsv = "mindist_{vect}_{col}".format(vect=invect, col=invectcol)
         try:
-            invect = str(self.BaseInput.currentText())
-            invectsource = STEMUtils.getLayersSource(invect)
-            invectcol = str(self.layer_list.currentText())
-            cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                                 'vector')
-            prefcsv = "mindist_{vect}_{col}".format(vect=invect, col=invectcol)
             if cut:
                 invect = cut
                 invectsource = cutsource
@@ -232,7 +233,6 @@ class STEMToolsDialog(BaseDialog):
                 optvectsource = None
                 optvectcols = None
 
-            home = STEMSettings.value("stempath")
             trnpath = os.path.join(home,
                                    "{p}_csvtraining.csv".format(p=prefcsv))
             crosspath = os.path.join(home,
