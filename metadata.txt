@@ -4,7 +4,7 @@ qgisMinimumVersion=2.0.0
 description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
 about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di Trento, Italian language is used for plugin interface
 category=
-version=0.5.1
+version=0.6.0
 author=Luca Delucchi, Pietro Zambelli, Salvatore Larosa, Michele Dalponte, Francesco Nex
 email=luca.delucchi@fmach.it
 
