@@ -55,6 +55,15 @@ class WriteError(Exception):
     pass
 
 
+def checkshp(name):
+    if name.find('.shp') != -1:
+        out = name.rstrip('.shp')
+        if out.find('.shp') != -1:
+            return name
+        return "{pref}.txt".format(pref=out)
+    return name
+
+
 def cvbar(total, fill='#', empty='-', barsize=30,
           fmt=("{index:03d}/{total:03d} {mean:.3f} {max:.3f} {min:.3f} "
                "{std:.3f}, {time:.1f}s"),
@@ -480,8 +489,14 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         start = time.time()
         model['mod'].fit(X, y)
         try:
-            print("\n coef: {co}, inter: {i}".format(co=model['mod'].coef_,
-                                                     i=model['mod'].intercept_))
+            coef = model['mod'].coef_
+            inte = model['mod'].intercept_
+            outpath = os.path.split(output_file)
+            outrep = 'coef_inter_{suf}'.format(suf=checkshp(outpath[1]))
+            outf = open(os.path.join(outpath[0], outrep), 'w')
+            outf.write("coefficient: {co}\n".format(co=coef))
+            outf.write("intercept: {it}\n".format(it=inte))
+            outf.close()
         except Exception:
             pass
 
@@ -876,8 +891,13 @@ class MLToolBox(object):
                     self.fselector.fit(Xt, y)
                     if (hasattr(self.fselector, 'scores_') and
                             hasattr(self.fselector, 'pvalues_')):
-                        #TODO: save to external file
-                        print(self.fselector.scores_, self.fselector.pvalues_)
+                        outpath = os.path.split(fsfile)
+
+                        outrep = "score_pvalue_{suf}".format(suf=checkshp(outpath[1]))
+                        outf = open(os.path.join(outpath[0], outrep), 'w')
+                        outf.write("scores: {co}\n".format(co=self.fselector.scores_))
+                        outf.write("pvalues: {it}\n".format(it=self.fselector.pvalues_))
+                        outf.close()
                     ##Xt = self.fselector.transform(Xt)
                 if self.fselector not in self._trans:
                     self._trans.append(self.fselector)
