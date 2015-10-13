@@ -641,9 +641,9 @@ def get_parser():
     """Create the parser for running as script"""
     import argparse
     parser = argparse.ArgumentParser(description='Script for LAS operations')
-    parser.add_argument('input', metavar='input', type=str, nargs='+',
+    parser.add_argument('input', metavar='input', type=str, nargs='*',
                         help='the path to the input LAS file')
-    parser.add_argument('output', metavar='output', type=str, nargs='+',
+    parser.add_argument('output', metavar='output', type=str, nargs='*',
                         help='the path to the output LAS file')
     parser.add_argument('-c', '--clip', dest='clip', type=str,
                         help='sum the integers (default: find the max)')

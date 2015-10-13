@@ -845,9 +845,9 @@ def get_parser():
     """Create the parser for running as script"""
     import argparse
     parser = argparse.ArgumentParser(description='Script for GDAL/OGR operations')
-    parser.add_argument('inputs', metavar='input', type=str, nargs='+',
+    parser.add_argument('inputs', metavar='input', type=str, nargs='*',
                         help='the path to the inputs GDAL files')
-    parser.add_argument('output', metavar='output', type=str,
+    parser.add_argument('output', metavar='output', type=str, nargs='*',
                         help='the path to the output GDAL file')
     parser.add_argument('-V', '--volume', metavar='volume',
                         help='the name of new volume column')
