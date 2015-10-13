@@ -68,13 +68,14 @@ class STEMUtils:
     registry = QgsMapLayerRegistry.instance()
 
     @staticmethod
-    def addLayerToComboBox(combo, typ, clear=True, empty=False):
+    def addLayerToComboBox(combo, typ, clear=True, empty=False, alls=False):
         """Add layers to input files list
 
         :param obj combo: the ComboBox object where add layers
         :param int typ: the type of layers to add, 0 for vector, 1 for raster
         :param bool clear: True to clear the ComboBox
         :param bool empty: True to add a empty record
+        :paran str alls: String to add in the layer list
         """
         if clear:
             combo.clear()
@@ -82,6 +83,8 @@ class STEMUtils:
         layermap = STEMUtils.registry.mapLayers()
         if empty:
             layerlist.append("")
+        if alls:
+            layerlist.append(alls)
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
                 layerlist.append(layer.name())
@@ -497,6 +500,17 @@ class STEMUtils:
             else:
                 os.makedirs(path)
                 shutil.copy2(inp, path)
+
+    @staticmethod
+    def pathClientWinToServerLinux(path):
+        """"""
+        rel = os.path.relpath(path, STEMSettings._check(STEMSettings.value("datalocal", "")))
+        print(rel)
+        new = os.path.join(STEMSettings._check(STEMSettings.value("dataserver",
+                                                                  "")), rel)
+        print(new)
+        new = new.replace("\\", "/")
+        return new
 
 
 class STEMMessageHandler:
