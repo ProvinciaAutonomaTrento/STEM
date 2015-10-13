@@ -840,7 +840,7 @@ class BaseDialog(QDialog, baseDialog):
         """
         self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(enable)
 
-    def cutInput(self, inp, source, typ, inverse=False):
+    def cutInput(self, inp, source, typ, inverse=False, local=True):
         """Cut the input data according to a bounding box or a vector geometry
 
         :param str inp: the name of input data
@@ -861,7 +861,11 @@ class BaseDialog(QDialog, baseDialog):
             return
         if mask:
             mask_inverse = inverse_mask()
-        path = tempfile.gettempdir()
+        if local:
+            path = tempfile.gettempdir()
+        else:
+            path = SettingsDialog.check(STEMSettings.value("tempdataserver",
+                                                           ""))
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
@@ -1101,8 +1105,8 @@ class SettingsDialog(QDialog, settingsDialog):
                      partial(self.BrowseDir, self.lineEdit_grassdata))
         self.connect(self.pushButton_grassserver, SIGNAL("clicked()"),
                      partial(self.BrowseBin, self.lineEdit_grassserver))
-        self.connect(self.pushButton_grassdataserver, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_grassdataserver))
+        self.connect(self.pushButton_datalocal, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
@@ -1113,7 +1117,7 @@ class SettingsDialog(QDialog, settingsDialog):
         :param obj string: a string, it should be as UnicodeType or StringType
         """
         if isinstance(string, UnicodeType) or isinstance(string, StringType):
-            return string
+            return str(string)
         else:
             return str("")
 
@@ -1131,6 +1135,12 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                   "")))
         self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
+        self.lineEdit_datalocal.setText(self._check(STEMSettings.value("datalocal",
+                                                                      "")))
+        self.lineEdit_serverdata.setText(self._check(STEMSettings.value("dataserver",
+                                                                       "")))
+        self.lineEdit_tempserverdata.setText(self._check(STEMSettings.value("tempdataserver",
+                                                                           "")))
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
         self.lineEditMemory.setText(self._check(STEMSettings.value("memory",
                                                                    "")))
@@ -1189,8 +1199,14 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_grassdataserver.text())
         STEMSettings.setValue("grasslocationserver",
                               self.lineEdit_grasslocationserver.text())
+        STEMSettings.setValue("datalocal",
+                              self.lineEdit_datalocal.text())
+        STEMSettings.setValue("dataserver",
+                              self.lineEdit_serverdata.text())
+        STEMSettings.setValue("tempdataserver",
+                              self.lineEdit_tempserverdata.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
-        STEMSettings.setValue("epsgcode", self.lineEditMemory.text())
+        STEMSettings.setValue("memory", self.lineEditMemory.text())
 
 
 class helpDialog(QDialog, helpDialog):

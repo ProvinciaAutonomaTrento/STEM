@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>292</height>
+    <height>371</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -105,13 +105,6 @@
        <item>
         <widget class="QLineEdit" name="lineEdit_grassdataserver"/>
        </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_grassdataserver">
-         <property name="text">
-          <string>Sfoglia</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -125,6 +118,62 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEdit_grasslocationserver"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="label_localdata">
+         <property name="text">
+          <string>Directory dei dati in locale</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_datalocal"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_datalocal">
+         <property name="text">
+          <string>Sfoglia</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_serverdata">
+         <property name="text">
+          <string>Directory dei dati sul server</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_serverdata"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QLabel" name="label_tempserverdata">
+         <property name="text">
+          <string>Directory dei dati temporanei sul server</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_tempserverdata"/>
        </item>
       </layout>
      </item>
