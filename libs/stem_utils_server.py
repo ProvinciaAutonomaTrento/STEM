@@ -142,3 +142,19 @@ class STEMSettings:
     def allKeys():
         """Return all keys of STEMSettings"""
         return STEMSettings.s.allKeys()
+
+    @staticmethod
+    def saveToFile(fil):
+        groups = []
+        fil.write("[General]\n")
+        for k in STEMSettings.s.childKeys():
+            fil.write("{ke}={va}\n".format(ke=k, va=STEMSettings.s.value(k)))
+        fil.write("\n")
+        for k in STEMSettings.allKeys():
+            if k.find('/') != -1:
+                key = k.split('/')
+                if key[0] not in groups:
+                    fil.write("\n[{ke}]\n".format(ke=key[0]))
+                    groups.append(key[0])
+                fil.write("{ke}={va}\n".format(ke=key[1],
+                                               va=STEMSettings.s.value(k)))

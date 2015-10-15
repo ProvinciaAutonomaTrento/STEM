@@ -99,7 +99,12 @@ class STEMPlugin:
         import tempfile
         f = tempfile.NamedTemporaryFile(delete=False)
         name = f.name
-        shutil.copy(STEMSettings.s.fileName(), name)
+        if sys.platform != 'win32':
+            name = f.name
+            shutil.copy(STEMSettings.s.fileName(), name)
+        else:
+            STEMSettings.saveToFile(f)
+            f.close()
         STEMMessageHandler.success("Configurazione salvata in {n}, si prega"
                                    "di rimuovere i tools non utili".format(n=name))
 
