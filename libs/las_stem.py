@@ -167,7 +167,7 @@ class stemLAS():
         """
         option = Element('Option')
         option.set(key, val)
-        option.text = fil
+        option.text = str(fil)
         return option
 
     def _add_write(self, output, compres):
