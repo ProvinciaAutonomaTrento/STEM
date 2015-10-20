@@ -1193,7 +1193,7 @@ class SettingsDialog(QDialog, settingsDialog):
         STEMSettings.setValue("grassdata", self.lineEdit_grassdata.text())
         STEMSettings.setValue("grasslocation",
                               self.lineEdit_grasslocation.text())
-        STEMSettings.setValue("grassserver",
+        STEMSettings.setValue("grasspathserver",
                               self.lineEdit_grassserver.text())
         STEMSettings.setValue("grassdataserver",
                               self.lineEdit_grassdataserver.text())
