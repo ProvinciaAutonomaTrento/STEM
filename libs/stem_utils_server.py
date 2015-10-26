@@ -9,6 +9,7 @@ from PyQt4.QtCore import QSettings
 from PyQt4.QtGui import QComboBox, QLineEdit, QCheckBox
 import inspect
 import re
+from types import StringType, UnicodeType
 try:
     import osgeo.ogr as ogr
 except ImportError:
@@ -44,6 +45,18 @@ class STEMSettings:
     STEMSettings.restoreWidgetsValue(ui, QSettings("STEM", "STEM"), toolName)
     """
     s = QSettings("STEM", "STEM")
+
+    @staticmethod
+    def _check(string):
+        """Check the type of string
+
+        :param obj string: a string, it should be as UnicodeType or StringType
+        """
+        if isinstance(string, UnicodeType) or isinstance(string, StringType):
+            return str(string)
+        else:
+            return str("")
+
 
     @staticmethod
     def saveWidgetsValue(ui, tool=""):
