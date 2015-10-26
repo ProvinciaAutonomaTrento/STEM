@@ -116,13 +116,13 @@ class STEMPlugin:
         newconfig = ConfigParser.ConfigParser()
         newconfig.read(myfile)
         newsections = newconfig.sections()
-        oldconfig = ConfigParser.ConfigParser()
-        oldconfig.read(STEMSettings.s.fileName())
+
         for news in newsections:
             items = newconfig.items(news)
             for i in items:
-                oldconfig.set(news, i[0], i[1])
+                STEMSettings.s.setValue(i[0], i[1])
         STEMMessageHandler.success("Opzioni caricate correttamente")
+
 
     def help(self):
         """Show the help dialog"""
