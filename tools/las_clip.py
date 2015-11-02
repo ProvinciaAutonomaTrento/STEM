@@ -32,6 +32,9 @@ from las_stem import stemLAS
 import traceback
 from gdal_stem import infoOGR
 import os
+from pyro_stem import PYROSERVER
+from pyro_stem import LASPYROOBJNAME
+from pyro_stem import LAS_PORT
 
 
 class STEMToolsDialog(BaseDialog):
@@ -90,7 +93,9 @@ class STEMToolsDialog(BaseDialog):
                 las = stemLAS()
             else:
                 import Pyro4
-                las = Pyro4.Proxy("PYRONAME:stem.las")
+                las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                   port=LAS_PORT,
+                                                                   name=LASPYROOBJNAME))
             las.initialize()
             if self.checkbox.isChecked():
                 compres = True

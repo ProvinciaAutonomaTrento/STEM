@@ -35,7 +35,7 @@ try:
 except ImportError:
     from scorer import check_scoring
 
-from pyro_stem import PYROSERVER, ML_PORT
+from pyro_stem import PYROSERVER, ML_PORT, MLPYROOBJNAME
 # import greographical libraries
 from osgeo import gdal
 from osgeo import ogr
@@ -1113,8 +1113,9 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         machine_stem = MLToolBox()
-        Pyro4.Daemon.serveSimple({machine_stem: "stem.machinelearning"},
-                                 host=PYROSERVER, port=ML_PORT, ns=True)
+        Pyro4.Daemon.serveSimple({MLToolBox: None,
+                                  machine_stem: MLPYROOBJNAME},
+                                 host=PYROSERVER, port=ML_PORT, ns=False)
     else:
         parser.error("--server option is required")
 

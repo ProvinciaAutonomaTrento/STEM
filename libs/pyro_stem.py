@@ -13,3 +13,10 @@ GRASS_PORT = 9091
 GDAL_PORT = 9092
 ML_PORT = 9093
 LAS_PORT = 9094
+
+GRASSPYROOBJNAME = "grass_stem_pyro_testing"
+GDALINFOPYROOBJNAME = "gdalinfo_stem_pyro_testing"
+GDALCONVERTPYROOBJNAME = "gdalconvert_stem_pyro_testing"
+OGRINFOPYROOBJNAME = "ogrinfo_stem_pyro_testing"
+MLPYROOBJNAME = "ml_stem_pyro_testing"
+LASPYROOBJNAME = "las_stem_pyro_testing"

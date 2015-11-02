@@ -23,7 +23,7 @@ __revision__ = '$Format:%H$'
 import os
 import sys
 import subprocess
-from pyro_stem import PYROSERVER, GRASS_PORT
+from pyro_stem import PYROSERVER, GRASS_PORT, GRASSPYROOBJNAME
 from stem_utils_server import STEMSettings, inverse_mask
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
@@ -111,7 +111,9 @@ def temporaryFilesGRASS(name, local=True):
         gs = stemGRASS()
     else:
         import Pyro4
-        gs = Pyro4.Proxy("PYRONAME:stem.grass")
+        gs = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                          port=GRASS_PORT,
+                                                          name=GRASSPYROOBJNAME))
     gs.initialize(pid, grassdatabase, location, grassbin, epsg)
     return tempin, tempout, gs
 
@@ -617,8 +619,9 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         grass_stem = stemGRASS()
-        Pyro4.Daemon.serveSimple({grass_stem: "stem.grass"}, host=PYROSERVER,
-                                 port=GRASS_PORT, ns=True)
+        Pyro4.Daemon.serveSimple({stemGRASS: None,
+                                  grass_stem: GRASSPYROOBJNAME},
+                                 host=PYROSERVER, port=GRASS_PORT, ns=False)
     else:
         parser.error("--server option is required")
 

@@ -35,6 +35,9 @@ from machine_learning import MLToolBox, SEP, NODATA
 import os
 import numpy as np
 from gdal_stem import infoOGR
+from pyro_stem import PYROSERVER
+from pyro_stem import MLPYROOBJNAME
+from pyro_stem import ML_PORT
 
 
 class STEMToolsDialog(BaseDialog):
@@ -108,7 +111,9 @@ class STEMToolsDialog(BaseDialog):
                 mltb = MLToolBox()
             else:
                 import Pyro4
-                mltb = Pyro4.Proxy("PYRONAME:stem.machinelearning")
+                mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                    port=ML_PORT,
+                                                                    name=MLPYROOBJNAME))
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster=inrastsource, models=None,

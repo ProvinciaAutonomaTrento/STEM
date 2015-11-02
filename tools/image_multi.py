@@ -29,6 +29,9 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 from gdal_stem import convertGDAL
+from pyro_stem import PYROSERVER
+from pyro_stem import GDALCONVERTPYROOBJNAME
+from pyro_stem import GDAL_PORT
 
 
 class STEMToolsDialog(BaseDialog):
@@ -100,7 +103,9 @@ class STEMToolsDialog(BaseDialog):
             cgdal = convertGDAL()
         else:
             import Pyro4
-            cgdal = Pyro4.Proxy("PYRONAME:stem.gdalconvert")
+            cgdal = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                 port=GDAL_PORT,
+                                                                 name=GDALCONVERTPYROOBJNAME))
         cgdal.initialize(sources, out, outformat, self.digit)
         #if self.Linedit.text():
         #    resolution = float(self.Linedit.text())

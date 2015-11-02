@@ -31,7 +31,9 @@ from stem_utils_server import STEMSettings
 import traceback
 from gdal_stem import infoOGR
 import os
-
+from pyro_stem import PYROSERVER
+from pyro_stem import GDAL_PORT
+from pyro_stem import OGRINFOPYROOBJNAME
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -90,7 +92,9 @@ class STEMToolsDialog(BaseDialog):
                 ogrinfo = infoOGR()
             else:
                 import Pyro4
-                ogrinfo = Pyro4.Proxy("PYRONAME:stem.ogrinfo")
+                ogrinfo = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                       port=GDAL_PORT,
+                                                                       name=OGRINFOPYROOBJNAME))
             ogrinfo.initialize(source, 1)
             ogrinfo.calc_vol(out, hei, dia, specie)
 

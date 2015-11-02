@@ -17,7 +17,7 @@ Created on Mon Dec  1 10:56:52 2014
 import subprocess
 from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
-from pyro_stem import PYROSERVER, LAS_PORT
+from pyro_stem import PYROSERVER, LAS_PORT, LASPYROOBJNAME
 from gdal_stem import file_info
 import os
 import json
@@ -665,7 +665,7 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         las_stem = stemLAS()
-        Pyro4.Daemon.serveSimple({las_stem: "stem.las"},
+        Pyro4.Daemon.serveSimple({stemLAS: None, las_stem: LASPYROOBJNAME},
                                  host=PYROSERVER, port=LAS_PORT, ns=True)
     else:
         print args

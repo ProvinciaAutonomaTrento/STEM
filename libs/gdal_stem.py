@@ -49,7 +49,11 @@ import os
 import sys
 import numpy
 from types import StringType, ListType
-from pyro_stem import PYROSERVER, GDAL_PORT
+from pyro_stem import PYROSERVER
+from pyro_stem import GDAL_PORT
+from pyro_stem import GDALINFOPYROOBJNAME
+from pyro_stem import GDALCONVERTPYROOBJNAME
+from pyro_stem import OGRINFOPYROOBJNAME
 import gc
 
 NP2GDAL_CONVERSION = {
@@ -882,10 +886,13 @@ def main():
         gdalinfo_stem = file_info()
         gdalconvert_stem = convertGDAL()
         ogrinfo_stem = infoOGR()
-        Pyro4.Daemon.serveSimple({gdalinfo_stem: "stem.gdalinfo",
-                                  gdalconvert_stem: "stem.gdalconvert",
-                                  ogrinfo_stem: "stem.ogrinfo"},
-                                 host=PYROSERVER, port=GDAL_PORT, ns=True)
+
+        Pyro4.Daemon.serveSimple({file_info: None, convertGDAL: None,
+                                  infoOGR: None,
+                                  gdalinfo_stem: GDALINFOPYROOBJNAME,
+                                  gdalconvert_stem: GDALCONVERTPYROOBJNAME,
+                                  ogrinfo_stem: OGRINFOPYROOBJNAME},
+                                 host=PYROSERVER, port=GDAL_PORT, ns=False)
     else:
         if args.volume:
             infogr = infoOGR()
