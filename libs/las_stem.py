@@ -461,8 +461,8 @@ class stemLAS():
                 area = "POLYGON (({minx} {miny}, {minx} {maxy}, {maxx} {maxy}" \
                        ", {maxx} {miny}, {minx} {miny}))".format(minx=coors[0],
                                                                  miny=coors[1],
-                                                                 maxx=coors[1],
-                                                                 maxy=coors[1])
+                                                                 maxx=coors[2],
+                                                                 maxy=coors[3])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
         self._run_command(command)
