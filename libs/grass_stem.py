@@ -229,12 +229,17 @@ class stemGRASS():
         else:
             name = '_'.join(os.path.split(mask)[-1].split('.')[:-1])
             com = ['r.mask', 'vector={ma}'.format(ma=name)]
-            vecs = self.list_maps('vector')
+            # try to fix it
+            try:
+                vecs = self.list_maps('vector')
+            except:
+                vecs = []
             inv_mask = inverse_mask()
             if inv_mask:
                 com.append('-i')
             if name not in vecs:
-                runcom = gcore.Popen(['v.in.ogr', 'input={ma}'.format(ma=mask),
+                runcom = gcore.Popen(['v.in.ogr', '--overwrite',
+                                      'input={ma}'.format(ma=mask),
                                       'output={out}'.format(out=name)],
                                      stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 out, err = runcom.communicate()
@@ -413,7 +418,7 @@ class stemGRASS():
             self.removeMapset()
 
     def las_import(self, inp, out, method, returnpulse=None, resolution=None,
-                   percentile=None, trim=None):
+                   percentile=None, trim=None, region=None):
         """Import LAS file trhough r.in.lidar
 
         :param str inp: the input source
@@ -443,8 +448,21 @@ class stemGRASS():
         com = ['g.region']
         com.extend(outp.split())
         self.run_grass([com])
-        if resolution:
+        if resolution and region:
+            com2 = ['g.region', 'o={va}'.format(va=self.rect_str[0]),
+                    's={va}'.format(va=self.rect_str[1]),
+                    'e={va}'.format(va=self.rect_str[2]),
+                    'n={va}'.format(va=self.rect_str[3]),
+                    'res={va}'.format(va=resolution), '-a']
+        elif resolution and not region:
             com2 = ['g.region', 'res={r}'.format(r=str(resolution)), '-a']
+        elif not resolution and region:
+            actual_res = int(gcore.region()['nsres'])
+            com2 = ['g.region', 'o={va}'.format(va=self.rect_str[0]),
+                    's={va}'.format(va=self.rect_str[1]),
+                    'e={va}'.format(va=self.rect_str[2]),
+                    'n={va}'.format(va=self.rect_str[3]),
+                    'res={va}'.format(va=actual_res), '-a']
         else:
             actual_res = int(gcore.region()['nsres'])
             com2 = ['g.region', 'res={r}'.format(r=str(actual_res)), '-a']
