@@ -30,6 +30,7 @@ from las_stem import stemLAS
 from stem_utils import STEMMessageHandler, STEMUtils
 from stem_utils_server import STEMSettings
 import traceback
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -76,7 +77,10 @@ class STEMToolsDialog(BaseDialog):
                 compres = False
             com = las.union(items, out, compres)
             STEMUtils.saveCommand(com)
-            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            if os.path.exists(out):
+                STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            else:
+                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

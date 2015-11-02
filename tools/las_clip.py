@@ -31,6 +31,7 @@ from stem_utils_server import STEMSettings
 from las_stem import stemLAS
 import traceback
 from gdal_stem import infoOGR
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -102,7 +103,10 @@ class STEMToolsDialog(BaseDialog):
             com = las.clip(source, out, area, inverted=inv, compressed=compres,
                            forced=self.MethodInput.currentText())
             STEMUtils.saveCommand(com)
-            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            if os.path.exists(out):
+                STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            else:
+                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
