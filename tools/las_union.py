@@ -63,7 +63,7 @@ class STEMToolsDialog(BaseDialog):
                 items = self.BaseInput.selectedItems()
             else:
                 for index in xrange(self.BaseInput.count()):
-                    items.append(self.BaseInput.item(index))
+                    items.append(self.BaseInput.item(index).text())
             out = self.TextOut.text()
             if self.LocalCheck.isChecked():
                 las = stemLAS()
