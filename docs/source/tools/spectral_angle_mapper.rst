@@ -19,7 +19,7 @@ Input
 Parametri
 ------------
 
-File di selezione delle matrici: file contenete le matrici delle firme spettrali.
+**File di selezione delle matrici**: file contenete le matrici delle firme spettrali.
 
 Output
 ------------
