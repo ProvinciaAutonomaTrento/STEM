@@ -156,12 +156,11 @@ class STEMUtils:
         :param str typ: the type of data
         """
         layer = QFileInfo(filename)
+        layerName = layer.baseName()
         if not layer.exists():
             STEMMessageHandler.error("Problema ricaricando il layer {na}, "
                                      "potrebbe non essere stato scritto "
                                      "correttamente".format(na=layerName))
-        else:
-            layerName = layer.baseName()
         if typ == 'raster' or typ == 'image':
             layer = QgsRasterLayer(filename, layerName)
         elif typ == 'vector':
