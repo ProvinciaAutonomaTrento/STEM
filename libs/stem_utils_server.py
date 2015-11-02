@@ -33,7 +33,6 @@ def check_wkt(wkt):
     if geom:
         return True
     else:
-        raise Exception('WKT non valido')
         return False
 
 
