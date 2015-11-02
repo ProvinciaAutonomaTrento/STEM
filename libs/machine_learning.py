@@ -280,7 +280,7 @@ def test_model(model, Xtraining, ytraining, Xtest, ytest, scoring=None,
     print(model['name'], model['score_test'])
     try:
         print("coef : {co}".format(co=model['mod'].coef_))
-    except ValueError:
+    except (ValueError, AttributeError):
         pass
     test = TestResult(model.get('index', 1), model['name'],
                       model['score_test'])
