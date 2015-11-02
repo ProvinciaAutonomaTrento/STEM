@@ -93,16 +93,21 @@ class STEMToolsDialog(BaseDialog):
             if returnfilter == 'all':
                 returnfilter = None
 
+            bbox = None
+            if self.QGISextent.isChecked():
+                self.mapDisplay()
+                bbox = self.rect_str
+
             # TODO save parameter of import
             if method == 'percentile':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso, percentile=perc)
+                              resolution=reso, percentile=perc, region=bbox)
             elif method == 'trimmean':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso, trim=perc)
+                              resolution=reso, trim=perc, region=bbox)
             else:
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso)
+                              resolution=reso, region=bbox)
 
             STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
                                   tempout, 'raster')
