@@ -7,6 +7,9 @@ Il modulo esegue la selezione delle variabili per la stima. La selezione viene e
 
   .. image:: ../_static/tool_images/selezione_variabili_per_la_stima.png
 
+.. warning::
+
+  Questo modulo non prende in considerazione l'estensione di QGIS e/o una maschera
 
 Input
 ------------

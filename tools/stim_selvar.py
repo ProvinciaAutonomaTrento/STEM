@@ -43,6 +43,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
+        self.QGISextent.hide()
         self._insertSingleInput(label='Dati di input vettoriale')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self.labelcol = "Seleziona la colonna con indicazione del parametro da stimare"
@@ -75,8 +76,7 @@ class STEMToolsDialog(BaseDialog):
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
             invectcol = str(self.layer_list.currentText())
-            cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                                 'vector')
+
             prefcsv = "selvar_{vect}_{col}".format(vect=invect, col=invectcol)
             infovect = infoOGR()
             infovect.initialize(invectsource)
@@ -87,9 +87,6 @@ class STEMToolsDialog(BaseDialog):
                                          "maggiore o uguale al numero delle "
                                          "colonne")
                 return
-            if cut:
-                invect = cut
-                invectsource = cutsource
 
             inrastsource = None
             prefcsv += "_{n}".format(n=len(ncolumnschoose))
