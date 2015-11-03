@@ -13,6 +13,10 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
 
   Se una banda del file di input contiene valori dei pixel tutti uguali è probabile che la selezione si blocchi alla prima iterazione. Si consiglia di verificare quindi i valori delle bande, e semmai rimuovere le bande corrotte, per evitare questo problema.
 
+.. warning::
+
+  Questo modulo non prende in considerazione l'estensione di QGIS e/o una maschera
+
 .. only:: latex
 
   .. image:: ../_static/tool_images/selezione_feature_per_classificazione.png

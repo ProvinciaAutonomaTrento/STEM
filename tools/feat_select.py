@@ -45,7 +45,6 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.txt')
         self.toolName = name
         self.iface = iface
-
         self._insertSingleInput(label='Dati di input vettoriale')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self.labelcol = "Seleziona la colonna con indicazione della classe"
@@ -63,6 +62,7 @@ class STEMToolsDialog(BaseDialog):
         labeln = "Numero massimo di feature da selezionare"
         self. _insertFirstLineEdit(labeln, 1)
         self.helpui.fillfromUrl(self.SphinxUrl())
+        self.QGISextent.hide()
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
@@ -83,13 +83,9 @@ class STEMToolsDialog(BaseDialog):
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
             invectcol = str(self.layer_list.currentText())
-            cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                                 'vector')
             prefcsv = "featsel_{vect}_{col}".format(vect=invect,
                                                     col=invectcol)
-            if cut:
-                invect = cut
-                invectsource = cutsource
+
             inrast = str(self.BaseInput2.currentText())
 
             inrastsource = STEMUtils.getLayersSource(inrast)
