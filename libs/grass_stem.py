@@ -158,19 +158,16 @@ class stemGRASS():
         self.mapset = 'stem_{pid}'.format(pid=pid)
         locexist = os.path.join(grassdatabase, location)
         if not os.path.exists(locexist):
-            print "dentro creation"
             if not epsg:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Manca il codice EPSG nelle impostazioni")
-            startcmd = grassbin + ' -c epsg:' + epsg + ' -e ' + locexist
-            print startcmd
+            startcmd = grassbin + ' -c EPSG:' + epsg + ' -e ' + locexist
             p = subprocess.Popen(startcmd, shell=True, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if p.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: ",
                                 "Creazione della location fallita")
-            print "dopo location"
         self.mapsetpath = os.path.join(grassdatabase, location, self.mapset)
         if not os.path.exists(self.mapsetpath):
             os.mkdir(self.mapsetpath)
@@ -619,9 +616,11 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         grass_stem = stemGRASS()
-        Pyro4.Daemon.serveSimple({stemGRASS: None,
-                                  grass_stem: GRASSPYROOBJNAME},
-                                 host=PYROSERVER, port=GRASS_PORT, ns=False)
+        daemon = Pyro4.Daemon(host=PYROSERVER, port=GRASS_PORT)
+        uri = daemon.register(grass_stem,objectId=GRASSPYROOBJNAME,force=True)
+        ns = Pyro4.locateNS()
+        ns.register("PyroGrassStem",uri)
+        daemon.requestLoop()
     else:
         parser.error("--server option is required")
 

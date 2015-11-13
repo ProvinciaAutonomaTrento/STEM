@@ -886,13 +886,16 @@ def main():
         gdalinfo_stem = file_info()
         gdalconvert_stem = convertGDAL()
         ogrinfo_stem = infoOGR()
-
-        Pyro4.Daemon.serveSimple({file_info: None, convertGDAL: None,
-                                  infoOGR: None,
-                                  gdalinfo_stem: GDALINFOPYROOBJNAME,
-                                  gdalconvert_stem: GDALCONVERTPYROOBJNAME,
-                                  ogrinfo_stem: OGRINFOPYROOBJNAME},
-                                 host=PYROSERVER, port=GDAL_PORT, ns=False)
+        # Trilogis daemon configuration with objectId 2015-11-06
+        daemon = Pyro4.Daemon(host=PYROSERVER, port=GDAL_PORT)
+        uri1 = daemon.register(gdalinfo_stem,objectId=GDALINFOPYROOBJNAME,force=True)
+        uri2 = daemon.register(gdalconvert_stem,objectId=GDALCONVERTPYROOBJNAME,force=True)
+        uri3 = daemon.register(ogrinfo_stem,objectId=OGRINFOPYROOBJNAME,force=True)
+        ns = Pyro4.locateNS()
+        ns.register("PyroGdalInfoStem",uri1)
+        ns.register("PyroGdalConvertStem",uri2)
+        ns.register("PyroOgrStem",uri3)
+        daemon.requestLoop()
     else:
         if args.volume:
             infogr = infoOGR()

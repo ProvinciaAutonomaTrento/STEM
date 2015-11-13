@@ -665,8 +665,11 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         las_stem = stemLAS()
-        Pyro4.Daemon.serveSimple({stemLAS: None, las_stem: LASPYROOBJNAME},
-                                 host=PYROSERVER, port=LAS_PORT, ns=True)
+        daemon = Pyro4.Daemon(host=PYROSERVER, port=LAS_PORT)
+        uri = daemon.register(las_stem,objectId=LASPYROOBJNAME,force=True)
+        ns = Pyro4.locateNS()
+        ns.register("PyroLasStem",uri)
+        daemon.requestLoop()
     else:
         print args
 

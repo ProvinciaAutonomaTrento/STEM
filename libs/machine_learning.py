@@ -1113,9 +1113,11 @@ def main():
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
         machine_stem = MLToolBox()
-        Pyro4.Daemon.serveSimple({MLToolBox: None,
-                                  machine_stem: MLPYROOBJNAME},
-                                 host=PYROSERVER, port=ML_PORT, ns=False)
+        daemon = Pyro4.Daemon(host=PYROSERVER, port=ML_PORT)
+        uri = daemon.register(machine_stem,objectId=MLPYROOBJNAME,force=True)
+        ns = Pyro4.locateNS()
+        ns.register("PyroMachineStem",uri)
+        daemon.requestLoop()
     else:
         parser.error("--server option is required")
 
