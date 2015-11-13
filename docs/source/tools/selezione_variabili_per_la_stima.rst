@@ -28,7 +28,7 @@ Parametri
 Output
 ------------
 
-**Risultato**: inserire il percorso e il nome del file di output.
+**Risultato**: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete l'indicazione della selezione (1) o non selezione (0) delle feature del file di input.
 
 .. only:: latex
 
