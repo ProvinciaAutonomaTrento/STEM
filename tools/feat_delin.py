@@ -50,9 +50,13 @@ class STEMToolsDialog(BaseDialog):
         min_height = "Valore minimo dell'altezza della chioma"
         self._insertThirdLineEdit(min_height, 2)
 
-        min_cre = "Soglia di crescita della chioma"
-        self._insertFourthLineEdit(min_cre, 2)
+        min_cre = "Soglia crescita chioma basata su altezza media chioma"
+        self._insertFourthLineEdit(min_cre, 3)
         self.Linedit4.setText('0.65')
+
+        min_alb = "Soglia crescita chioma basata su altezza albero"
+        self._insertFifthLineEdit(min_alb, 4)
+        self.Linedit5.setText('0.65')
 
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -76,6 +80,7 @@ class STEMToolsDialog(BaseDialog):
                                int(self.Linedit2.text()),
                                int(self.Linedit3.text()),
                                float(self.Linedit4.text()),
+                               float(self.Linedit5.text()),
                                overwrite=self.overwrite)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
