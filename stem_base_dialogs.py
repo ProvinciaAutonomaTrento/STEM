@@ -847,6 +847,7 @@ class BaseDialog(QDialog, baseDialog):
         :param str source: the full path to source data
         :param str typ: the type of data, it should be raster, image, vector
         :param bool inverse: if True create an inverse mask
+        :param bool local: if True it use the local disk for the cut info
         """
         self.mapDisplay()
         mask = STEMSettings.value("mask", "")
@@ -922,12 +923,13 @@ class BaseDialog(QDialog, baseDialog):
                                          "comando {err}".format(err=err))
         return outname.strip(), out, mask
 
-    def cutInputMulti(self, inp, source):
+    def cutInputMulti(self, inp, source, local=True):
         """Cut multiple data according to a bounding box or a vector geometry
 
         :param str inp: the name of input data
         :param str source: the full path to source data
         :param str typ: the type of data, it should be raster, image, vector
+        :param bool local: if True it use the local disk for the cut info
         """
         if len(inp) != len(source):
             STEMMessageHandler.error("Errore durante il ritaglio di più immagini")
@@ -936,7 +938,8 @@ class BaseDialog(QDialog, baseDialog):
         for n in range(len(inp)):
             layer = STEMUtils.getLayersSource(source[n])
             typ = STEMUtils.checkMultiRaster(source[n], layer)
-            newn, news, newm = self.cutInput(inp[n], source[n], typ)
+            newn, news, newm = self.cutInput(inp[n], source[n], typ,
+                                             local=local)
             if not newn:
                 return False, False
             else:
