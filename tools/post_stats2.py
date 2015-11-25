@@ -31,6 +31,7 @@ from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 from grass_stem import temporaryFilesGRASS
 import traceback
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -92,12 +93,17 @@ class STEMToolsDialog(BaseDialog):
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             perc = str(self.Linedit.text())
             coms = []
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name,
-                                                      self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
 
             zonename = name = str(self.BaseInput2.currentText())
@@ -122,9 +128,8 @@ class STEMToolsDialog(BaseDialog):
             com = ['r.univar', '-e', '-g', 'map={name}'.format(name=tempin),
                    'percentile={p}'.format(p=perc),
                    'zones={zon}'.format(zon=zonetempin)]
-            out = self.TextOut.text()
-            if out:
-                com.append('output={name}'.format(name=out))
+            if output:
+                com.append('output={name}'.format(name=output))
             else:
                 STEMMessageHandler.error("Si prega di inserire il nome del "
                                          "file di output")
@@ -133,7 +138,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass(coms)
             STEMMessageHandler.success("Il file {name} è stato scritto "
-                                       "correttamente".format(name=out))
+                                       "correttamente".format(name=output))
 
         except:
             error = traceback.format_exc()

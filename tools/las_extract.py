@@ -32,6 +32,7 @@ from stem_utils_server import STEMSettings
 from grass_stem import temporaryFilesGRASS, stats
 import os
 import traceback
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -84,7 +85,8 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             name = os.path.basename(source).replace('.las', '')
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            local = self.LocalCheck.isChecked()
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
             method = str(self.MethodInput.currentText())
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
@@ -98,7 +100,10 @@ class STEMToolsDialog(BaseDialog):
                 self.mapDisplay()
                 bbox = self.rect_str
 
-            # TODO save parameter of import
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             if method == 'percentile':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
                               resolution=reso, percentile=perc, region=bbox)
@@ -109,8 +114,8 @@ class STEMToolsDialog(BaseDialog):
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
                               resolution=reso, region=bbox)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, 'raster')
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout,
+                                  'raster')
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')

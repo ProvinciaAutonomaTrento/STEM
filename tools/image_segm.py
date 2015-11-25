@@ -33,6 +33,7 @@ from grass_stem import temporaryFilesGRASS
 import traceback
 from functools import partial
 from PyQt4.QtCore import SIGNAL
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -97,13 +98,21 @@ class STEMToolsDialog(BaseDialog):
             size = str(self.Linedit.text())
             memory = str(self.Linedit2.text())
             coms = []
-
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
 
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            output = self.TextOut.text()
+            output2 = self.TextOut2.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
+                output2 = STEMUtils.pathClientWinToServerLinux(output2, False)
+
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -123,11 +132,11 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass(coms)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
+            STEMUtils.exportGRASS(gs, self.overwrite, output,
                                   tempout, typ, False)
 
             if self.TextOut2.text():
-                STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut2.text(),
+                STEMUtils.exportGRASS(gs, self.overwrite, output2,
                                       'goodness_{name}'.format(name=tempout),
                                       typ)
             else:

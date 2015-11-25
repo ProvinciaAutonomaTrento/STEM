@@ -30,6 +30,7 @@ from stem_utils_server import STEMSettings
 import traceback
 from gdal_stem import file_info
 import types
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -79,11 +80,18 @@ class STEMToolsDialog(BaseDialog):
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             coms = []
             outnames = []
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            out = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                old_source = source
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                out = STEMUtils.pathClientWinToServerLinux(out)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -93,7 +101,7 @@ class STEMToolsDialog(BaseDialog):
 
             if len(nlayerchoose) > 1:
                 raster = file_info()
-                raster.init_from_name(source)
+                raster.init_from_name(old_source)
                 for n in nlayerchoose:
                     com = startcom[:]
                     layer = raster.getColorInterpretation(n)
@@ -129,8 +137,7 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, out, tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

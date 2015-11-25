@@ -32,6 +32,7 @@ from stem_utils_server import STEMSettings
 from grass_stem import temporaryFilesGRASS
 import traceback
 import numpy
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -83,14 +84,18 @@ class STEMToolsDialog(BaseDialog):
             nlayers = STEMUtils.checkLayers(source, self.layer_list)
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             coms = []
-
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
 
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
-
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayers)
 
             if mask:
@@ -103,10 +108,10 @@ class STEMToolsDialog(BaseDialog):
 
             outputs = []
             for i in numpy.arange(minthre, maxthre + step, step):
-                output = '{outname}_{thre}'.format(outname=tempout, thre=i)
-                outputs.append(output)
+                out = '{outname}_{thre}'.format(outname=tempout, thre=i)
+                outputs.append(out)
                 com = ['i.segment', '-d', 'group={name}'.format(name=tempin),
-                       'output={out}'.format(out=output),
+                       'output={out}'.format(out=out),
                        'thres={val}'.format(val=i),
                        'similarity=euclidean', 'minsize=1', 'iter=20',
                        'memory={val}'.format(val=memory)]
@@ -116,8 +121,8 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
 
             gs.create_group(outputs, tempout)
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ, False)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ,
+                                  False)
             gs.removeMapset()
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

@@ -32,6 +32,7 @@ from stem_utils_server import STEMSettings
 import traceback
 from gdal_stem import file_info
 from grass_stem import temporaryFilesGRASS
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -104,18 +105,25 @@ class STEMToolsDialog(BaseDialog):
                 nlayers.append(str(blue))
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
 
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            output = self.TextOut.text()
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
 
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            if not local and sys.platform == 'win32':
+                old_source = source
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
             if mask:
                 gs.check_mask(mask)
 
             gs.import_grass(source, tempin, typ, nlayers)
             raster = file_info()
-            raster.init_from_name(source)
+            raster.init_from_name(old_source)
             red = raster.getColorInterpretation(red)
             nir = raster.getColorInterpretation(nir)
             com = ['i.vi', 'red={name}.{l}'.format(name=tempin, l=red),
@@ -140,8 +148,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass([com])
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
         except:

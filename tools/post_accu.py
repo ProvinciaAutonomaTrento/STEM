@@ -32,6 +32,7 @@ from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 from grass_stem import temporaryFilesGRASS
 import traceback
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -83,51 +84,45 @@ class STEMToolsDialog(BaseDialog):
             if type2 == 1:
                 nlayerchoose2 = [1]
                 type2 = 'raster'
-#                if len(nlayerchoose) != len(nlayerchoose2):
-#                    err = "Selezionare lo stesso numero di bande"
-#                    STEMMessageHandler.error(err)
             else:
                 type2 = 'vector'
                 nlayerchoose2 = None
             typ = 'raster'
             coms = []
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
             pid = tempin.split('_')[2]
             tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
             cut2, cutsource2, mask = self.cutInput(name2, source2, type2)
             if cut2:
                 name2 = cut2
                 source2 = cutsource2
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                source2 = STEMUtils.pathClientWinToServerLinux(source2)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             gs.import_grass(source2, tempin2, type2, nlayerchoose2)
-
-#            import pdb
-#            pyqtRemoveInputHook()
-#            pdb.set_trace()
 
             if type2 == 'vector':
                 gs.vtorast(tempin2, self.BaseInputCombo.currentText())
 
-#            pdb.set_trace()
-
             com = ['r.kappa', '-w',
                    'classification={name}'.format(name=tempin),
                    'reference={name}'.format(name=tempin2),
-                   'output={outname}'.format(outname=self.TextOut.text())]
+                   'output={outname}'.format(outname=output)]
             coms.append(com)
             STEMUtils.saveCommand(com)
             gs.run_grass(coms)
 
             self.finished(self.TextOut.text())
-#            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-#                                  tempout, typ)
-#
-#            if self.AddLayerToCanvas.isChecked():
-#                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
+
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

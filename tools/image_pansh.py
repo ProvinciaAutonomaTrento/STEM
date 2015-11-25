@@ -31,6 +31,7 @@ from stem_utils_server import STEMSettings
 import traceback
 from grass_stem import temporaryFilesGRASS
 from gdal_stem import file_info
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -113,25 +114,32 @@ class STEMToolsDialog(BaseDialog):
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             method = str(self.MethodInput.currentText())
             coms = []
-
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
 
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
-
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                old_source = source
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             if name == namepan:
                 nlayers.append(pan)
                 gs.import_grass(source, tempin, typ, nlayers)
             else:
                 gs.import_grass(source, tempin, typ, nlayers)
                 sourcepan = STEMUtils.getLayersSource(namepan)
+                if not local and sys.platform == 'win32':
+                    sourcepan = STEMUtils.pathClientWinToServerLinux(sourcepan)
                 gs.import_grass(sourcepan, namepan, typ, [pan])
             if mask:
                 gs.check_mask(mask)
             raster = file_info()
-            raster.init_from_name(source)
+            raster.init_from_name(old_source)
             red = raster.getColorInterpretation(red)
             green = raster.getColorInterpretation(green)
             blu = raster.getColorInterpretation(blu)
@@ -150,8 +158,7 @@ class STEMToolsDialog(BaseDialog):
             STEMUtils.saveCommand(com)
             gs.run_grass(coms)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

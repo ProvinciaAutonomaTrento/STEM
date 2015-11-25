@@ -33,6 +33,7 @@ from gdal_stem import file_info
 from grass_stem import temporaryFilesGRASS
 import traceback
 import types
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -85,11 +86,18 @@ class STEMToolsDialog(BaseDialog):
             typ = STEMUtils.checkMultiRaster(source, self.layer_list)
             coms = []
             outnames = []
-            cut, cutsource, mask = self.cutInput(name, source, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
             if cut:
                 name = cut
                 source = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                old_source = source
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
                 gs.check_mask(mask)
@@ -102,7 +110,7 @@ class STEMToolsDialog(BaseDialog):
 
             if len(nlayerchoose) > 1:
                 raster = file_info()
-                raster.init_from_name(source)
+                raster.init_from_name(old_source)
                 for n in nlayerchoose:
                     layer = raster.getColorInterpretation(n)
                     com = startcom[:]
@@ -137,8 +145,7 @@ class STEMToolsDialog(BaseDialog):
             if len(nlayerchoose) > 1:
                 gs.create_group(outnames, tempout)
 
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempout, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

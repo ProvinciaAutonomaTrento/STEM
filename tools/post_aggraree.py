@@ -32,6 +32,7 @@ from stem_utils_server import STEMSettings
 from gdal_stem import infoOGR
 from grass_stem import temporaryFilesGRASS
 import traceback
+import sys
 
 
 class STEMToolsDialog(BaseDialog):
@@ -95,8 +96,11 @@ class STEMToolsDialog(BaseDialog):
                 return
             name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
-            cut, cutsource, mask = self.cutInput(name, source, typ)
-            cut2, cutsource2, mask = self.cutInput(name2, source2, typ)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource, mask = self.cutInput(name, source, typ,
+                                                 local=local)
+            cut2, cutsource2, mask = self.cutInput(name2, source2, typ,
+                                                   local=local)
             if cut:
                 name = cut
                 source = cutsource
@@ -104,9 +108,13 @@ class STEMToolsDialog(BaseDialog):
                 name2 = cut2
                 source2 = cutsource2
 
-            tempin, tempout, gs = temporaryFilesGRASS(name, self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(name, local)
             pid = tempin.split('_')[2]
-
+            output = self.TextOut.text()
+            if not local and sys.platform == 'win32':
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                source2 = STEMUtils.pathClientWinToServerLinux(source2)
+                output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ)
             tempin2 = 'stem_{name}_{pid}'.format(name=name2, pid=pid)
             gs.import_grass(source2, tempin2, typ)
@@ -120,8 +128,7 @@ class STEMToolsDialog(BaseDialog):
                    'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
             STEMUtils.saveCommand(com)
             gs.run_grass([com])
-            STEMUtils.exportGRASS(gs, self.overwrite, self.TextOut.text(),
-                                  tempin2, typ)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempin2, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

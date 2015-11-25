@@ -33,6 +33,7 @@ from grass_stem import temporaryFilesGRASS
 import traceback
 import glob
 import os
+import sys
 
 
 def basename(name):
@@ -105,17 +106,20 @@ class STEMToolsDialog(BaseDialog):
             sources = [os.path.join(sourcedir, fi) for fi in files if fi.find('aux') == -1 and fi.find('txt') == -1]
             method = str(self.MethodInput.currentText())
             suffix = 'dos'
-            cut, cutsource = self.cutInputMulti(files, sources)
+            local = self.LocalCheck.isChecked()
+            cut, cutsource = self.cutInputMulti(files, sources, local=local)
             if cut:
                 files = cut
                 sources = cutsource
-            tempin, tempout, gs = temporaryFilesGRASS(files[0], self.LocalCheck.isChecked())
+            tempin, tempout, gs = temporaryFilesGRASS(files[0], local)
             for sou in range(len(sources)):
                 tempin = basename(files[sou])
                 tempout = "{pref}_{suf}{key}".format(pref=pref, suf=suffix,
                                                      key=sou + 1)
                 tempouts.append(tempout)
-                gs.import_grass(sources[sou], tempin, 'raster', [1])
+                if not local and sys.platform == 'win32':
+                    source = STEMUtils.pathClientWinToServerLinux(sources[sou])
+                gs.import_grass(source, tempin, 'raster', [1])
             com = ['i.landsat.toar', 'input={name}'.format(name=pref),
                    'output={outname}'.format(outname='_'.join([pref, suffix])),
                    'metfile={met}'.format(met=metfile),
@@ -131,8 +135,10 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
             for tpo in tempouts:
                 out = "{di}_{name}.tif".format(di=outdir, name=tpo)
-                STEMUtils.exportGRASS(gs, self.overwrite, out, tpo, 'raster',
-                                      remove=False)
+                if not local and sys.platform == 'win32':
+                    output = STEMUtils.pathClientWinToServerLinux(out, False)
+                STEMUtils.exportGRASS(gs, self.overwrite, output, tpo,
+                                      'raster', remove=False)
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')
         except:
