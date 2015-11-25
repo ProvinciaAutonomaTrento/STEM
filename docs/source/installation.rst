@@ -1,9 +1,9 @@
 Come installare il plugin
 ==============================
 
-Il plugin richiede `GRASS GIS 7`_, `GDAL`_ e le librerie di Python
-`numpy`_, `scikit-learn`_ (versione maggiore o uguale alla 0.15.2) e
-`psutil`_ (versione maggiore alla 2.1.1), `Pyro4`_
+Il plugin richiede `GRASS GIS 7`_, `GDAL`_, `PDAL`_, `libLAS`_ e le
+librerie di Python `numpy`_, `scikit-learn`_ (versione uguale alla 0.15.2)
+e `psutil`_ (versione maggiore alla 2.1.1), `Pyro4`_
 
 Installazione su Linux
 ------------------------------
@@ -93,3 +93,5 @@ residui di precedenti installazioni di `scikit-learn`_.
 .. _`OSGeo4W`: http://trac.osgeo.ogr/osgeo4w
 .. _`psutil`: https://github.com/giampaolo/psutil
 .. _`Pyro4`: https://pythonhosted.org/Pyro4/index.html
+.. _`PDAL`: http://www.pdal.io/
+.. _`libLAS`: http://liblas.org/
