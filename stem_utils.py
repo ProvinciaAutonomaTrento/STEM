@@ -509,14 +509,32 @@ class STEMUtils:
                 shutil.copy2(inp, path)
 
     @staticmethod
-    def pathClientWinToServerLinux(path):
-        """"""
-        rel = os.path.relpath(path, STEMSettings._check(STEMSettings.value("datalocal", "")))
-        print(rel)
-        new = os.path.join(STEMSettings._check(STEMSettings.value("dataserver",
-                                                                  "")), rel)
-        print(new)
-        new = new.replace("\\", "/")
+    def pathClientWinToServerLinux(path, inp=True):
+        """Convert path from windows to linux for client and server connection
+
+        :param str path: the path to rename
+        :param bool inp: if inp true check datalocal/dataserver otherwise
+                         outdataserver/outdatalocal
+        """
+        try:
+            if inp or not STEMSettings.value("datalocal", ""):
+                old_local = STEMSettings._check(STEMSettings.value("datalocal",
+                                                                   ""))
+                old_server = STEMSettings._check(STEMSettings.value("dataserver",
+                                                                    ""))
+            else:
+                old_local = STEMSettings._check(STEMSettings.value("outdatalocal",
+                                                                   ""))
+                old_server = STEMSettings._check(STEMSettings.value("outdataserver",
+                                                                    ""))
+            old = os.path.relpath(path, old_local)
+            new = os.path.join(old_server, old)
+            new = new.replace("\\", "/")
+        except:
+            STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
+                                       ' potrebbero esserci problemi nelle '
+                                       'prossimi analisi')
+            new = path
         return new
 
 
