@@ -1112,6 +1112,8 @@ class SettingsDialog(QDialog, settingsDialog):
                      partial(self.BrowseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
+        self.connect(self.pushButton_proj, SIGNAL("clicked()"),
+                     partial(self.BrowseDir, self.lineEdit_outputlocal))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
     def _check(self, string):
@@ -1142,8 +1144,10 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                       "")))
         self.lineEdit_serverdata.setText(self._check(STEMSettings.value("dataserver",
                                                                        "")))
-        self.lineEdit_tempserverdata.setText(self._check(STEMSettings.value("tempdataserver",
+        self.lineEdit_outserverdata.setText(self._check(STEMSettings.value("outdataserver",
                                                                            "")))
+        self.lineEdit_outputlocal.setText(self._check(STEMSettings.value("outdatalocal",
+                                                                         "")))
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
         self.lineEditMemory.setText(self._check(STEMSettings.value("memory",
                                                                    "")))
@@ -1206,8 +1210,10 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_datalocal.text())
         STEMSettings.setValue("dataserver",
                               self.lineEdit_serverdata.text())
-        STEMSettings.setValue("tempdataserver",
+        STEMSettings.setValue("outdataserver",
                               self.lineEdit_tempserverdata.text())
+        STEMSettings.setValue("outdatalocal",
+                              self.lineEdit_outputlocal.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
         STEMSettings.setValue("memory", self.lineEditMemory.text())
 
