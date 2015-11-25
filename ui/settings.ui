@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>371</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,13 +145,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_11">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="label_serverdata">
          <property name="text">
           <string>Directory dei dati sul server</string>
@@ -164,16 +157,37 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_12">
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
        <item>
-        <widget class="QLabel" name="label_tempserverdata">
+        <widget class="QLabel" name="label_outputlocal">
          <property name="text">
-          <string>Directory dei dati temporanei sul server</string>
+          <string>Directory dei dati di output il locale</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_tempserverdata"/>
+        <widget class="QLineEdit" name="lineEdit_outputlocal"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_outputlocal">
+         <property name="text">
+          <string>Sfoglia</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QLabel" name="label_outserverdata">
+         <property name="text">
+          <string>Directory dei dati di output sul server</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_outserverdata"/>
        </item>
       </layout>
      </item>
