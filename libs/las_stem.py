@@ -25,9 +25,6 @@ import sys
 from stem_utils_server import check_wkt
 from math import *
 import numpy as np
-import copy
-from bosco_stem import read_las_header, readlas_1_2_
-from bosco_stem import compute_layers_, compute_types_
 PIPE = subprocess.PIPE
 
 LAST_RETURN = """
@@ -661,6 +658,14 @@ class stemLAS():
         :param str inp: full path for the input LAS file
         :param str prefix: prefix for the output LAS file
         """
+        try:
+            from runtime import *
+        except ImportError:
+            from smop.runtime import *
+        import copy
+        import struct
+        from bosco_stem import read_las_header, readlas_1_2_
+        from bosco_stem import compute_layers_, compute_types_
         h_sterpaglia = 1.0
         dim_celle = 4
         n_layers_TOT = 0
