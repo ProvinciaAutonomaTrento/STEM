@@ -154,9 +154,9 @@ class stemLAS():
                 if lasout:
                     return True
                 elif laserr:
-                    raise Exception(laserr[0].strip())
+                    return False
             else:
-                raise Exception(laserr[0].strip())
+                return False
         else:
             return False
 
