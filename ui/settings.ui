@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
-    <height>376</height>
+    <width>694</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,7 @@
        <item>
         <widget class="QLabel" name="label_grassdata">
          <property name="text">
-          <string>Percorso alla GRASSDATA directory server</string>
+          <string>Percorso alla GRASSDATA directory locale</string>
          </property>
         </widget>
        </item>
@@ -126,7 +126,7 @@
        <item>
         <widget class="QLabel" name="label_localdata">
          <property name="text">
-          <string>Directory dei dati in locale</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unità di rete per la connessione a \server\alfresco\sites&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
