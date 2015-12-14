@@ -470,8 +470,8 @@ class infoOGR:
 class convertGDAL:
     """A class to run operation on raster data from using GDAL in STEM tools"""
     def __init__(self):
-        self.file_infos = []
-
+        # move to initialize
+        pass
     def initialize(self, innames, output=None, outformat='GTIFF',
                    bandtype=None):
         """Function for the initialize the object
@@ -481,8 +481,29 @@ class convertGDAL:
        :param str outformat: the name of output format according with gdal
                              format names
         """
+        self.file_infos = []
+        # Rimuovo i file output+.hdr e output+.aux.xml e ...
+        def remove(path):
+            if os.path.isfile(path):
+                print 'Rimuovo il file temporaneo',path
+                os.remove(path)
+        if output is not None:
+            remove(output+'.hdr')
+            remove(output+'.aux.xml')
+            if '.' in output:
+                remove(output[:output.rindex('.')]+'.hdr')
+            if output.lower().endswith('.tmp'):
+                path1 = output[:-4] # Rimuovi .tmp dal path
+                remove(path1+'.hdr')
+                remove(path1+'.aux.xml')
+                if '.' in path1:
+                    remove(path1[:path1.rindex('.')]+'.hdr')
+                
+
         # Open source dataset
+        
         self.in_names = innames
+        
         self.driver = gdal.GetDriverByName(str(outformat))
         if self.driver is None:
             raise IOError('Format driver %s not found, pick a supported '

@@ -230,7 +230,8 @@ class stemLAS():
                                stdout=PIPE, stderr=PIPE)
         out, err = com.communicate()
 
-        if com.returncode != 0 and err != '':
+        # Pdal da` errore anche se restituisce 0 come returncode
+        if err != '':
             raise Exception('Problem executing "{com}", the error is :'
                             '{er}'.format(com=' '.join(comm), er=err))
         elif com.returncode == -11:

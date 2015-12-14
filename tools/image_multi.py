@@ -25,6 +25,8 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
+import sys
+
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
@@ -106,12 +108,27 @@ class STEMToolsDialog(BaseDialog):
             cgdal = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                  port=GDAL_PORT,
                                                                  name=GDALCONVERTPYROOBJNAME))
-        cgdal.initialize(sources, out, outformat, self.digit)
+        if not self.LocalCheck.isChecked() and sys.platform == 'win32':
+            # with open(r'Z:\idt\tempout\temp.log','a') as f:
+            #     f.write('Converto i path '+ \
+            #             ' '.join([STEMUtils.pathClientWinToServerLinux(x) for x in sources])+ \
+            #             ' '+STEMUtils.pathClientWinToServerLinux(out))
+
+            cgdal.initialize([STEMUtils.pathClientWinToServerLinux(x) for x in sources],
+                             output=STEMUtils.pathClientWinToServerLinux(out),
+                             outformat=outformat,
+                             bandtype=self.digit)
+        else:
+            # with open(r'Z:\idt\tempout\temp.log','a') as f:
+            #     f.write('Non converto i path')
+            cgdal.initialize(sources, output=out, outformat=outformat, bandtype=self.digit)
+
         #if self.Linedit.text():
         #    resolution = float(self.Linedit.text())
         #else:
         #    resolution = None
         cgdal.write()
+
         if self.overwrite:
             STEMUtils.renameRast(out, self.TextOut.text())
         if self.AddLayerToCanvas.isChecked():
