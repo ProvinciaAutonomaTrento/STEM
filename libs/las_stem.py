@@ -18,14 +18,20 @@ import subprocess
 from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
 from pyro_stem import PYROSERVER, LAS_PORT, LASPYROOBJNAME
-from gdal_stem import file_info
+from gdal_stem import file_info, infoOGR
 import os
 import json
 import sys
-from stem_utils_server import check_wkt
+from stem_utils_server import check_wkt, tempFileName
 from math import *
 import numpy as np
 PIPE = subprocess.PIPE
+try:
+    import pdal
+    from pdal import libpdalpython
+except:
+    PDAL = False
+
 
 LAST_RETURN = """
 import numpy as np
@@ -112,6 +118,25 @@ def filter(ins,outs):
     outs['Mask'] = others
     return True
 """
+
+
+def number_return(inps, value):
+    """Count the number of inps major than value and after divide them for
+    value
+
+    :param array inps: numpy array with input height values
+    :param float value: the threshold to cut inps
+    """
+    return float((inps > value).sum()) / float(len(inps))
+
+
+def hcv(inps):
+    """Calculate coefficient of variation height points,
+    standard_deviation/mean
+
+    :param array inps: numpy array with input height values
+    """
+    return (np.std(inps) / np.mean(inps))
 
 
 class stemLAS():
@@ -811,6 +836,65 @@ class stemLAS():
             fid.close()
             out = "{pref}_{num}.las".format(pref=prefix, num=str(zona[fascia]))
             self.txt2las(savefile, out)
+
+    def zonal_statistics(self, inlas, invect, output, stats, overwrite=False,
+                         ogrdriver='ESRI Shapefile'):
+        """Calculate statistics of point cloud heigths for each polygon in
+        invect
+
+        :param str inlas: the input LAS file
+        :param str invect: the input vector polygon file
+        :param str output: the output vector file
+        :param list stats: a list with stats to calculate
+        :param bool overwrite: overwrite existing files
+        :param str ogrdriver: the name of OGR driver to use
+        """
+        statistics = {'hcv': hcv, 'max': np.max, 'mean': np.mean,
+                      'p10': np.percentile, 'p20': np.percentile,
+                      'p30': np.percentile, 'p40': np.percentile,
+                      'p50': np.percentile, 'p60': np.percentile,
+                      'p70': np.percentile, 'p80': np.percentile,
+                      'p90': np.percentile, 'c2m': number_return,
+                      'cmean': number_return}
+        vect = infoOGR()
+        vect.initialize(invect)
+        if vect.getType() not in [ogr.wkbPolygon, ogr.wkbPolygon25D,
+                                  ogr.wkbMultiPolygon, ogr.wkbMultiPolygon25D]:
+            raise Exception("Geometry type is not supported, please use a "
+                            "polygon vector file")
+            return 1
+        driver = ogr.GetDriverByName(ogrdriver)
+        if overwrite:
+            driver.DeleteDataSource(outvect)
+        newdata = driver.CreateDataSource(outvect)
+        newdata.CopyLayer(vect.lay0, 'las_zonal_stats')
+        newlayer = newdata.GetLayer()
+        for s in stats:
+            field = ogr.FieldDefn(s, ogr.OFTReal)
+            newlayer.CreateField(field)
+        for inFeature in newlayer:
+            inGeom = inFeature.GetGeometryRef()
+            outlas = tempFileName()
+            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt())
+            xml = read_file(self.pdalxml)
+            pipe = libpdalpython.PyPipeline(xml)
+            pipe.execute()
+            data = pipe.arrays()[0]
+            zs = map(lambda x: x[2], data)
+            for s in stats:
+                if s in ['hcv', 'max', 'mean']:
+                    val = statistics[s](zs)
+                elif s == 'c2m':
+                    val = statistics[s](zs, 2)
+                elif s == 'cmean':
+                    mean = np.mean(zs)
+                    val = statistics[s](zs, mean)
+                else:
+                    perc = int(s.replace('p', ''))
+                    val = statistics[s](zs, perc)
+                inFeature.SetField(s, val)
+        newlayer.Destroy()
+        newdata.Destroy()
 
 
 def get_parser():
