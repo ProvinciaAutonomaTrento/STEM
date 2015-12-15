@@ -596,7 +596,7 @@ class BaseDialog(QDialog, baseDialog):
                                                  self.horizontalLayout_linedit6)
         self.LabelLinedit6.setText(self.tr("", label))
 
-    def _insertFirstCombobox(self, label, posnum, items=None):
+    def _insertFirstCombobox(self, label, posnum, items=None, combo=False):
         """Function to add a ComboBox Widget
 
         :param int posnum: the position of form in the input layout
@@ -609,7 +609,10 @@ class BaseDialog(QDialog, baseDialog):
         self.LabelCombo.setObjectName("LabelCombo")
         self.LabelCombo.setWordWrap(True)
         self.horizontalLayout_combo.addWidget(self.LabelCombo)
-        self.BaseInputCombo = QComboBox()
+        if combo:
+            self.BaseInputCombo = CheckableComboBox()
+        else:
+            self.BaseInputCombo = QComboBox()
         self.BaseInputCombo.setEditable(True)
         self.BaseInputCombo.setObjectName("BaseInputCombo")
         self.horizontalLayout_combo.addWidget(self.BaseInputCombo)
