@@ -865,7 +865,10 @@ class stemLAS():
             return 1
         driver = ogr.GetDriverByName(ogrdriver)
         if overwrite:
-            driver.DeleteDataSource(outvect)
+            try:
+                driver.DeleteDataSource(outvect)
+            except Exception:
+                pass
         newdata = driver.CreateDataSource(outvect)
         newdata.CopyLayer(vect.lay0, 'las_zonal_stats')
         newlayer = newdata.GetLayer()
@@ -881,19 +884,21 @@ class stemLAS():
             pipe.execute()
             data = pipe.arrays()[0]
             zs = map(lambda x: x[2], data)
-            for s in stats:
-                if s in ['hcv', 'max', 'mean']:
-                    val = statistics[s](zs)
-                elif s == 'c2m':
-                    val = statistics[s](zs, 2)
-                elif s == 'cmean':
-                    mean = np.mean(zs)
-                    val = statistics[s](zs, mean)
-                else:
-                    perc = int(s.replace('p', ''))
-                    val = statistics[s](zs, perc)
-                inFeature.SetField(s, val)
-        newlayer.Destroy()
+            if len(zs) != 0:
+                for s in stats:
+                    if s in ['hcv', 'max', 'mean']:
+                        val = statistics[s](zs)
+                    elif s == 'c2m':
+                        val = statistics[s](zs, 2)
+                    elif s == 'cmean':
+                        mean = np.mean(zs)
+                        val = statistics[s](zs, mean)
+                    else:
+                        perc = int(s.replace('p', ''))
+                        val = statistics[s](zs, perc)
+                    inFeature.SetField(s, val)
+            newlayer.SetFeature(inFeature)
+            inFeature = None
         newdata.Destroy()
 
 
