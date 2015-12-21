@@ -114,6 +114,7 @@ class STEMUtils:
         """
         layer = STEMUtils.getLayer(layerName)
 
+        print 'layerName: {} layer: {} '.format(layerName, layer)
         if layer:
             return layer.source()
         else:
@@ -358,6 +359,7 @@ class STEMUtils:
         :param str tmp: the temporary file name
         :param str out: the final output file name
         """
+        print 'stem_utils renameRast', tmp, out
         shutil.move(tmp, out)
         try:
             shutil.move('{name}.aux.xml'.format(name=tmp),
@@ -526,7 +528,8 @@ class STEMUtils:
                 old_local = STEMSettings._check(STEMSettings.value("outdatalocal",
                                                                    ""))
                 old_server = STEMSettings._check(STEMSettings.value("outdataserver",
-                                                                    ""))
+                                                                   ""))
+
             old = os.path.relpath(path, old_local)
             new = os.path.join(old_server, old)
             new = new.replace("\\", "/")

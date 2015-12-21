@@ -865,8 +865,11 @@ class BaseDialog(QDialog, baseDialog):
         if local:
             path = tempfile.gettempdir()
         else:
-            path = SettingsDialog.check(STEMSettings.value("tempdataserver",
-                                                           ""))
+            # Esecuzione sul server, ma il file viene generato sul client
+            # Quindi devo usare un path accessibile a server e client
+            #path =  r'Z:\idt\temp' # Non esiste il metodo -> SettingsDialog.check(STEMSettings.value("tempdataserver",
+                                #                               ""))
+            path = r'Z:\idt\temp' # os.path.split(source)[0] # Usa la cartella del file di input per il file temporaneo
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
@@ -892,8 +895,14 @@ class BaseDialog(QDialog, baseDialog):
                     return False, False, False
         else:
             if typ == 'raster' or typ == 'image':
-                if os.path.exists(out):
-                    os.remove(out)
+                #if os.path.exists(out):
+                #    os.remove(out) # Errore: file in uso da un altro processo
+                i = 0
+                out_new = out
+                while os.path.exists(out_new):
+                    out_new = '{}{}'.format(out,i)
+                    i += 1
+                out = out_new
                 if bbox:
                     com = ['gdal_translate', source, out, '-projwin']
                     com.extend(self.rect_str)
@@ -940,6 +949,7 @@ class BaseDialog(QDialog, baseDialog):
             typ = STEMUtils.checkMultiRaster(source[n], layer)
             newn, news, newm = self.cutInput(inp[n], source[n], typ,
                                              local=local)
+
             if not newn:
                 return False, False
             else:

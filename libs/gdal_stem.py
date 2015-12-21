@@ -48,7 +48,7 @@ except ImportError:
 import os
 import sys
 import numpy
-from types import StringType, ListType
+from types import StringType, ListType, TupleType
 from pyro_stem import PYROSERVER
 from pyro_stem import GDAL_PORT
 from pyro_stem import GDALINFOPYROOBJNAME
@@ -111,9 +111,10 @@ def createMaskFromBbox(coord):
     :param coord: a list or a string (space separator) with for values
                   xmin ymin xmax ymax
     """
+
     if type(coord) == StringType:
         coord = coord.split()
-    elif type(coord) != ListType:
+    elif type(coord) != ListType and type(coord) != TupleType:
         raise IOError('coord parameter must be a string or a list')
     if len(coord) != 4:
         raise IOError('coord parameter must contain 4 values: xmin ymin xmax ymax')
@@ -510,6 +511,7 @@ class convertGDAL:
                           'driver.' % outformat)
         self._checkPara(bandtype)
         outbands = self._checkOutputBands()
+        print 'Parametri driver.Create:',output, self.xsize, self.ysize, outbands, self.bandtype
         self.output = self.driver.Create(output, self.xsize, self.ysize,
                                          outbands, self.bandtype)
         self.output.SetProjection(self.proj)
@@ -747,6 +749,7 @@ class file_info:
         :param obj output: a GDAL object containing the output raster
         :param obj datatype: Numpy dtype object
         """
+        print 'cutInputInverse params',geom, output, datatype, layer
         import json
         geomjs = json.loads(geom.ExportToJson())
         coors = geomjs['coordinates'][0]
@@ -765,6 +768,8 @@ class file_info:
         ycount = int((ymax - ymin) / self.geotransform[1]) + 1
         target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount,
                                                        gdal.GDT_Byte)
+        print "gdal.GetDriverByName('MEM').Create ->",xcount, ycount, gdal.GDT_Byte
+        print 'target_ds', target_ds
         target_ds.SetGeoTransform((xmin, self.geotransform[1], 0, ymax, 0,
                                    self.geotransform[5]))
 
