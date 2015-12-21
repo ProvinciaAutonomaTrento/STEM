@@ -79,6 +79,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        local = self.LocalCheck.isChecked()
         if not self.digit:
             STEMMessageHandler.error("Selezionare il formato di output")
             return
@@ -92,16 +93,19 @@ class STEMToolsDialog(BaseDialog):
                 items.append(self.BaseInput.item(index))
         names = [i.text() for i in items]
         sources = [STEMUtils.getLayersSource(i) for i in names]
+
         outformat = str(self.BaseInputCombo.currentText())
-        cut, cutsource = self.cutInputMulti(names, sources)
+        cut, cutsource = self.cutInputMulti(names, sources, local=local)
+
         if cut:
                 items = cut
                 sources = cutsource
+
         if self.overwrite:
             out = self.TextOut.text() + '.tmp'
         else:
             out = self.TextOut.text()
-        if self.LocalCheck.isChecked():
+        if local:
             cgdal = convertGDAL()
         else:
             import Pyro4
@@ -109,18 +113,16 @@ class STEMToolsDialog(BaseDialog):
                                                                  port=GDAL_PORT,
                                                                  name=GDALCONVERTPYROOBJNAME))
         if not self.LocalCheck.isChecked() and sys.platform == 'win32':
-            # with open(r'Z:\idt\tempout\temp.log','a') as f:
-            #     f.write('Converto i path '+ \
-            #             ' '.join([STEMUtils.pathClientWinToServerLinux(x) for x in sources])+ \
-            #             ' '+STEMUtils.pathClientWinToServerLinux(out))
+
+            print 'Converted sources: {}'.format([STEMUtils.pathClientWinToServerLinux(x) for x in sources])
+            print 'Out: {}\nConverted out: {}'.format(out,STEMUtils.pathClientWinToServerLinux(out))
 
             cgdal.initialize([STEMUtils.pathClientWinToServerLinux(x) for x in sources],
                              output=STEMUtils.pathClientWinToServerLinux(out),
                              outformat=outformat,
                              bandtype=self.digit)
         else:
-            # with open(r'Z:\idt\tempout\temp.log','a') as f:
-            #     f.write('Non converto i path')
+            print 'Converted sources: {}'.format(sources)
             cgdal.initialize(sources, output=out, outformat=outformat, bandtype=self.digit)
 
         #if self.Linedit.text():

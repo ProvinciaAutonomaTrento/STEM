@@ -123,8 +123,8 @@ class STEMToolsDialog(BaseDialog):
                 source = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             output = self.TextOut.text()
+            old_source = source
             if not local and sys.platform == 'win32':
-                old_source = source
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             if name == namepan:

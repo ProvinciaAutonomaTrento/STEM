@@ -520,7 +520,7 @@ class stemGRASS():
             out, err = runcom.communicate()
             if runcom.returncode != 0:
                 raise Exception("Errore eseguendo GRASS: "
-                                "Errore eseguendo il comando {err}".format(err=err))
+                                "Errore eseguendo il comando {i} {err}".format(i=i, err=err))
 
     def rmarea(self, infile, outfile, thresh):
         # transform user input from hectares to map units (kept this for future)
