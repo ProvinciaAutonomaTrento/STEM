@@ -10,6 +10,7 @@ from PyQt4.QtGui import QComboBox, QLineEdit, QCheckBox
 import inspect
 import re
 from types import StringType, UnicodeType
+import tempfile
 try:
     import osgeo.ogr as ogr
 except ImportError:
@@ -34,6 +35,26 @@ def check_wkt(wkt):
         return True
     else:
         return False
+
+
+def tempFileName():
+    """Return a temporary file name"""
+    tmp_file = tempfile.NamedTemporaryFile()
+    tmp_file.close()
+    return tmp_file.name
+
+
+def read_file(filename, mode='rb', encoding='UTF-8'):
+    """Read the input file and return its content
+
+    :param str filename: the input filename to read
+    :param str mode: a string for the mode to open the file
+    :param str encoding: the encoding for the input file
+    """
+    output = ''
+    with open(filename, mode) as f:
+        output = f.read().decode(encoding)
+    return output
 
 
 class STEMSettings:

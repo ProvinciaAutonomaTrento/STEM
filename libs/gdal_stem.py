@@ -349,7 +349,8 @@ class infoOGR:
 
     def getWkt(self):
         """Return a WKT string of features"""
-        if self.getType() not in [3, 6, -2147483645, -2147483642]:
+        if self.getType() not in [ogr.wkbPolygon, ogr.wkbPolygon25D,
+                                  ogr.wkbMultiPolygon, ogr.wkbMultiPolygon25D]:
             raise Exception("Geometry type is not supported, please use a "
                             "polygon vector file")
         if self.lay0.GetFeatureCount() > 1:
@@ -499,12 +500,12 @@ class convertGDAL:
                 remove(path1+'.aux.xml')
                 if '.' in path1:
                     remove(path1[:path1.rindex('.')]+'.hdr')
-                
+
 
         # Open source dataset
-        
+
         self.in_names = innames
-        
+
         self.driver = gdal.GetDriverByName(str(outformat))
         if self.driver is None:
             raise IOError('Format driver %s not found, pick a supported '
