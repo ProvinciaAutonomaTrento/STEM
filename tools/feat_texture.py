@@ -84,8 +84,8 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            old_source = source
             if not local and sys.platform == 'win32':
-                old_source = source
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
