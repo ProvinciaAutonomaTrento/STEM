@@ -569,17 +569,18 @@ class stemLAS():
                 first_opt.append(options)
                 filt.append(first_opt)
             else:
-                filt_ret = Element('Filter')
-                filt_ret.set("type", "filters.predicate")
+                filt = None
+                filt = Element('Filter')
+                filt.set("type", "filters.predicate")
                 funct = self._add_option_file('filter', val='function')
                 modu = self._add_option_file('anything', val='module')
                 if retur == 'last':
                     source = self._add_option_file(LAST_RETURN, val='source')
                 elif retur == 'others':
                     source = self._add_option_file(OTHER_RETURN, val='source')
-                filt_ret.append(funct)
-                filt_ret.append(modu)
-                filt_ret.append(source)
+                filt.append(funct)
+                filt.append(modu)
+                filt.append(source)
         if clas:
             clas_opt = self._add_option_file('Classification', val='dimension')
             options = Element('Options')
