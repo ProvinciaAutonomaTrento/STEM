@@ -1223,8 +1223,6 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_datalocal.text())
         STEMSettings.setValue("dataserver",
                               self.lineEdit_serverdata.text())
-        STEMSettings.setValue("outdataserver",
-                              self.lineEdit_tempserverdata.text())
         STEMSettings.setValue("outdatalocal",
                               self.lineEdit_outputlocal.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
