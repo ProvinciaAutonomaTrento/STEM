@@ -139,6 +139,7 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
+            print 'name, source, local', name, source, local
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             output = self.TextOut.text()
             old_source = source
@@ -151,7 +152,10 @@ class STEMToolsDialog(BaseDialog):
                 print 'source output', source, output
 
             gs.import_grass(source, tempin, typ, nlayerchoose)
+
+            print 'check_mask PRE PRE'
             if mask:
+                print 'check_mask PRE'
                 gs.check_mask(mask)
             if self.BaseInputCombo.currentText() == 'filter':
                 pass

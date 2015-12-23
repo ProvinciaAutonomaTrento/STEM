@@ -25,6 +25,7 @@ import sys
 import subprocess
 import tempfile
 import platform
+import pickle, base64
 from functools import partial
 from types import StringType, UnicodeType
 from stem_utils import STEMMessageHandler
@@ -870,9 +871,8 @@ class BaseDialog(QDialog, baseDialog):
         else:
             # Esecuzione sul server, ma il file viene generato sul client
             # Quindi devo usare un path accessibile a server e client
-            #path =  r'Z:\idt\temp' # Non esiste il metodo -> SettingsDialog.check(STEMSettings.value("tempdataserver",
-                                #                               ""))
-            path = r'Z:\idt\temp' # os.path.split(source)[0] # Usa la cartella del file di input per il file temporaneo
+            #path =  "/tmp/"
+            path = 'Y:\\' # os.path.split(source)[0] # Usa la cartella del file di input per il file temporaneo
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
@@ -1114,19 +1114,17 @@ class SettingsDialog(QDialog, settingsDialog):
 
         self.connect(self.buttonBox, SIGNAL("rejected()"), self._reject)
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self._accept)
-#        self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
+        # self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.pushButton_grass, SIGNAL("clicked()"),
                      partial(self.BrowseBin, self.lineEdit_grass))
         self.connect(self.pushButton_grassdata, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_grassdata))
-        self.connect(self.pushButton_grassserver, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_grassserver))
-        self.connect(self.pushButton_datalocal, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_datalocal))
+        # self.connect(self.pushButton_datalocal, SIGNAL("clicked()"),
+        #              partial(self.BrowseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
-        self.connect(self.pushButton_proj, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_outputlocal))
+        # self.connect(self.pushButton_proj, SIGNAL("clicked()"),
+        #              partial(self.BrowseDir, self.lineEdit_outputlocal))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
     def _check(self, string):
@@ -1153,14 +1151,27 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                   "")))
         self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
-        self.lineEdit_datalocal.setText(self._check(STEMSettings.value("datalocal",
-                                                                      "")))
-        self.lineEdit_serverdata.setText(self._check(STEMSettings.value("dataserver",
-                                                                       "")))
-        self.lineEdit_outserverdata.setText(self._check(STEMSettings.value("outdataserver",
-                                                                           "")))
-        self.lineEdit_outputlocal.setText(self._check(STEMSettings.value("outdatalocal",
-                                                                         "")))
+        # >> da rimuovere
+        # self.lineEdit_datalocal.setText(self._check(STEMSettings.value("datalocal",
+        #                                                               "")))
+        # self.lineEdit_serverdata.setText(self._check(STEMSettings.value("dataserver",
+        #                                                                "")))
+        # self.lineEdit_outserverdata.setText(self._check(STEMSettings.value("outdataserver",
+        #                                                                    "")))
+        # self.lineEdit_outputlocal.setText(self._check(STEMSettings.value("outdatalocal",
+        #                                                                  "")))
+        # << da rimuovere
+
+        assert self.tableWidget.rowCount() >= 2
+        assert self.tableWidget.columnCount() >= 2
+        table = STEMSettings.value("mappingTable", None)
+        if table:
+            table = pickle.loads(base64.b64decode(table)) # [[r0,r0],[r1,r1]]
+            for i in range(len(table)):
+                for j in range(len(table[i])):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(table[i][j]))
+        self.tableWidget.resizeColumnsToContents()
+
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
         self.lineEditMemory.setText(self._check(STEMSettings.value("memory",
                                                                    "")))
@@ -1174,7 +1185,6 @@ class SettingsDialog(QDialog, settingsDialog):
             self.label_proj.setEnabled(True)
             if os.path.exists('C:\OSGeo4W\share\proj'):
                 self.lineEdit_proj.setText('C:\OSGeo4W\share\proj')
-
     def BrowseBin(self, line):
         """Choose an existing file and set it to a QLineEdit
 
@@ -1219,16 +1229,26 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_grassdataserver.text())
         STEMSettings.setValue("grasslocationserver",
                               self.lineEdit_grasslocationserver.text())
-        STEMSettings.setValue("datalocal",
-                              self.lineEdit_datalocal.text())
-        STEMSettings.setValue("dataserver",
-                              self.lineEdit_serverdata.text())
-        STEMSettings.setValue("outdataserver",
-                              self.lineEdit_tempserverdata.text())
-        STEMSettings.setValue("outdatalocal",
-                              self.lineEdit_outputlocal.text())
+        # STEMSettings.setValue("datalocal",
+        #                       self.lineEdit_datalocal.text())
+        # STEMSettings.setValue("dataserver",
+        #                       self.lineEdit_serverdata.text())
+        # STEMSettings.setValue("outdataserver",
+        #                       self.lineEdit_tempserverdata.text())
+        # STEMSettings.setValue("outdatalocal",
+        #                       self.lineEdit_outputlocal.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
         STEMSettings.setValue("memory", self.lineEditMemory.text())
+
+        table = []
+        for i in range(self.tableWidget.rowCount()):
+            table.append([])
+            for j in range(self.tableWidget.columnCount()):
+                    item = self.tableWidget.item(i, j)
+                    if item is not None:
+                        table[-1].append(item.text())
+
+        STEMSettings.setValue("mappingTable", base64.b64encode(pickle.dumps(table)))
 
 
 class helpDialog(QDialog, helpDialog):

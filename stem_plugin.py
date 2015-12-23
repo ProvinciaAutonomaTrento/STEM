@@ -80,6 +80,8 @@ class STEMPlugin:
 
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(),
                            self.stemMenu)
+        STEMSettings.setValue("mask", "")
+        STEMSettings.setValue("mask_inverse", "")
 
     def unload(self):
         """Unload the plugin"""

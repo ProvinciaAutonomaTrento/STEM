@@ -95,6 +95,7 @@ class STEMToolsDialog(BaseDialog):
         sources = [STEMUtils.getLayersSource(i) for i in names]
 
         outformat = str(self.BaseInputCombo.currentText())
+        print 'onRunLocal ->',names, sources, local
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
 
         if cut:
@@ -115,7 +116,7 @@ class STEMToolsDialog(BaseDialog):
         if not self.LocalCheck.isChecked() and sys.platform == 'win32':
 
             print 'Converted sources: {}'.format([STEMUtils.pathClientWinToServerLinux(x) for x in sources])
-            print 'Out: {}\nConverted out: {}'.format(out,STEMUtils.pathClientWinToServerLinux(out))
+            print 'Out: {}\nServer out: {}'.format(out,STEMUtils.pathClientWinToServerLinux(out))
 
             cgdal.initialize([STEMUtils.pathClientWinToServerLinux(x) for x in sources],
                              output=STEMUtils.pathClientWinToServerLinux(out),
