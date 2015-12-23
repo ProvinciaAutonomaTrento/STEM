@@ -58,7 +58,6 @@ Installazione su Windows
 
 **STEP4**: copiare la cartella del plug-in STEM nella cartella dei plugin di Qgis. Esempio: “C:\\Users\\Angelo\\.qgis2\\python\\plugins”.
 
-
 Risoluzione dei problemi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -85,6 +84,24 @@ residui di precedenti installazioni di `scikit-learn`_.
 
  * Soluzione: cancellare il file
    $Home_OSGeo4W\python27\Lib\site-packages\sklearn\utils\sparsefuncs.py.
+
+
+Installazione pacchetti aggiuntivi GRASS GIS
+--------------------------------------------------
+Il modulo per calcolare lo Spectral Angle Mapper richiede un modulo aggiuntivo
+per GRASS GIS (denominati `Addons <https://grass.osgeo.org/grass70/manuals/addons/>`_).
+In special modo bisogna installare l'addons `i.spec.sam <https://grass.osgeo.org/grass70/manuals/addons/i.spec.sam.html>`_,
+per fare ciò bisogna:
+
+* lanciare GRASS GIS
+* andare in ``Impostazioni -> Estensioni (addons) aggiuntive -> Installa estensione dagli addons``
+* cliccare su ``imagery -> i.spec.sam`` all'interno della ``Lista delle estensioni``
+* cliccare sul bottone ``Installa``
+
+A questo punto l'estensione è installata. Per controllare la corretta installazione
+si può digitare ``i.spec.sam`` nel ``Layer Manager`` all'interno della
+``Console dei programmi``; se tutto è andato a buon fine si aprirà la finestra
+del comando.
 
 .. _`GRASS GIS 7`: http://grass.osgeo.org
 .. _`GDAL`: http://gdal.osgeo.org
