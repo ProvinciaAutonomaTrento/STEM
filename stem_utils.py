@@ -31,6 +31,8 @@ import tempfile
 import shutil
 import glob
 import logging
+import pickle, base64
+import time
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -156,6 +158,11 @@ class STEMUtils:
         :param str filename: the name of layer
         :param str typ: the type of data
         """
+        # E` necessario un po' di tempo per rilevare l'esistenza del file
+        while not QFileInfo(filename).exists():
+            time.sleep(.1)
+            pass
+        print 'Output filename', filename
         layer = QFileInfo(filename)
         layerName = layer.baseName()
         if not layer.exists():
@@ -518,27 +525,48 @@ class STEMUtils:
         :param bool inp: if inp true check datalocal/dataserver otherwise
                          outdataserver/outdatalocal
         """
-        try:
-            if inp or not STEMSettings.value("datalocal", ""):
-                old_local = STEMSettings._check(STEMSettings.value("datalocal",
-                                                                   ""))
-                old_server = STEMSettings._check(STEMSettings.value("dataserver",
-                                                                    ""))
-            else:
-                old_local = STEMSettings._check(STEMSettings.value("outdatalocal",
-                                                                   ""))
-                old_server = STEMSettings._check(STEMSettings.value("outdataserver",
-                                                                   ""))
 
-            old = os.path.relpath(path, old_local)
-            new = os.path.join(old_server, old)
-            new = new.replace("\\", "/")
-        except:
+        table = STEMSettings.value("mappingTable", None)
+        if table:
+            table = [x for x in pickle.loads(base64.b64decode(table)) if len(x)==2 and x[0] and x[1]] # [[remote0,local0],[rlocal,remote1]]
+        else:
+            table = []
+
+        converted = False
+        print 'table:', table
+        for remote, local in table:
+            try:
+                path = os.path.join(remote, os.path.relpath(path, local)).replace('\\','/')
+            except:
+                pass
+            else:
+                converted = True
+        if not converted:
             STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
                                        ' potrebbero esserci problemi nelle '
                                        'prossimi analisi')
-            new = path
-        return new
+        return path
+        # try:
+        #     if inp or not STEMSettings.value("datalocal", ""):
+        #         old_local = STEMSettings._check(STEMSettings.value("datalocal",
+        #                                                            ""))
+        #         old_server = STEMSettings._check(STEMSettings.value("dataserver",
+        #                                                             ""))
+        #     else:
+        #         old_local = STEMSettings._check(STEMSettings.value("outdatalocal",
+        #                                                            ""))
+        #         old_server = STEMSettings._check(STEMSettings.value("outdataserver",
+        #                                                            ""))
+        #
+        #     old = os.path.relpath(path, old_local)
+        #     new = os.path.join(old_server, old)
+        #     new = new.replace("\\", "/")
+        # except:
+        #     STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
+        #                                ' potrebbero esserci problemi nelle '
+        #                                'prossimi analisi')
+        #     new = path
+        # return new
 
 
 class STEMMessageHandler:

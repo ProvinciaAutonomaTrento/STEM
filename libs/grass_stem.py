@@ -217,6 +217,8 @@ class stemGRASS():
 
         :param str mask: the path to the mask, None to remove it
         """
+        print 'check_mask'
+
         import grass.script.core as gcore
         if mask == '':
             runcom = gcore.Popen(['r.mask', '-r'])
