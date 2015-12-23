@@ -217,6 +217,8 @@ class stemGRASS():
 
         :param str mask: the path to the mask, None to remove it
         """
+        print """[check_mask] Abbiamo disabilitato temporaneamente questa funzione, non riesce ad accedere allo shapefile della machera"""
+        return
         print 'check_mask'
 
         import grass.script.core as gcore
@@ -230,15 +232,22 @@ class stemGRASS():
         else:
             name = '_'.join(os.path.split(mask)[-1].split('.')[:-1])
             com = ['r.mask', 'vector={ma}'.format(ma=name)]
+            print 'DEBUG MASCHERA'
+            print 'name', name
+            print 'com', com
             # try to fix it
             try:
                 vecs = self.list_maps('vector')
             except:
                 vecs = []
+            print 'vecs', vecs
             inv_mask = inverse_mask()
             if inv_mask:
                 com.append('-i')
             if name not in vecs:
+                print 'gcore.Popen', ['v.in.ogr', '--overwrite',
+                                      'input={ma}'.format(ma=mask),
+                                      'output={out}'.format(out=name)]
                 runcom = gcore.Popen(['v.in.ogr', '--overwrite',
                                       'input={ma}'.format(ma=mask),
                                       'output={out}'.format(out=name)],

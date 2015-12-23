@@ -125,6 +125,7 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        # Riduzione rumore
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
@@ -134,8 +135,10 @@ class STEMToolsDialog(BaseDialog):
             coms = []
             outnames = []
             local = self.LocalCheck.isChecked()
+            print 'onRunLocal -> cutInput params', name, source, typ, local
             cut, cutsource, mask = self.cutInput(name, source, typ,
                                                  local=local)
+            print 'cut, cutsource, mask:', cut, cutsource, mask
             if cut:
                 name = cut
                 source = cutsource
@@ -148,14 +151,12 @@ class STEMToolsDialog(BaseDialog):
                 print 'curdir',  os.path.realpath('.')
                 print 'source output', source, output
                 source = STEMUtils.pathClientWinToServerLinux(source)
-                output = STEMUtils.pathClientWinToServerLinux(output, False)
+                output = STEMUtils.pathClientWinToServerLinux(output)
                 print 'source output', source, output
 
             gs.import_grass(source, tempin, typ, nlayerchoose)
 
-            print 'check_mask PRE PRE'
             if mask:
-                print 'check_mask PRE'
                 gs.check_mask(mask)
             if self.BaseInputCombo.currentText() == 'filter':
                 pass
