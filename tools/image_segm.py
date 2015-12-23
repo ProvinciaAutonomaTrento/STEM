@@ -87,6 +87,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        # Segmentazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             name = str(self.BaseInput.currentText())
@@ -110,8 +111,8 @@ class STEMToolsDialog(BaseDialog):
             output2 = self.TextOut2.text()
             if not local and sys.platform == 'win32':
                 source = STEMUtils.pathClientWinToServerLinux(source)
-                output = STEMUtils.pathClientWinToServerLinux(output, False)
-                output2 = STEMUtils.pathClientWinToServerLinux(output2, False)
+                output = STEMUtils.pathClientWinToServerLinux(output)
+                output2 = STEMUtils.pathClientWinToServerLinux(output2)
 
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:

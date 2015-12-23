@@ -103,7 +103,7 @@ class STEMToolsDialog(BaseDialog):
             output = self.TextOut.text()
             if not local and sys.platform == 'win32':
                 source = STEMUtils.pathClientWinToServerLinux(source)
-                output = STEMUtils.pathClientWinToServerLinux(output, False)
+                output = STEMUtils.pathClientWinToServerLinux(output)
             if method == 'percentile':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
                               resolution=reso, percentile=perc, region=bbox)

@@ -79,6 +79,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        # Accatastamento
         local = self.LocalCheck.isChecked()
         if not self.digit:
             STEMMessageHandler.error("Selezionare il formato di output")
@@ -95,8 +96,9 @@ class STEMToolsDialog(BaseDialog):
         sources = [STEMUtils.getLayersSource(i) for i in names]
 
         outformat = str(self.BaseInputCombo.currentText())
-        print 'onRunLocal ->',names, sources, local
+        print 'onRunLocal -> cutInputMulti params', names, sources, local
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
+        print 'cut, cutsource -> cutInputMulti out', cut, cutsource
 
         if cut:
                 items = cut

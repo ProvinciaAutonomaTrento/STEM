@@ -950,6 +950,7 @@ class BaseDialog(QDialog, baseDialog):
         for n in range(len(inp)):
             layer = STEMUtils.getLayersSource(source[n])
             typ = STEMUtils.checkMultiRaster(source[n], layer)
+            print 'onRunLocal -> cutInput params', inp[n], source[n], typ, local
             newn, news, newm = self.cutInput(inp[n], source[n], typ,
                                              local=local)
 
