@@ -11,14 +11,20 @@ Il modulo permette di estrarre feature LIDAR a partire da un file .las e uno sha
 Input
 ------------
 
-**File LAS di input**: selezionare il file .las da ritagliare.
-
 **Dati di input**: selezionare lo shapefile da usare per ritagliare il file .las. Lo shapefile deve essere stato precedentemente aperto in Qgis.
+
+**File LAS di input**: selezionare il file .las da ritagliare.
 
 Parametri
 ------------
 
-**XXX**:
+**Seleziona le statistiche da calcolare**: selezionare dal menù a tendina le statistiche da calcolare. E' possibile scegliere più statistiche.
+	* *Valore massimo altezza punti*: valore massimo di altezza dei punti.
+	* *Altezza media punti*: valore medio di altezza dei punti.
+	* *N-esimo percentile altezze punti*: percentile sulle altezze dal 10mo al 90mo.
+	* *Coefficiente di variazione*: rapporto tra la deviazione standard delle altezze dei punti e la media delle altezze.
+	* *Numero ritorni sopra l'altezza media diviso il totale dei ritorni*
+	* *Numero ritorni sopra 2 metri diviso il totale dei ritorni*
 
 Output
 ------------

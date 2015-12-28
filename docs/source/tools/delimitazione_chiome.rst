@@ -24,7 +24,9 @@ Parametri
 
 **Valore massimo del raggio massimo della chioma**: valore massimo del raggio massimo della chioma in pixel. Deve essere maggiore o uguale a *Valore minimo del raggio massimo della chioma*.
 
-**Soglia di crescita della chioma**: valore di soglia percentuale tra il valore di altezza dell'albero e i valori di altezza più bassi della chioma. Deve essere tra 0 e 1. Default: 0.65.
+**Soglia di crescita chioma basata su altezza media chioma**: valore di soglia percentuale tra il valore di altezza media della chioma e i valori di altezza più bassi della chioma. Deve essere tra 0 e 1. Default: 0.6.
+
+**Soglia di crescita chioma basata su altezza albero**: valore di soglia percentuale tra il valore di altezza dell'albero e i valori di altezza più bassi della chioma. Deve essere tra 0 e 1. Default: 0.65.
 
 **Valore minimo dell'altezza della chioma**: soglia minima di altezza per i pixel appartenenti alla chioma (es. 2 m).
 
