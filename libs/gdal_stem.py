@@ -143,7 +143,7 @@ def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
     fi.init_from_name(inrast)
     resolution = fi.geotransform[1]
     data = gdal_array.DatasetReadAsArray(fi.s_fh)
-    Hmax = data.max()
+    Hmax = numpy.percentile(data, 99)
     border = int(numpy.ceil(minsearch / 2))
     stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2, 2)
     thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
@@ -212,7 +212,8 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     TRESHCrown = tresh_crown
     fi = file_info()
     fi.init_from_name(inrast)
-    data = gdal_array.DatasetReadAsArray(fi.s_fh)
+    data_nan = gdal_array.DatasetReadAsArray(fi.s_fh)
+    data = numpy.ma.masked_array(data_nan, numpy.isnan(data_nan))
     Hmax = data.max()
     stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2)
     thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
@@ -268,7 +269,7 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
             rvSeed = data[coordSeed[0], coordSeed[1]][0]
             Crownvals = data[coordCrown[0], coordCrown[1]]
             rvCrown = Crownvals.mean()
-            distances = [x - rvSeed for x in thSearchFilSize]
+            distances = [abs(x - rvSeed) for x in thSearchFilSize]
             dist = stepsSearchFilSize[distances.index(min(distances))]
             fildata = numpy.zeros([4, 3])
             if treeid not in coordinate.keys():
