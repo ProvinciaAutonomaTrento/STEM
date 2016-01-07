@@ -285,23 +285,21 @@ class stemGRASS():
 
         if typ == 'raster' or typ == 'image':
             if len(nl) > 1:
-                runcom = gcore.Popen(['r.in.gdal', 'input={i}'.format(i=inp),
+                cmd = ['r.in.gdal', 'input={i}'.format(i=inp),
                                       'output={o}'.format(o=intemp),
-                                      'band={bs}'.format(bs=','.join(nl))],
-                                     stdin=PIPE, stdout=PIPE,
-                                     stderr=PIPE)
+                                      'band={bs}'.format(bs=','.join(nl))]
             elif len(nl) == 1 and str(nl[0]) == '1':
-                runcom = gcore.Popen(['r.in.gdal', 'input={i}'.format(i=inp),
+                cmd = ['r.in.gdal', 'input={i}'.format(i=inp),
                                       'output={o}'.format(o=intemp),
-                                      'band=1'],
-                                     stdin=PIPE, stdout=PIPE,
-                                     stderr=PIPE)
+                                      'band=1']
             elif len(nl) == 1 and str(nl[0]) != '1':
-                runcom = gcore.Popen(['r.in.gdal', 'input={i}'.format(i=inp),
+                cmd = ['r.in.gdal', 'input={i}'.format(i=inp),
                                       'output={o}'.format(o=intemp),
-                                      'band={bs}'.format(bs=nl[0])],
-                                     stdin=PIPE, stdout=PIPE,
-                                     stderr=PIPE)
+                                      'band={bs}'.format(bs=nl[0])]
+            print 'Eseguo il comando', cmd
+            runcom = gcore.Popen(cmd,
+                                 stdin=PIPE, stdout=PIPE,
+                                 stderr=PIPE)
             out, err = runcom.communicate()
             #  print out, err
             if runcom.returncode != 0:

@@ -76,6 +76,7 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.show_(self)
 
     def onRunLocal(self):
+        # Correzione atmosferica
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             name = str(self.BaseInput.currentText())
@@ -94,15 +95,19 @@ class STEMToolsDialog(BaseDialog):
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             if not local and sys.platform == 'win32':
                 source = STEMUtils.pathClientWinToServerLinux(source)
-                output = STEMUtils.pathClientWinToServerLinux(output, False)
-            gs.import_grass(source, tempin, typ, nlayerchoose)
+                output = STEMUtils.pathClientWinToServerLinux(output)
+            gs.import_grass(source, tempin, typ, [nlayerchoose])
             if mask:
                 gs.check_mask(mask)
 
             outnames.append(tempout)
+            para = self.TextIn.text().strip()
+            if not para:
+                STEMMessageHandler.error("Selezionare il file con i parametri s6")
+                return
             com = ['i.atcorr', 'input={name}'.format(name=tempin),
                    'output={outname}'.format(outname=tempout),
-                   'parameters={para}'.format(self.TextIn.text())]
+                   'parameters={para}'.format(para=para)]
             if self.checkbox.isChecked():
                 com.append('-r')
             if self.checkbox2.isChecked():
