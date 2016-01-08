@@ -913,8 +913,13 @@ class BaseDialog(QDialog, baseDialog):
                 i = 0
                 out_new = out
                 while os.path.exists(out_new):
-                    out_new = '{}{}'.format(out,i)
-                    i += 1
+                    # Si cerca di rimuovere il vecchio file temporaneo,
+                    # se non e` possibile si usa un altro nome.
+                    try:
+                        os.remove(out_new)
+                    except:
+                        out_new = '{}{}'.format(out, i)
+                        i += 1
                 out = out_new
                 if bbox:
                     com = ['gdal_translate', source, out, '-projwin']
