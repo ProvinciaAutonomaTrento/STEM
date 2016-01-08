@@ -119,6 +119,8 @@ class STEMToolsDialog(BaseDialog):
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             gs.import_grass(source, tempin, typ, nlayers)

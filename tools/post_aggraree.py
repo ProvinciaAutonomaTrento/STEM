@@ -119,6 +119,8 @@ class STEMToolsDialog(BaseDialog):
             tempin2 = 'stem_{name}_{pid}'.format(name=name2, pid=pid)
             gs.import_grass(source2, tempin2, typ)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
             com = ['v.vect.stats', 'points={m}'.format(m=tempin),
                    'areas={n}'.format(n=tempin2), 'type={t}'.format(t=geotype),

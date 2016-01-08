@@ -123,6 +123,8 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(zonesource, zonetempin, typ, zonenlayerchoose)
 
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             com = ['r.univar', '-e', '-g', 'map={name}'.format(name=tempin),

@@ -100,6 +100,8 @@ class STEMToolsDialog(BaseDialog):
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
             if self.BaseInputCombo.currentText() == 'vicinanza':
                 startcom = ['r.neighbors', 'method=mode',

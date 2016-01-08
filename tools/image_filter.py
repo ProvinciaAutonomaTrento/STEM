@@ -150,6 +150,8 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(source, tempin, typ, nlayerchoose)
 
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
             if self.BaseInputCombo.currentText() == 'filter':
                 pass

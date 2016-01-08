@@ -116,6 +116,8 @@ class STEMToolsDialog(BaseDialog):
 
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             com = ['i.segment', 'group={name}'.format(name=tempin),
