@@ -117,7 +117,9 @@ class STEMToolsDialog(BaseDialog):
             local = self.LocalCheck.isChecked()
             cut, cutsource, mask = self.cutInput(name, source, typ,
                                                  local=local)
-
+            if not local:
+                # TODO: ripetere ad ogni check_mask
+                mask = STEMUtils.pathClientWinToServerLinux(mask)
             if cut:
                 name = cut
                 source = cutsource

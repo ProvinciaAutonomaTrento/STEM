@@ -217,10 +217,7 @@ class stemGRASS():
 
         :param str mask: the path to the mask, None to remove it
         """
-        print """[check_mask] Abbiamo disabilitato temporaneamente questa funzione, non riesce ad accedere allo shapefile della machera"""
-        return
-        print 'check_mask'
-
+        
         import grass.script.core as gcore
         if mask == '':
             runcom = gcore.Popen(['r.mask', '-r'])
