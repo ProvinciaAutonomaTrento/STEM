@@ -80,6 +80,7 @@ class STEMPlugin:
 
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(),
                            self.stemMenu)
+        # Azzera la maschera all'avvio del plugin
         STEMSettings.setValue("mask", "")
         STEMSettings.setValue("mask_inverse", "")
 

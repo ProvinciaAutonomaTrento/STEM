@@ -950,10 +950,8 @@ class BaseDialog(QDialog, baseDialog):
         for n in range(len(inp)):
             layer = STEMUtils.getLayersSource(source[n])
             typ = STEMUtils.checkMultiRaster(source[n], layer)
-            print 'onRunLocal -> cutInput params', inp[n], source[n], typ, local
             newn, news, newm = self.cutInput(inp[n], source[n], typ,
                                              local=local)
-
             if not newn:
                 return False, False
             else:
@@ -1152,17 +1150,6 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                   "")))
         self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
-        # >> da rimuovere
-        # self.lineEdit_datalocal.setText(self._check(STEMSettings.value("datalocal",
-        #                                                               "")))
-        # self.lineEdit_serverdata.setText(self._check(STEMSettings.value("dataserver",
-        #                                                                "")))
-        # self.lineEdit_outserverdata.setText(self._check(STEMSettings.value("outdataserver",
-        #                                                                    "")))
-        # self.lineEdit_outputlocal.setText(self._check(STEMSettings.value("outdatalocal",
-        #                                                                  "")))
-        # << da rimuovere
-
         assert self.tableWidget.rowCount() >= 2
         assert self.tableWidget.columnCount() >= 2
         table = STEMSettings.value("mappingTable", None)
@@ -1230,14 +1217,6 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_grassdataserver.text())
         STEMSettings.setValue("grasslocationserver",
                               self.lineEdit_grasslocationserver.text())
-        # STEMSettings.setValue("datalocal",
-        #                       self.lineEdit_datalocal.text())
-        # STEMSettings.setValue("dataserver",
-        #                       self.lineEdit_serverdata.text())
-        # STEMSettings.setValue("outdataserver",
-        #                       self.lineEdit_tempserverdata.text())
-        # STEMSettings.setValue("outdatalocal",
-        #                       self.lineEdit_outputlocal.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
         STEMSettings.setValue("memory", self.lineEditMemory.text())
 

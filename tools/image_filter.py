@@ -135,25 +135,18 @@ class STEMToolsDialog(BaseDialog):
             coms = []
             outnames = []
             local = self.LocalCheck.isChecked()
-            print 'onRunLocal -> cutInput params', name, source, typ, local
             cut, cutsource, mask = self.cutInput(name, source, typ,
                                                  local=local)
-            print 'cut, cutsource, mask:', cut, cutsource, mask
             if cut:
                 name = cut
                 source = cutsource
-            print 'name, source, local', name, source, local
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             output = self.TextOut.text()
             old_source = source
             if not local and sys.platform == 'win32':
-                import os.path
-                print 'curdir',  os.path.realpath('.')
-                print 'source output', source, output
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 output = STEMUtils.pathClientWinToServerLinux(output)
-                print 'source output', source, output
-
+                
             gs.import_grass(source, tempin, typ, nlayerchoose)
 
             if mask:
