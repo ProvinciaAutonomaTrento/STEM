@@ -94,6 +94,8 @@ class STEMToolsDialog(BaseDialog):
                 out = STEMUtils.pathClientWinToServerLinux(out)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))

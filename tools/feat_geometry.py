@@ -99,6 +99,8 @@ class STEMToolsDialog(BaseDialog):
             gs.import_grass(source, tempin, typ, nlayers)
 
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             minthre = self.thresholdd.value()

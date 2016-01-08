@@ -90,6 +90,8 @@ class STEMToolsDialog(BaseDialog):
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             gs.import_grass(source, tempin, typ, nlayerchoose)
             if mask:
+                if not local:
+                    mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
 
             if len(nlayerchoose) > 1:
