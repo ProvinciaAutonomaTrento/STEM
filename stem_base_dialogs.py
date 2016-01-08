@@ -14,31 +14,33 @@ __author__ = 'Luca Delucchi'
 __date__ = 'August 2014'
 __copyright__ = '(C) 2014 Luca Delucchi'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4 import uic
-from qgis.core import *
-from qgis.gui import *
-
 import os
 import sys
 import subprocess
 import tempfile
 import platform
 import pickle, base64
+from collections import namedtuple
 from functools import partial
 from types import StringType, UnicodeType
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4 import uic
+from qgis.core import *
+from qgis.gui import *
+
 from stem_utils import STEMMessageHandler
 from stem_utils import STEMUtils
 from stem_utils import CheckableComboBox
 from stem_utils_server import STEMSettings, inverse_mask
-
 import gdal_stem
 
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
 helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
 settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
 
+PathMapping = namedtuple('PathMapping', 'remote local')
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string
@@ -863,16 +865,24 @@ class BaseDialog(QDialog, baseDialog):
             STEMMessageHandler.error("Sono state impostate sia una maschera "
                                      "vettoriale sia una estensione di QGIS. "
                                      "Si prega di rimuoverne una delle due")
-            return
+            return False, False, False
         if mask:
             mask_inverse = inverse_mask()
         if local:
             path = tempfile.gettempdir()
         else:
             # Esecuzione sul server, ma il file viene generato sul client
-            # Quindi devo usare un path accessibile a server e client
-            #path =  "/tmp/"
-            path = 'Y:\\' # os.path.split(source)[0] # Usa la cartella del file di input per il file temporaneo
+            # Quindi bisogna usare un path accessibile a server e client
+
+            # soluzione temporanea: scelgo il path locale del primo mapping definito dall'utente
+            # TODO: aggiungere alla tabella un radio button per scegliere la cartella dei file temporanei
+            mt = decode_mapping_table(STEMSettings.value("mappingTable", None))
+            if mt:
+                path = mt[0].local
+            else:
+                STEMMessageHandler.error("È necessario configurare almeno un mapping fra le "
+                                         "risorse locali e remote")
+                return False, False, False
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
@@ -1099,6 +1109,29 @@ class BaseDialog(QDialog, baseDialog):
             return "file:///{p}".format(p=path)
 
 
+def decode_mapping_table(encoded):
+    """
+    :param encoded: STEMSettings.value("mappingTable", None)
+    :raram return: python object [[r0,r0],[r1,r1]]
+    """
+    if encoded:
+        table = pickle.loads(base64.b64decode(encoded))
+        if all([type(x) == list and len(x) in [0, 2] for x in table]):
+            # converto dal vecchio formato
+            table = [PathMapping(*x) for x in table if x]
+        # Dopo la serializzazione il controllo sul tipo non funziona
+        assert all([hasattr(x, 'local') and hasattr(x, 'remote') for x in table]), table
+        return table
+    else:
+        return []
+def encode_mapping_table(table):
+    """
+    :param table: object [(remote, local),(remote, local)]
+    :raram return: ASCII encoded table
+    """
+    assert all([type(x) == PathMapping for x in table]), table 
+    return base64.b64encode(pickle.dumps(table))
+
 class SettingsDialog(QDialog, settingsDialog):
     """Dialog for setting"""
     def __init__(self, parent, iface):
@@ -1150,14 +1183,14 @@ class SettingsDialog(QDialog, settingsDialog):
                                                                   "")))
         self.lineEdit_grasslocationserver.setText(self._check(STEMSettings.value("grasslocationserver",
                                                                   "")))
+        
         assert self.tableWidget.rowCount() >= 2
         assert self.tableWidget.columnCount() >= 2
-        table = STEMSettings.value("mappingTable", None)
-        if table:
-            table = pickle.loads(base64.b64decode(table)) # [[r0,r0],[r1,r1]]
-            for i in range(len(table)):
-                for j in range(len(table[i])):
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(table[i][j]))
+        i = 0
+        for mapping in decode_mapping_table(STEMSettings.value("mappingTable", None)):
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(mapping.remote))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem(mapping.local))
+            i += 1
         self.tableWidget.resizeColumnsToContents()
 
         self.epsg.setText(self._check(STEMSettings.value("epsgcode", "")))
@@ -1222,13 +1255,17 @@ class SettingsDialog(QDialog, settingsDialog):
 
         table = []
         for i in range(self.tableWidget.rowCount()):
-            table.append([])
-            for j in range(self.tableWidget.columnCount()):
-                    item = self.tableWidget.item(i, j)
-                    if item is not None:
-                        table[-1].append(item.text())
+            remote = self.tableWidget.item(i, 0)
+            local = self.tableWidget.item(i, 1)
+            r = remote.text().strip() if remote else ''
+            l = local.text().strip() if local else ''
+            
+            if r and l:
+                table.append(PathMapping(r, l))
+            elif bool(r) != bool(l):
+                STEMMessageHandler.error("Mapping delle risosrse non definito correttamente, ricontrolla le impostazioni (mapping: {})".format(r or l))
 
-        STEMSettings.setValue("mappingTable", base64.b64encode(pickle.dumps(table)))
+        STEMSettings.setValue("mappingTable", encode_mapping_table(table))
 
 
 class helpDialog(QDialog, helpDialog):
