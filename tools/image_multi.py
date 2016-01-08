@@ -96,14 +96,11 @@ class STEMToolsDialog(BaseDialog):
         sources = [STEMUtils.getLayersSource(i) for i in names]
 
         outformat = str(self.BaseInputCombo.currentText())
-        print 'onRunLocal -> cutInputMulti params', names, sources, local
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
-        print 'cut, cutsource -> cutInputMulti out', cut, cutsource
-
+        
         if cut:
                 items = cut
                 sources = cutsource
-
         if self.overwrite:
             out = self.TextOut.text() + '.tmp'
         else:
@@ -116,16 +113,11 @@ class STEMToolsDialog(BaseDialog):
                                                                  port=GDAL_PORT,
                                                                  name=GDALCONVERTPYROOBJNAME))
         if not self.LocalCheck.isChecked() and sys.platform == 'win32':
-
-            print 'Converted sources: {}'.format([STEMUtils.pathClientWinToServerLinux(x) for x in sources])
-            print 'Out: {}\nServer out: {}'.format(out,STEMUtils.pathClientWinToServerLinux(out))
-
             cgdal.initialize([STEMUtils.pathClientWinToServerLinux(x) for x in sources],
                              output=STEMUtils.pathClientWinToServerLinux(out),
                              outformat=outformat,
                              bandtype=self.digit)
         else:
-            print 'Converted sources: {}'.format(sources)
             cgdal.initialize(sources, output=out, outformat=outformat, bandtype=self.digit)
 
         #if self.Linedit.text():
