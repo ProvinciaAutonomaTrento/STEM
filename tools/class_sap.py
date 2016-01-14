@@ -49,7 +49,7 @@ class STEMToolsDialog(BaseDialog):
 
         self.lio = "File di selezione delle matrici"
         self._insertFileInputOption(self.lio, 5, "Text file (*.txt)")
-
+        self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
