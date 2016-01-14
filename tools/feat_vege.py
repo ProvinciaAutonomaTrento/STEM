@@ -89,6 +89,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        # Indici di vegetazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             name = str(self.BaseInput.currentText())
@@ -113,8 +114,8 @@ class STEMToolsDialog(BaseDialog):
             if cut:
                 name = cut
                 source = cutsource
+            old_source = source
             if not local and sys.platform == 'win32':
-                old_source = source
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
