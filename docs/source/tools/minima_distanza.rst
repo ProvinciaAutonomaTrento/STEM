@@ -28,6 +28,13 @@ Parametri
 
 **Selezionare il numero di fold della cross validation maggiore di 2**: inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L'accuratezza finale sarà la media delle N accuratezze.
 
+**Numero di neighbors**: numero di pixel di training vicini al pixel da classificare da considerare per la classificazione.
+
+**Pesi dei neighbors**: peso da dare ai neighbors
+
+	* *uniforme*: uguale per tutti;
+	* *distanza*: variabile in base alla distanza dal campione da classificare.
+
 **Selezione feature**:
 
 	* *no*: nessuna selezione delle feature.
