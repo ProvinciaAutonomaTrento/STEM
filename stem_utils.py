@@ -68,7 +68,18 @@ class STEMUtils:
     registry = QgsMapLayerRegistry.instance()
 
     @staticmethod
-    def addLayerToComboBox(combo, typ, clear=True, empty=False, alls=False):
+    def getNameFromSource(path):
+        """From path return the basename without extension
+
+        :param str path: the full path of source
+        """
+        base = os.path.basename(path)
+        spl = base.split('.')
+        return "_".join(spl[:-1])
+
+    @staticmethod
+    def addLayerToComboBox(combo, typ, clear=True, empty=False, alls=False,
+                           source=False):
         """Add layers to input files list
 
         :param obj combo: the ComboBox object where add layers
@@ -76,6 +87,7 @@ class STEMUtils:
         :param bool clear: True to clear the ComboBox
         :param bool empty: True to add a empty record
         :paran str alls: String to add in the layer list
+        :param bool source: True to add source instead name
         """
         if clear:
             combo.clear()
@@ -87,7 +99,10 @@ class STEMUtils:
             layerlist.append(alls)
         for name, layer in layermap.iteritems():
             if layer.type() == typ:
-                layerlist.append(layer.name())
+                if source:
+                    layerlist.append(layer.source())
+                else:
+                    layerlist.append(layer.name())
 
         combo.addItems(layerlist)
 
