@@ -22,7 +22,7 @@ from gdal_stem import file_info, infoOGR
 import os
 import json
 import sys
-from stem_utils_server import check_wkt, tempFileName
+from stem_utils_server import check_wkt, tempFileName, read_file
 from math import *
 import numpy as np
 PIPE = subprocess.PIPE
@@ -850,6 +850,7 @@ class stemLAS():
         :param bool overwrite: overwrite existing files
         :param str ogrdriver: the name of OGR driver to use
         """
+        import osgeo.ogr as ogr
         statistics = {'hcv': hcv, 'max': np.max, 'mean': np.mean,
                       'p10': np.percentile, 'p20': np.percentile,
                       'p30': np.percentile, 'p40': np.percentile,
