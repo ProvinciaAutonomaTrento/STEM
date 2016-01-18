@@ -108,23 +108,24 @@ class STEMPlugin:
         else:
             STEMSettings.saveToFile(f)
             f.close()
-        STEMMessageHandler.success("Configurazione salvata in {n}, si prega"
+        STEMMessageHandler.success("Configurazione salvata in {n}, si prega "
                                    "di rimuovere i tools non utili".format(n=name))
 
     def load(self):
         """Load parameters from a file"""
         myfile = QFileDialog.getOpenFileName(None, "Selezionare il file con la"
-                                             "configurazione da caricare", "")
-        import ConfigParser
-        newconfig = ConfigParser.ConfigParser()
-        newconfig.read(myfile)
-        newsections = newconfig.sections()
+                                             " configurazione da caricare", "")
+        if myfile:
+            import ConfigParser
+            newconfig = ConfigParser.ConfigParser()
+            newconfig.read(myfile)
+            newsections = newconfig.sections()
 
-        for news in newsections:
-            items = newconfig.items(news)
-            for i in items:
-                STEMSettings.s.setValue(i[0], i[1])
-        STEMMessageHandler.success("Opzioni caricate correttamente")
+            for news in newsections:
+                items = newconfig.items(news)
+                for i in items:
+                    STEMSettings.s.setValue(i[0], i[1])
+            STEMMessageHandler.success("Opzioni caricate correttamente")
 
 
     def help(self):

@@ -885,9 +885,7 @@ class stemLAS():
         for inFeature in newlayer:
             inGeom = inFeature.GetGeometryRef()
             outlas = tempFileName()
-            #     def clip_xml_pdal(self, inp, out, bbox, compres, inverted=False):
-            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), False) # XXX
-            # FIXME: compress=False, va aggiunto il parametro nell'interfaccia
+            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), True)
             xml = read_file(self.pdalxml)
             pipe = libpdalpython.PyPipeline(xml)
             pipe.execute()
