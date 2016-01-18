@@ -437,7 +437,7 @@ class STEMUtils:
 
         :param str name: the name of raster map
         """
-        src_ds = gdal.Open(name)
+        src_ds = gdal.Open(str(name))
         if len(src_ds.GetSubDatasets()) != 0:
             return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
         else:
