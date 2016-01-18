@@ -30,9 +30,13 @@ Parametri
 
 **Selezionare il kernel da utilizzare**:
 
-	* *RBF*: kernel di tipo gaussiano Radial Basis Function.
+	* *RBF*: kernel di tipo gaussiano Radial Basis Function (scelta consigliata).
 	* *lineare*: kernel di tipo lineare.
 	* *polinomiale*: kernel polinomiale.
+
+.. warning::
+
+  Si suggerisce di evitare il kernel lineare poichè fa aumentare a dismisura i tempi di elaborazione.
 
 **Inserire il parametro C**: parametro di regolarizzazione. Valori suggeriti: numero intero tra 1 e 100.
 
