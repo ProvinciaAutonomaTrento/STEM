@@ -43,7 +43,7 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertMultipleInput()
-        STEMUtils.addLayerToComboBox(self.BaseInput, 1)
+        STEMUtils.addLayerToComboBox(self.BaseInput, 1, source=True)
 
         formats = ['GTIFF', 'ENVI']
         self._insertFirstCombobox('Formato di output', 0, formats)
@@ -90,8 +90,8 @@ class STEMToolsDialog(BaseDialog):
         else:
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
-        names = [i.text() for i in items]
-        sources = [STEMUtils.getLayersSource(i) for i in names]
+        sources = [i.text() for i in items]
+        names = [STEMUtils.getNameFromSource(i) for i in sources]
         outformat = str(self.BaseInputCombo.currentText())
         cut, cutsource = self.cutInputMulti(names, sources)
         if cut:
@@ -121,7 +121,8 @@ class STEMToolsDialog(BaseDialog):
         else:
             # with open(r'Z:\idt\tempout\temp.log','a') as f:
             #     f.write('Non converto i path')
-            cgdal.initialize(sources, output=out, outformat=outformat, bandtype=self.digit)
+            cgdal.initialize(sources, output=out, outformat=outformat,
+                             bandtype=self.digit)
 
         #if self.Linedit.text():
         #    resolution = float(self.Linedit.text())
@@ -133,3 +134,5 @@ class STEMToolsDialog(BaseDialog):
             STEMUtils.renameRast(out, self.TextOut.text())
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+        else:
+            STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
