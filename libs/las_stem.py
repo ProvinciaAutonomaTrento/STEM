@@ -868,10 +868,10 @@ class stemLAS():
         driver = ogr.GetDriverByName(ogrdriver)
         if overwrite:
             try:
-                driver.DeleteDataSource(outvect)
+                driver.DeleteDataSource(output)
             except Exception:
                 pass
-        newdata = driver.CreateDataSource(outvect)
+        newdata = driver.CreateDataSource(output)
         newdata.CopyLayer(vect.lay0, 'las_zonal_stats')
         newlayer = newdata.GetLayer()
         for s in stats:
