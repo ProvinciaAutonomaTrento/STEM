@@ -1040,8 +1040,15 @@ class BaseDialog(QDialog, baseDialog):
                                                     "file di input",
                                                     directory="")
             if os.path.exists(mydir):
-                line.setText(mydir)
-                return
+                try:
+                    line.setText(mydir)
+                    return
+                except AttributeError:
+                    try:
+                        line.addItem(mydir)
+                        return
+                    except Exception:
+                        STEMMessageHandler.error(u"Errore caricando il file")
         STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def BrowseDir(self, line, suffix='.tif'):
