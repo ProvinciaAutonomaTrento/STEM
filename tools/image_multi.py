@@ -92,14 +92,8 @@ class STEMToolsDialog(BaseDialog):
         else:
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
-<<<<<<< HEAD
-        names = [i.text() for i in items]
-        sources = [STEMUtils.getLayersSource(i) for i in names]
-
-=======
         sources = [i.text() for i in items]
         names = [STEMUtils.getNameFromSource(i) for i in sources]
->>>>>>> e092652a982839cf3b2148752fdb151ff22a67a1
         outformat = str(self.BaseInputCombo.currentText())
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
         
@@ -123,14 +117,11 @@ class STEMToolsDialog(BaseDialog):
                              outformat=outformat,
                              bandtype=self.digit)
         else:
-<<<<<<< HEAD
-            cgdal.initialize(sources, output=out, outformat=outformat, bandtype=self.digit)
-=======
+
             # with open(r'Z:\idt\tempout\temp.log','a') as f:
             #     f.write('Non converto i path')
             cgdal.initialize(sources, output=out, outformat=outformat,
                              bandtype=self.digit)
->>>>>>> e092652a982839cf3b2148752fdb151ff22a67a1
 
         #if self.Linedit.text():
         #    resolution = float(self.Linedit.text())
