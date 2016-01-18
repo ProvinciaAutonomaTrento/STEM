@@ -18,7 +18,7 @@ import subprocess
 from xml.etree.ElementTree import Element, tostring, fromstring
 import tempfile
 from pyro_stem import PYROSERVER, LAS_PORT, LASPYROOBJNAME
-from gdal_stem import file_info, infoOGR
+from gdal_stem import file_info, infoOGR, ogr
 import os
 import json
 import sys
@@ -31,7 +31,10 @@ try:
     from pdal import libpdalpython
 except:
     PDAL = False
+else:
+    PDAL = True
 
+from stem_utils_server import read_file
 
 LAST_RETURN = """
 import numpy as np
@@ -867,10 +870,12 @@ class stemLAS():
         driver = ogr.GetDriverByName(ogrdriver)
         if overwrite:
             try:
-                driver.DeleteDataSource(outvect)
+                # driver.DeleteDataSource(outvect)
+                driver.DeleteDataSource(output)
             except Exception:
                 pass
-        newdata = driver.CreateDataSource(outvect)
+        # newdata = driver.CreateDataSource(outvect)
+        newdata = driver.CreateDataSource(output)
         newdata.CopyLayer(vect.lay0, 'las_zonal_stats')
         newlayer = newdata.GetLayer()
         for s in stats:
@@ -879,7 +884,9 @@ class stemLAS():
         for inFeature in newlayer:
             inGeom = inFeature.GetGeometryRef()
             outlas = tempFileName()
-            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt())
+            #     def clip_xml_pdal(self, inp, out, bbox, compres, inverted=False):
+            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), False) # XXX
+            # FIXME: compress=False, va aggiunto il parametro nell'interfaccia
             xml = read_file(self.pdalxml)
             pipe = libpdalpython.PyPipeline(xml)
             pipe.execute()
