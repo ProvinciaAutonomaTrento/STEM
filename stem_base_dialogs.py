@@ -1167,7 +1167,6 @@ class SettingsDialog(QDialog, settingsDialog):
         #              partial(self.BrowseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
-
         self.connect(self.pushButton_outputlocal, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_outputlocal))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
@@ -1225,7 +1224,6 @@ class SettingsDialog(QDialog, settingsDialog):
                     self.lineEdit_proj.setText('C:\OSGeo4W\share\proj')
                 elif os.path.exists('C:\OSGeo4W64\share\proj'):
                     self.lineEdit_proj.setText('C:\OSGeo4W64\share\proj')
-
     def BrowseBin(self, line):
         """Choose an existing file and set it to a QLineEdit
 
