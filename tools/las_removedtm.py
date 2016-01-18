@@ -60,6 +60,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        # Estrazione CHM
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             source = str(self.TextIn.text())
