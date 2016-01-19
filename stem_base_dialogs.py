@@ -1167,8 +1167,6 @@ class SettingsDialog(QDialog, settingsDialog):
         #              partial(self.BrowseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
                      partial(self.BrowseDir, self.lineEdit_proj))
-        self.connect(self.pushButton_outputlocal, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_outputlocal))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
     def _check(self, string):
@@ -1220,10 +1218,12 @@ class SettingsDialog(QDialog, settingsDialog):
             if proj:
                 self.lineEdit_proj.setText(proj)
             else:
-                if os.path.exists('C:\OSGeo4W\share\proj'):
-                    self.lineEdit_proj.setText('C:\OSGeo4W\share\proj')
-                elif os.path.exists('C:\OSGeo4W64\share\proj'):
-                    self.lineEdit_proj.setText('C:\OSGeo4W64\share\proj')
+                # Impostazione di default
+                for path in [r'C:\OSGeo4W\share\proj', r'C:\OSGeo4W64\share\proj']:
+                    if os.path.exists(path):
+                        self.lineEdit_proj.setText(path)
+                        break
+        # TODO: caricare le impostazioni di default se non sono definite
     def BrowseBin(self, line):
         """Choose an existing file and set it to a QLineEdit
 
@@ -1270,7 +1270,7 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_grasslocationserver.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
         STEMSettings.setValue("memory", self.lineEditMemory.text())
-        STEMSettings.setValue("proj", self.lineEditMemory.text())
+        STEMSettings.setValue("proj", self.lineEdit_proj.text())
 
         table = []
         for i in range(self.tableWidget.rowCount()):
