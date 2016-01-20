@@ -98,23 +98,24 @@ class STEMPlugin:
         """Save parameters to a file"""
         # save in different way
         # STEMUtils.saveParameters()
-        import shutil
-        import tempfile
-        f = tempfile.NamedTemporaryFile(delete=False)
-        name = f.name
-        if sys.platform != 'win32':
-            name = f.name
-            shutil.copy(STEMSettings.s.fileName(), name)
-        else:
-            STEMSettings.saveToFile(f)
-            f.close()
-        STEMMessageHandler.success("Configurazione salvata in {n}, si prega "
-                                   "di rimuovere i tools non utili".format(n=name))
+        myfile = QFileDialog.getSaveFileName(None, "Selezionare il file in cui"
+                                             " salvare la configurazione", "",  "File di configurazione (*.ini *.txt)")
+        if myfile:
+            import shutil
+            import tempfile
+            f = tempfile.NamedTemporaryFile(delete=False)
+            if sys.platform != 'win32':
+                shutil.copy(STEMSettings.s.fileName(), myfile)
+            else:
+                with open(myfile, 'w') as f:
+                    STEMSettings.saveToFile(f)
+            STEMMessageHandler.success("Configurazione salvata in {n}, si prega "
+                                       "di rimuovere i tools non utili".format(n=myfile))
 
     def load(self):
         """Load parameters from a file"""
         myfile = QFileDialog.getOpenFileName(None, "Selezionare il file con la"
-                                             " configurazione da caricare", "")
+                                             " configurazione da caricare", "", "File di configurazione (*.ini *.txt)")
         if myfile:
             import ConfigParser
             newconfig = ConfigParser.ConfigParser()
