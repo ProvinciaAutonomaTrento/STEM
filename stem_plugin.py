@@ -33,11 +33,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "libs"))
 
 
-from stem_base_dialogs import SettingsDialog, helpDialog
+from stem_base_dialogs import SettingsDialog, helpDialog, encode_mapping_table, PathMapping
 from stem_toolbox import STEMToolbox
 from stem_utils import STEMMessageHandler, STEMUtils
 from stem_utils_server import STEMSettings
 
+BASE_CONFIG_KEYS = "grasspath grassdata grasslocation grasspathserver grassdataserver grasslocationserver".split()
 
 class STEMPlugin:
     """This is the main function of the plugin. The class it is used into
@@ -83,7 +84,21 @@ class STEMPlugin:
         # Azzera la maschera all'avvio del plugin
         STEMSettings.setValue("mask", "")
         STEMSettings.setValue("mask_inverse", "")
-
+        # TODO: azzera il check "Maschera inversa nella GUI"
+        
+        if not any([STEMSettings.value(key, "") for key in BASE_CONFIG_KEYS]):
+            # Nessuna delle variabili e` impostata
+            print "Inizializzazione variabili di default"
+            STEMSettings.setValue("grasspath", r"C:\OSGeo4W64\bin\grass70.bat")
+            STEMSettings.setValue("grassdata", r"C:\Users\test\Desktop\grassdata")
+            STEMSettings.setValue("grasslocation", r"STEM")
+            STEMSettings.setValue("grasspathserver", r"/usr/local/bin/grass70")
+            STEMSettings.setValue("grassdataserver", r"/mnt/temp_dir/grassdata")
+            STEMSettings.setValue("grasslocationserver", r"STEM")
+            STEMSettings.setValue("mappingTable", encode_mapping_table([PathMapping('/mnt/temp_dir/grassoutput/', 'Y:\\'),
+                                                                        PathMapping('/mnt/alfresco_root_dir', 'Z:\\')]))
+            STEMSettings.setValue("epsgcode", r"32632")
+            STEMSettings.setValue("memory", "1")
     def unload(self):
         """Unload the plugin"""
         self.toolbox.setVisible(False)

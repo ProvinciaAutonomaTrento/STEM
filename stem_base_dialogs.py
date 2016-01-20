@@ -1256,7 +1256,6 @@ class SettingsDialog(QDialog, settingsDialog):
 
     def _reject(self):
         """"""
-        print 'settings -> _reject'
         QDialog.reject(self)
 
     def _accept(self):
@@ -1266,15 +1265,15 @@ class SettingsDialog(QDialog, settingsDialog):
         grassdata = self.lineEdit_grassdata.text()
         projdir = self.lineEdit_proj.text()
         errors = []
-        if os.path.isfile(grasspath):
+        if not grasspath or os.path.isfile(grasspath):
             STEMSettings.setValue("grasspath", grasspath)
         else:
             errors.append("Eseguibile di GRASS non trovato, corregere le impostazioni.\nValore errato: {}".format(grasspath))
-        if os.path.isdir(grassdata):
+        if not grassdata or os.path.isdir(grassdata):
             STEMSettings.setValue("grassdata", grassdata)
         else:
             errors.append("Cartella GRASSDATA non esistente, corregere le impostazioni.\nValore errato: {}".format(grassdata))
-        if os.path.isdir(projdir):
+        if not projdir or os.path.isdir(projdir):
             STEMSettings.setValue("proj", projdir)
         else:
             errors.append("Cartella PROJ non esistente, corregere le impostazioni.\nValore errato: {}".format(projdir))
@@ -1311,12 +1310,12 @@ class SettingsDialog(QDialog, settingsDialog):
         
         if errors:
             # QMessageBox.about(self, SETTINGS_ERROR_TITLE, u'\n\n'.join([u'• '+x for x in errors]))
-            self.settings_error_button(u'\n\n'.join([u'• '+x for x in errors]))
+            self.warning_message(u'\n\n'.join([u'• '+x for x in errors]))
             
             dialog = SettingsDialog(self.parent, self.iface)
             dialog.exec_()
 
-    def settings_error_button(self, message):
+    def warning_message(self, message):
         SETTINGS_ERROR_TITLE = "Errore"
         # StandardButton warning (QWidget parent, QString title, QString text, 
         # StandardButtons buttons = QMessageBox.Ok, StandardButton defaultButton = QMessageBox.NoButton)
