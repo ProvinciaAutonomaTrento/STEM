@@ -15,6 +15,7 @@ __date__ = 'August 2014'
 __copyright__ = '(C) 2014 Luca Delucchi'
 
 import os
+import os.path
 import sys
 import subprocess
 import tempfile
@@ -83,7 +84,7 @@ class BaseDialog(QDialog, baseDialog):
         # self.connect(self.buttonBox, SIGNAL("accepted()"), self._accept)
         self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.BrowseButton, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.TextOut, suffix))
+                     partial(self.browseDir, self.TextOut, suffix))
         # self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
         self.toolname = title
@@ -1051,7 +1052,7 @@ class BaseDialog(QDialog, baseDialog):
                         STEMMessageHandler.error(u"Errore caricando il file")
         STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
-    def BrowseDir(self, line, suffix='.tif'):
+    def browseDir(self, line, suffix='.tif'):
         """Function to create new file in a directory
 
         :param obj line: the QLineEdit object to update
@@ -1149,6 +1150,7 @@ class SettingsDialog(QDialog, settingsDialog):
     def __init__(self, parent, iface):
         QDialog.__init__(self, parent)
         self.dialog = settingsDialog
+        self.parent = parent
         self.iface = iface
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -1160,13 +1162,13 @@ class SettingsDialog(QDialog, settingsDialog):
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self._accept)
         # self.connect(self.buttonBox, SIGNAL("helpRequested()"), self._help)
         self.connect(self.pushButton_grass, SIGNAL("clicked()"),
-                     partial(self.BrowseBin, self.lineEdit_grass))
+                     partial(self.browseBin, self.lineEdit_grass))
         self.connect(self.pushButton_grassdata, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_grassdata))
+                     partial(self.browseDir, self.lineEdit_grassdata))
         # self.connect(self.pushButton_datalocal, SIGNAL("clicked()"),
-        #              partial(self.BrowseDir, self.lineEdit_datalocal))
+        #              partial(self.browseDir, self.lineEdit_datalocal))
         self.connect(self.pushButton_proj, SIGNAL("clicked()"),
-                     partial(self.BrowseDir, self.lineEdit_proj))
+                     partial(self.browseDir, self.lineEdit_proj))
         self.buttonBox.button(QDialogButtonBox.Ok).setDefault(True)
 
     def _check(self, string):
@@ -1224,7 +1226,7 @@ class SettingsDialog(QDialog, settingsDialog):
                         self.lineEdit_proj.setText(path)
                         break
         # TODO: caricare le impostazioni di default se non sono definite
-    def BrowseBin(self, line):
+    def browseBin(self, line):
         """Choose an existing file and set it to a QLineEdit
 
         :param obj line: the QLineEdit object to update
@@ -1238,7 +1240,7 @@ class SettingsDialog(QDialog, settingsDialog):
             # TODO add overwrite option
             STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
 
-    def BrowseDir(self, line):
+    def browseDir(self, line):
         """Choose an existing directory and set it to a QLineEdit
 
         :param obj line: the QLineEdit object to update
@@ -1254,12 +1256,31 @@ class SettingsDialog(QDialog, settingsDialog):
 
     def _reject(self):
         """"""
-        pass
+        print 'settings -> _reject'
+        QDialog.reject(self)
 
     def _accept(self):
         """Save the variable in STEM Settings"""
-        STEMSettings.setValue("grasspath", self.lineEdit_grass.text())
-        STEMSettings.setValue("grassdata", self.lineEdit_grassdata.text())
+        # TODO: Controllare se i path locali sono validi
+        grasspath = self.lineEdit_grass.text()
+        grassdata = self.lineEdit_grassdata.text()
+        projdir = self.lineEdit_proj.text()
+        errors = []
+        if os.path.isfile(grasspath):
+            STEMSettings.setValue("grasspath", grasspath)
+        else:
+            errors.append("Eseguibile di GRASS non trovato, corregere le impostazioni.\nValore errato: {}".format(grasspath))
+        if os.path.isdir(grassdata):
+            STEMSettings.setValue("grassdata", grassdata)
+        else:
+            errors.append("Cartella GRASSDATA non esistente, corregere le impostazioni.\nValore errato: {}".format(grassdata))
+        if os.path.isdir(projdir):
+            STEMSettings.setValue("proj", projdir)
+        else:
+            errors.append("Cartella PROJ non esistente, corregere le impostazioni.\nValore errato: {}".format(projdir))
+            
+
+            
         STEMSettings.setValue("grasslocation",
                               self.lineEdit_grasslocation.text())
         STEMSettings.setValue("grasspathserver",
@@ -1270,7 +1291,6 @@ class SettingsDialog(QDialog, settingsDialog):
                               self.lineEdit_grasslocationserver.text())
         STEMSettings.setValue("epsgcode", self.epsg.text())
         STEMSettings.setValue("memory", self.lineEditMemory.text())
-        STEMSettings.setValue("proj", self.lineEdit_proj.text())
 
         table = []
         for i in range(self.tableWidget.rowCount()):
@@ -1280,12 +1300,28 @@ class SettingsDialog(QDialog, settingsDialog):
             l = local.text().strip() if local else ''
             
             if r and l:
-                table.append(PathMapping(r, l))
+                if os.path.isdir(l):
+                    table.append(PathMapping(r, l))
+                else:
+                    errors.append(u"Mapping risosrse: la cartella locale ({}) non è attiva".format(l))
             elif bool(r) != bool(l):
-                STEMMessageHandler.error("Mapping delle risosrse non definito correttamente, ricontrolla le impostazioni (mapping: {})".format(r or l))
+                errors.append("Mapping delle risosrse non definito correttamente, ricontrolla le impostazioni (mapping: {})".format(r or l))
 
         STEMSettings.setValue("mappingTable", encode_mapping_table(table))
+        
+        if errors:
+            # QMessageBox.about(self, SETTINGS_ERROR_TITLE, u'\n\n'.join([u'• '+x for x in errors]))
+            self.settings_error_button(u'\n\n'.join([u'• '+x for x in errors]))
+            
+            dialog = SettingsDialog(self.parent, self.iface)
+            dialog.exec_()
 
+    def settings_error_button(self, message):
+        SETTINGS_ERROR_TITLE = "Errore"
+        # StandardButton warning (QWidget parent, QString title, QString text, 
+        # StandardButtons buttons = QMessageBox.Ok, StandardButton defaultButton = QMessageBox.NoButton)
+        QMessageBox.warning(self, SETTINGS_ERROR_TITLE, message)
+        
 
 class helpDialog(QDialog, helpDialog):
     """Dialog for help manual"""

@@ -66,7 +66,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstLineEdit(label, 0)
         self.Linedit.setText('90')
 #        self.connect(self.BrowseButton, SIGNAL("clicked()"),
-#                     partial(self.BrowseDir, self.TextOut, None))
+#                     partial(self.browseDir, self.TextOut, None))
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
