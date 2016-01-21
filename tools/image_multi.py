@@ -35,14 +35,15 @@ from pyro_stem import PYROSERVER
 from pyro_stem import GDALCONVERTPYROOBJNAME
 from pyro_stem import GDAL_PORT
 
+from PyQt4.QtGui import QMessageBox
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow(), suffix='')
-        self.toolName = name
         self.iface = iface
+        self.toolName = name
 
-        self._insertMultipleInput()
+        self._insertMultipleInput(True)
         STEMUtils.addLayerToComboBox(self.BaseInput, 1, source=True)
 
         formats = ['GTIFF', 'ENVI']
@@ -82,7 +83,8 @@ class STEMToolsDialog(BaseDialog):
         # Accatastamento
         local = self.LocalCheck.isChecked()
         if not self.digit:
-            STEMMessageHandler.error("Selezionare il formato di output")
+            # STEMMessageHandler.error("Selezionare il formato di output")
+            QMessageBox.critical(self, "Parametro mancante", "Selezionare il formato di output")
             return
         STEMSettings.saveWidgetsValue(self, self.toolName)
         items = []
@@ -93,6 +95,12 @@ class STEMToolsDialog(BaseDialog):
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
         sources = [i.text() for i in items]
+        if not sources:
+            QMessageBox.warning(self, "Errore nei parametri", u"Non è stato selezionato nessun input")
+            # TODO: rilanciare il dialog
+            dialog = STEMToolsDialog(self.iface, self.toolName)
+            dialog.exec_()
+            return
         names = [STEMUtils.getNameFromSource(i) for i in sources]
         outformat = str(self.BaseInputCombo.currentText())
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
