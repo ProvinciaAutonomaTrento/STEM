@@ -768,6 +768,14 @@ class file_info:
         ycount = int((ymax - ymin) / self.geotransform[1]) + 1
         target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount,
                                                        gdal.GDT_Byte)
+        if target_ds is None:
+            print "Impossibile creare la maschera inversa in RAM, provo su file"
+            # Proviamo il tiff
+            target_ds = gdal.GetDriverByName('GTiff').Create(r'C:\Users\test\Desktop\tmp\maschera_inversa.tif', xcount, ycount,
+                                                           gdal.GDT_Byte, options=['BIGTIFF=IF_SAFER'])
+        if target_ds is None:
+            print "Impossibile creare la maschera inversa"
+            return
         target_ds.SetGeoTransform((xmin, self.geotransform[1], 0, ymax, 0,
                                    self.geotransform[5]))
 
