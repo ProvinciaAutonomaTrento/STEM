@@ -82,7 +82,7 @@ def get_value(x,y, band, band_type, geomt):
         return None
 
 def chm(ins,outs):
-    inrast = '{NAME}'
+    inrast = r'{NAME}'
     rast = gdal.Open(inrast)
     band = rast.GetRasterBand(1)
     geomtransf = rast.GetGeoTransform()
