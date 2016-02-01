@@ -94,6 +94,7 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             out = str(self.TextOut.text())
+            out_locale = str(self.TextOut.text())
             if self.LocalCheck.isChecked():
                 las = stemLAS()
             else:
@@ -119,7 +120,7 @@ class STEMToolsDialog(BaseDialog):
             com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
                               retur=ret, forced=self.MethodInput.currentText(), compressed=compres)
             STEMUtils.saveCommand(com)
-            if os.path.exists(out):
+            if os.path.exists(out_locale):
                 STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
             else:
                 STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))

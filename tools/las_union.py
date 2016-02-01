@@ -68,6 +68,7 @@ class STEMToolsDialog(BaseDialog):
                 for index in xrange(self.BaseInput.count()):
                     items.append(self.BaseInput.item(index).text())
             out = self.TextOut.text()
+            out_locale = self.TextOut.text()
             if self.LocalCheck.isChecked():
                 las = stemLAS()
             else:
@@ -75,6 +76,10 @@ class STEMToolsDialog(BaseDialog):
                 las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
+                for i in range(len(items)):
+                    items[i] = STEMUtils.pathClientWinToServerLinux(items[i])
+                out  = STEMUtils.pathClientWinToServerLinux(out)
+                
             las.initialize()
             if self.checkbox.isChecked():
                 compres = True
@@ -82,10 +87,10 @@ class STEMToolsDialog(BaseDialog):
                 compres = False
             com = las.union(items, out, compres)
             STEMUtils.saveCommand(com)
-            if os.path.exists(out):
-                STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            if os.path.exists(out_locale):
+                STEMMessageHandler.success("{ou} LAS file created".format(ou=out_locale))
             else:
-                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))
+                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out_locale))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
