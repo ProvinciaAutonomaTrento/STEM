@@ -552,7 +552,7 @@ class STEMUtils:
         for remote, local in table:
             try:
                 path = os.path.join(remote, os.path.relpath(path, local)).replace('\\','/')
-            except:
+            except Exception as e:
                 pass
             else:
                 converted = True

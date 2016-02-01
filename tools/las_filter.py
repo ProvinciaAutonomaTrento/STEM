@@ -101,6 +101,8 @@ class STEMToolsDialog(BaseDialog):
                 las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                out  = STEMUtils.pathClientWinToServerLinux(out)
             las.initialize()
             if self.checkbox.isChecked():
                 compres = True
@@ -115,8 +117,7 @@ class STEMToolsDialog(BaseDialog):
             ret = self.check_return()
 
             com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
-                              retur=ret, compressed=compres,
-                              forced=self.MethodInput.currentText())
+                              retur=ret, forced=self.MethodInput.currentText(), compressed=compres)
             STEMUtils.saveCommand(com)
             if os.path.exists(out):
                 STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
