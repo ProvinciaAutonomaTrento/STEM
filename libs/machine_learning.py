@@ -224,7 +224,7 @@ def read_pixels(bands, pixels):
         """Return an arrays with the value of a band"""
         res = []
         for row in sorted(pixels.keys()):
-            buf = band.ReadAsArray(0, row, band.XSize, 1, band.XSize, 1)[0]
+            buf = band.ReadAsArray(0, int(row), band.XSize, 1, band.XSize, 1)[0]
             cols = pixels[row]
             for col in cols:
                 res.append(buf[col])
