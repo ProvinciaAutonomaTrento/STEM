@@ -382,7 +382,7 @@ class STEMToolsDialog(BaseDialog):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
-                               header=SEP.join(test[0].__dict__.keys()))
+                               header=SEP.join(test[0]._asdict().keys()))
                     mltb.find_best(models, strategy=lambda x: x,
                                    key='score_test')
                     best = mltb.select_best()
