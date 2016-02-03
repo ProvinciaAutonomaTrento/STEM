@@ -83,7 +83,7 @@ def cvbar(total, fill='#', empty='-', barsize=30,
             best = cross
         bst = '%s is the best so far (%03d): %.4f' % (best.name, best.index,
                                                       best.mean)
-        info = fmt.format(total=total, **cross.__dict__)
+        info = fmt.format(total=total, **cross._asdict())
         print('\r\x1b[3A\n{bar}\n{best}\n{info}'.format(bar=bar, best=bst,
                                                         info=info), end='')
     return printinfo
