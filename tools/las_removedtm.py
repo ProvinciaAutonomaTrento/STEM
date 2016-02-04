@@ -69,17 +69,23 @@ class STEMToolsDialog(BaseDialog):
             out = str(self.TextOut.text())
             if self.LocalCheck.isChecked():
                 las = stemLAS()
+                source_task = source
+                out_task = out
+                dtm_source_task = dtm_source
             else:
                 import Pyro4
                 las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
+                source_task = STEMUtils.pathClientWinToServerLinux(source)
+                out_task = STEMUtils.pathClientWinToServerLinux(out)
+                dtm_source_task = STEMUtils.pathClientWinToServerLinux(dtm_source)
             las.initialize()
             if self.checkbox.isChecked():
                 compres = True
             else:
                 compres = False
-            com = las.chm(source, out, dtm_source, compressed=compres)
+            com = las.chm(source_task, out_task, dtm_source_task, compressed=compres)
             STEMUtils.saveCommand(com)
             if os.path.exists(out):
                 STEMMessageHandler.success("{ou} LAS file created".format(ou=out))

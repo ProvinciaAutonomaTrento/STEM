@@ -1,4 +1,7 @@
 eclipse.preferences.version=1
+encoding//libs/stem_utils_server.py=utf-8
 encoding//tools/image_multi.py=utf-8
+encoding//tools/las_removedtm.py=utf-8
 encoding/stem_base_dialogs.py=utf-8
+encoding/stem_plugin.py=utf-8
 encoding/stem_utils.py=utf-8

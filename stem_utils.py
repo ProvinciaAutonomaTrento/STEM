@@ -538,8 +538,7 @@ class STEMUtils:
         """Convert path from windows to linux for client and server connection
 
         :param str path: the path to rename
-        :param bool inp: if inp true check datalocal/dataserver otherwise
-                         outdataserver/outdatalocal
+        :param bool inp: DEPRECATED
         """
 
         table = STEMSettings.value("mappingTable", None)
