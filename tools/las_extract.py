@@ -81,6 +81,7 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit2.clear()
 
     def onRunLocal(self):
+        # Rasterizzazione file LAS
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
             source = str(self.TextIn.text())
