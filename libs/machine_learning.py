@@ -83,7 +83,7 @@ def cvbar(total, fill='#', empty='-', barsize=30,
             best = cross
         bst = '%s is the best so far (%03d): %.4f' % (best.name, best.index,
                                                       best.mean)
-        info = fmt.format(total=total, **cross.__dict__)
+        info = fmt.format(total=total, **cross._asdict())
         print('\r\x1b[3A\n{bar}\n{best}\n{info}'.format(bar=bar, best=bst,
                                                         info=info), end='')
     return printinfo
@@ -224,7 +224,7 @@ def read_pixels(bands, pixels):
         """Return an arrays with the value of a band"""
         res = []
         for row in sorted(pixels.keys()):
-            buf = band.ReadAsArray(0, row, band.XSize, 1, band.XSize, 1)[0]
+            buf = band.ReadAsArray(0, int(row), band.XSize, 1, band.XSize, 1)[0]
             cols = pixels[row]
             for col in cols:
                 res.append(buf[col])
