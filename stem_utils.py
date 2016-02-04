@@ -382,6 +382,13 @@ class STEMUtils:
         :param str out: the final output file name
         """
         print 'stem_utils renameRast', tmp, out
+
+        t = time.time()
+        while not os.path.isfile(tmp):
+            if time.time()-t > 5:
+                raise Exception("Il file di output non è stato creato: {}".format(tmp))
+            time.sleep(.1)
+        
         shutil.move(tmp, out)
         try:
             shutil.move('{name}.aux.xml'.format(name=tmp),
@@ -420,7 +427,7 @@ class STEMUtils:
         :param bool remove: True to remove the mapset, otherwise it is kept
         """
         original_dir = os.path.dirname(output)
-        if typ == 'vector' and overwrite:
+        if typ == 'vector':
 
             newdir = os.path.join(tempfile.gettempdir(), "shpdir")
             if not os.path.exists(newdir):
@@ -443,16 +450,10 @@ class STEMUtils:
             shutil.rmtree(newdir)
             STEMUtils.removeFiles(newdir)
         else:
-            if overwrite:
-                tmp = output + '.tmp'
-            else:
-                tmp = output
             try:
-                gs.export_grass(tempout, tmp, typ, remove)
-            except:
-                pass
-            if overwrite:
-                STEMUtils.renameRast(tmp, output)
+                gs.export_grass(tempout, output, typ, remove)
+            except Exception as e:
+                print 'gs.export_grass error:', e
         STEMUtils.removeFiles(original_dir)
 
     @staticmethod
