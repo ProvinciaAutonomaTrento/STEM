@@ -92,6 +92,10 @@ class STEMToolsDialog(BaseDialog):
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
             perc = self.Linedit2.text()
+            
+            if not os.path.isfile(source):
+                STEMMessageHandler.error("File di input non valido")
+                return
 
             if returnfilter == 'all':
                 returnfilter = None

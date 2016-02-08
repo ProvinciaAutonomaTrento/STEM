@@ -496,7 +496,7 @@ class STEMUtils:
             return None
 
     @staticmethod
-    def saveCommand(command):
+    def saveCommand(command, details=None):
         """Save the command history to file
 
         :param list command: the list of all parameter used
@@ -504,11 +504,10 @@ class STEMUtils:
         historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
                                    "stem", "stem_command_history.txt")
 
-        try:
-            hFile = codecs.open(historypath, 'a', encoding='utf-8')
-            hFile.write(" ".join(command) + '\n')
-        except:
-            raise
+        hFile = codecs.open(historypath, 'a', encoding='utf-8')
+        if details is not None:
+            hFile.write('# {}\n'.format(details))
+        hFile.write(" ".join(command) + '\n')
         hFile.close()
 
     @staticmethod

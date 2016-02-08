@@ -5,12 +5,18 @@ Created on Wed Oct  7 11:37:19 2015
 @author: lucadelu
 """
 
-from PyQt4.QtCore import QSettings
-from PyQt4.QtGui import QComboBox, QLineEdit, QCheckBox
 import inspect
 import re
 from types import StringType, UnicodeType
 import tempfile
+import time
+import sys
+import os
+import codecs
+
+from PyQt4.QtCore import QSettings
+from PyQt4.QtGui import QComboBox, QLineEdit, QCheckBox
+
 try:
     import osgeo.ogr as ogr
 except ImportError:
@@ -19,6 +25,11 @@ except ImportError:
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 
+def filelineno():
+    """Returns the current line number in our program."""
+    cf = inspect.currentframe()
+    filename = inspect.getframeinfo(cf).filename.split(os.path.sep)[-1]
+    return filename, cf.f_back.f_lineno
 
 def inverse_mask():
     inverse = STEMSettings.value("mask_inverse", "")
@@ -191,3 +202,35 @@ class STEMSettings:
                     groups.append(key[0])
                 fil.write("{ke}={va}\n".format(ke=key[1],
                                                va=STEMSettings.s.value(k)))
+
+
+def libs_save_command(command, details=None):
+    """Save the command history to file
+
+    :param list command: the list of all parameter used
+    :param details str or [str]: text details to attach to the command
+    """
+    historyfilename = 'stem_command_history.txt'
+    stemdir = 'stem'
+    if sys.platform.startswith('win'):
+        from qgis.core import QgsApplication
+        historypath = os.path.join(QgsApplication.qgisSettingsDirPath(),
+                               stemdir, historyfilename)
+    else:
+        historypathdir = os.path.join(tempfile.gettempdir(),stemdir)
+        os.mkdir(historypathdir)
+        historypath = os.pah.join(historypathdir, historyfilename)
+
+    hFile = codecs.open(historypath, 'a', encoding='utf-8')
+    
+    hFile.write('# {}\n'.format(time.ctime()))
+    hFile.write('# File: {} Line: {}\n'.format(*filelineno()))
+    filelineno()
+    if details is not None:
+        if isinstance(details, basestring):
+            details = [details]
+        if isinstance(details, list):
+            for l in details:
+                hFile.write('# {}\n'.format(l))
+    hFile.write(" ".join(command) + '\n')
+    hFile.close()

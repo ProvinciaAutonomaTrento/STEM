@@ -24,7 +24,7 @@ import os
 import sys
 import subprocess
 from pyro_stem import PYROSERVER, GRASS_PORT, GRASSPYROOBJNAME
-from stem_utils_server import STEMSettings, inverse_mask
+from stem_utils_server import STEMSettings, inverse_mask, libs_save_command
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -428,13 +428,16 @@ class stemGRASS():
         :param str percentile: value of percentile 1-100
         :param str trim: discard <trim> percent of the smallest and <trim>
                          percent of the largest observations 0-50
+        :param bool commandOnly: non esegue i comandi, li costruisce e li restituisce
         """
         import grass.script.core as gcore
-
+        
+        cmd = ['r.in.lidar', '-go',
+               'input={input}'.format(input=inp),
+               'output={output}'.format(output=out)]
+        libs_save_command(cmd, 'Primo comando di las_import')
         try:
-            runcom = gcore.Popen(['r.in.lidar', '-go',
-                                  'input={input}'.format(input=inp),
-                                  'output={output}'.format(output=out)],
+            runcom = gcore.Popen(cmd,
                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
             outp, errp = runcom.communicate()
             if runcom.returncode != 0:
@@ -445,6 +448,7 @@ class stemGRASS():
                             "vostra versione di GRASS GIS")
         com = ['g.region']
         com.extend(outp.split())
+        libs_save_command(com)
         self.run_grass([com])
         if resolution and region:
             com2 = ['g.region', 'o={va}'.format(va=self.rect_str[0]),
@@ -464,46 +468,49 @@ class stemGRASS():
         else:
             actual_res = int(gcore.region()['nsres'])
             com2 = ['g.region', 'res={r}'.format(r=str(actual_res)), '-a']
+        libs_save_command(com2)
         self.run_grass([com2])
         try:
             if returnpulse and percentile:
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method),
-                                 'return_filter={pul}'.format(pul=returnpulse),
-                                 'pth={perc}'.format(perc=percentile)]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method),
+                         'return_filter={pul}'.format(pul=returnpulse),
+                         'pth={perc}'.format(perc=percentile)]
             elif returnpulse and trim:
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method),
-                                 'return_filter={pul}'.format(pul=returnpulse),
-                                 'trim={tri}'.format(tri=trim)]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method),
+                         'return_filter={pul}'.format(pul=returnpulse),
+                         'trim={tri}'.format(tri=trim)]
             elif percentile and not returnpulse:
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method),
-                                 'pth={perc}'.format(perc=percentile)]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method),
+                         'pth={perc}'.format(perc=percentile)]
             elif trim and not returnpulse:
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method),
-                                 'trim={tri}'.format(tri=trim)]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method),
+                         'trim={tri}'.format(tri=trim)]
             elif returnpulse and not (percentile or trim):
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method),
-                                 'return_filter={pul}'.format(pul=returnpulse)
-                                 ]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method),
+                         'return_filter={pul}'.format(pul=returnpulse)
+                         ]
             else:
-                self.run_grass([['r.in.lidar', '-o',
-                                 'input={input}'.format(input=inp),
-                                 'output={output}'.format(output=out),
-                                 'method={met}'.format(met=method)]])
+                com3 = ['r.in.lidar', '-o',
+                         'input={input}'.format(input=inp),
+                         'output={output}'.format(output=out),
+                         'method={met}'.format(met=method)]
+            libs_save_command(com3)
+            self.run_grass([com3])
 
         except:
             raise Exception("Errore eseguendo l'importazione del file LAS")
