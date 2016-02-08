@@ -25,11 +25,13 @@ except ImportError:
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
 
-def filelineno():
+def filelineno(levels_back):
     """Returns the current line number in our program."""
-    cf = inspect.currentframe()
-    filename = inspect.getframeinfo(cf).filename.split(os.path.sep)[-1]
-    return filename, cf.f_back.f_lineno
+    frame = inspect.currentframe()
+    for i in range(levels_back+1):
+        frame = frame.f_back
+    frameinfo = inspect.getframeinfo(frame)
+    return frameinfo.filename.split(os.path.sep)[-1], frameinfo.lineno
 
 def inverse_mask():
     inverse = STEMSettings.value("mask_inverse", "")
@@ -224,8 +226,7 @@ def libs_save_command(command, details=None):
     hFile = codecs.open(historypath, 'a', encoding='utf-8')
     
     hFile.write('# {}\n'.format(time.ctime()))
-    hFile.write('# File: {} Line: {}\n'.format(*filelineno()))
-    filelineno()
+    hFile.write('# File: {} Line: {}\n'.format(*filelineno(1)))
     if details is not None:
         if isinstance(details, basestring):
             details = [details]
