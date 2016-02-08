@@ -450,24 +450,40 @@ class stemGRASS():
         com.extend(outp.split())
         libs_save_command(com)
         self.run_grass([com])
-        if resolution and region:
-            com2 = ['g.region', 'o={va}'.format(va=self.rect_str[0]),
-                    's={va}'.format(va=self.rect_str[1]),
-                    'e={va}'.format(va=self.rect_str[2]),
-                    'n={va}'.format(va=self.rect_str[3]),
-                    'res={va}'.format(va=resolution), '-a']
-        elif resolution and not region:
-            com2 = ['g.region', 'res={r}'.format(r=str(resolution)), '-a']
-        elif not resolution and region:
-            actual_res = int(gcore.region()['nsres'])
-            com2 = ['g.region', 'o={va}'.format(va=self.rect_str[0]),
-                    's={va}'.format(va=self.rect_str[1]),
-                    'e={va}'.format(va=self.rect_str[2]),
-                    'n={va}'.format(va=self.rect_str[3]),
-                    'res={va}'.format(va=actual_res), '-a']
+        
+        com2 = ['g.region']
+        
+        if region:
+            com2.extend(['w={}'.format(region[0]),
+                         'n={}'.format(region[1]),
+                         'e={}'.format(region[2]),
+                         's={}'.format(region[3])])    
+        if resolution:
+            com2.extend(['res={}'.format(str(resolution)), '-a'])
         else:
             actual_res = int(gcore.region()['nsres'])
-            com2 = ['g.region', 'res={r}'.format(r=str(actual_res)), '-a']
+            com2.extend(['res={}'.format(str(actual_res)), '-a'])
+        
+#         if resolution and region:
+#             com2 = ['g.region',
+#                     'w={}'.format(region[0]),
+#                     'n={}'.format(region[1]),
+#                     'e={}'.format(region[2]),
+#                     's={}'.format(region[3]),
+#                     'res={}'.format(resolution), '-a']
+#         elif resolution and not region:
+#             com2 = ['g.region', 'res={r}'.format(r=str(resolution)), '-a']
+#         elif not resolution and region:
+#             actual_res = int(gcore.region()['nsres'])
+#             com2 = ['g.region',
+#                     'w={va}'.format(va=region[0]),
+#                     'n={va}'.format(va=region[1]),
+#                     'e={va}'.format(va=region[2]),
+#                     's={va}'.format(va=region[3]),
+#                     'res={va}'.format(va=actual_res), '-a']
+#         else:
+#             actual_res = int(gcore.region()['nsres'])
+#             com2 = ['g.region', 'res={r}'.format(r=str(actual_res)), '-a']
         libs_save_command(com2)
         self.run_grass([com2])
         try:
