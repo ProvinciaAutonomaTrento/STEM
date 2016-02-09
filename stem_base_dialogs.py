@@ -20,8 +20,6 @@ import sys
 import subprocess
 import tempfile
 import platform
-import pickle, base64
-from collections import namedtuple
 from functools import partial
 from types import StringType, UnicodeType
 
@@ -34,14 +32,13 @@ from qgis.gui import *
 from stem_utils import STEMMessageHandler
 from stem_utils import STEMUtils
 from stem_utils import CheckableComboBox
+from stem_utils import PathMapping
 from stem_utils_server import STEMSettings, inverse_mask
 import gdal_stem
 
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
 helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
 settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
-
-PathMapping = namedtuple('PathMapping', 'remote local')
 
 def escapeAndJoin(strList):
     """Escapes arguments and return them joined in a string
@@ -121,6 +118,10 @@ class BaseDialog(QDialog, baseDialog):
         if not self.overwrite:
             res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
             if not res: return
+
+        # TODO: controllare se i file di input esistono
+        # TODO: se l'esecuzione e` lato server controllare che i path di
+        #       input e output siano compatibili
 
         self.onRunLocal()
         self.accept()
@@ -877,7 +878,7 @@ class BaseDialog(QDialog, baseDialog):
 
             # soluzione temporanea: scelgo il path locale del primo mapping definito dall'utente
             # TODO: aggiungere alla tabella un radio button per scegliere la cartella dei file temporanei
-            mt = decode_mapping_table(STEMSettings.value("mappingTable", None))
+            mt = STEMUtils.get_mapping_table()
             if mt:
                 path = mt[0].local
             else:
@@ -1121,30 +1122,6 @@ class BaseDialog(QDialog, baseDialog):
             path = path.replace("\\", "/")
             return "file:///{p}".format(p=path)
 
-
-def decode_mapping_table(encoded):
-    """
-    :param encoded: STEMSettings.value("mappingTable", None)
-    :raram return: python object [[r0,r0],[r1,r1]]
-    """
-    if encoded:
-        table = pickle.loads(base64.b64decode(encoded))
-        if all([type(x) == list and len(x) in [0, 2] for x in table]):
-            # converto dal vecchio formato
-            table = [PathMapping(*x) for x in table if x]
-        # Dopo la serializzazione il controllo sul tipo non funziona
-        assert all([hasattr(x, 'local') and hasattr(x, 'remote') for x in table]), table
-        return table
-    else:
-        return []
-def encode_mapping_table(table):
-    """
-    :param table: object [(remote, local),(remote, local)]
-    :raram return: ASCII encoded table
-    """
-    assert all([type(x) == PathMapping for x in table]), table 
-    return base64.b64encode(pickle.dumps(table))
-
 class SettingsDialog(QDialog, settingsDialog):
     """Dialog for setting"""
     def __init__(self, parent, iface):
@@ -1199,7 +1176,7 @@ class SettingsDialog(QDialog, settingsDialog):
         assert self.tableWidget.rowCount() >= 2
         assert self.tableWidget.columnCount() >= 2
         i = 0
-        for mapping in decode_mapping_table(STEMSettings.value("mappingTable", None)):
+        for mapping in STEMUtils.get_mapping_table():
             self.tableWidget.setItem(i, 0, QTableWidgetItem(mapping.remote))
             self.tableWidget.setItem(i, 1, QTableWidgetItem(mapping.local))
             i += 1
@@ -1306,7 +1283,7 @@ class SettingsDialog(QDialog, settingsDialog):
             elif bool(r) != bool(l):
                 errors.append("Mapping delle risosrse non definito correttamente, ricontrolla le impostazioni (mapping: {})".format(r or l))
 
-        STEMSettings.setValue("mappingTable", encode_mapping_table(table))
+        STEMUtils.set_mapping_table(table)
         
         if errors:
             # QMessageBox.about(self, SETTINGS_ERROR_TITLE, u'\n\n'.join([u'• '+x for x in errors]))

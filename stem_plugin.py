@@ -19,12 +19,12 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
+import os
+import sys
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-
-import os
-import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -33,9 +33,9 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "libs"))
 
 
-from stem_base_dialogs import SettingsDialog, helpDialog, encode_mapping_table, PathMapping
+from stem_base_dialogs import SettingsDialog, helpDialog 
 from stem_toolbox import STEMToolbox
-from stem_utils import STEMMessageHandler, STEMUtils
+from stem_utils import STEMMessageHandler, STEMUtils, PathMapping
 from stem_utils_server import STEMSettings
 
 BASE_CONFIG_KEYS = "grasspath grassdata grasslocation grasspathserver grassdataserver grasslocationserver".split()
@@ -95,8 +95,8 @@ class STEMPlugin:
             STEMSettings.setValue("grasspathserver", r"/usr/local/bin/grass70")
             STEMSettings.setValue("grassdataserver", r"/mnt/temp_dir/grassdata")
             STEMSettings.setValue("grasslocationserver", r"STEM")
-            STEMSettings.setValue("mappingTable", encode_mapping_table([PathMapping('/mnt/temp_dir/grassoutput/', 'Y:\\'),
-                                                                        PathMapping('/mnt/alfresco_root_dir', 'Z:\\')]))
+            STEMUtils.set_mapping_table([PathMapping('/mnt/temp_dir/grassoutput/', 'Y:\\'),
+                                         PathMapping('/mnt/alfresco_root_dir', 'Z:\\')])
             STEMSettings.setValue("epsgcode", r"32632")
             STEMSettings.setValue("memory", "1")
     def unload(self):

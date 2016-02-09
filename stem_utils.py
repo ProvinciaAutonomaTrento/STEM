@@ -18,11 +18,6 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import iface
 import codecs
 import os
 import inspect
@@ -33,6 +28,13 @@ import glob
 import logging
 import pickle, base64
 import time
+from collections import namedtuple
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.gui import *
+from qgis.utils import iface
 try:
     import osgeo.gdal as gdal
 except ImportError:
@@ -47,8 +49,8 @@ except ImportError:
         import ogr
     except ImportError:
         raise 'Python GDAL library not found, please install python-gdal'
-from stem_utils_server import STEMSettings
 
+from stem_utils_server import STEMSettings
 
 class CheckableComboBox(QComboBox):
     """New class to create chackable QComboBox"""
@@ -64,6 +66,7 @@ class CheckableComboBox(QComboBox):
         else:
             item.setCheckState(Qt.Checked)
 
+PathMapping = namedtuple('PathMapping', 'remote local')
 
 class STEMUtils:
     """Class to gather together several functions"""
@@ -540,12 +543,8 @@ class STEMUtils:
         :param bool inp: DEPRECATED
         """
 
-        table = STEMSettings.value("mappingTable", None)
-        if table:
-            table = [x for x in pickle.loads(base64.b64decode(table)) if len(x)==2 and x[0] and x[1]] # [[remote0,local0],[rlocal,remote1]]
-        else:
-            table = []
-
+        table = STEMUtils.get_mapping_table()
+        
         converted = False
         print 'table:', table
         for remote, local in table:
@@ -560,27 +559,40 @@ class STEMUtils:
                                        ' potrebbero esserci problemi nelle '
                                        'prossimi analisi')
         return path
-        # try:
-        #     if inp or not STEMSettings.value("datalocal", ""):
-        #         old_local = STEMSettings._check(STEMSettings.value("datalocal",
-        #                                                            ""))
-        #         old_server = STEMSettings._check(STEMSettings.value("dataserver",
-        #                                                             ""))
-        #     else:
-        #         old_local = STEMSettings._check(STEMSettings.value("outdatalocal",
-        #                                                            ""))
-        #         old_server = STEMSettings._check(STEMSettings.value("outdataserver",
-        #                                                            ""))
-        #
-        #     old = os.path.relpath(path, old_local)
-        #     new = os.path.join(old_server, old)
-        #     new = new.replace("\\", "/")
-        # except:
-        #     STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
-        #                                ' potrebbero esserci problemi nelle '
-        #                                'prossimi analisi')
-        #     new = path
-        # return new
+
+    @staticmethod
+    def decode_mapping_table(encoded):
+        """
+        :param encoded: STEMSettings.value("mappingTable", None)
+        :raram return: python object [[r0,r0],[r1,r1]]
+        """
+        if encoded:
+            table = pickle.loads(base64.b64decode(encoded))
+            if all([type(x) == list and len(x) in [0, 2] for x in table]):
+                # converto dal vecchio formato
+                table = [PathMapping(*x) for x in table if x]
+            # Dopo la serializzazione il controllo sul tipo non funziona
+            assert all([hasattr(x, 'local') and hasattr(x, 'remote') for x in table]), table
+            return table
+        else:
+            return []
+
+    @staticmethod
+    def get_mapping_table():
+        return STEMUtils.decode_mapping_table(STEMSettings.value("mappingTable", None))
+    
+    @staticmethod
+    def encode_mapping_table(table):
+        """
+        :param table: object [(remote, local),(remote, local)]
+        :raram return: ASCII encoded table
+        """
+        assert all([type(x) == PathMapping for x in table]), table 
+        return base64.b64encode(pickle.dumps(table))
+    
+    @staticmethod
+    def set_mapping_table(new_table):
+        STEMSettings.setValue("mappingTable", STEMUtils.encode_mapping_table(new_table))
 
 
 class STEMMessageHandler:
@@ -708,6 +720,7 @@ class STEMMessageHandler:
             except Exception:
                 iface.messageBar().pushMessage(str(text), level,
                                                timeout)
+
 
 class STEMLogging:
     """Class to log information of modules in a file"""
