@@ -79,14 +79,22 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
-    def onRunLocal(self):
-        # Accatastamento
-        local = self.LocalCheck.isChecked()
-        if not self.digit:
-            # STEMMessageHandler.error("Selezionare il formato di output")
-            QMessageBox.critical(self, "Parametro mancante", "Selezionare il formato di output")
-            return
-        STEMSettings.saveWidgetsValue(self, self.toolName)
+    def get_input_path_fields(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal().
+        """
+        return self.get_input_sources()
+    
+    
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        return [self.TextOut.text()]
+    
+    def get_input_sources(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal()"""
         items = []
 
         if len(self.BaseInput.selectedItems()) != 0:
@@ -95,6 +103,18 @@ class STEMToolsDialog(BaseDialog):
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
         sources = [i.text() for i in items]
+        
+        return sources        
+    
+    def onRunLocal(self):
+        # Accatastamento
+        local = self.LocalCheck.isChecked()
+        if not self.digit:
+            # STEMMessageHandler.error("Selezionare il formato di output")
+            QMessageBox.critical(self, "Parametro mancante", "Selezionare il formato di output")
+            return
+        STEMSettings.saveWidgetsValue(self, self.toolName)
+        sources = self.get_input_sources()
         if not sources:
             QMessageBox.warning(self, "Errore nei parametri", u"Non è stato selezionato nessun input")
             # TODO: rilanciare il dialog
@@ -108,8 +128,6 @@ class STEMToolsDialog(BaseDialog):
         if cut:
                 items = cut
                 sources = cutsource
-        if self.overwrite:
-            out = self.TextOut.text() + '.tmp'
         else:
             out = self.TextOut.text()
         if local:
@@ -137,8 +155,6 @@ class STEMToolsDialog(BaseDialog):
         #    resolution = None
         cgdal.write()
 
-        if self.overwrite:
-            STEMUtils.renameRast(out, self.TextOut.text())
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
         else:

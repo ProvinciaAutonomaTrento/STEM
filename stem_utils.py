@@ -536,11 +536,12 @@ class STEMUtils:
                 shutil.copy2(inp, path)
 
     @staticmethod
-    def pathClientWinToServerLinux(path, inp=True):
+    def pathClientWinToServerLinux(path, inp=True, gui_warning=True):
         """Convert path from windows to linux for client and server connection
 
         :param str path: the path to rename
         :param bool inp: DEPRECATED
+        :param boo gui_warning: notifica all'utente gli errori
         """
 
         table = STEMUtils.get_mapping_table()
@@ -554,7 +555,7 @@ class STEMUtils:
                 pass
             else:
                 converted = True
-        if not converted:
+        if not converted and gui_warning:
             STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
                                        ' potrebbero esserci problemi nelle '
                                        'prossimi analisi')

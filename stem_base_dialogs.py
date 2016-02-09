@@ -90,7 +90,7 @@ class BaseDialog(QDialog, baseDialog):
         self.rect_str = None
         self.mask = None
         self.overwrite = False
-
+        
         self.helpui = helpDialog()
         STEMUtils.stemMkdir()
 
@@ -119,12 +119,67 @@ class BaseDialog(QDialog, baseDialog):
             res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
             if not res: return
 
-        # TODO: controllare se i file di input esistono
-        # TODO: se l'esecuzione e` lato server controllare che i path di
-        #       input e output siano compatibili
+        errors = []
+        
+        e = self.check_paths_validity()
+        if e:
+            errors.append('I seguenti percorsi inseriti non sono validi:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
+        
+        e = [] if self.local_execution() else self.check_server_paths()
+        if e:
+            errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
+
+        if errors:
+            QMessageBox.question(self, "Errore", '\n\n'.join(errors))
+            return
 
         self.onRunLocal()
         self.accept()
+
+    def get_input_path_fields(self):
+        """Questo metodo deve essere ridefinito nei tool,
+        deve fornire la lista con i valori usati dal tool
+        come path di file di input
+        """
+        return []
+    
+    def get_output_path_fields(self):
+        """Questo metodo deve essere ridefinito nei tool,
+        deve fornire la lista con i valori usati dal tool
+        come path di file di output
+        """
+        return []
+    
+
+    def check_paths_validity(self):
+        """Controlla se i file di input esistono e
+        se i file di output sono validi.
+        Ogni plugin deve indicare quali controllare"""
+        errors = []
+        
+        for p in self.get_input_path_fields():
+            if not os.path.exists(p):
+                errors.append(p)
+        for p in self.get_output_path_fields():
+            # Controllo che esista la cartella 
+            # del file di output
+            if not os.path.isdir(os.path.split(p)[0]):
+                errors.append(p)
+                continue
+            # Controllo che il path non sia una cartella
+            if os.path.isdir(p):
+                errors.append(p)
+                continue
+            
+        return errors
+    
+    def check_server_paths(self):
+        """Controlla che i path siano compatibili con l'esecuzione remota"""
+        errors = []
+        for p in self.get_input_path_fields() + self.get_output_path_fields():
+            if STEMUtils.pathClientWinToServerLinux(p, gui_warning=False) == p:
+               errors.append(p) 
+        return errors
 
     def _help(self):
         """Function for help button"""
@@ -952,6 +1007,9 @@ class BaseDialog(QDialog, baseDialog):
                                          "comando {err}".format(err=err))
         return outname.strip(), out, mask
 
+    def local_execution(self):
+        return self.LocalCheck.isChecked()
+
     def cutInputMulti(self, inp, source, local=True):
         """Cut multiple data according to a bounding box or a vector geometry
 
@@ -1282,15 +1340,16 @@ class SettingsDialog(QDialog, settingsDialog):
                     errors.append(u"Mapping risosrse: la cartella locale ({}) non è attiva".format(l))
             elif bool(r) != bool(l):
                 errors.append("Mapping delle risosrse non definito correttamente, ricontrolla le impostazioni (mapping: {})".format(r or l))
-
+            
         STEMUtils.set_mapping_table(table)
         
         if errors:
             # QMessageBox.about(self, SETTINGS_ERROR_TITLE, u'\n\n'.join([u'• '+x for x in errors]))
             self.warning_message(u'\n\n'.join([u'• '+x for x in errors]))
             
-            dialog = SettingsDialog(self.parent, self.iface)
-            dialog.exec_()
+            # TODO: Fare in modo che in caso di errore la finestra non si chiuda, senza riinizializzarla da zero
+            # dialog = SettingsDialog(self.parent, self.iface)
+            # dialog.exec_()
 
     def warning_message(self, message):
         SETTINGS_ERROR_TITLE = "Errore"
