@@ -86,6 +86,17 @@ class STEMToolsDialog(BaseDialog):
     def onClosing(self):
         self.onClosing(self)
 
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        return [self.TextOut.text(), self.TextOut2.text()]
+    
+    def get_input_sources(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal()"""
+        return []    
+
     def onRunLocal(self):
         # Segmentazione
         STEMSettings.saveWidgetsValue(self, self.toolName)

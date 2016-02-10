@@ -123,6 +123,17 @@ class STEMToolsDialog(BaseDialog):
         self.switchClippingMode()
         BaseDialog.show_(self)
 
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        return [self.TextOut.text()]
+    
+    def get_input_sources(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal()"""
+        return []    
+
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         # Riduzione rumore
