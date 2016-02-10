@@ -4,6 +4,7 @@ encoding//libs/las_stem.py=utf-8
 encoding//libs/stem_utils_server.py=utf-8
 encoding//tools/feat_vege.py=utf-8
 encoding//tools/image_filter.py=utf-8
+encoding//tools/image_mask.py=utf-8
 encoding//tools/image_multi.py=utf-8
 encoding//tools/image_pansh.py=utf-8
 encoding//tools/image_segm.py=utf-8

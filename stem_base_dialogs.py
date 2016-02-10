@@ -169,7 +169,10 @@ class BaseDialog(QDialog, baseDialog):
             if not os.path.exists(p):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
-        for p in self.get_output_path_fields() + [self.TextOut.text()]:
+        paths = self.get_output_path_fields()
+        if not self.TextOut.isHidden():
+            paths.apply(self.TextOut.text())
+        for p in paths:
             # Controllo che esista la cartella 
             # del file di output
             if not os.path.isdir(os.path.split(p)[0]):
@@ -184,8 +187,11 @@ class BaseDialog(QDialog, baseDialog):
     
     def check_server_paths(self):
         """Controlla che i path siano compatibili con l'esecuzione remota"""
+        paths = self.get_input_path_fields() + self.get_output_path_fields()
+        if not self.TextOut.isHidden():
+            paths.apply(self.TextOut.text())
         errors = []
-        for p in self.get_input_path_fields() + self.get_output_path_fields() + [self.TextOut.text()]:
+        for p in paths:
             if STEMUtils.pathClientWinToServerLinux(p, gui_warning=False) == p:
                errors.append(p) 
         return errors
