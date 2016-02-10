@@ -90,7 +90,7 @@ class STEMToolsDialog(BaseDialog):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
         """
-        return [self.TextOut.text()]
+        return []
     
     def get_input_sources(self):
         """Fornisce al padre una lista di path di input da verificare
