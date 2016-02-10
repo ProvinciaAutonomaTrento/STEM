@@ -58,7 +58,30 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
-
+        
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        return []
+    
+    def get_input_sources(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal()"""
+        return []
+    
+    def check_form_fields(self):
+        """Fornisce al padre una lista di errori che riguardano i campi della form.
+        Non include gli errori che possono esser verificati con le funzioni precedenti"""
+        
+        dtm_name = str(self.BaseInput2.currentText())
+        dtm_source = STEMUtils.getLayersSource(dtm_name)
+        
+        if not dtm_source:
+            return [u'Input DTM non è un layer di QGIS valido']
+        
+        return []
+    
     def onRunLocal(self):
         # Estrazione CHM
         STEMSettings.saveWidgetsValue(self, self.toolName)

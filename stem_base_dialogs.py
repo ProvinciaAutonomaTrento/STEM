@@ -129,6 +129,8 @@ class BaseDialog(QDialog, baseDialog):
         if e:
             errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
 
+        errors.extend(self.check_form_fields())
+
         if errors:
             QMessageBox.question(self, "Errore", '\n\n'.join(errors))
             return
@@ -150,7 +152,13 @@ class BaseDialog(QDialog, baseDialog):
         """
         return []
     
-
+    def check_form_fields(self):
+        """Questo metodo deve essere ridefinito nei tool,
+        deve fornire la lista di errori sui campi che non
+        sono verificati dalle funzioni precedenti.
+        """
+        return []
+    
     def check_paths_validity(self):
         """Controlla se i file di input esistono e
         se i file di output sono validi.
