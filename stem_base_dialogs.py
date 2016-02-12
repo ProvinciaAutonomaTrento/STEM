@@ -1098,7 +1098,7 @@ class BaseDialog(QDialog, baseDialog):
             for fil in mydir:
                 if os.path.exists(fil):
                     line.addItem(fil)
-                else:
+                elif fil != '':
                     STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
 
             return
