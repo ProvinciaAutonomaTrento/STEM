@@ -564,12 +564,8 @@ class stemLAS():
             filt.append(z_opt)
         if retur:
             if retur == 'first':
-                first_opt = self._add_option_file('ReturnNumber',
-                                                  val='dimension')
-                options = Element('Options')
-                firstval = self._add_option_file(1, val='uquals')
-                options.append(firstval)
-                first_opt.append(options)
+                first_opt = self._add_option_file('ReturnNumber[1:1]',
+                                                  val='limits')
                 filt.append(first_opt)
             else:
                 filt = None
