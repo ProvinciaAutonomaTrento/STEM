@@ -109,7 +109,7 @@ def createMaskFromBbox(coord):
     """Function to create an OGR polygon geometry
 
     :param coord: a list or a string (space separator) with for values
-                  xmin ymin xmax ymax
+                  xmin xmax ymin ymax
     """
 
     if type(coord) == StringType:
@@ -123,10 +123,10 @@ def createMaskFromBbox(coord):
     coords = []
     for c in coord:
         coords.append(float(c))
-    ring.AddPoint(coords[0], coords[1])
+    ring.AddPoint(coords[0], coords[2])
     ring.AddPoint(coords[0], coords[3])
-    ring.AddPoint(coords[2], coords[3])
-    ring.AddPoint(coords[2], coords[1])
+    ring.AddPoint(coords[1], coords[3])
+    ring.AddPoint(coords[1], coords[2])
     poly.AddGeometry(ring)
     return poly
 

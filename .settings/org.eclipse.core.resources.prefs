@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//libs/gdal_stem.py=utf-8
 encoding//libs/grass_stem.py=utf-8
 encoding//libs/las_stem.py=utf-8
 encoding//libs/stem_utils_server.py=utf-8

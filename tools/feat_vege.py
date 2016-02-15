@@ -119,12 +119,14 @@ class STEMToolsDialog(BaseDialog):
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 output = STEMUtils.pathClientWinToServerLinux(output, False)
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
+            
+            gs.import_grass(source, tempin, typ, nlayers)
+            
             if mask:
                 if not local:
                     mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask)
-
-            gs.import_grass(source, tempin, typ, nlayers)
+            
             raster = file_info()
             raster.init_from_name(old_source)
             red = raster.getColorInterpretation(red)
