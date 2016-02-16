@@ -50,6 +50,9 @@ CVResult = namedtuple('CVResult',
                       ['index', 'name', 'mean', 'max', 'min', 'std', 'time'])
 TestResult = namedtuple('TestResult', ['index', 'name', 'score', ])
 
+BEST_STRATEGY_MEAN = 1
+BEST_STRATEGY_MIN = 2
+BEST_STRATEGY_MEDIAN = 3
 
 class WriteError(Exception):
     pass
@@ -374,7 +377,7 @@ def extract_vector_fields(layer, icols):
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
                      use_columns=None, delimiter=SEP, nodata=None,
-                     dtype=np.uint32, logging=None):
+                     logging=None):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
 
@@ -636,7 +639,7 @@ class MLToolBox(object):
                    use_columns=None,
                    output='{0}', models=None, training_csv=None,
                    scoring=None, nodata=NODATA,
-                   n_folds=5, n_jobs=1, n_best=1, best_strategy=np.mean,
+                   n_folds=5, n_jobs=1, n_best=1, best_strategy=BEST_STRATEGY_MEAN,
                    tvector=None, tcolumn=None, traster=None, test_csv=None,
                    scaler=None, fselector=None, decomposer=None,
                    transform=None, untransform=None, memory_factor=1.,
@@ -709,7 +712,17 @@ class MLToolBox(object):
         self.n_folds = n_folds
         self.n_jobs = n_jobs
         self.n_best = n_best
-        self.best_strategy = best_strategy
+        
+        if best_strategy == BEST_STRATEGY_MEAN:
+            self.best_strategy = np.mean
+        elif best_strategy == BEST_STRATEGY_MIN:
+            self.best_strategy = np.min
+        elif best_strategy == BEST_STRATEGY_MEDIAN:
+            self.best_strategy = np.median
+        else:
+            assert False, 'best_strategy sconosciuta' 
+        
+        
         self.tvector = tvector
         self.tcolumn = tcolumn
         self.traster = traster
@@ -743,7 +756,7 @@ class MLToolBox(object):
 
     def extract_training(self, vector_file=None, column=None, use_columns=None,
                          csv_file=None, raster_file=None, delimiter=SEP,
-                         nodata=None, dtype=np.uint32, logging=None):
+                         nodata=None, logging=None):
         """Return the data and classes array for the training, and save them on
         self.X and self.y, see: ``extract_training`` function for more detail
         on the parameters.
@@ -779,8 +792,9 @@ class MLToolBox(object):
                                           use_columns=self.use_columns,
                                           csv_file=self.training_csv,
                                           raster_file=self.raster,
-                                          delimiter=delimiter, nodata=nodata,
-                                          dtype=dtype, logging=self.logging)
+                                          delimiter=delimiter,
+                                          nodata=nodata,
+                                          logging=self.logging)
         return self.X, self.y
 
     def extract_test(self, vector_file=None, column=None, use_columns=None,

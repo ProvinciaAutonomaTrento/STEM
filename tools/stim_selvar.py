@@ -31,7 +31,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 from sklearn.feature_selection import SelectKBest, f_regression
 import traceback
-from machine_learning import MLToolBox, SEP, NODATA
+from machine_learning import MLToolBox, SEP, NODATA, BEST_STRATEGY_MEAN
 import os
 import numpy as np
 from gdal_stem import infoOGR
@@ -119,7 +119,7 @@ class STEMToolsDialog(BaseDialog):
                             raster=inrastsource, models=None,
                             scoring='accuracy', n_folds=None, n_jobs=1,
                             n_best=1, tvector=None, tcolumn=None,
-                            traster=None, best_strategy=getattr(np, 'mean'),
+                            traster=None, best_strategy=BEST_STRATEGY_MEAN,
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
 
@@ -134,7 +134,7 @@ class STEMToolsDialog(BaseDialog):
             if mltb.raster:
                 log.debug('      - raster: %s' % mltb.raster)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=NODATA, dtype=np.float32)
+                                         nodata=NODATA)
 
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))

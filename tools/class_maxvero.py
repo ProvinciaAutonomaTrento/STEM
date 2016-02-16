@@ -33,7 +33,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 import traceback
 from sklearn.naive_bayes import GaussianNB
-from machine_learning import MLToolBox, SEP
+from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN
 import os
 import pickle as pkl
 import numpy as np
@@ -252,7 +252,7 @@ class STEMToolsDialog(BaseDialog):
                             models=models, scoring='accuracy',
                             n_folds=nfold, n_jobs=1, n_best=1,
                             tvector=optvectsource, tcolumn=optvectcols,
-                            best_strategy=getattr(np, 'mean'),
+                            best_strategy=BEST_STRATEGY_MEAN,
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
 
@@ -271,7 +271,7 @@ class STEMToolsDialog(BaseDialog):
                 if mltb.raster:
                     log.debug('      - raster: %s' % mltb.raster)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                             dtype=np.uint32, nodata=nodata)
+                                             nodata=nodata)
             else:
                 log.debug('    Load from:')
                 log.debug('      - %s' % trnpath)
@@ -290,8 +290,7 @@ class STEMToolsDialog(BaseDialog):
             Xtest, ytest = None, None
             if mltb.tvector and mltb.tcolumn:
                 # extract_training(vector_file, column, csv_file, raster_file=None,
-                #                  use_columns=None, delimiter=SEP, nodata=None,
-                #                  dtype=np.uint32)
+                #                  use_columns=None, delimiter=SEP, nodata=None)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
                                         "{p}_csvtest.csv".format(p=prefcsv))

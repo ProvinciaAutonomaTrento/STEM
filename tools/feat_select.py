@@ -32,7 +32,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 from feature_selection import SSF
 import traceback
-from machine_learning import MLToolBox, SEP, NODATA
+from machine_learning import MLToolBox, SEP, NODATA, BEST_STRATEGY_MEAN, BEST_STRATEGY_MIN, BEST_STRATEGY_MEDIAN
 import numpy as np
 import os
 from pyro_stem import PYROSERVER
@@ -76,6 +76,7 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def onRunLocal(self):
+        # Selezione feature per classificazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
         log = STEMLogging()
         com = ['python', 'mlcmd.py']
@@ -109,17 +110,15 @@ class STEMToolsDialog(BaseDialog):
                         'accuracy', '--best-strategy', 'mean',
                         '--feature-selection', 'SSF', invectsource, invectcol])
             out = self.TextOut.text()
-            outputlog = STEMLogging(logname='.'.join([out, 'log']))
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
                             raster=inrastsource,
                             models=None, scoring='accuracy',
                             n_folds=None, n_jobs=1, n_best=1,
                             tvector=None, tcolumn=None, traster=None,
-                            best_strategy=getattr(np, 'mean'),
+                            best_strategy=BEST_STRATEGY_MEAN,
                             scaler=None, fselector=None, decomposer=None,
-                            transform=None, untransform=None,
-                            logging=outputlog)
+                            transform=None, untransform=None)
 
             home = STEMSettings.value("stempath")
 
@@ -127,16 +126,17 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             trnpath = os.path.join(home,
                                    "{pr}_csvtraining.csv".format(pr=prefcsv))
-            log.debug('    From:')
-            log.debug('      - vector: %s' % mltb.vector)
-            log.debug('      - training column: %s' % mltb.column)
-            if mltb.use_columns:
-                log.debug('      - use columns: %s' % mltb.use_columns)
-            if mltb.raster:
-                log.debug('      - raster: %s' % mltb.raster)
-            X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=NODATA, dtype=np.uint32,
-                                         logging=outputlog)
+#             log.debug('    From:')
+#             log.debug('      - vector: %s' % mltb.vector)
+#             log.debug('      - training column: %s' % mltb.column)
+#             if mltb.use_columns:
+#                 log.debug('      - use columns: %s' % mltb.use_columns)
+#             if mltb.raster:
+#                 log.debug('      - raster: %s' % mltb.raster)
+            X, y = mltb.extract_training(csv_file=trnpath,
+                                         delimiter=SEP,
+                                         nodata=NODATA
+                                         )
 
             X = X.astype(float)
             log.debug('\nTraining sample shape: {val}'.format(val=X.shape))
@@ -144,13 +144,13 @@ class STEMToolsDialog(BaseDialog):
             # --------------------------------------------------------------
             # Feature selector
             fselector = SSF(strategy=getattr(np, meth), precision=4,
-                            n_features=nfeat, logfile=outputlog)
+                            n_features=nfeat)
 
             # ------------------------------------------------------------
             # Transform the input data
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=out, fsfit=True, logging=outputlog)
+                                    fsfile=out, fsfit=True)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
             return
