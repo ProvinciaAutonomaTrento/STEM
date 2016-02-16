@@ -80,6 +80,27 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit2.setEnabled(False)
             self.Linedit2.clear()
 
+    def get_input_path_fields(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal().
+        """
+        return [str(self.TextIn.text())]
+    
+    
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        return []
+       
+    def check_form_fields(self):
+        try:
+            reso = float(self.Linedit.text())
+        except ValueError as e:
+            # Errore
+            reso = -1
+        return [] if reso > 0 else ['Il parametro Risoluzione finale deve essere un numero maggiore di zero']
+    
     def onRunLocal(self):
         # Rasterizzazione file LAS
         STEMSettings.saveWidgetsValue(self, self.toolName)

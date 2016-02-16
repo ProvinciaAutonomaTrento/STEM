@@ -139,21 +139,24 @@ class BaseDialog(QDialog, baseDialog):
         self.accept()
 
     def get_input_path_fields(self):
-        """Questo metodo deve essere ridefinito nei tool,
+        """Metodo astratto
+        Questo metodo deve essere ridefinito nei tool,
         deve fornire la lista con i valori usati dal tool
         come path di file di input
         """
         return []
     
     def get_output_path_fields(self):
-        """Questo metodo deve essere ridefinito nei tool,
+        """Metodo astratto
+        Questo metodo deve essere ridefinito nei tool,
         deve fornire la lista con i valori usati dal tool
         come path di file di output
         """
         return []
     
     def check_form_fields(self):
-        """Questo metodo deve essere ridefinito nei tool,
+        """Metodo astratto
+        Questo metodo deve essere ridefinito nei tool,
         deve fornire la lista di errori sui campi che non
         sono verificati dalle funzioni precedenti.
         """
@@ -1057,7 +1060,8 @@ class BaseDialog(QDialog, baseDialog):
                          str(rect.xMaximum()), str(rect.yMinimum())]
 
     def onRunLocal(self):
-        """Function to run the command locally, redefined in each module"""
+        """Metodo astratto
+        Function to run the command locally, redefined in each module"""
         pass
 
     def onRunServer(self):
