@@ -882,9 +882,18 @@ class stemLAS():
             inGeom = inFeature.GetGeometryRef()
             outlas = tempFileName()
             self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), True)
-            xml = read_file(self.pdalxml)
-            pipe = libpdalpython.PyPipeline(xml)
-            pipe.execute()
+            
+#             xml = read_file(self.pdalxml)
+#             pipe = libpdalpython.PyPipeline(xml)
+#             pipe.execute()
+            
+            p = subprocess.Popen(['pdal', 'pipeline', '-i', self.pdalxml], shell=False, stdin=PIPE,
+                                 stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()            
+            
+            if p.returncode != 0:
+                raise Exception("Errore eseguendo pdal pipeline: "+err)
+            
             data = pipe.arrays()[0]
             zs = map(lambda x: x[2], data)
             if len(zs) != 0:

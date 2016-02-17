@@ -79,7 +79,7 @@ class STEMToolsDialog(BaseDialog):
         # Selezione feature per classificazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
         log = STEMLogging()
-        com = ['python', 'mlcmd.py']
+#         com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
@@ -91,7 +91,7 @@ class STEMToolsDialog(BaseDialog):
 
             inrastsource = STEMUtils.getLayersSource(inrast)
 
-            com.extend(['--raster', inrastsource])
+#             com.extend(['--raster', inrastsource])
 
             meth = str(self.MethodInput.currentText())
 
@@ -106,9 +106,11 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
-            com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
-                        'accuracy', '--best-strategy', 'mean',
-                        '--feature-selection', 'SSF', invectsource, invectcol])
+                invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
+                inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
+#             com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
+#                         'accuracy', '--best-strategy', 'mean',
+#                         '--feature-selection', 'SSF', invectsource, invectcol])
             out = self.TextOut.text()
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
@@ -133,7 +135,7 @@ class STEMToolsDialog(BaseDialog):
 #                 log.debug('      - use columns: %s' % mltb.use_columns)
 #             if mltb.raster:
 #                 log.debug('      - raster: %s' % mltb.raster)
-            X, y = mltb.extract_training(csv_file=trnpath,
+            X, y = mltb.extract_training(csv_file= '/tmp/temptemp.csv', #trnpath,
                                          delimiter=SEP,
                                          nodata=NODATA
                                          )
