@@ -883,19 +883,47 @@ class stemLAS():
             outlas = tempFileName()
             self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), True)
             
-#             xml = read_file(self.pdalxml)
-#             pipe = libpdalpython.PyPipeline(xml)
-#             pipe.execute()
+            # extract output file name
+            import xml.etree.ElementTree as ElementTree
             
-            p = subprocess.Popen(['pdal', 'pipeline', '-i', self.pdalxml], shell=False, stdin=PIPE,
+            tree = ElementTree.parse(self.pdalxml)
+            root = tree.getroot()
+            
+            # substitute output type to be text (for easier processing)
+            elements = root.findall("Writer[@type='writers.las']")
+            elements[0].attrib['type'] = 'writers.text'
+            pdalxml_csv_output = self.pdalxml + "_csv_output"
+            tree.write(pdalxml_csv_output)           
+            
+            tree = ElementTree.parse(self.pdalxml)
+            root = tree.getroot()
+            elements = root.findall("Writer[@type='writers.las']/Option[@name='filename']")
+          
+            # get pipeline output file
+            output_file = elements[0].text
+            
+            # execute the pipeline using the command line tools
+            p = subprocess.Popen(['pdal', 'pipeline', '-i', pdalxml_csv_output], shell=False, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()            
             
             if p.returncode != 0:
                 raise Exception("Errore eseguendo pdal pipeline: "+err)
             
-            data = pipe.arrays()[0]
-            zs = map(lambda x: x[2], data)
+
+            # read output as csv file
+            import csv
+            zs = []
+            with open(output_file) as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    zs.append(float(row['Z']))
+                
+#             xml = read_file(self.pdalxml)            
+#             pipe = libpdalpython.PyPipeline(xml)                     
+#             pipe.execute()
+#             data = pipe.arrays()[0]
+#             zs = map(lambda x: x[2], data)
             if len(zs) != 0:
                 for s in stats:
                     if s in ['hcv', 'max', 'mean']:

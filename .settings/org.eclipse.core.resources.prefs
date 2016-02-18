@@ -1,9 +1,16 @@
 eclipse.preferences.version=1
+<<<<<<< HEAD
 encoding//libs/feature_selection.py=utf-8
 encoding//libs/gdal_stem.py=utf-8
 encoding//libs/grass_stem.py=utf-8
 encoding//libs/las_stem.py=utf-8
 encoding//libs/machine_learning.py=utf-8
+=======
+encoding//libs/gdal_stem.py=utf-8
+encoding//libs/grass_stem.py=utf-8
+encoding//libs/las_stem.py=utf-8
+encoding//libs/pyro_stem.py=utf-8
+>>>>>>> origin/pdal_library_missing
 encoding//libs/stem_utils_server.py=utf-8
 encoding//tools/feat_select.py=utf-8
 encoding//tools/feat_vege.py=utf-8
