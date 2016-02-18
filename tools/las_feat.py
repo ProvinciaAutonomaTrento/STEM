@@ -114,6 +114,8 @@ class STEMToolsDialog(BaseDialog):
             las.zonal_statistics(source, invectsource, out, stats)
             if os.path.exists(self.TextOut.text()):
                 STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
+                if self.AddLayerToCanvas.isChecked():
+                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
             else:
                 STEMMessageHandler.error("{ou} file not created".format(ou=self.TextOut.text()))
         except:
