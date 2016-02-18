@@ -2,6 +2,7 @@ eclipse.preferences.version=1
 encoding//libs/gdal_stem.py=utf-8
 encoding//libs/grass_stem.py=utf-8
 encoding//libs/las_stem.py=utf-8
+encoding//libs/pyro_stem.py=utf-8
 encoding//libs/stem_utils_server.py=utf-8
 encoding//tools/feat_vege.py=utf-8
 encoding//tools/image_filter.py=utf-8
