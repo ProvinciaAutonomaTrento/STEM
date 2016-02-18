@@ -111,7 +111,7 @@ class STEMToolsDialog(BaseDialog):
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
             stats = self._selectedStats()
-            las.zonal_statistics(source, invectsource, out, stats)
+            las.zonal_statistics(source, invectsource, out, stats, self.overwrite)
             if os.path.exists(self.TextOut.text()):
                 STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
                 if self.AddLayerToCanvas.isChecked():
