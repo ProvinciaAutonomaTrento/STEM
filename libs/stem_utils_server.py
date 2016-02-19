@@ -220,8 +220,9 @@ def libs_save_command(command, details=None):
                                stemdir, historyfilename)
     else:
         historypathdir = os.path.join(tempfile.gettempdir(),stemdir)
-        os.mkdir(historypathdir)
-        historypath = os.pah.join(historypathdir, historyfilename)
+        if not os.path.exists(historypathdir): #corretto?
+            os.mkdir(historypathdir)
+        historypath = os.path.join(historypathdir, historyfilename)
 
     hFile = codecs.open(historypath, 'a', encoding='utf-8')
     
