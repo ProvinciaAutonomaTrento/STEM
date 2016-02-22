@@ -562,6 +562,15 @@ class STEMUtils:
         return path
 
     @staticmethod
+    def get_temp_dir():
+        """Cartella temporanea valida per client e server
+        """
+        mt = STEMUtils.get_mapping_table()
+        if mt:
+            return mt[0].local
+        raise Exception("Risorse remote non configurate")
+
+    @staticmethod
     def decode_mapping_table(encoded):
         """
         :param encoded: STEMSettings.value("mappingTable", None)

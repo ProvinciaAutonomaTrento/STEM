@@ -951,10 +951,10 @@ class BaseDialog(QDialog, baseDialog):
 
             # soluzione temporanea: scelgo il path locale del primo mapping definito dall'utente
             # TODO: aggiungere alla tabella un radio button per scegliere la cartella dei file temporanei
-            mt = STEMUtils.get_mapping_table()
-            if mt:
-                path = mt[0].local
-            else:
+            
+            try:
+                path = STEMUtils.get_temp_dir()
+            except:
                 STEMMessageHandler.error("È necessario configurare almeno un mapping fra le "
                                          "risorse locali e remote")
                 return False, False, False

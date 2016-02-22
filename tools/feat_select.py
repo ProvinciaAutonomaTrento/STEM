@@ -135,7 +135,7 @@ class STEMToolsDialog(BaseDialog):
 #                 log.debug('      - use columns: %s' % mltb.use_columns)
 #             if mltb.raster:
 #                 log.debug('      - raster: %s' % mltb.raster)
-            X, y = mltb.extract_training(csv_file= '/tmp/temptemp.csv', #trnpath,
+            X, y = mltb.extract_training(csv_file= trnpath,
                                          delimiter=SEP,
                                          nodata=NODATA
                                          )
