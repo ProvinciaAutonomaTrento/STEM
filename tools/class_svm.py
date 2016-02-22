@@ -204,11 +204,37 @@ class STEMToolsDialog(BaseDialog):
                                               'degree': d, 'probability': True}
                      }], csv
 
+
+    def get_input_path_fields(self):
+        """Fornisce al padre una lista di path di input da verificare
+        prima di invocare onRunLocal().
+        """
+        invect = str(self.BaseInput.currentText())
+        inrast = str(self.BaseInput2.currentText())
+        return [STEMUtils.getLayersSource(invect), STEMUtils.getLayersSource(inrast)]
+    
+    
+    def get_output_path_fields(self):
+        """Fornisce al padre una lista di path di output da verificare
+        prima di invocare onRunLocal().
+        """
+        optvect = str(self.BaseInputOpt.currentText())
+        return [STEMUtils.getLayersSource(optvect)]
+
+    def check_form_fields(self):
+        """
+        """
+        return []
+
     def onRunLocal(self):
+        # Support Vector Machines
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
-        home = STEMSettings.value("stempath")
+        if not self.LocalCheck.isChecked():
+            home = STEMUtils.get_temp_dir()
+        else:
+            home = STEMSettings.value("stempath")
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
@@ -298,6 +324,10 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
+                
+                invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
+                inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
+                optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster=inrastsource, traster=None,

@@ -93,8 +93,6 @@ class STEMToolsDialog(BaseDialog):
         return []
     
     def get_input_sources(self):
-        """Fornisce al padre una lista di path di input da verificare
-        prima di invocare onRunLocal()"""
         items = []
 
         if len(self.BaseInput.selectedItems()) != 0:
