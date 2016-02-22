@@ -30,6 +30,7 @@ import numpy as np
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score, LeaveOneOut
 from sklearn.linear_model import LassoLarsIC
+from sklearn.svm.classes import SVC
 try:
     from sklearn.cross_validation import check_scoring
 except ImportError:
@@ -53,6 +54,8 @@ TestResult = namedtuple('TestResult', ['index', 'name', 'score', ])
 BEST_STRATEGY_MEAN = 1
 BEST_STRATEGY_MIN = 2
 BEST_STRATEGY_MEDIAN = 3
+
+MODEL_SVC = 4
 
 class WriteError(Exception):
     pass
@@ -706,6 +709,9 @@ class MLToolBox(object):
         self.column = column
         self.use_columns = use_columns
         self.training_csv = training_csv
+        for model in models:
+            if model["model"] == MODEL_SVC:
+                model["model"] = SVC
         self.models = models
         self.scoring = scoring
         self.nodata = nodata
@@ -720,7 +726,7 @@ class MLToolBox(object):
         elif best_strategy == BEST_STRATEGY_MEDIAN:
             self.best_strategy = np.median
         else:
-            assert False, 'best_strategy sconosciuta' 
+            assert False, 'best_strategy sconosciuta'
         
         
         self.tvector = tvector

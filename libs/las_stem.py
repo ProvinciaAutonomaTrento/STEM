@@ -876,7 +876,6 @@ class stemLAS():
         newdata.CopyLayer(vect.lay0, 'las_zonal_stats')
         newlayer = newdata.GetLayer()
         for s in stats:
-            out_file = open("log.txt", "w"); out_file.write("s:{0} {1}; org.OFTReal: {2} {3}\n".format(s, type(s), ogr.OFTReal, type(ogr.OFTReal))); out_file.close()
             field = ogr.FieldDefn(str(s), ogr.OFTReal)
             newlayer.CreateField(field)
         for inFeature in newlayer:

@@ -32,7 +32,7 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 import traceback
-from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN
+from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN, MODEL_SVC
 from sklearn.svm import SVC
 import numpy as np
 import pickle as pkl
@@ -185,13 +185,13 @@ class STEMToolsDialog(BaseDialog):
                 k = 'sigmoid'
             g = float(self.Linedit2.text())
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
+            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': MODEL_SVC,
                      'kwargs': {'kernel': k, 'C': c, 'gamma': g,
                                 'probability': True}}], csv
         elif kernel == 'lineare':
             k = 'linear'
             csv += "_{ke}_{c}".format(ke=k, c=c)
-            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVC,
+            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': MODEL_SVC,
                      'kwargs': {'kernel': k, 'C': c,
                                 'probability': True}}], csv
         else:
@@ -200,7 +200,7 @@ class STEMToolsDialog(BaseDialog):
             d = 3 # TODO ask pietro
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
-                     'model': SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                     'model': MODEL_SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
                                               'degree': d, 'probability': True}
                      }], csv
 
@@ -209,6 +209,8 @@ class STEMToolsDialog(BaseDialog):
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
         home = STEMSettings.value("stempath")
+        if (self.LocalCheck.isChecked()):
+            home = STEMUtils.get_
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
@@ -315,13 +317,13 @@ class STEMToolsDialog(BaseDialog):
             log.debug('Extract training samples')
 
             if (not os.path.exists(trnpath) or overwrite):
-                log.debug('    From:')
-                log.debug('      - vector: %s' % mltb.vector)
-                log.debug('      - training column: %s' % mltb.column)
-                if mltb.use_columns:
-                    log.debug('      - use columns: %s' % mltb.use_columns)
-                if mltb.raster:
-                    log.debug('      - raster: %s' % mltb.raster)
+#                 log.debug('    From:')
+#                 log.debug('      - vector: %s' % mltb.vector)
+#                 log.debug('      - training column: %s' % mltb.column)
+#                 if mltb.use_columns:
+#                     log.debug('      - use columns: %s' % mltb.use_columns)
+#                 if mltb.raster:
+#                     log.debug('      - raster: %s' % mltb.raster)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                              nodata=nodata)
             else:
