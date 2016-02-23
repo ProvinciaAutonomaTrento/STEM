@@ -360,7 +360,7 @@ class STEMToolsDialog(BaseDialog):
                 log.debug('      - %s' % trnpath)
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
-            X = X.astype(float)
+            X = np.asarray(X).astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             if fscolumns:

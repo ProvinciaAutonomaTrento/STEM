@@ -444,7 +444,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         msg = 'extract_trining: csv_file={}, delimiter={}, header={}'
         logging.debug(msg.format(csv_file, delimiter, header))
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
-    return data[:, :-1].astype(float), data[:, -1]  # X, y
+    return data[:, :-1].astype(float).tolist(), data[:, -1].tolist()  # X, y
 
 
 def run_model(model, data, logging=None):
@@ -709,9 +709,10 @@ class MLToolBox(object):
         self.column = column
         self.use_columns = use_columns
         self.training_csv = training_csv
-        for model in models:
-            if model["model"] == MODEL_SVC:
-                model["model"] = SVC
+        if models:
+            for model in models:
+                if model["model"] == MODEL_SVC:
+                    model["model"] = SVC
         self.models = models
         self.scoring = scoring
         self.nodata = nodata
