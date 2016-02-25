@@ -480,6 +480,12 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
+                
+                if not self.LocalCheck.isChecked():
+                    temp_out = STEMUtils.pathClientWinToServerLinux(out)
+                else:
+                    temp_out = out
+                
                 mltb.execute(best=best, transform=None, untransform=None,
                              output_file=out, format='GTiff')
 
