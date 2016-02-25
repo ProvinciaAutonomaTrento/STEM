@@ -10,6 +10,7 @@ Copyright: (C) 2014 Luca Delucchi
 
 This create the menu in the toolbar and the toolbox
 """
+import Pyro4
 
 __author__ = 'Luca Delucchi'
 __date__ = 'August 2014'
@@ -44,6 +45,14 @@ class STEMPlugin:
     """This is the main function of the plugin. The class it is used into
     __init_.py file"""
     def __init__(self, iface):
+        
+#         os.environ['PYRO_SERIALIZERS_ACCEPTED'] += ',pickle'
+#         os.environ['PYRO_SERIALIZER'] = 'pickle'
+#         
+        import Pyro4
+        Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
+        Pyro4.config.SERIALIZER = 'pickle'
+        
         self.iface = iface
         self.stemMenu = None
         STEMUtils.stemMkdir()

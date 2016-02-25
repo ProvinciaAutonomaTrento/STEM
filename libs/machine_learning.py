@@ -31,6 +31,13 @@ from sklearn.cross_validation import StratifiedKFold
 from sklearn.cross_validation import cross_val_score, LeaveOneOut
 from sklearn.linear_model import LassoLarsIC
 from sklearn.svm.classes import SVC
+from exported_objects import CVResult, TestResult, return_argument #added
+
+try:
+    import Pyro4
+except:
+    pass
+
 try:
     from sklearn.cross_validation import check_scoring
 except ImportError:
@@ -42,20 +49,13 @@ from osgeo import gdal
 from osgeo import ogr
 gdal.UseExceptions()
 
-
 SEP = ';'
 NODATA = -9999
 
 
-CVResult = namedtuple('CVResult',
-                      ['index', 'name', 'mean', 'max', 'min', 'std', 'time'])
-TestResult = namedtuple('TestResult', ['index', 'name', 'score', ])
-
 BEST_STRATEGY_MEAN = 1
 BEST_STRATEGY_MIN = 2
 BEST_STRATEGY_MEDIAN = 3
-
-MODEL_SVC = 4
 
 class WriteError(Exception):
     pass
@@ -444,7 +444,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         msg = 'extract_trining: csv_file={}, delimiter={}, header={}'
         logging.debug(msg.format(csv_file, delimiter, header))
     np.savetxt(csv_file, data, header=header, delimiter=delimiter)
-    return data[:, :-1].astype(float).tolist(), data[:, -1].tolist()  # X, y
+    return data[:, :-1].astype(float), data[:, -1]  # X, y
 
 
 def run_model(model, data, logging=None):
@@ -626,7 +626,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         osrc.Destroy()
 
 
-class MLToolBox(object):
+class MLToolBox(object):    
     def __init__(self, *args, **kwargs):
         """The MLToolBox class can be instantiate without any argument,
         however if the argument are given then they are set using the
@@ -709,10 +709,6 @@ class MLToolBox(object):
         self.column = column
         self.use_columns = use_columns
         self.training_csv = training_csv
-        if models:
-            for model in models:
-                if model["model"] == MODEL_SVC:
-                    model["model"] = SVC
         self.models = models
         self.scoring = scoring
         self.nodata = nodata
@@ -751,16 +747,38 @@ class MLToolBox(object):
                             'fselector', 'decomposer',
                             'transform', 'untransform',
                             'memory_factor', 'logging')
+             
         if self.logging:
             msg = 'MLToolBox.set_params({})'
             params = self.get_params()
             par = ', '.join(['{}={}'.format(k, params[k])
                              for k in self._attributes])
             self.logging.debug(msg.format(par))
-
+            
+    def getVector(self):
+        return self.vector
+    
+    def getColumn(self):
+        return self.column
+    
+    def getUseColumns(self):
+        return self.use_columns
+    
+    def getRaster(self):
+        return self.raster
+    
+    def getTVector(self):
+        return self.tvector
+    
+    def getTColumn(self):
+        return self.tvector
+    
+    def getTRaster(self):
+        return self.traster
+    
     def get_params(self):
         return {key: getattr(self, key) for key in self._attributes}
-
+              
     def extract_training(self, vector_file=None, column=None, use_columns=None,
                          csv_file=None, raster_file=None, delimiter=SEP,
                          nodata=None, logging=None):
@@ -793,6 +811,7 @@ class MLToolBox(object):
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
         self.training_csv = self.training_csv if csv_file is None else csv_file
+        
         self.nodata = nodata
         self.X, self.y = extract_training(vector_file=self.vector,
                                           column=self.column,
@@ -844,8 +863,7 @@ class MLToolBox(object):
                                                   csv_file=self.test_csv,
                                                   raster_file=self.traster,
                                                   delimiter=delimiter,
-                                                  nodata=nodata,
-                                                  dtype=dtype)
+                                                  nodata=nodata)
         return self.Xtest, self.ytest
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
@@ -1132,7 +1150,7 @@ def main():
         # decomment this two lines if you want activate the logging
         #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-        import Pyro4
+                
         machine_stem = MLToolBox()
         daemon = Pyro4.Daemon(host=PYROSERVER, port=ML_PORT)
         uri = daemon.register(machine_stem,objectId=MLPYROOBJNAME,force=True)

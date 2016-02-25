@@ -32,7 +32,8 @@ from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 import traceback
-from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN, MODEL_SVC
+from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN
+from exported_objects import return_argument
 from sklearn.svm import SVC
 import numpy as np
 import pickle as pkl
@@ -185,13 +186,13 @@ class STEMToolsDialog(BaseDialog):
                 k = 'sigmoid'
             g = float(self.Linedit2.text())
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': MODEL_SVC,
+            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
                      'kwargs': {'kernel': k, 'C': c, 'gamma': g,
                                 'probability': True}}], csv
         elif kernel == 'lineare':
             k = 'linear'
             csv += "_{ke}_{c}".format(ke=k, c=c)
-            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': MODEL_SVC,
+            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVC,
                      'kwargs': {'kernel': k, 'C': c,
                                 'probability': True}}], csv
         else:
@@ -200,7 +201,7 @@ class STEMToolsDialog(BaseDialog):
             d = 3 # TODO ask pietro
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
             return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
-                     'model': MODEL_SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                     'model': SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
                                               'degree': d, 'probability': True}
                      }], csv
 
@@ -360,8 +361,7 @@ class STEMToolsDialog(BaseDialog):
                 log.debug('      - %s' % trnpath)
                 dt = np.loadtxt(trnpath, delimiter=SEP, skiprows=1)
                 X, y = dt[:, :-1], dt[:, -1]
-            X = np.asarray(X).astype(float)
-            y = np.asarray(y)
+            X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             if fscolumns:
@@ -372,20 +372,20 @@ class STEMToolsDialog(BaseDialog):
             # Extract test samples
             log.debug('Extract test samples')
             Xtest, ytest = None, None
-            if mltb.tvector and mltb.tcolumn:
+            if mltb.getTVector() and mltb.getTColumn():
                 # extract_training(vector_file, column, csv_file, raster_file=None,
                 #                  use_columns=None, delimiter=SEP, nodata=None)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
                                         "{p}_csvtest.csv".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
-                    log.debug('    From:')
-                    log.debug('      - vector: %s' % mltb.tvector)
-                    log.debug('      - training column: %s' % mltb.tcolumn)
-                    if mltb.use_columns:
-                        log.debug('      - use columns: %s' % mltb.use_columns)
-                    if mltb.raster:
-                        log.debug('      - raster: %s' % mltb.traster)
+#                     log.debug('    From:')
+#                     log.debug('      - vector: %s' % mltb.tvector)
+#                     log.debug('      - training column: %s' % mltb.tcolumn)
+#                     if mltb.use_columns:
+#                         log.debug('      - use columns: %s' % mltb.use_columns)
+#                     if mltb.raster:
+#                         log.debug('      - raster: %s' % mltb.traster)
                     Xtest, ytest = mltb.extract_test(csv_file=testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
