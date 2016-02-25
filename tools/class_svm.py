@@ -354,6 +354,8 @@ class STEMToolsDialog(BaseDialog):
 #                     log.debug('      - use columns: %s' % mltb.use_columns)
 #                 if mltb.raster:
 #                     log.debug('      - raster: %s' % mltb.raster)
+                if not self.LocalCheck.isChecked():
+                    trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                              nodata=nodata)
             else:
@@ -365,6 +367,8 @@ class STEMToolsDialog(BaseDialog):
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
             if fscolumns:
+                if not self.LocalCheck.isChecked():
+                    infile = STEMUtils.pathClientWinToServerLinux(infile)
                 X = mltb.data_transform(X=X, y=y, scaler=None,
                                         fscolumns=fscolumns,
                                         fsfile=infile, fsfit=True)
@@ -386,7 +390,11 @@ class STEMToolsDialog(BaseDialog):
 #                         log.debug('      - use columns: %s' % mltb.use_columns)
 #                     if mltb.raster:
 #                         log.debug('      - raster: %s' % mltb.traster)
-                    Xtest, ytest = mltb.extract_test(csv_file=testpath,
+                    if not self.LocalCheck.isChecked():
+                        temp_testpath = STEMUtils.pathClientWinToServerLinux(testpath)
+                    else:
+                        temp_testpath = testpath
+                    Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
                     np.savetxt(testpath, dt, delimiter=SEP,
@@ -448,7 +456,7 @@ class STEMToolsDialog(BaseDialog):
                                      transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0]._asdict().keys()))
-                    mltb.find_best(models, strategy=lambda x: x,
+                    mltb.find_best(models, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
@@ -458,7 +466,7 @@ class STEMToolsDialog(BaseDialog):
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
                     order, models = mltb.find_best(models=best,
-                                                   strategy=lambda x: x,
+                                                   strategy=return_argument,
                                                    key='score_test')
                     best = mltb.select_best(best=models)
                 log.debug('Best models:')
@@ -469,7 +477,7 @@ class STEMToolsDialog(BaseDialog):
             if self.checkbox.isChecked():
                 if best is None:
                     order, models = mltb.find_best(models, key='score',
-                                                   strategy=lambda x: x)
+                                                   strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
                 mltb.execute(best=best, transform=None, untransform=None,
