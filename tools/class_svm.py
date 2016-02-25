@@ -487,7 +487,7 @@ class STEMToolsDialog(BaseDialog):
                     temp_out = out
                 
                 mltb.execute(best=best, transform=None, untransform=None,
-                             output_file=out, format='GTiff')
+                             output_file=temp_out, format='GTiff')
 
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')

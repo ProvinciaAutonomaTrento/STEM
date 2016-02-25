@@ -547,7 +547,7 @@ class STEMUtils:
         table = STEMUtils.get_mapping_table()
         
         converted = False
-        print 'table:', table
+        #print 'table:', table
         for remote, local in table:
             try:
                 path = os.path.join(remote, os.path.relpath(path, local)).replace('\\','/')
