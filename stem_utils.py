@@ -134,7 +134,7 @@ class STEMUtils:
         """
         layer = STEMUtils.getLayer(layerName)
 
-        print 'layerName: {} layer: {} '.format(layerName, layer)
+        #print 'layerName: {} layer: {} '.format(layerName, layer)
         if layer:
             return layer.source()
         else:
