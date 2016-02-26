@@ -338,8 +338,8 @@ class STEMToolsDialog(BaseDialog):
                     Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
-                    np.savetxt(testpath, dt, delimiter=SEP,
-                               header="# last column is the training.")
+#                     np.savetxt(testpath, dt, delimiter=SEP,
+#                                header="# last column is the training.")
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)

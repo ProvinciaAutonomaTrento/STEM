@@ -128,6 +128,8 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
             trnpath = os.path.join(home,
                                    "{pr}_csvtraining.csv".format(pr=prefcsv))
+            if not self.LocalCheck.isChecked():
+                trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
 #             log.debug('    From:')
 #             log.debug('      - vector: %s' % mltb.vector)
 #             log.debug('      - training column: %s' % mltb.column)
@@ -150,9 +152,13 @@ class STEMToolsDialog(BaseDialog):
 
             # ------------------------------------------------------------
             # Transform the input data
+            if not self.LocalCheck.isChecked():
+                temp_out = STEMUtils.pathClientWinToServerLinux(out)
+            else:
+                temp_out = out
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=out, fsfit=True)
+                                    fsfile=temp_out, fsfit=True)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
             return
