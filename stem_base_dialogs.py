@@ -962,25 +962,26 @@ class BaseDialog(QDialog, baseDialog):
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
         if mask_inverse:
-            if typ == 'raster' or typ == 'image':
-                raster = gdal_stem.convertGDAL()
-                raster.initialize([source], out)
-                if bbox:
-                    raster.cutInputInverse(bbox=bbox)
-                elif mask:
-                    raster.cutInputInverse(erase=mask)
-                else:
-                    return False, False, False
-            elif typ == 'vector':
-                out = self._checkExtention(out, '.shp')
-                vector = gdal_stem.infoOGR()
-                vector.initialize(source)
-                if bbox:
-                    vector.cutInputInverse(out, bbox=bbox)
-                elif mask:
-                    vector.cutInputInverse(out, erase=mask)
-                else:
-                    return False, False, False
+            pass
+#             if typ == 'raster' or typ == 'image':
+#                 raster = gdal_stem.convertGDAL()
+#                 raster.initialize([source], out)
+#                 if bbox:
+#                     raster.cutInputInverse(bbox=bbox)
+#                 elif mask:
+#                     raster.cutInputInverse(erase=mask)
+#                 else:
+#                     return False, False, False
+#             elif typ == 'vector':
+#                 out = self._checkExtention(out, '.shp')
+#                 vector = gdal_stem.infoOGR()
+#                 vector.initialize(source)
+#                 if bbox:
+#                     vector.cutInputInverse(out, bbox=bbox)
+#                 elif mask:
+#                     vector.cutInputInverse(out, erase=mask)
+#                 else:
+#                     return False, False, False
         else:
             if typ == 'raster' or typ == 'image':
                 #if os.path.exists(out):
