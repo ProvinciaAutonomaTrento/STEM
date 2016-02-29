@@ -9,7 +9,7 @@ Requirements
 * QGIS >= 2.6
 * GRASS >= 7.0
 * GDAL/OGR = 1.11
-* PDAL ??
+* PDAL 1.0.1
 * Python libraries:
   * GDAL/OGR
   * sklearn > 0.15.0
