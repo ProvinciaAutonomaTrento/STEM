@@ -241,7 +241,7 @@ class STEMToolsDialog(BaseDialog):
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
         cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                             'vector')
+                                             'vector', local=self.LocalCheck.isChecked())
         prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)
         try:
             if cut:
@@ -256,7 +256,7 @@ class STEMToolsDialog(BaseDialog):
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
-                                                     rasttyp)
+                                                     rasttyp, local=self.LocalCheck.isChecked())
                 prefcsv += "_{rast}_{n}".format(rast=inrast, n=len(nlayerchoose))
                 if cut:
                     inrast = cut
@@ -288,7 +288,7 @@ class STEMToolsDialog(BaseDialog):
                 optvectsource = STEMUtils.getLayersSource(optvect)
                 optvectcols = str(self.BaseInputCombo2.currentText())
                 cut, cutsource, mask = self.cutInput(optvect, optvectsource,
-                                                     'vector')
+                                                     'vector', local=self.LocalCheck.isChecked())
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
