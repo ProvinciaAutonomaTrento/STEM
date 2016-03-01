@@ -491,6 +491,7 @@ class convertGDAL:
                 print 'Rimuovo il file temporaneo',path
                 os.remove(path)
         if output is not None:
+            remove(output)
             remove(output+'.hdr')
             remove(output+'.aux.xml')
             if '.' in output:

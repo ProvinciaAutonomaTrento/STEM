@@ -1012,7 +1012,8 @@ class BaseDialog(QDialog, baseDialog):
                     com.append('-clipsrc')
                     com.extend(self.rect_str)
                 elif mask:
-                    com.append('-clipsrc {bbox}'.format(bbox=mask))
+                    com.append('-clipsrc')
+                    com.append('{bbox}'.format(bbox=mask))
                 else:
                     return False, False, False
                 com.extend([out, source])
