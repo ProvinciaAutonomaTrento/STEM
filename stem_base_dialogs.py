@@ -965,6 +965,7 @@ class BaseDialog(QDialog, baseDialog):
             if typ == 'raster' or typ == 'image':
                 raster = gdal_stem.convertGDAL()
                 raster.initialize([source], out)
+                raster.write(leave_output=True)
                 if bbox:
                     raster.cutInputInverse(bbox=bbox)
                 elif mask:
