@@ -124,10 +124,10 @@ class STEMToolsDialog(BaseDialog):
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
         
         if cut:
-                items = cut
-                sources = cutsource
-        else:
-            out = self.TextOut.text()
+             items = cut
+             sources = cutsource
+        
+        out = self.TextOut.text()
         if local:
             cgdal = convertGDAL()
         else:
