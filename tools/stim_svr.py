@@ -246,7 +246,10 @@ class STEMToolsDialog(BaseDialog):
                                              'vector')
         prefcsv = "stimsvr_{vect}_{col}".format(vect=invect,
                                                 col=invectcol)
-        home = STEMSettings.value("stempath")
+        if not self.LocalCheck.isChecked():
+            home = STEMUtils.get_temp_dir()
+        else:
+            home = STEMSettings.value("stempath")
         try:
             if cut:
                 invect = cut

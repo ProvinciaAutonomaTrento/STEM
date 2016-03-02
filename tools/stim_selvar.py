@@ -98,7 +98,10 @@ class STEMToolsDialog(BaseDialog):
             # Feature selector
             fselector = SelectKBest(f_regression, num_var)
 
-            home = STEMSettings.value("stempath")
+            if not self.LocalCheck.isChecked():
+                home = STEMUtils.get_temp_dir()
+            else:
+                home = STEMSettings.value("stempath")
             trnpath = os.path.join(home,
                                    "{pr}_csvtraining.csv".format(pr=prefcsv))
             com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',

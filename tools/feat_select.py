@@ -122,7 +122,10 @@ class STEMToolsDialog(BaseDialog):
                             scaler=None, fselector=None, decomposer=None,
                             transform=None, untransform=None)
 
-            home = STEMSettings.value("stempath")
+            if not self.LocalCheck.isChecked():
+                home = STEMUtils.get_temp_dir()
+            else:
+                home = STEMSettings.value("stempath")
 
             # ------------------------------------------------------------
             # Extract training samples
