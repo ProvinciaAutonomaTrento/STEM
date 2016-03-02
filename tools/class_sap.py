@@ -28,7 +28,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
-from stem_utils_server import STEMSettings
+from stem_utils_server import STEMSettings, inverse_mask
 import traceback
 from grass_stem import temporaryFilesGRASS
 import sys
@@ -86,7 +86,7 @@ class STEMToolsDialog(BaseDialog):
             if mask:
                 if not local:
                     mask = STEMUtils.pathClientWinToServerLinux(mask)
-                gs.check_mask(mask)
+                gs.check_mask(mask, inverse_mask())
             gs.find_program('i.spec.sam', '--help')
             com = ['i.spec.sam', 'group={name}'.format(name=tempin),
                    'matrix={name}'.forma(name=matrixfile),

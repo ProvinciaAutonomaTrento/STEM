@@ -24,7 +24,7 @@ import os
 import sys
 import subprocess
 from pyro_stem import PYROSERVER, GRASS_PORT, GRASSPYROOBJNAME
-from stem_utils_server import STEMSettings, inverse_mask, libs_save_command
+from stem_utils_server import STEMSettings, libs_save_command
 
 stats = ['mean', 'n', 'min', 'max', 'range', 'sum', 'stddev', 'variance',
          'coeff_var', 'median', 'percentile', 'skewness', 'trimmean']
@@ -212,7 +212,7 @@ class stemGRASS():
         else:
             return out.split()
 
-    def check_mask(self, mask):
+    def check_mask(self, mask, inverse_mask):
         """Check if a mask should be used
 
         :param str mask: the path to the mask, None to remove it
@@ -234,8 +234,8 @@ class stemGRASS():
                 vecs = self.list_maps('vector')
             except:
                 vecs = []
-            inv_mask = inverse_mask()
-            if inv_mask:
+
+            if inverse_mask:
                 com.append('-i')
             if name not in vecs:
                 runcom = gcore.Popen(['v.in.ogr', '--overwrite',

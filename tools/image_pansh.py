@@ -27,7 +27,7 @@ __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
-from stem_utils_server import STEMSettings
+from stem_utils_server import STEMSettings, inverse_mask
 import traceback
 from grass_stem import temporaryFilesGRASS
 from gdal_stem import file_info
@@ -149,7 +149,7 @@ class STEMToolsDialog(BaseDialog):
             if mask:
                 if not local:
                     mask = STEMUtils.pathClientWinToServerLinux(mask)
-                gs.check_mask(mask)
+                gs.check_mask(mask, inverse_mask())
             raster = file_info()
             raster.init_from_name(old_source)
             red = raster.getColorInterpretation(red)
