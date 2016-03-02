@@ -406,6 +406,10 @@ class infoOGR:
             raise IOError('Could not create file for inverse mask')
         outLayer = outDS.CreateLayer('inverse_mask', geom_type=self.getType(),
                                      srs=self.lay0.GetSpatialRef())
+        fields = []
+        for n in range(self.featureDefn.GetFieldCount()):
+            fields.append(self.featureDefn.GetFieldDefn(n))
+        outLayer.CreateFields(fields)
 
         # loop through input layer
         for inFeature in self.lay0:
