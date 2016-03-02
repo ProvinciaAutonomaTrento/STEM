@@ -74,7 +74,7 @@ class STEMToolsDialog(BaseDialog):
             specie = STEMUtils.checkLayers(source, self.layer_list, False)
             dia = STEMUtils.checkLayers(source, self.layer_list2, False)
             hei = STEMUtils.checkLayers(source, self.layer_list3, False)
-            cut, cutsource, mask = self.cutInput(name, source, 'vector')
+            cut, cutsource, mask = self.cutInput(name, source, 'vector', local=self.LocalCheck.isChecked())
             if cut:
                 name = cut
                 source = cutsource

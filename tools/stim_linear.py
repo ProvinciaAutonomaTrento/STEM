@@ -184,7 +184,7 @@ class STEMToolsDialog(BaseDialog):
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
         cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                             'vector')
+                                             'vector', local=self.LocalCheck.isChecked())
         prefcsv = "stimlin_{vect}_{col}".format(vect=invect, col=invectcol)
         try:
             if cut:
@@ -226,7 +226,7 @@ class STEMToolsDialog(BaseDialog):
                     optvectcols = str(self.BaseInputCombo2.currentText())
                     com.extend(['--test-column', optvectcols])
                 cut, cutsource, mask = self.cutInput(optvect, optvectsource,
-                                                     'vector')
+                                                     'vector', local=self.LocalCheck.isChecked())
                 if cut:
                     optvect = cut
                     optvectsource = cutsource

@@ -98,7 +98,7 @@ class STEMToolsDialog(BaseDialog):
             tempin, tempout, gs = temporaryFilesGRASS(name, local)
             pid = tempin.split('_')[2]
             tempin2 = 'stem_{name}_{pid}'.format(name=name, pid=pid)
-            cut2, cutsource2, mask = self.cutInput(name2, source2, type2)
+            cut2, cutsource2, mask = self.cutInput(name2, source2, type2, local=self.LocalCheck.isChecked())
             if cut2:
                 name2 = cut2
                 source2 = cutsource2
