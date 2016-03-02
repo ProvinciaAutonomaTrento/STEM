@@ -406,6 +406,10 @@ class infoOGR:
             raise IOError('Could not create file for inverse mask')
         outLayer = outDS.CreateLayer('inverse_mask', geom_type=self.getType(),
                                      srs=self.lay0.GetSpatialRef())
+        fields = []
+        for n in range(self.featureDefn.GetFieldCount()):
+            fields.append(self.featureDefn.GetFieldDefn(n))
+        outLayer.CreateFields(fields)
 
         # loop through input layer
         for inFeature in self.lay0:
@@ -491,6 +495,7 @@ class convertGDAL:
                 print 'Rimuovo il file temporaneo',path
                 os.remove(path)
         if output is not None:
+            remove(output)
             remove(output+'.hdr')
             remove(output+'.aux.xml')
             if '.' in output:
@@ -552,7 +557,7 @@ class convertGDAL:
             output += fi.bands
         return output
 
-    def write(self, res=None):
+    def write(self, res=None, leave_output=False):
         """Write the output file"""
         targetband = 0
         for f in range(len(self.file_infos)):
@@ -564,7 +569,8 @@ class convertGDAL:
             else:
                 targetband += 1
                 fi.copy_into(self.output, targetband, res=res)
-        self.output = None
+        if leave_output == False:
+            self.output = None
 
     def cutInputInverse(self, erase=None, bbox=None):
         """Create an inverted mask, returning a raster containing only data
@@ -799,7 +805,7 @@ class file_info:
             outband_null = outband_null.astype(datatype, copy=False)
             t_band = output.GetRasterBand(b)
 
-            t_band.WriteArray(outband_null)
+            t_band.WriteArray(outband_null, xoff, yoff)
 
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None, res=None):
         """Copy this files image into target file.

@@ -961,10 +961,11 @@ class BaseDialog(QDialog, baseDialog):
         outname = "stem_cut_{name}".format(name=inp)
         out = os.path.join(path, outname)
         PIPE = subprocess.PIPE
-        if mask_inverse:
+        if mask_inverse:            
             if typ == 'raster' or typ == 'image':
                 raster = gdal_stem.convertGDAL()
                 raster.initialize([source], out)
+                raster.write(leave_output=True)
                 if bbox:
                     raster.cutInputInverse(bbox=bbox)
                 elif mask:
@@ -1011,7 +1012,8 @@ class BaseDialog(QDialog, baseDialog):
                     com.append('-clipsrc')
                     com.extend(self.rect_str)
                 elif mask:
-                    com.append('-clipsrc {bbox}'.format(bbox=mask))
+                    com.append('-clipsrc')
+                    com.append('{bbox}'.format(bbox=mask))
                 else:
                     return False, False, False
                 com.extend([out, source])
