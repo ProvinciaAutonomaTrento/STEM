@@ -98,7 +98,10 @@ class STEMToolsDialog(BaseDialog):
             # Feature selector
             fselector = SelectKBest(f_regression, num_var)
 
-            home = STEMSettings.value("stempath")
+            if not self.LocalCheck.isChecked():
+                home = STEMUtils.get_temp_dir()
+            else:
+                home = STEMSettings.value("stempath")
             trnpath = os.path.join(home,
                                    "{pr}_csvtraining.csv".format(pr=prefcsv))
             com.extend(['--n-jobs', '1', '--n-best', '1', '--scoring',
@@ -114,6 +117,8 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
+                invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
+                inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster=inrastsource, models=None,
@@ -126,15 +131,18 @@ class STEMToolsDialog(BaseDialog):
             # ------------------------------------------------------------
             # Extract training samples
 
-            log.debug('    From:')
-            log.debug('      - vector: %s' % mltb.vector)
-            log.debug('      - training column: %s' % mltb.column)
-            if mltb.use_columns:
-                log.debug('      - use columns: %s' % mltb.use_columns)
-            if mltb.raster:
-                log.debug('      - raster: %s' % mltb.raster)
-            X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=NODATA)
+            if (not os.path.exists(trnpath) or overwrite):
+#                 log.debug('    From:')
+#                 log.debug('      - vector: %s' % mltb.vector)
+#                 log.debug('      - training column: %s' % mltb.column)
+#                 if mltb.use_columns:
+#                     log.debug('      - use columns: %s' % mltb.use_columns)
+#                 if mltb.raster:
+#                     log.debug('      - raster: %s' % mltb.raster)
+                if not self.LocalCheck.isChecked():
+                    trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
+                X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
+                                             nodata=nodata)
 
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
@@ -142,9 +150,13 @@ class STEMToolsDialog(BaseDialog):
             # ------------------------------------------------------------
             # Transform the input data
             out = self.TextOut.text()
+            if not self.LocalCheck.isChecked():
+                temp_out = STEMUtils.pathClientWinToServerLinux(out)
+            else:
+                temp_out = out
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=out, fsfit=True)
+                                    fsfile=temp_out, fsfit=True)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
             return

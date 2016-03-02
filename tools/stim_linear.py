@@ -33,6 +33,7 @@ from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
 from stem_utils_server import STEMSettings
 import traceback
 from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN
+from exported_objects import return_argument
 import numpy as np
 import pickle as pkl
 import os
@@ -176,12 +177,15 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
-        home = STEMSettings.value("stempath")
+        if not self.LocalCheck.isChecked():
+            home = STEMUtils.get_temp_dir()
+        else:
+            home = STEMSettings.value("stempath")
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
         cut, cutsource, mask = self.cutInput(invect, invectsource,
-                                             'vector')
+                                             'vector', local=self.LocalCheck.isChecked())
         prefcsv = "stimlin_{vect}_{col}".format(vect=invect, col=invectcol)
         try:
             if cut:
@@ -223,7 +227,7 @@ class STEMToolsDialog(BaseDialog):
                     optvectcols = str(self.BaseInputCombo2.currentText())
                     com.extend(['--test-column', optvectcols])
                 cut, cutsource, mask = self.cutInput(optvect, optvectsource,
-                                                     'vector')
+                                                     'vector', local=self.LocalCheck.isChecked())
                 if cut:
                     optvect = cut
                     optvectsource = cutsource
@@ -263,6 +267,9 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
+                invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
+                inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
+                optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
                             raster=inrastsource, models=model,
@@ -279,13 +286,15 @@ class STEMToolsDialog(BaseDialog):
             # Extract training samples
 
             if (not os.path.exists(trnpath) or overwrite):
-                log.debug('    From:')
-                log.debug('      - vector: %s' % mltb.vector)
-                log.debug('      - training column: %s' % mltb.column)
-                if mltb.use_columns:
-                    log.debug('      - use columns: %s' % mltb.use_columns)
-                if mltb.raster:
-                    log.debug('      - raster: %s' % mltb.raster)
+#                 log.debug('    From:')
+#                 log.debug('      - vector: %s' % mltb.vector)
+#                 log.debug('      - training column: %s' % mltb.column)
+#                 if mltb.use_columns:
+#                     log.debug('      - use columns: %s' % mltb.use_columns)
+#                 if mltb.raster:
+#                     log.debug('      - raster: %s' % mltb.raster)
+                if not self.LocalCheck.isChecked():
+                    trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
                 X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
                                              nodata=nodata)
             else:
@@ -296,43 +305,47 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            # ------------------------------------------------------------
-            # Transform the input data
-            if fscolumns is not None:
+            if fscolumns:
+                if not self.LocalCheck.isChecked():
+                    infile = STEMUtils.pathClientWinToServerLinux(infile)
                 X = mltb.data_transform(X=X, y=y, scaler=None,
                                         fscolumns=fscolumns,
                                         fsfile=infile, fsfit=True)
 
             # ----------------------------------------------------------------
             # Extract test samples
-            Xtest, ytest = None, None
             log.debug('Extract test samples')
-            if mltb.tvector and mltb.tcolumn:
+            Xtest, ytest = None, None
+            if mltb.getTVector() and mltb.getTColumn():
                 # extract_training(vector_file, column, csv_file, raster_file=None,
                 #                  use_columns=None, delimiter=SEP, nodata=None)
                 # testpath = os.path.join(args.odir, args.csvtest)
                 testpath = os.path.join(home,
-                                        "{pref}_csvtestsample.csv".format(pref=prefcsv))
+                                        "{p}_csvtest.csv".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
-                    log.debug('    From:')
-                    log.debug('      - vector: %s' % mltb.tvector)
-                    log.debug('      - training column: %s' % mltb.tcolumn)
-                    if mltb.use_columns:
-                        log.debug('      - use columns: %s' % mltb.use_columns)
-                    if mltb.raster:
-                        log.debug('      - raster: %s' % mltb.traster)
-                    Xtest, ytest = mltb.extract_test(csv_file=testpath,
+#                     log.debug('    From:')
+#                     log.debug('      - vector: %s' % mltb.tvector)
+#                     log.debug('      - training column: %s' % mltb.tcolumn)
+#                     if mltb.use_columns:
+#                         log.debug('      - use columns: %s' % mltb.use_columns)
+#                     if mltb.raster:
+#                         log.debug('      - raster: %s' % mltb.traster)
+                    if not self.LocalCheck.isChecked():
+                        temp_testpath = STEMUtils.pathClientWinToServerLinux(testpath)
+                    else:
+                        temp_testpath = testpath
+                    Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
-                    np.savetxt(testpath, dt, delimiter=SEP,
-                               header="# last column is the training.")
+#                     np.savetxt(testpath, dt, delimiter=SEP,
+#                                header="# last column is the training.")
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)
                     dt = np.loadtxt(testpath, delimiter=SEP, skiprows=1)
                     Xtest, ytest = dt[:, :-1], dt[:, -1]
                 Xtest = Xtest.astype(float)
-                log.debug('Training sample shape: {val}'.format(val=X.shape))
+                log.debug('Training sample shape: {val}'.format(val=Xtest.shape))
 
             # ---------------------------------------------------------------
             # Cross Models
@@ -375,13 +388,13 @@ class STEMToolsDialog(BaseDialog):
                                                      vect=optvect,
                                                      col=optvectcols))
                 bpkpath = os.path.join(home,
-                                       "{pref}_test_pickle.csv".format(pref=prefcsv))
+                                       "{p}_test_pickle.pkl".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
-                                     transform=trasf)
+                                     transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
-                               header=SEP.join(test[0].__dict__.keys()))
-                    mltb.find_best(model, strategy=lambda x: x,
+                               header=SEP.join(test[0]._asdict().keys()))
+                    mltb.find_best(models, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
@@ -391,7 +404,7 @@ class STEMToolsDialog(BaseDialog):
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
                     order, models = mltb.find_best(models=best,
-                                                   strategy=lambda x: x,
+                                                   strategy=return_argument,
                                                    key='score_test')
                     best = mltb.select_best(best=models)
                 log.debug('Best models:')
@@ -402,7 +415,7 @@ class STEMToolsDialog(BaseDialog):
             if self.checkbox.isChecked():
                 if best is None:
                     order, models = mltb.find_best(models, key='score',
-                                                   strategy=lambda x: x)
+                                                   strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
                 if optvect:
@@ -413,8 +426,13 @@ class STEMToolsDialog(BaseDialog):
                     fname = str(self.TextOutField.text())
                 else:
                     fname = None
+                    
+                if not self.LocalCheck.isChecked():
+                    temp_out = STEMUtils.pathClientWinToServerLinux(out)
+                else:
+                    temp_out = out
                 mltb.execute(input_file=finalinp, best=best, transform=trasf,
-                             untransform=utrasf, output_file=out,
+                             untransform=utrasf, output_file=temp_out,
                              field=fname)
                 STEMUtils.copyFile(crosspath, out)
                 if self.AddLayerToCanvas.isChecked():

@@ -96,6 +96,8 @@ class STEMToolsDialog(BaseDialog):
                 las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
+                source = STEMUtils.pathClientWinToServerLinux(source)
+                temp_out = STEMUtils.pathClientWinToServerLinux(out)
             las.initialize()
             if self.checkbox.isChecked():
                 compres = True
@@ -105,7 +107,7 @@ class STEMToolsDialog(BaseDialog):
                 inv = True
             else:
                 inv = False
-            com = las.clip(source, out, area, inverted=inv, compressed=compres,
+            com = las.clip(source, temp_out, area, inverted=inv, compressed=compres,
                            forced=self.MethodInput.currentText())
             STEMUtils.saveCommand(com)
             if os.path.exists(out):

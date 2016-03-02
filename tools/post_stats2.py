@@ -113,7 +113,7 @@ class STEMToolsDialog(BaseDialog):
             zonetyp = STEMUtils.checkMultiRaster(zonesource, self.layer_list2)
             zonecut, zonecutsource, zonemask = self.cutInput(zonename,
                                                              zonesource,
-                                                             zonetyp)
+                                                             zonetyp, local=self.LocalCheck.isChecked())
             if cut:
                 zonename = zonecut
                 zonesource = zonecutsource
