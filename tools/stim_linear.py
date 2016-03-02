@@ -176,7 +176,10 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
-        home = STEMSettings.value("stempath")
+        if not self.LocalCheck.isChecked():
+            home = STEMUtils.get_temp_dir()
+        else:
+            home = STEMSettings.value("stempath")
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
