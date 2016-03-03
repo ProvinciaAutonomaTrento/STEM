@@ -464,9 +464,13 @@ class stemLAS():
         filt = Element('Filter')
         filt.set("type", "filters.crop")
 
-        clip = self._add_option_file(bbox, val='polygon')
         if inverted:
-            clip.set("outside", "true")
+            clip_inverted = self._add_option_file('true', val='outside')
+            filt.append(clip_inverted)
+
+        clip = self._add_option_file(bbox, val='polygon')
+#         if inverted:
+#             clip.set("outside", "true")
         filt.append(clip)
         filt.append(self._add_reader(inp))
         write.append(filt)
