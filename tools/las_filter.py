@@ -120,10 +120,7 @@ class STEMToolsDialog(BaseDialog):
             com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
                               retur=ret, forced=self.MethodInput.currentText(), compressed=compres)
             STEMUtils.saveCommand(com)
-            if os.path.exists(out_locale):
-                STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
-            else:
-                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

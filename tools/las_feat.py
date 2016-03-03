@@ -113,12 +113,9 @@ class STEMToolsDialog(BaseDialog):
                                                                    name=LASPYROOBJNAME))
             stats = self._selectedStats()
             las.zonal_statistics(source, invectsource, out, stats, self.overwrite)
-            if os.path.exists(self.TextOut.text()):
-                STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
-                if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
-            else:
-                STEMMessageHandler.error("{ou} file not created".format(ou=self.TextOut.text()))
+            STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
+            if self.AddLayerToCanvas.isChecked():
+                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

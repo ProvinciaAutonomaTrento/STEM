@@ -155,5 +155,5 @@ class STEMToolsDialog(BaseDialog):
 
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
-        else:
-            STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
+        
+        STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))

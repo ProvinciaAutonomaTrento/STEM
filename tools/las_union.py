@@ -87,10 +87,7 @@ class STEMToolsDialog(BaseDialog):
                 compres = False
             com = las.union(items, out, compres)
             STEMUtils.saveCommand(com)
-            if os.path.exists(out_locale):
-                STEMMessageHandler.success("{ou} LAS file created".format(ou=out_locale))
-            else:
-                STEMMessageHandler.error("{ou} LAS file not created".format(ou=out_locale))
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out_locale))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

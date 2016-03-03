@@ -72,10 +72,7 @@ class STEMToolsDialog(BaseDialog):
                                                                    name=LASPYROOBJNAME))
             las.initialize()
             las.bosco(source, out)
-            if os.path.exists(self.TextOut.text()):
-                STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
-            else:
-                STEMMessageHandler.error("{ou} LAS file not created".format(ou=self.TextOut.text()))
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
