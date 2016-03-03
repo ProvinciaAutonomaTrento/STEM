@@ -91,6 +91,7 @@ class STEMToolsDialog(BaseDialog):
             out = str(self.TextOut.text())
             if self.LocalCheck.isChecked():
                 las = stemLAS()
+                temp_out = out
             else:
                 import Pyro4
                 las = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,

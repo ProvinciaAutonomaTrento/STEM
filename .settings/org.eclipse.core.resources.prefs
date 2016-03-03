@@ -11,6 +11,7 @@ encoding//libs/machine_learning.py=utf-8
 encoding//libs/mlcmd.py=utf-8
 encoding//libs/pyro_stem.py=utf-8
 encoding//libs/stem_utils_server.py=utf-8
+encoding//tools/__init__.py=utf-8
 encoding//tools/bosco.py=utf-8
 encoding//tools/calc_vol.py=utf-8
 encoding//tools/clas_mod.py=utf-8
