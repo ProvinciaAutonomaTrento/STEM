@@ -131,7 +131,6 @@ class STEMToolsDialog(BaseDialog):
             # ------------------------------------------------------------
             # Extract training samples
 
-            if (not os.path.exists(trnpath) or overwrite):
 #                 log.debug('    From:')
 #                 log.debug('      - vector: %s' % mltb.vector)
 #                 log.debug('      - training column: %s' % mltb.column)
@@ -139,10 +138,10 @@ class STEMToolsDialog(BaseDialog):
 #                     log.debug('      - use columns: %s' % mltb.use_columns)
 #                 if mltb.raster:
 #                     log.debug('      - raster: %s' % mltb.raster)
-                if not self.LocalCheck.isChecked():
-                    trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
-                X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                             nodata=nodata)
+            if not self.LocalCheck.isChecked():
+                trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
+            X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
+                                         nodata=nodata)
 
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
