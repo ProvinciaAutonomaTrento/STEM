@@ -131,7 +131,7 @@ class STEMToolsDialog(BaseDialog):
                    'percentile={p}'.format(p=perc),
                    'zones={zon}'.format(zon=zonetempin)]
             if output:
-                com.append('output={name}'.format(name=output))
+                com.append('output={name}'.format(name=self.TextOut.text()))
             else:
                 STEMMessageHandler.error("Si prega di inserire il nome del "
                                          "file di output")
@@ -140,7 +140,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass(coms)
             STEMMessageHandler.success("Il file {name} è stato scritto "
-                                       "correttamente".format(name=output))
+                                       "correttamente".format(name=self.TextOut.text()))
 
         except:
             error = traceback.format_exc()
