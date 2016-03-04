@@ -267,7 +267,10 @@ class stemLAS():
                             'Segmantation fault'.format(com=' '.join(comm)))
         else:
             if self.pdalxml:
-                os.remove(self.pdalxml)
+                try:
+                    os.remove(self.pdalxml)
+                except OSError:
+                    pass
         return out
 
     def lasinfo(self, inp):
