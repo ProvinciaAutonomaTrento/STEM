@@ -141,7 +141,7 @@ class STEMToolsDialog(BaseDialog):
             if not self.LocalCheck.isChecked():
                 trnpath = STEMUtils.pathClientWinToServerLinux(trnpath)
             X, y = mltb.extract_training(csv_file=trnpath, delimiter=SEP,
-                                         nodata=nodata)
+                                         nodata=NODATA)
 
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
