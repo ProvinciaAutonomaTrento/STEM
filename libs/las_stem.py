@@ -568,12 +568,7 @@ class stemLAS():
         else:
             limits.append('ReturnNumber[:]')
         if clas:
-            clas_opt = self._add_option_file('Classification', val='dimension')
-            options = Element('Options')
-            clasval = self._add_option_file(clas, val='uquals')
-            options.append(clasval)
-            clas_opt.append(options)
-            filt.append(clas_opt)
+            limits.append('Classification[{0}:{1}]'.format(clas, clas))
         if inte:
             limits.append('Intensity[{0}:{1}]'.format(inte[0], inte[1]))
         if angle:
