@@ -542,26 +542,16 @@ class stemLAS():
         write = self._add_write(out, compres)
         filt = Element('Filter')
         filt.set("type", "filters.range")
+        limits = []
         if x:
-            x_opt = self._add_option_file('X', val='dimension')
-            options = Element('Options')
-            minxval = self._add_option_file(x[0], val='min')
-            maxxval = self._add_option_file(x[1], val='max')
-            options.append(minxval)
-            options.append(maxxval)
-            x_opt.append(options)
-            filt.append(x_opt)
+            limits.append('X[{0}:{1}]'.format(x[0], x[1]))
         if y:
-            first_opt = self._add_option_file('Y[{0}:{1}]'.format(y[0],y[1]), val='limits')
-            filt.append(first_opt)
+            limits.append('Y[{0}:{1}]'.format(y[0], y[1]))
         if z:
-            first_opt = self._add_option_file('Z[{0}:{1}]'.format(z[0],z[1]), val='limits')
-            filt.append(first_opt)
+            limits.append('Z[{0}:{1}]'.format(z[0], z[1]))
         if retur:
             if retur == 'first':
-                first_opt = self._add_option_file('ReturnNumber[1:1]',
-                                                  val='limits')
-                filt.append(first_opt)
+                limits.append('ReturnNumber[1:1]')
             else:
                 filt = None
                 filt = Element('Filter')
@@ -576,8 +566,7 @@ class stemLAS():
                 filt.append(modu)
                 filt.append(source)
         else:
-            first_opt = self._add_option_file('ReturnNumber[:]', val='limits')
-            filt.append(first_opt)
+            limits.append('ReturnNumber[:]')
         if clas:
             clas_opt = self._add_option_file('Classification', val='dimension')
             options = Element('Options')
@@ -586,23 +575,10 @@ class stemLAS():
             clas_opt.append(options)
             filt.append(clas_opt)
         if inte:
-            int_opt = self._add_option_file('Intensity', val='dimension')
-            options = Element('Options')
-            minintval = self._add_option_file(inte[0], val='min')
-            maxintval = self._add_option_file(inte[1], val='max')
-            options.append(minintval)
-            options.append(maxintval)
-            int_opt.append(options)
-            filt.append(int_opt)
+            limits.append('Intensity[{0}:{1}]'.format(inte[0], inte[1]))
         if angle:
-            ang_opt = self._add_option_file('ScanAngleRank', val='dimension')
-            options = Element('Options')
-            minangval = self._add_option_file(angle[0], val='min')
-            maxangval = self._add_option_file(angle[1], val='max')
-            options.append(minangval)
-            options.append(maxangval)
-            ang_opt.append(options)
-            filt.append(ang_opt)
+            limits.append('ScanAngleRank[{0}:{1}]'.format(angle[0], angle[1]))
+        filt.append(self._add_option_file(",".join(limits), val='limits'))
         filt.append(self._add_reader(inp))
         write.append(filt)
         root.append(write)
