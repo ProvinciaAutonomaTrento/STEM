@@ -587,6 +587,9 @@ class stemLAS():
                 filt.append(funct)
                 filt.append(modu)
                 filt.append(source)
+        else:
+            first_opt = self._add_option_file('ReturnNumber[:]', val='limits')
+            filt.append(first_opt)
         if clas:
             clas_opt = self._add_option_file('Classification', val='dimension')
             options = Element('Options')
