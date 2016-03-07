@@ -543,6 +543,7 @@ class stemLAS():
         filt = Element('Filter')
         filt.set("type", "filters.range")
         limits = []
+        filt_pred = None
         if x:
             limits.append('X[{0}:{1}]'.format(x[0], x[1]))
         if y:
@@ -553,18 +554,17 @@ class stemLAS():
             if retur == 'first':
                 limits.append('ReturnNumber[1:1]')
             else:
-                filt = None
-                filt = Element('Filter')
-                filt.set("type", "filters.predicate")
+                filt_pred = Element('Filter')
+                filt_pred.set("type", "filters.predicate")
                 funct = self._add_option_file('filter', val='function')
                 modu = self._add_option_file('anything', val='module')
                 if retur == 'last':
                     source = self._add_option_file(LAST_RETURN, val='source')
                 elif retur == 'others':
                     source = self._add_option_file(OTHER_RETURN, val='source')
-                filt.append(funct)
-                filt.append(modu)
-                filt.append(source)
+                filt_pred.append(funct)
+                filt_pred.append(modu)
+                filt_pred.append(source)
         else:
             limits.append('ReturnNumber[:]')
         if clas:
@@ -573,9 +573,19 @@ class stemLAS():
             limits.append('Intensity[{0}:{1}]'.format(inte[0], inte[1]))
         if angle:
             limits.append('ScanAngleRank[{0}:{1}]'.format(angle[0], angle[1]))
-        filt.append(self._add_option_file(",".join(limits), val='limits'))
-        filt.append(self._add_reader(inp))
-        write.append(filt)
+        
+        if limits:
+            filt.append(self._add_option_file(",".join(limits), val='limits'))
+            if filt_pred is None:
+                filt.append(self._add_reader(inp))
+            else:
+                filt_pred.append(self._add_reader(inp))
+                filt.append(filt_pred)
+            write.append(filt)
+        else:
+            # The only case in which we have no limits is when we have a filt_pred
+            write.append(filt_pred)
+            
         root.append(write)
         if sys.platform == 'win32':
             tmp_file.write(tostring(root, 'iso-8859-1'))
