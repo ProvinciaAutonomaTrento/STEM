@@ -108,7 +108,7 @@ class STEMToolsDialog(BaseDialog):
                 compres = True
             else:
                 compres = False
-            com = las.chm(source_task, out_task, dtm_source_task, compressed=compres)
+            com = las.chm(source_task, out_task, dtm_source_task, compressed=compres, local = self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TexOut.text()))
         except:

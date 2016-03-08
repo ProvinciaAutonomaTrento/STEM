@@ -387,7 +387,7 @@ class stemLAS():
         self.pdalxml = tmp_file.name
         return 0
 
-    def chm(self, inp, out, dtm, compressed=False):
+    def chm(self, inp, out, dtm, compressed=False, local):
         """Merge several LAS file into one LAS file
 
         :param str inp: full path for the input LAS file
@@ -403,7 +403,13 @@ class stemLAS():
             bbox = fi.getBBoxWkt()
             self.chm_xml_pdal(inp, out, dtm, bbox, compressed)
             command.extend(['-i', self.pdalxml])
-            self._run_command(command)
+            
+            if not local:
+                xml = read_file(self.pdalxml)
+                pipe = libpdalpython.PyPipeline(xml)
+                pipe.execute()
+            else:          
+                self._run_command(command)
             return command
         else:
             raise Exception("pdal è necessario per calcolare il CHM")
@@ -656,8 +662,6 @@ class stemLAS():
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
         if not local:
-            import pdal
-            from pdal import libpdalpython
             xml = read_file(self.pdalxml)
             pipe = libpdalpython.PyPipeline(xml)
             pipe.execute()
