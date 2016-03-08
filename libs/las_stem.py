@@ -387,7 +387,7 @@ class stemLAS():
         self.pdalxml = tmp_file.name
         return 0
 
-    def chm(self, inp, out, dtm, compressed=False, local):
+    def chm(self, inp, out, dtm, compressed=False, local=False):
         """Merge several LAS file into one LAS file
 
         :param str inp: full path for the input LAS file
@@ -602,7 +602,7 @@ class stemLAS():
         return 0
 
     def filterr(self, inp, out, x=None, y=None, z=None, inte=None, angle=None,
-                clas=None, retur=None, forced=False, compressed=False, local):
+                clas=None, retur=None, forced=False, compressed=False, local=False):
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
