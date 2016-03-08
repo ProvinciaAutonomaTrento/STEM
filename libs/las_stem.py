@@ -596,7 +596,7 @@ class stemLAS():
         return 0
 
     def filterr(self, inp, out, x=None, y=None, z=None, inte=None, angle=None,
-                clas=None, retur=None, forced=False, compressed=False):
+                clas=None, retur=None, forced=False, compressed=False, local):
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
@@ -655,7 +655,14 @@ class stemLAS():
             self.filter_xml_pdal(inp, out, compressed, x, y, z,
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
-        self._run_command(command)
+        if not local:
+            import pdal
+            from pdal import libpdalpython
+            xml = read_file(self.pdalxml)
+            pipe = libpdalpython.PyPipeline(xml)
+            pipe.execute()
+        else:
+            self._run_command(command)
         return command
 
     def bosco(self, inp, prefix):
