@@ -305,7 +305,7 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            if fscolumns:
+            if fscolumns is not None:
                 if not self.LocalCheck.isChecked():
                     infile = STEMUtils.pathClientWinToServerLinux(infile)
                 X = mltb.data_transform(X=X, y=y, scaler=None,
