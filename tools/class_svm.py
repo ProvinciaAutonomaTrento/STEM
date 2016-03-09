@@ -456,7 +456,7 @@ class STEMToolsDialog(BaseDialog):
                                      transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0]._asdict().keys()))
-                    mltb.find_best(models, strategy=return_argument,
+                    mltb.find_best(model, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
