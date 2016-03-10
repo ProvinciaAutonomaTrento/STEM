@@ -590,6 +590,7 @@ class stemLAS():
             write.append(filt)
         else:
             # The only case in which we have no limits is when we have a filt_pred
+            filt_pred.append(self._add_reader(inp))
             write.append(filt_pred)
             
         root.append(write)
@@ -619,6 +620,12 @@ class stemLAS():
         :param bool compressed: True to obtain a LAZ file
         """
         command = self._start_command(forced)
+        
+        try:
+            os.remove(out)
+        except OSError:
+            pass
+        
         if 'las2las' in command:
             if compressed:
                 command.append('-c')
