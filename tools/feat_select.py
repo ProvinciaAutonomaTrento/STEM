@@ -18,6 +18,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 """
+from cgi import logfile
 
 __author__ = 'Luca Delucchi'
 __date__ = 'August 2014'
@@ -63,6 +64,7 @@ class STEMToolsDialog(BaseDialog):
         self. _insertFirstLineEdit(labeln, 1)
         self.helpui.fillfromUrl(self.SphinxUrl())
         self.QGISextent.hide()
+        self.AddLayerToCanvas.hide()
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def show_(self):
@@ -78,7 +80,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         # Selezione feature per classificazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
-        log = STEMLogging()
+        #log = STEMLogging()
 #         com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
@@ -112,6 +114,11 @@ class STEMToolsDialog(BaseDialog):
 #                         'accuracy', '--best-strategy', 'mean',
 #                         '--feature-selection', 'SSF', invectsource, invectcol])
             out = self.TextOut.text()
+            
+            logfile = os.path.splitext(out)[0]+"_log.txt"
+            if not self.LocalCheck.isChecked():
+                logfile = STEMUtils.pathClientWinToServerLinux(logfile)
+            
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
                             raster=inrastsource,
@@ -151,7 +158,7 @@ class STEMToolsDialog(BaseDialog):
             # --------------------------------------------------------------
             # Feature selector
             fselector = SSF(strategy=getattr(np, meth), precision=4,
-                            n_features=nfeat)
+                            n_features=nfeat, logfile=logfile)
 
             # ------------------------------------------------------------
             # Transform the input data
