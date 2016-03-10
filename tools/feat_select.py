@@ -118,6 +118,8 @@ class STEMToolsDialog(BaseDialog):
             logfile = os.path.splitext(out)[0]+"_log.txt"
             if not self.LocalCheck.isChecked():
                 logfile = STEMUtils.pathClientWinToServerLinux(logfile)
+                
+            log = STEMLogging(logfile)
             
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
@@ -158,7 +160,7 @@ class STEMToolsDialog(BaseDialog):
             # --------------------------------------------------------------
             # Feature selector
             fselector = SSF(strategy=getattr(np, meth), precision=4,
-                            n_features=nfeat, logfile=logfile)
+                            n_features=nfeat, logfile=log)
 
             # ------------------------------------------------------------
             # Transform the input data
