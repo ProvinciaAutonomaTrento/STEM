@@ -64,7 +64,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self._insertFileInput(pos=1)
-
+        self.QGISextent.hide()
         self._insertFirstCombobox(label="Seleziona le statistiche da calcolare",
                                   posnum=0, combo=True)
         self.BaseInputCombo.addItems(STATS.values())
@@ -85,6 +85,12 @@ class STEMToolsDialog(BaseDialog):
         for i in range(self.BaseInputCombo.count()):
             item = self.BaseInputCombo.model().item(i)
             if item.checkState() == Qt.Checked:
+                val = str(item.text())
+                key = self._keysStats(val)
+                itemlist.append(key[0])
+        if not itemlist:
+            for i in range(self.BaseInputCombo.count()):
+                item = self.BaseInputCombo.model().item(i)
                 val = str(item.text())
                 key = self._keysStats(val)
                 itemlist.append(key[0])
