@@ -449,7 +449,7 @@ class STEMUtils:
                         p = os.path.join(newdir, f)
                         shutil.copy(p, original_dir)
                     except:
-                        return
+                        pass
             shutil.rmtree(newdir)
             STEMUtils.removeFiles(newdir)
         else:

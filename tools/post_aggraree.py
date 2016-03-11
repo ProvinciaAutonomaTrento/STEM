@@ -37,7 +37,7 @@ import sys
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow(), None)
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.shp')
         self.toolName = name
         self.iface = iface
 
