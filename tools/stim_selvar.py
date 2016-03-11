@@ -47,6 +47,7 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self.QGISextent.hide()
+        self.AddLayerToCanvas.hide()
         self._insertSingleInput(label='Dati di input vettoriale')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self.labelcol = "Seleziona la colonna con indicazione del parametro da stimare"
