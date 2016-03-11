@@ -46,13 +46,13 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput(label="CHM di input")
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        min_label = "Valore minimo della finestra mobile per trovare gli alberi"
+        min_label = "Valore minimo della finestra mobile per trovare gli alberi (pixel)"
         self._insertFirstLineEdit(min_label, 0)
 
-        max_label = "Valore massimo della finestra mobile per trovare gli alberi"
+        max_label = "Valore massimo della finestra mobile per trovare gli alberi (pixel)"
         self._insertSecondLineEdit(max_label, 1)
 
-        min_height = "Valore minimo dell'altezza degli alberi"
+        min_height = "Valore minimo dell'altezza degli alberi (metri)"
         self._insertThirdLineEdit(min_height, 2)
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
