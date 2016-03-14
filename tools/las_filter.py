@@ -94,7 +94,11 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             out = str(self.TextOut.text())
-            out_locale = str(self.TextOut.text())
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            out = STEMUtils.check_las_compress(out, compres)
             if self.LocalCheck.isChecked():
                 las = stemLAS()
             else:
@@ -103,12 +107,8 @@ class STEMToolsDialog(BaseDialog):
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
                 source = STEMUtils.pathClientWinToServerLinux(source)
-                out  = STEMUtils.pathClientWinToServerLinux(out)
+                out = STEMUtils.pathClientWinToServerLinux(out)
             las.initialize()
-            if self.checkbox.isChecked():
-                compres = True
-            else:
-                compres = False
             xs = STEMUtils.splitIntoList(self.Linedit.text())
             ys = STEMUtils.splitIntoList(self.Linedit2.text())
             zs = STEMUtils.splitIntoList(self.Linedit3.text())
@@ -118,7 +118,9 @@ class STEMToolsDialog(BaseDialog):
             ret = self.check_return()
 
             com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
-                              retur=ret, forced=self.MethodInput.currentText(), compressed=compres, local=self.LocalCheck.isChecked())
+                              retur=ret, forced=self.MethodInput.currentText(),
+                              compressed=compres,
+                              local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
         except:

@@ -68,7 +68,12 @@ class STEMToolsDialog(BaseDialog):
                 for index in xrange(self.BaseInput.count()):
                     items.append(self.BaseInput.item(index).text())
             out = self.TextOut.text()
-            out_locale = self.TextOut.text()
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            out = STEMUtils.check_las_compress(out, compres)
+            out_locale = out
             if self.LocalCheck.isChecked():
                 las = stemLAS()
             else:
@@ -79,12 +84,8 @@ class STEMToolsDialog(BaseDialog):
                 for i in range(len(items)):
                     items[i] = STEMUtils.pathClientWinToServerLinux(items[i])
                 out  = STEMUtils.pathClientWinToServerLinux(out)
-                
+
             las.initialize()
-            if self.checkbox.isChecked():
-                compres = True
-            else:
-                compres = False
             com = las.union(items, out, compres)
             STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out_locale))

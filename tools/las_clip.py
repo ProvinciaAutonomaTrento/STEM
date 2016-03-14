@@ -89,6 +89,11 @@ class STEMToolsDialog(BaseDialog):
         try:
             source = str(self.TextIn.text())
             out = str(self.TextOut.text())
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            out = STEMUtils.check_las_compress(out, compres)
             if self.LocalCheck.isChecked():
                 las = stemLAS()
                 temp_out = out
@@ -100,10 +105,6 @@ class STEMToolsDialog(BaseDialog):
                 source = STEMUtils.pathClientWinToServerLinux(source)
                 temp_out = STEMUtils.pathClientWinToServerLinux(out)
             las.initialize()
-            if self.checkbox.isChecked():
-                compres = True
-            else:
-                compres = False
             if self.checkbox2.isChecked():
                 inv = True
             else:

@@ -391,7 +391,7 @@ class STEMUtils:
             if time.time()-t > 5:
                 raise Exception("Il file di output non è stato creato: {}".format(tmp))
             time.sleep(.1)
-        
+
         shutil.move(tmp, out)
         try:
             shutil.move('{name}.aux.xml'.format(name=tmp),
@@ -545,7 +545,7 @@ class STEMUtils:
         """
 
         table = STEMUtils.get_mapping_table()
-        
+
         converted = False
         #print 'table:', table
         for remote, local in table:
@@ -590,19 +590,35 @@ class STEMUtils:
     @staticmethod
     def get_mapping_table():
         return STEMUtils.decode_mapping_table(STEMSettings.value("mappingTable", None))
-    
+
     @staticmethod
     def encode_mapping_table(table):
         """
         :param table: object [(remote, local),(remote, local)]
         :raram return: ASCII encoded table
         """
-        assert all([type(x) == PathMapping for x in table]), table 
+        assert all([type(x) == PathMapping for x in table]), table
         return base64.b64encode(pickle.dumps(table))
-    
+
     @staticmethod
     def set_mapping_table(new_table):
         STEMSettings.setValue("mappingTable", STEMUtils.encode_mapping_table(new_table))
+
+    @staticmethod
+    def check_las_compress(inp, compr):
+        """
+        :param str inp: the input path
+        :param bool compr: True if the output will be compressed, so extension
+                           should be .laz
+        """
+        if compr and inp.endswith('.las'):
+            inp = inp.rstrip('.las')
+            return inp + '.laz'
+        elif not compr and inp.endswith('.laz'):
+            inp = inp.rstrip('.laz')
+            return inp + '.laz'
+
+        return inp
 
 
 class STEMMessageHandler:

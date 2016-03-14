@@ -58,30 +58,30 @@ class STEMToolsDialog(BaseDialog):
 
     def onClosing(self):
         self.onClosing(self)
-        
+
     def get_output_path_fields(self):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
         """
         return []
-    
+
     def get_input_sources(self):
         """Fornisce al padre una lista di path di input da verificare
         prima di invocare onRunLocal()"""
         return []
-    
+
     def check_form_fields(self):
         """Fornisce al padre una lista di errori che riguardano i campi della form.
         Non include gli errori che possono esser verificati con le funzioni precedenti"""
-        
+
         dtm_name = str(self.BaseInput2.currentText())
         dtm_source = STEMUtils.getLayersSource(dtm_name)
-        
+
         if not dtm_source:
             return [u'Input DTM non è un layer di QGIS valido']
-        
+
         return []
-    
+
     def onRunLocal(self):
         # Estrazione CHM
         STEMSettings.saveWidgetsValue(self, self.toolName)
@@ -90,6 +90,12 @@ class STEMToolsDialog(BaseDialog):
             dtm_name = str(self.BaseInput2.currentText())
             dtm_source = STEMUtils.getLayersSource(dtm_name)
             out = str(self.TextOut.text())
+            if self.checkbox.isChecked():
+                compres = True
+            else:
+                compres = False
+            out = STEMUtils.check_las_compress(out, compres)
+            out_orig = out
             if self.LocalCheck.isChecked():
                 las = stemLAS()
                 source_task = source
@@ -104,13 +110,11 @@ class STEMToolsDialog(BaseDialog):
                 out_task = STEMUtils.pathClientWinToServerLinux(out)
                 dtm_source_task = STEMUtils.pathClientWinToServerLinux(dtm_source)
             las.initialize()
-            if self.checkbox.isChecked():
-                compres = True
-            else:
-                compres = False
-            com = las.chm(source_task, out_task, dtm_source_task, compressed=compres, local = self.LocalCheck.isChecked())
+            com = las.chm(source_task, out_task, dtm_source_task,
+                          compressed=compres,
+                          local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
-            STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out_orig))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
