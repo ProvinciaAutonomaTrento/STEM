@@ -682,9 +682,10 @@ class stemLAS():
         :param str prefix: prefix for the output LAS file
         """
         try:
-            from runtime import *
+            import readline
         except ImportError:
-            from smop.runtime import *
+            import pyreadline as readline
+        from smop.runtime import *
         import copy
         import struct
         from bosco_stem import read_las_header, readlas_1_2_

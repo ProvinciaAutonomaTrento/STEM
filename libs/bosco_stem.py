@@ -7,9 +7,10 @@ Created on Wed Nov 25 13:42:07 2015
 
 from __future__ import division
 try:
-    from runtime import *
+  import readline
 except ImportError:
-    from smop.runtime import *
+  import pyreadline as readline
+from smop.runtime import *
 
 import struct
 from sklearn.cluster import KMeans
