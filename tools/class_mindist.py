@@ -104,6 +104,7 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Creare output"
         self._insertCheckbox(label, 9)
+        self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)

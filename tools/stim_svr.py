@@ -57,11 +57,6 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
-        self.llcc = "Colonne delle feature da utilizzare"
-        self._insertLayerChooseCheckBox2(self.llcc, pos=3)
-        self.label_layer2.setEnabled(False)
-        self.layer_list2.setEnabled(False)
-
         labelc = "Effettuare la cross validation"
         self._insertSecondCheckbox(labelc, 0)
         self.checkbox2.stateChanged.connect(self.crossVali)
@@ -90,30 +85,35 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(mets, self.lm, 7)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
+        self.llcc = "Colonne delle feature da utilizzare"
+        self._insertLayerChooseCheckBox2Options(self.llcc, pos=8)
+        self.label_layer2.setEnabled(False)
+        self.layer_list2.setEnabled(False)
+
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 8, "Text file (*.txt)")
+        self._insertFileInputOption(self.lio, 9, "Text file (*.txt)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(9, label="Vettoriale di validazione")
+        self._insertSingleInputOption(10, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 10)
+        self._insertSecondCombobox(label, 11)
 
         ls = "Indice di accuratezza per la selezione del modello"
-        self._insertThirdCombobox(ls, 11, ['R²', 'MSE'])
+        self._insertThirdCombobox(ls, 12, ['R²', 'MSE'])
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
                                  empty=True)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 12)
-
+        self._insertCheckbox(label, 13)
+        
         self.horizontalLayout_field = QHBoxLayout()
         self.labelfield = QLabel()
         self.labelfield.setObjectName("labelfield")
@@ -125,7 +125,26 @@ class STEMToolsDialog(BaseDialog):
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.outputStateChanged()
+        self.checkbox.stateChanged.connect(self.outputStateChanged)
+        
         self.helpui.fillfromUrl(self.SphinxUrl())
+
+    def outputStateChanged(self):
+        if self.checkbox.isChecked():
+            self.LabelOut.setEnabled(True)
+            self.TextOut.setEnabled(True)
+            self.BrowseButton.setEnabled(True)
+            self.AddLayerToCanvas.setEnabled(True)
+            self.labelfield.setEnabled(True)
+            self.TextOutField.setEnabled(True)
+        else:
+            self.LabelOut.setEnabled(False)
+            self.TextOut.setEnabled(False)
+            self.BrowseButton.setEnabled(False)
+            self.AddLayerToCanvas.setEnabled(False)
+            self.labelfield.setEnabled(False)
+            self.TextOutField.setEnabled(False)
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
