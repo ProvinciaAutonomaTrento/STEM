@@ -84,14 +84,14 @@ class STEMToolsDialog(BaseDialog):
         prima di invocare onRunLocal().
         """
         return self.get_input_sources()
-    
-    
+
+
     def get_output_path_fields(self):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
         """
         return []
-    
+
     def get_input_sources(self):
         items = []
 
@@ -101,20 +101,22 @@ class STEMToolsDialog(BaseDialog):
             for index in xrange(self.BaseInput.count()):
                 items.append(self.BaseInput.item(index))
         sources = [i.text() for i in items]
-        
-        return sources        
-    
+
+        return sources
+
     def onRunLocal(self):
         # Accatastamento
         local = self.LocalCheck.isChecked()
         if not self.digit:
             # STEMMessageHandler.error("Selezionare il formato di output")
-            QMessageBox.critical(self, "Parametro mancante", "Selezionare il formato di output")
+            QMessageBox.critical(self, "Parametro mancante",
+                                 "Selezionare il formato di output")
             return
         STEMSettings.saveWidgetsValue(self, self.toolName)
         sources = self.get_input_sources()
         if not sources:
-            QMessageBox.warning(self, "Errore nei parametri", u"Non è stato selezionato nessun input")
+            QMessageBox.warning(self, "Errore nei parametri",
+                                u"Non è stato selezionato nessun input")
             # TODO: rilanciare il dialog
             dialog = STEMToolsDialog(self.iface, self.toolName)
             dialog.exec_()
@@ -122,12 +124,17 @@ class STEMToolsDialog(BaseDialog):
         names = [STEMUtils.getNameFromSource(i) for i in sources]
         outformat = str(self.BaseInputCombo.currentText())
         cut, cutsource = self.cutInputMulti(names, sources, local=local)
-        
+
         if cut:
              items = cut
              sources = cutsource
-        
+
         out = self.TextOut.text()
+        if outformat == 'GTIFF' and not (out.endswith('.tif') or
+           out.endswith('.TIF') or out.endswith('.tiff') or out.endswith('.TIFF')):
+            out = out + '.tif'
+        out_orig = out
+
         if local:
             cgdal = convertGDAL()
         else:
@@ -152,8 +159,8 @@ class STEMToolsDialog(BaseDialog):
         #else:
         #    resolution = None
         cgdal.write()
-        
-        STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
+
+        STEMMessageHandler.success("{ou} file created".format(ou=out_orig))
 
         if self.AddLayerToCanvas.isChecked():
-            STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')
+            STEMUtils.addLayerIntoCanvas(out_orig, 'raster')
