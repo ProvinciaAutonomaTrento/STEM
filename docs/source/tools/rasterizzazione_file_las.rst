@@ -47,6 +47,8 @@ Parametri
 
 **Risoluzione finale del raster**: risoluzione geometrica del file di output in metri.
 
+**Classe**: i numeri della classe o classi da considerare, se si seleziona più classi vanno separate da virgola senza alcun spazio.
+
 Output
 ------------
 

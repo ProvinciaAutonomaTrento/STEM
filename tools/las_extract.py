@@ -52,6 +52,8 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstLineEdit(label, 2)
         self.labelMethod = "Percentile (valori supportati 1-100)"
         self._insertSecondLineEdit(self.labelMethod, 3)
+        self.labelClass = "Classe o classi (separate da virgola senza spazi) su cui filtrare il file LAS"
+        self._insertThirdLineEdit(self.labelClass, 4)
         self.MethodInput.currentIndexChanged.connect(self.checkPercentile)
         self.LabelLinedit2.setEnabled(False)
         self.Linedit2.setEnabled(False)
@@ -85,14 +87,14 @@ class STEMToolsDialog(BaseDialog):
         prima di invocare onRunLocal().
         """
         return [str(self.TextIn.text())]
-    
-    
+
+
     def get_output_path_fields(self):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
         """
         return []
-       
+
     def check_form_fields(self):
         try:
             reso = float(self.Linedit.text())
@@ -100,7 +102,7 @@ class STEMToolsDialog(BaseDialog):
             # Errore
             reso = -1
         return [] if reso > 0 else ['Il parametro Risoluzione finale deve essere un numero maggiore di zero']
-    
+
     def onRunLocal(self):
         # Rasterizzazione file LAS
         STEMSettings.saveWidgetsValue(self, self.toolName)
@@ -113,7 +115,8 @@ class STEMToolsDialog(BaseDialog):
             returnfilter = self.BaseInputCombo.currentText()
             reso = self.Linedit.text()
             perc = self.Linedit2.text()
-            
+            classes = self.Linedit3.text()
+
             if not os.path.isfile(source):
                 STEMMessageHandler.error("File di input non valido")
                 return
@@ -132,13 +135,15 @@ class STEMToolsDialog(BaseDialog):
                 output = STEMUtils.pathClientWinToServerLinux(output)
             if method == 'percentile':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso, percentile=perc, region=bbox)
+                              resolution=reso, percentile=perc, region=bbox,
+                              classes=classes)
             elif method == 'trimmean':
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso, trim=perc, region=bbox)
+                              resolution=reso, trim=perc, region=bbox,
+                              classes=classes)
             else:
                 gs.las_import(source, tempout, method, returnpulse=returnfilter,
-                              resolution=reso, region=bbox)
+                              resolution=reso, region=bbox, classes=classes)
 
             STEMUtils.exportGRASS(gs, self.overwrite, output, tempout,
                                   'raster')

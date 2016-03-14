@@ -217,7 +217,7 @@ class stemGRASS():
 
         :param str mask: the path to the mask, None to remove it
         """
-        
+
         import grass.script.core as gcore
         if mask == '':
             runcom = gcore.Popen(['r.mask', '-r'])
@@ -416,7 +416,7 @@ class stemGRASS():
             self.removeMapset()
 
     def las_import(self, inp, out, method, returnpulse=None, resolution=None,
-                   percentile=None, trim=None, region=None):
+                   percentile=None, trim=None, region=None, classes=None):
         """Import LAS file trhough r.in.lidar
 
         :param str inp: the input source
@@ -429,9 +429,10 @@ class stemGRASS():
         :param str trim: discard <trim> percent of the smallest and <trim>
                          percent of the largest observations 0-50
         :param bool commandOnly: non esegue i comandi, li costruisce e li restituisce
+        :param str classes: the class(es) to select
         """
         import grass.script.core as gcore
-        
+
         cmd = ['r.in.lidar', '-go',
                'input={input}'.format(input=inp),
                'output={output}'.format(output=out)]
@@ -450,20 +451,20 @@ class stemGRASS():
         com.extend(outp.split())
         libs_save_command(com)
         self.run_grass([com])
-        
+
         com2 = ['g.region']
-        
+
         if region:
             com2.extend(['w={}'.format(region[0]),
                          'n={}'.format(region[1]),
                          'e={}'.format(region[2]),
-                         's={}'.format(region[3])])    
+                         's={}'.format(region[3])])
         if resolution:
             com2.extend(['res={}'.format(str(resolution)), '-a'])
         else:
             actual_res = int(gcore.region()['nsres'])
             com2.extend(['res={}'.format(str(actual_res)), '-a'])
-        
+
 #         if resolution and region:
 #             com2 = ['g.region',
 #                     'w={}'.format(region[0]),
@@ -525,6 +526,8 @@ class stemGRASS():
                          'input={input}'.format(input=inp),
                          'output={output}'.format(output=out),
                          'method={met}'.format(met=method)]
+            if classes:
+                com3.append('class_filter={cla}'.format(cla=classes))
             libs_save_command(com3)
             self.run_grass([com3])
 
