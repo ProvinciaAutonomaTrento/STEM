@@ -17,9 +17,9 @@ Input
 Parametri
 ------------
 
-**Valore minimo della finestra mobile per trovare gli alberi**: dimensione minima della finestra mobile usata per identificare i massimi locali. Il valore deve essere dispari e maggiore o uguale a 3.
+**Valore minimo della finestra mobile per trovare gli alberi**: dimensione minima in piexels della finestra mobile usata per identificare i massimi locali. Il valore deve essere dispari e maggiore o uguale a 3.
 
-**Valore massimo della finestra mobile per trovare gli alberi**: dimensione massima della finestra mobile usata per identificare i massimi locali. Il valore deve essere dispari e maggiore o uguale al parametro precedente (*Valore minimo della finestra mobile per trovare gli alberi*).
+**Valore massimo della finestra mobile per trovare gli alberi**: dimensione massima in piexels della finestra mobile usata per identificare i massimi locali. Il valore deve essere dispari e maggiore o uguale al parametro precedente (*Valore minimo della finestra mobile per trovare gli alberi*).
 
 **Valore minimo dell'altezza degli alberi**: soglia minima di altezza per gli alberi da individuare (es. 2 m).
 
