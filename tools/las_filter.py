@@ -99,6 +99,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 compres = False
             out = STEMUtils.check_las_compress(out, compres)
+            out_orig = out
             if self.LocalCheck.isChecked():
                 las = stemLAS()
             else:
@@ -122,7 +123,7 @@ class STEMToolsDialog(BaseDialog):
                               compressed=compres,
                               local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
-            STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
+            STEMMessageHandler.success("{ou} LAS file created".format(ou=out_orig))
         except:
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
