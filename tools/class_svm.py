@@ -110,10 +110,21 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Creare output"
         self._insertCheckbox(label, 10)
+        self.checkbox.stateChanged.connect(self.outputStateChanged)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
+    def outputStateChanged(self):
+        if self.checkbox.isChecked():
+            self.LabelOut.setEnabled(True)
+            self.TextOut.setEnabled(True)
+            self.BrowseButton.setEnabled(True)
+        else:
+            self.LabelOut.setEnabled(False)
+            self.TextOut.setEnabled(False)
+            self.BrowseButton.setEnabled(False)
+            
     def indexChanged(self):
         if self.BaseInput2.currentText() != "":
             STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
