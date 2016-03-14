@@ -190,7 +190,6 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
             res[i] = dict(features=fs, distance=dist[idistmax])
 
         if check == round(dist[idistmax], precision):
-            QMessageBox.question("Successo, ma ci siamo fermati prima", "Abbiamo {0} features su {1}".format(i, nfeat))
             return res
     return res
 
