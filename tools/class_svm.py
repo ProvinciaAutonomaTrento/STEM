@@ -59,11 +59,11 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
-        
+
         labelc = "Effettuare la cross validation"
         self._insertSecondCheckbox(labelc, 0)
         self.checkbox2.stateChanged.connect(self.crossVali)
-       
+
         self._insertThirdLineEdit(label="Inserire il numero di fold della "
                                   "cross validation maggiore di 2", posnum=1)
         self.Linedit3.setEnabled(False)
@@ -78,7 +78,7 @@ class STEMToolsDialog(BaseDialog):
                                    posnum=4)
 
         mets = ['no', 'manuale', 'file']
-              
+
         self.lm = "Selezione feature"
         self._insertMethod(mets, self.lm, 5)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
@@ -127,7 +127,7 @@ class STEMToolsDialog(BaseDialog):
             self.TextOut.setEnabled(False)
             self.BrowseButton.setEnabled(False)
             self.AddLayerToCanvas.setEnabled(False)
-            
+
     def indexChanged(self):
         if self.BaseInput2.currentText() != "":
             STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
@@ -228,8 +228,8 @@ class STEMToolsDialog(BaseDialog):
         invect = str(self.BaseInput.currentText())
         inrast = str(self.BaseInput2.currentText())
         return [STEMUtils.getLayersSource(invect), STEMUtils.getLayersSource(inrast)]
-    
-    
+
+
     def get_output_path_fields(self):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
@@ -328,6 +328,11 @@ class STEMToolsDialog(BaseDialog):
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+            elif feat == 'manuale':
+                cols = STEMUtils.checkLayers(inrast, self.layer_list2, False,
+                                             True)
+                fscolumns = np.loadtxt(cols)
+                com.extend(['-feature-selection-file', "tmp_manual_select"])
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
@@ -341,7 +346,7 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
-                
+
                 invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
                 inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
                 optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
@@ -495,12 +500,12 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                
+
                 if not self.LocalCheck.isChecked():
                     temp_out = STEMUtils.pathClientWinToServerLinux(out)
                 else:
                     temp_out = out
-                
+
                 mltb.execute(best=best, transform=None, untransform=None,
                              output_file=temp_out, format='GTiff')
 

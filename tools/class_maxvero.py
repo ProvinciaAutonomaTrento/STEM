@@ -252,6 +252,12 @@ class STEMToolsDialog(BaseDialog):
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+            elif feat == 'manuale':
+                cols = STEMUtils.checkLayers(inrast, self.layer_list2, False,
+                                             True)
+                fscolumns = np.loadtxt(cols)
+                com.extend(['-feature-selection-file', "tmp_manual_select"])
+
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
@@ -283,7 +289,7 @@ class STEMToolsDialog(BaseDialog):
             # ---------------------------------------------------------------
             # Extract training samples
             log.debug('Extract training samples')
-        
+
             if (not os.path.exists(trnpath) or overwrite):
                 log.debug('    From:')
                 log.debug('      - vector: %s' % mltb.getVector())

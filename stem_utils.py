@@ -214,12 +214,13 @@ class STEMUtils:
             return 'raster'
 
     @staticmethod
-    def checkLayers(inmap, form=None, index=True):
+    def checkLayers(inmap, form=None, index=True, boolean=False):
         """Function to check if layers are choosen
 
         :param str inmap: the input map
         :param obj form: a object containing the bands of map
         :param bool index:
+        :param bool boolean: add 1.0 for selected layer and 0.0 for unselected
         """
         if not form:
             return STEMUtils.getNumSubset(inmap)
@@ -230,8 +231,12 @@ class STEMUtils:
                 if item.checkState() == Qt.Checked:
                     if index:
                         itemlist.append(str(i + 1))
+                    elif boolean:
+                        itemlist.append(1.0)
                     else:
                         itemlist.append(str(item.text()))
+                elif item.checkState() != Qt.Checked and boolean:
+                    itemlist.append(0.0)
             if len(itemlist) == 0:
                 try:
                     return STEMUtils.getNumSubset(inmap)
