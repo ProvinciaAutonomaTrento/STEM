@@ -234,11 +234,8 @@ class STEMToolsDialog(BaseDialog):
         """Fornisce al padre una lista di path di output da verificare
         prima di invocare onRunLocal().
         """
-        if self.checkbox.isChecked():
-            optvect = str(self.BaseInputOpt.currentText())
-            return [STEMUtils.getLayersSource(optvect)]
-        else:
-            return []
+        optvect = str(self.BaseInputOpt.currentText())
+        return [STEMUtils.getLayersSource(optvect)]
 
     def check_form_fields(self):
         """
