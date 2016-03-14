@@ -59,18 +59,11 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
-        self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
-        self._insertLayerChooseCheckBox2(self.llcc, pos=3)
-        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
-
-        self.label_layer2.setEnabled(False)
-        self.layer_list2.setEnabled(False)
-
+        
         labelc = "Effettuare la cross validation"
         self._insertSecondCheckbox(labelc, 0)
         self.checkbox2.stateChanged.connect(self.crossVali)
-
+       
         self._insertThirdLineEdit(label="Inserire il numero di fold della "
                                   "cross validation maggiore di 2", posnum=1)
         self.Linedit3.setEnabled(False)
@@ -85,30 +78,38 @@ class STEMToolsDialog(BaseDialog):
                                    posnum=4)
 
         mets = ['no', 'manuale', 'file']
+              
         self.lm = "Selezione feature"
         self._insertMethod(mets, self.lm, 5)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
+        self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
+        self._insertLayerChooseCheckBox2Options(self.llcc, pos=6)
+        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+        self.label_layer2.setEnabled(False)
+        self.layer_list2.setEnabled(False)
+
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 6,
+        self._insertFileInputOption(self.lio, 7,
                                     filt="Text file (*.txt *.text)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(7, label="Vettoriale di validazione")
+        self._insertSingleInputOption(8, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 8)
+        self._insertSecondCombobox(label, 9)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 9)
+        self._insertCheckbox(label, 10)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())

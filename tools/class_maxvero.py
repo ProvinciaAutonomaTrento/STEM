@@ -59,13 +59,6 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSecondSingleInput(pos=2, label="Dati di input raster")
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1, empty=True)
-        self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
-        self._insertLayerChooseCheckBox2(self.llcc, pos=3)
-        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
-
-        self.label_layer2.setEnabled(False)
-        self.layer_list2.setEnabled(False)
 
         labelc = "Effettuare la cross validation"
         self._insertSecondCheckbox(labelc, 0)
@@ -80,23 +73,30 @@ class STEMToolsDialog(BaseDialog):
         self._insertMethod(mets, self.lm, 2)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
+        self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
+        self._insertLayerChooseCheckBox2Options(self.llcc, pos=3)
+        self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+        self.label_layer2.setEnabled(False)
+        self.layer_list2.setEnabled(False)
+
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 3, "Text file (*.txt)")
+        self._insertFileInputOption(self.lio, 4, "Text file (*.txt)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(4, label="Vettoriale di validazione")
+        self._insertSingleInputOption(5, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 5)
+        self._insertSecondCombobox(label, 6)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 6)
+        self._insertCheckbox(label, 7)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())

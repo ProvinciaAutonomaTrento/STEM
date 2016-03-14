@@ -387,6 +387,30 @@ class BaseDialog(QDialog, baseDialog):
                                                self.horizontalLayout_layer)
         self.label_layer.setText(self.tr("", label))
 
+    def _insertLayerChooseCheckBox2Options(self, label, combo=True, pos=3):
+        """Function to insert a second CheckBox
+
+        :param int pos: the position of form in the input layout
+        :param str label: the label of form
+        :param bool combo: boolean to choose if the CheckBox should be
+                           checkable or not
+        """
+        self.horizontalLayout_layer2 = QHBoxLayout()
+        self.horizontalLayout_layer2.setObjectName("horizontalLayout_layer2")
+        self.label_layer2 = QLabel()
+        self.label_layer2.setWordWrap(True)
+        self.label_layer2.setObjectName("label_layer2")
+        self.horizontalLayout_layer2.addWidget(self.label_layer2)
+        if combo:
+            self.layer_list2 = CheckableComboBox()
+        else:
+            self.layer_list2 = QComboBox()
+        self.layer_list2.setObjectName("layer_list2")
+        self.horizontalLayout_layer2.addWidget(self.layer_list2)
+        self.verticalLayout_options.insertLayout(pos,
+                                               self.horizontalLayout_layer2)
+        self.label_layer2.setText(self.tr("", label))
+        
     def _insertLayerChooseCheckBox2(self, label, combo=True, pos=3):
         """Function to insert a second CheckBox
 
