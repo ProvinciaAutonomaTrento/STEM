@@ -25,6 +25,7 @@ __copyright__ = '(C) 2015 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
+from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
@@ -53,12 +54,24 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChooseCheckBox3(self.labelalt, False)
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list3)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
+        
+        self.horizontalLayout_field = QHBoxLayout()
+        self.labelfield = QLabel()
+        self.labelfield.setObjectName("labelfield")
+        self.labelfield.setText(self.tr("", "Nome della nuova colonna con il "
+                                      "volume. Massimo 10 caratteri"))
+        self.horizontalLayout_field.addWidget(self.labelfield)
+        self.TextOutField = QLineEdit()
+        self.TextOutField.setObjectName("TextOutField")
+        self.TextOutField.setMaxLength(10)
+        self.horizontalLayout_field.addWidget(self.TextOutField)
+        self.verticalLayout_output.insertLayout(0, self.horizontalLayout_field)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.LabelOut.hide()
+        self.TextOut.hide()
         self.BrowseButton.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
-        self.LabelOut.setText(self.tr("", "Nome della nuova colonna con il "
-                                      "volume. Massimo 10 caratteri"))
-        self.TextOut.setMaxLength(10)
 
     def columnsChange(self):
         """Change columns in the combobox according with the layer choosen"""
@@ -80,7 +93,7 @@ class STEMToolsDialog(BaseDialog):
                 name = cut
                 source = cutsource
 
-            out = str(self.TextOut.text())
+            out = str(self.TextOutField.text())
             if self.overwrite and os.path.exists(out):
                 out_pref = os.path.basename(out).replace('.shp', '')
                 out_path = os.path.dirname(out)
