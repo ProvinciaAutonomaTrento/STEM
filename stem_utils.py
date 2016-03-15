@@ -20,6 +20,7 @@ __revision__ = '$Format:%H$'
 
 import codecs
 import os
+import sys
 import inspect
 import re
 import tempfile
@@ -548,6 +549,8 @@ class STEMUtils:
         :param bool inp: DEPRECATED
         :param boo gui_warning: notifica all'utente gli errori
         """
+        if not sys.platform == 'win32':
+            return path
 
         table = STEMUtils.get_mapping_table()
 
