@@ -76,6 +76,25 @@ class STEMToolsDialog(BaseDialog):
         self.LabelOut.setText('Selezionare prefisso per salvare i risultati')
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+    
+    def check_paths_validity(self):
+        errors = []
+        
+        for p in self.get_input_path_fields():
+            if not os.path.exists(p):
+                errors.append(p)
+        # TextOut e` comune a tutti i plugin
+        paths = self.get_output_path_fields()
+        if not self.TextOut.isHidden():
+            paths.append(self.TextOut.text())
+        for p in paths:
+            # Controllo che esista la cartella 
+            # del file di output
+            if not os.path.isdir(os.path.split(p)[0]):
+                errors.append(p)
+                continue
+            
+        return errors
 
     def methodChanged(self):
         if self.MethodInput.currentText().find('dos') != -1:

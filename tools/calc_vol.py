@@ -60,6 +60,24 @@ class STEMToolsDialog(BaseDialog):
                                       "volume. Massimo 10 caratteri"))
         self.TextOut.setMaxLength(10)
 
+    def check_paths_validity(self):
+        errors = []
+        
+        for p in self.get_input_path_fields():
+            if not os.path.exists(p):
+                errors.append(p)
+        # TextOut e` comune a tutti i plugin
+        paths = self.get_output_path_fields()
+        
+        for p in paths:
+            # Controllo che esista la cartella 
+            # del file di output
+            if not os.path.isdir(os.path.split(p)[0]):
+                errors.append(p)
+                continue
+            
+        return errors
+
     def columnsChange(self):
         """Change columns in the combobox according with the layer choosen"""
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
