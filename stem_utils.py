@@ -762,6 +762,7 @@ class STEMLogging:
         else:
             stempath = STEMSettings.value("stempath")
             logfile = os.path.join(stempath, 'stem.log')
+        reload(logging)
         logging.basicConfig(filename=logfile, filemode='w',
                             level=logging.DEBUG)
 

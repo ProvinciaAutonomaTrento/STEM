@@ -80,7 +80,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         # Selezione feature per classificazione
         STEMSettings.saveWidgetsValue(self, self.toolName)
-        #log = STEMLogging()
+        log = STEMLogging()
 #         com = ['python', 'mlcmd.py']
         try:
             invect = str(self.BaseInput.currentText())
@@ -114,12 +114,6 @@ class STEMToolsDialog(BaseDialog):
 #                         'accuracy', '--best-strategy', 'mean',
 #                         '--feature-selection', 'SSF', invectsource, invectcol])
             out = self.TextOut.text()
-            
-            logfile = os.path.splitext(out)[0]+"_log.txt"
-            if not self.LocalCheck.isChecked():
-                logfile = STEMUtils.pathClientWinToServerLinux(logfile)
-                
-            log = STEMLogging(logfile)
             
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=None,
@@ -159,6 +153,10 @@ class STEMToolsDialog(BaseDialog):
 
             # --------------------------------------------------------------
             # Feature selector
+            logfile = os.path.splitext(out)[0]+"_log.log"
+            if not self.LocalCheck.isChecked():
+                logfile = STEMUtils.pathClientWinToServerLinux(logfile)
+            log = STEMLogging(logfile)
             fselector = SSF(strategy=getattr(np, meth), precision=4,
                             n_features=nfeat, logfile=log)
 
