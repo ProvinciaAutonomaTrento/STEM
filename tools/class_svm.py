@@ -509,7 +509,7 @@ class STEMToolsDialog(BaseDialog):
                 mltb.execute(best=best, transform=None, untransform=None,
                              output_file=temp_out, format='GTiff')
 
-                if self.AddLayerToCanvas.isChecked():
+                if self.AddLayerToCanvas.isChecked() and self.TextOut.isEnabled():
                     STEMUtils.addLayerIntoCanvasMaxMin(out)
                 STEMUtils.copyFile(crosspath, out)
                 STEMMessageHandler.success("Il file {name} è stato scritto "
