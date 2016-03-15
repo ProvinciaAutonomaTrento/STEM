@@ -15,7 +15,7 @@ from itertools import combinations
 from math import log, exp, sqrt
 import numpy as np
 from numpy.linalg import inv, det
-
+from stem_utils_server import STEMLoggingServer
 
 VERBOSE = True
 
@@ -207,6 +207,9 @@ class SSF(object):
         self.ranking_ = None
         self.logfile = logfile
 
+    def setup_logfile(self):
+        self.logfile = STEMLoggingServer(self.logfile)
+
     def __repr__(self):
         return "SSF(strategy=%r, precision=%r)" % (self.strategy,
                                                    self.precision)
@@ -214,6 +217,7 @@ class SSF(object):
     def fit(self, X, y, verbose=False):
         """Fit the RFE model and automatically tune the number of
         selected features."""
+        self.setup_logfile()
         try:
             res = seq_forward_floating_fs(X, y, strategy=self.strategy,
                                           n_features=self.n_features_,

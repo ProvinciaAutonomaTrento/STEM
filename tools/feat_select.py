@@ -156,9 +156,9 @@ class STEMToolsDialog(BaseDialog):
             logfile = os.path.splitext(out)[0]+"_log.log"
             if not self.LocalCheck.isChecked():
                 logfile = STEMUtils.pathClientWinToServerLinux(logfile)
-            log = STEMLogging(logfile)
+            
             fselector = SSF(strategy=getattr(np, meth), precision=4,
-                            n_features=nfeat, logfile=log)
+                            n_features=nfeat, logfile=logfile)
 
             # ------------------------------------------------------------
             # Transform the input data

@@ -13,6 +13,7 @@ import time
 import sys
 import os
 import codecs
+import logging
 
 from PyQt4.QtCore import QSettings
 from PyQt4.QtGui import QComboBox, QLineEdit, QCheckBox
@@ -69,6 +70,23 @@ def read_file(filename, mode='rb', encoding='UTF-8'):
         output = f.read().decode(encoding)
     return output
 
+class STEMLoggingServer:
+    """Class to log information of modules in a file"""
+
+    def __init__(self, logname):
+        logfile = logname
+        reload(logging)
+        logging.basicConfig(filename=logfile, filemode='w',
+                            level=logging.DEBUG)
+
+    def debug(self, text):
+        logging.debug(text)
+
+    def warning(self, text):
+        logging.warning(text)
+
+    def info(self, text):
+        logging.info(text)
 
 class STEMSettings:
     """
