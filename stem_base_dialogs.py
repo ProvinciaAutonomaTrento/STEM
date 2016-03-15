@@ -173,7 +173,7 @@ class BaseDialog(QDialog, baseDialog):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
         paths = self.get_output_path_fields()
-        if not self.TextOut.isHidden():
+        if not self.TextOut.isHidden() and self.TextOut.isEnabled():
             paths.append(self.TextOut.text())
         for p in paths:
             # Controllo che esista la cartella 
@@ -191,7 +191,7 @@ class BaseDialog(QDialog, baseDialog):
     def check_server_paths(self):
         """Controlla che i path siano compatibili con l'esecuzione remota"""
         paths = self.get_input_path_fields() + self.get_output_path_fields()
-        if not self.TextOut.isHidden():
+        if not self.TextOut.isHidden() and self.TextOut.isEnabled():
             paths.append(self.TextOut.text())
         errors = []
         for p in paths:

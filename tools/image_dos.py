@@ -85,7 +85,7 @@ class STEMToolsDialog(BaseDialog):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
         paths = self.get_output_path_fields()
-        if not self.TextOut.isHidden():
+        if not self.TextOut.isHidden() and self.TextOut.isEnabled():
             paths.append(self.TextOut.text())
         for p in paths:
             # Controllo che esista la cartella 
