@@ -43,7 +43,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
-        self.labelcol = "Seleziona la colonna con indicazione del specie"
+        self.labelcol = "Seleziona la colonna con indicazione della specie"
         self._insertLayerChooseCheckBox(self.labelcol, pos=1, combo=False)
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.labeldia = "Seleziona la colonna con indicazione del diametro"
