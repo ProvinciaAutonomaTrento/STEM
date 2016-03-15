@@ -59,10 +59,11 @@ class STEMToolsDialog(BaseDialog):
         labelcount = "Nome della nuova colonna con il numero di elementi " \
                      "all'interno di ogni area. Massimo 10 caratteri"
         self._insertFirstLineEdit(label=labelcount, posnum=2)
+        self.Linedit.SetMaxLength(10)
         labelstats = "Nome della nuova colonna con la statistica sugli " \
                      "elementi all'interno di ogni area. Massimo 10 caratteri"
         self._insertSecondLineEdit(label=labelstats, posnum=3)
-
+        self.Linedit2.SetMaxLength(10)
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
 

@@ -55,7 +55,7 @@ class STEMToolsDialog(BaseDialog):
         self.label2.setText(self.tr(name, "Input mappa training area (sia raster che vettoriale)"))
         self.label.setText(self.tr(name, "Input mappa classificata"))
         self.helpui.fillfromUrl(self.SphinxUrl())
-
+        self.AddLayerToCanvas.hide()
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):

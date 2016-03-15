@@ -121,6 +121,7 @@ class STEMToolsDialog(BaseDialog):
         self.horizontalLayout_field.addWidget(self.labelfield)
         self.TextOutField = QLineEdit()
         self.TextOutField.setObjectName("TextOutField")
+        self.TextOutField.setMaxLength(9)
         self.horizontalLayout_field.addWidget(self.TextOutField)
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
 

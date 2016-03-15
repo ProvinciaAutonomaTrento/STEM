@@ -58,6 +58,7 @@ class STEMToolsDialog(BaseDialog):
         self.helpui.fillfromUrl(self.SphinxUrl())
         self.LabelOut.setText(self.tr("", "Nome della nuova colonna con il "
                                       "volume. Massimo 10 caratteri"))
+        self.TextOut.setMaxLength(10)
 
     def columnsChange(self):
         """Change columns in the combobox according with the layer choosen"""
