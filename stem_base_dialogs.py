@@ -115,7 +115,7 @@ class BaseDialog(QDialog, baseDialog):
 
     def run(self):
         """Function for accept button"""
-        if not self.overwrite:
+        if not self.overwrite and self.TextOut.isEnabled():
             res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
             if not res: return
 
