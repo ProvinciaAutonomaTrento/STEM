@@ -476,7 +476,7 @@ class STEMToolsDialog(BaseDialog):
                                      transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0]._asdict().keys()))
-                    mltb.find_best(model, strategy=return_argument,
+                    mltb.find_best(models, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
@@ -510,7 +510,7 @@ class STEMToolsDialog(BaseDialog):
                              output_file=temp_out, format='GTiff')
 
                 if self.AddLayerToCanvas.isChecked():
-                    STEMUtils.addLayerIntoCanvas(out, 'raster')
+                    STEMUtils.addLayerIntoCanvasMaxMin(out)
                 STEMUtils.copyFile(crosspath, out)
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))

@@ -113,6 +113,44 @@ class STEMUtils:
         combo.addItems(layerlist)
 
     @staticmethod
+    def addLayerIntoCanvasMaxMin(filename):
+        while not QFileInfo(filename).exists():
+            time.sleep(.1)
+            pass
+        layer = QFileInfo(filename)
+        layerName = layer.baseName()
+        if not layer.exists():
+            STEMMessageHandler.error("Problema ricaricando il layer {na}, "
+                                     "potrebbe non essere stato scritto "
+                                     "correttamente".format(na=layerName))
+            
+        layer = QgsRasterLayer(filename, layerName)
+        renderer = layer.renderer()
+        provider = layer.dataProvider()
+        layer_extent = layer.extent()
+        uses_band = renderer.usesBands()
+        myType = renderer.dataType(uses_band[0])
+        stats = provider.bandStatistics(uses_band[0], 
+                                        QgsRasterBandStats.All, 
+                                        layer_extent, 
+                                        0)
+        myEnhancement = QgsContrastEnhancement(myType)
+        contrast_enhancement = QgsContrastEnhancement.StretchToMinimumMaximum
+        
+        myEnhancement.setContrastEnhancementAlgorithm(contrast_enhancement,True)
+        myEnhancement.setMinimumValue(stats.minimumValue)
+        myEnhancement.setMaximumValue(stats.maximumValue)
+        
+        layer.renderer().setContrastEnhancement(myEnhancement)
+
+        if not layer.isValid():
+            STEMMessageHandler.error("Problema ricaricando il layer {na}, "
+                                     "potrebbe non essere stato scritto "
+                                     "correttamente".format(na=layerName))
+        else:
+            STEMUtils.registry.addMapLayer(layer)
+        
+    @staticmethod
     def getLayer(layerName):
         """Return the layer object starting from the name
 
