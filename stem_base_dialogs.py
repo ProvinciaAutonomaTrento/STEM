@@ -172,7 +172,7 @@ class BaseDialog(QDialog, baseDialog):
             if not os.path.exists(p):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
-        paths = self.get_output_path_fields()
+        paths = [x for x in self.get_output_path_fields() if x is not None]
         if not self.TextOut.isHidden() and self.TextOut.isEnabled():
             paths.append(self.TextOut.text())
         for p in paths:

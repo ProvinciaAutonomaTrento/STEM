@@ -255,6 +255,7 @@ class STEMToolsDialog(BaseDialog):
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
+        
         cut, cutsource, mask = self.cutInput(invect, invectsource,
                                              'vector', local=self.LocalCheck.isChecked())
         prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)

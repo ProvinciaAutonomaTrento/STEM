@@ -29,7 +29,9 @@ import glob
 import logging
 import pickle, base64
 import time
+import subprocess
 from collections import namedtuple
+import json
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -666,6 +668,23 @@ class STEMUtils:
 
         return inp
 
+    @staticmethod    
+    def hasNaN(image):
+        def analyze(log):
+            d = json.loads(log)
+            try:
+                nodata_value = d['bands'][0]['noDataValue']
+                if str(nodata_value).lower() == 'nan':
+                    return True
+                else:
+                    return False
+            except:
+                return False
+        gdalinfo_command = "gdalinfo -json {0}".format(image)
+        gdalinfo_command = gdalinfo_command.split()
+        runcom = subprocess.Popen(gdalinfo_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        log, err = runcom.communicate()
+        analyze(log)
 
 class STEMMessageHandler:
     """
