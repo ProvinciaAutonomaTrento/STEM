@@ -634,6 +634,7 @@ class MLToolBox(object):
         """
         self._trans = []
         self.fsfit = False
+        self.message = None
 
         # set values
         self.set_params(*args, **kwargs)
@@ -755,6 +756,9 @@ class MLToolBox(object):
                              for k in self._attributes])
             self.logging.debug(msg.format(par))
             
+    def getMessage(self):        
+        return self.message
+    
     def getVector(self):
         return self.vector
     
@@ -928,8 +932,8 @@ class MLToolBox(object):
                     ##Xt = self.fselector.transform(Xt)
                 if fsfit:
                     self.fselector.fit(Xt, y)
-                    if (hasattr(self.fselector, 'message') and self.fselector.message is not None):
-                        X.message = self.fselector.message
+                    if hasattr(self.fselector, 'message') and self.fselector is not None:
+                        self.message = self.fselector.message                    
                     if (hasattr(self.fselector, 'scores_') and
                             hasattr(self.fselector, 'pvalues_')):
                         outpath = os.path.split(fsfile)
@@ -977,7 +981,6 @@ class MLToolBox(object):
                 print("Selected feature are not saved in: %s" % fsfile)
                 pass
         return Xt
-
 
     def cross_validation(self, models=None, X=None, y=None,
                          scoring=None,

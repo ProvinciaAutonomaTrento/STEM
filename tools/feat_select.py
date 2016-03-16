@@ -170,9 +170,14 @@ class STEMToolsDialog(BaseDialog):
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
                                     fsfile=temp_out, fsfit=True)
+            
+            message = mltb.getMessage()
+            
             STEMMessageHandler.success("Il file {name} è stato scritto correttamente".format(name=out))
-            if hasattr(X, 'message') and X.message is not None:
-                QMessageBox.warning(self, "Attenzione", X.message)
+            
+            if message is not None:
+                QMessageBox.warning(self, "Attenzione", error)
+            
             return
         except:
             error = traceback.format_exc()
