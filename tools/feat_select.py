@@ -166,11 +166,13 @@ class STEMToolsDialog(BaseDialog):
                 temp_out = STEMUtils.pathClientWinToServerLinux(out)
             else:
                 temp_out = out
+                
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
                                     fsfile=temp_out, fsfit=True)
-            STEMMessageHandler.success("Il file {name} è stato scritto "
-                                       "correttamente".format(name=out))
+            STEMMessageHandler.success("Il file {name} è stato scritto correttamente".format(name=out))
+            if hasattr(X, 'message') and X.message is not None:
+                QMessageBox.warning(self, "Attenzione", X.message)
             return
         except:
             error = traceback.format_exc()

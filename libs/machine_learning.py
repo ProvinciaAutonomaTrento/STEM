@@ -928,6 +928,8 @@ class MLToolBox(object):
                     ##Xt = self.fselector.transform(Xt)
                 if fsfit:
                     self.fselector.fit(Xt, y)
+                    if (hasattr(self.fselector, 'message') and self.fselector.message is not None):
+                        X.message = self.fselector.message
                     if (hasattr(self.fselector, 'scores_') and
                             hasattr(self.fselector, 'pvalues_')):
                         outpath = os.path.split(fsfile)

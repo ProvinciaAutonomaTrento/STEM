@@ -121,6 +121,7 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
     Jeffries-Matusita Distance.
     """
     #labels = sorted(set(classes))
+    message = None
     nrows, ncols = data.shape
     mu = fgroup(classes, data, mean)
     cv = fgroup(classes, data, cov)
@@ -170,12 +171,15 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
                                "equal values")
 
         if np.isnan(dist.max()):
+            message = "WARNING: Distace is NaN, this could happen when" + \
+                         " the number of training for a class is too low" + \
+                         " and the covariance matrix is not invertible."
             communicate(("WARNING: Distace is NaN, this could happen when"
                          " the number of training for a class is too low"
                          " and the covariance matrix is not invertible."),
                         verbose=verbose, logging=logging)
             info(i, np.nan, fs, verbose, logging)
-            return res
+            return res, message
 
         idistmax = dist.argmax()
         fs = features_comb[idistmax]
@@ -190,8 +194,9 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
             res[i] = dict(features=fs, distance=dist[idistmax])
 
         if check == round(dist[idistmax], precision):
-            return res
-    return res
+            message = "Square root of 2."
+            return res, message
+    return res, message
 
 
 class SSF(object):
@@ -219,10 +224,11 @@ class SSF(object):
         selected features."""
         self.setup_logfile()
         try:
-            res = seq_forward_floating_fs(X, y, strategy=self.strategy,
+            res, message = seq_forward_floating_fs(X, y, strategy=self.strategy,
                                           n_features=self.n_features_,
                                           logging=self.logfile,
                                           verbose=verbose)
+            self.message = message
         except Exception as exc:
             if self.logfile:
                 msg = 'seq_forward_floating_fs raise {}'
@@ -241,7 +247,7 @@ class SSF(object):
         #self.ranking_ =
         self.support_ = np.array([True if i in self.selected else False
                                   for i in range(X.shape[1])])
-
+        
     def transform(self, X):
         """Reduce X to the selected features."""
         return X[:, self.support_]
