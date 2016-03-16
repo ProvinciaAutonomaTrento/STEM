@@ -685,6 +685,30 @@ class STEMUtils:
         runcom = subprocess.Popen(gdalinfo_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log, err = runcom.communicate()
         analyze(log)
+        
+    @staticmethod
+    def NaNToNumber(image, number):
+        if local:
+            path = tempfile.gettempdir()
+        else:
+            # Esecuzione sul server, ma il file viene generato sul client
+            # Quindi bisogna usare un path accessibile a server e client
+
+            # soluzione temporanea: scelgo il path locale del primo mapping definito dall'utente
+            # TODO: aggiungere alla tabella un radio button per scegliere la cartella dei file temporanei
+            try:
+                path = STEMUtils.get_temp_dir()
+            except:
+                STEMMessageHandler.error("È necessario configurare almeno un mapping fra le "
+                                         "risorse locali e remote")
+                return False, False, False
+        outname = "nodata_{name}".format(name=inp).strip()
+        out = os.path.join(path, outname)
+        com = "gdal_calc.py -A {0} --outfile={1} --overwrite --calc=A --NoDataValue={2}".format(image, transformed_image, number)
+        com = com.split()
+        runcom = subprocess.Popen(com, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        log, err = runcom.communicate()
+        return outname, out
 
 class STEMMessageHandler:
     """

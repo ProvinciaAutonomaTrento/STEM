@@ -168,7 +168,7 @@ class BaseDialog(QDialog, baseDialog):
         Ogni plugin deve indicare quali controllare"""
         errors = []
         
-        for p in self.get_input_path_fields():
+        for p in [x for x in self.get_input_path_fields() if x is not None]:
             if not os.path.exists(p):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
