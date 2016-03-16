@@ -176,7 +176,7 @@ class STEMToolsDialog(BaseDialog):
             STEMMessageHandler.success("Il file {name} è stato scritto correttamente".format(name=out))
             
             if message is not None:
-                QMessageBox.warning(self, "Attenzione", error)
+                QMessageBox.warning(self, "Attenzione", message)
             
             return
         except:
