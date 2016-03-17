@@ -123,7 +123,7 @@ class STEMPlugin:
         # save in different way
         # STEMUtils.saveParameters()
         myfile = QFileDialog.getSaveFileName(None, "Selezionare il file in cui"
-                                             " salvare la configurazione", "",  "File di configurazione (*.ini *.txt)")
+                                             " salvare la configurazione", "",  "File di configurazione (*.ini *.txt)", options=QFileDialog.DontUseNativeDialog)
         if myfile:
             import shutil
             import tempfile
@@ -139,7 +139,7 @@ class STEMPlugin:
     def load(self):
         """Load parameters from a file"""
         myfile = QFileDialog.getOpenFileName(None, "Selezionare il file con la"
-                                             " configurazione da caricare", "", "File di configurazione (*.ini *.txt)")
+                                             " configurazione da caricare", "", "File di configurazione (*.ini *.txt)", options=QFileDialog.DontUseNativeDialog)
         if myfile:
             import ConfigParser
             newconfig = ConfigParser.ConfigParser()
