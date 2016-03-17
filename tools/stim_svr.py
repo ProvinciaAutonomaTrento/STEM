@@ -484,7 +484,8 @@ class STEMToolsDialog(BaseDialog):
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
                         pkl.dump(best, bpkl)
-                    STEMUtils.copyFile(testpath, out)
+                    if self.checkbox.isChecked():
+                        STEMUtils.copyFile(testpath, out)
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)

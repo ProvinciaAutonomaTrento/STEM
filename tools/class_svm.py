@@ -418,8 +418,8 @@ class STEMToolsDialog(BaseDialog):
                     Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
-                    np.savetxt(testpath, dt, delimiter=SEP,
-                               header="# last column is the training.")
+#                     np.savetxt(testpath, dt, delimiter=SEP,
+#                                header="# last column is the training.")
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)
@@ -482,7 +482,8 @@ class STEMToolsDialog(BaseDialog):
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
                         pkl.dump(best, bpkl)
-                    STEMUtils.copyFile(testpath, out)
+                    if self.checkbox.isChecked():
+                        STEMUtils.copyFile(testpath, out)
                 else:
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
