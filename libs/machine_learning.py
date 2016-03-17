@@ -443,7 +443,9 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
     if logging:
         msg = 'extract_trining: csv_file={}, delimiter={}, header={}'
         logging.debug(msg.format(csv_file, delimiter, header))
-    np.savetxt(csv_file, data, header=header, delimiter=delimiter)
+    f = open(csv_file, "w")
+    np.savetxt(f, data, header=header, delimiter=delimiter)
+    f.close()
     return data[:, :-1].astype(float), data[:, -1]  # X, y
 
 

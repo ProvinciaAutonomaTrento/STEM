@@ -343,13 +343,15 @@ class STEMToolsDialog(BaseDialog):
                 testpath = os.path.join(home,
                                         "{p}_csvtest.csv".format(p=prefcsv))
                 if (not os.path.exists(testpath) or overwrite):
-#                     log.debug('    From:')
-#                     log.debug('      - vector: %s' % mltb.tvector)
-#                     log.debug('      - training column: %s' % mltb.tcolumn)
-#                     if mltb.use_columns:
-#                         log.debug('      - use columns: %s' % mltb.use_columns)
-#                     if mltb.raster:
-#                         log.debug('      - raster: %s' % mltb.traster)
+                    f = open(testpath, "w")
+                    f.close()
+                    log.debug('    From:')
+                    log.debug('      - vector: %s' % mltb.getTVector())
+                    log.debug('      - training column: %s' % mltb.getTColumn())
+                    if mltb.getUseColumns():
+                        log.debug('      - use columns: %s' % mltb.getUseColumns())
+                    if mltb.getRaster():
+                        log.debug('      - raster: %s' % mltb.getTRaster())
                     if not self.LocalCheck.isChecked():
                         temp_testpath = STEMUtils.pathClientWinToServerLinux(testpath)
                     else:
@@ -357,8 +359,9 @@ class STEMToolsDialog(BaseDialog):
                     Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
-                    np.savetxt(testpath, dt, delimiter=SEP,
-                               header="# last column is the training.")
+                    f = open(testpath, "w")
+                    np.savetxt(f, dt, delimiter=SEP, header="# last column is the training.")
+                    f.close()
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)
