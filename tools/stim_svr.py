@@ -520,7 +520,7 @@ class STEMToolsDialog(BaseDialog):
                              untransform=utrasf, output_file=temp_out,
                              field=fname)
                 STEMUtils.copyFile(crosspath, out)
-                if self.AddLayerToCanvas.isChecked() and self.TextOut.isEnabled():
+                if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'vector')
                 STEMMessageHandler.success("Il file {name} è stato scritto "
                                            "correttamente".format(name=out))
