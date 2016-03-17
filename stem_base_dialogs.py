@@ -1107,7 +1107,7 @@ class BaseDialog(QDialog, baseDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getExistingDirectory(parent=None,
-                                                 caption=caption, directory="")
+                                                 caption=caption, directory="", options=QFileDialog.DontUseNativeDialog)
         if os.path.exists(mydir):
             line.setText(mydir)
             return
@@ -1124,13 +1124,13 @@ class BaseDialog(QDialog, baseDialog):
         if multi:
             mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
                                                  caption="Selezionare i file "
-                                                 "di input", directory="")
+                                                 "di input", directory="", options=QFileDialog.DontUseNativeDialog)
             for fil in mydir:
                 if os.path.exists(fil):
                     line.addItem(fil)
                 elif fil != '':
                     STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
-
+                    pass
             return
 
         else:
@@ -1138,12 +1138,12 @@ class BaseDialog(QDialog, baseDialog):
                 label = "Selezionare la directory dei files"
                 mydir = QFileDialog.getExistingDirectory(parent=None,
                                                          caption=label,
-                                                         directory="")
+                                                         directory="", options=QFileDialog.DontUseNativeDialog)
             else:
                 mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
                                                     caption="Selezionare il "
                                                     "file di input",
-                                                    directory="")
+                                                    directory="", options=QFileDialog.DontUseNativeDialog)
             if os.path.exists(mydir):
                 try:
                     line.setText(mydir)
@@ -1154,14 +1154,14 @@ class BaseDialog(QDialog, baseDialog):
                         return
                     except Exception:
                         STEMMessageHandler.error(u"Errore caricando il file")
-        STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
+        #STEMMessageHandler.error(u"'%s' file non è presente." % mydir)
 
     def browseDir(self, line, suffix='.tif'):
         """Function to create new file in a directory
 
         :param obj line: the QLineEdit object to update
         """
-        fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
+        fileName = QFileDialog.getSaveFileName(None, "Salva file", "", options=QFileDialog.DontUseNativeDialog)
         if fileName:
             if suffix:
                 if fileName.rfind(suffix) == -1:
@@ -1170,8 +1170,7 @@ class BaseDialog(QDialog, baseDialog):
                 self.save(fileName)
                 line.setText(fileName)
             except (IOError, OSError), error:
-                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere '
-                                         'salvato. Errore: {1}'.format(fileName, error.strerror))
+                STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'.format(fileName, error.strerror))
 
     def save(self, fileName=None):
         """Function set the name of output file
@@ -1184,7 +1183,8 @@ class BaseDialog(QDialog, baseDialog):
             self.path = QFileDialog().getSaveFileName(self,
                                                       "",
                                                       "",
-                                                      "Output file (*.tiff)")
+                                                      "Output file (*.tiff)",
+                                                      options=QFileDialog.DontUseNativeDialog)
             # If the user didn't select a file, abort the save operation
             if len(self.path) == 0:
                 self.path = None
@@ -1312,13 +1312,14 @@ class SettingsDialog(QDialog, settingsDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file desiderato",
-                                            "")
+                                            "", options=QFileDialog.DontUseNativeDialog)
         if os.path.exists(mydir):
             line.setText(mydir)
             return
         else:
             # TODO add overwrite option
-            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
+            #STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
+            pass
 
     def browseDir(self, line):
         """Choose an existing directory and set it to a QLineEdit
@@ -1326,13 +1327,14 @@ class SettingsDialog(QDialog, settingsDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getExistingDirectory(None, "Selezionare il percorso desiderato",
-                                                 "")
+                                                 "", options=QFileDialog.DontUseNativeDialog)
         if os.path.exists(mydir):
             line.setText(mydir)
             return
         else:
             # TODO add overwrite option
-            STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
+            #STEMMessageHandler.error(u"'{0}' file già presente.".format(mydir))
+            pass
 
     def _reject(self):
         """"""
