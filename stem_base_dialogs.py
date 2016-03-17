@@ -1107,7 +1107,7 @@ class BaseDialog(QDialog, baseDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getExistingDirectory(parent=None,
-                                                 caption=caption, directory="", options=QFileDialog.DontUseNativeDialog)
+                                                 caption=caption, directory="")
         if os.path.exists(mydir):
             line.setText(mydir)
             return
@@ -1124,7 +1124,7 @@ class BaseDialog(QDialog, baseDialog):
         if multi:
             mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
                                                  caption="Selezionare i file "
-                                                 "di input", directory="", options=QFileDialog.DontUseNativeDialog)
+                                                 "di input", directory="")
             for fil in mydir:
                 if os.path.exists(fil):
                     line.addItem(fil)
@@ -1138,12 +1138,12 @@ class BaseDialog(QDialog, baseDialog):
                 label = "Selezionare la directory dei files"
                 mydir = QFileDialog.getExistingDirectory(parent=None,
                                                          caption=label,
-                                                         directory="", options=QFileDialog.DontUseNativeDialog)
+                                                         directory="")
             else:
                 mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
                                                     caption="Selezionare il "
                                                     "file di input",
-                                                    directory="", options=QFileDialog.DontUseNativeDialog)
+                                                    directory="")
             if os.path.exists(mydir):
                 try:
                     line.setText(mydir)
@@ -1161,7 +1161,7 @@ class BaseDialog(QDialog, baseDialog):
 
         :param obj line: the QLineEdit object to update
         """
-        fileName = QFileDialog.getSaveFileName(None, "Salva file", "", options=QFileDialog.DontUseNativeDialog)
+        fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
         if fileName:
             if suffix:
                 if fileName.rfind(suffix) == -1:
@@ -1183,8 +1183,7 @@ class BaseDialog(QDialog, baseDialog):
             self.path = QFileDialog().getSaveFileName(self,
                                                       "",
                                                       "",
-                                                      "Output file (*.tiff)",
-                                                      options=QFileDialog.DontUseNativeDialog)
+                                                      "Output file (*.tiff)")
             # If the user didn't select a file, abort the save operation
             if len(self.path) == 0:
                 self.path = None
@@ -1312,7 +1311,7 @@ class SettingsDialog(QDialog, settingsDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getOpenFileName(None, "Selezionare il file desiderato",
-                                            "", options=QFileDialog.DontUseNativeDialog)
+                                            "")
         if os.path.exists(mydir):
             line.setText(mydir)
             return
@@ -1327,7 +1326,7 @@ class SettingsDialog(QDialog, settingsDialog):
         :param obj line: the QLineEdit object to update
         """
         mydir = QFileDialog.getExistingDirectory(None, "Selezionare il percorso desiderato",
-                                                 "", options=QFileDialog.DontUseNativeDialog)
+                                                 "")
         if os.path.exists(mydir):
             line.setText(mydir)
             return
