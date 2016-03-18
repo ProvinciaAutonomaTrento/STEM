@@ -687,7 +687,8 @@ class STEMUtils:
                 return False, False, False
         outname = "nodata_{name}".format(name=image).strip()
         out = os.path.join(path, outname)
-        com = "gdal_calc.py -A {0} --outfile={1} --overwrite --calc=A --NoDataValue={2}".format(image_src, out, number)
+        #com = "gdal_calc.py -A {0} --outfile={1} --overwrite --calc=A --NoDataValue={2}".format(image_src, out, number)
+        com = "gdal_translate -a_nodata {0} {1} {2}".format(number, image_src, out)
         com = com.split()
         runcom = subprocess.Popen(com, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log, err = runcom.communicate()
