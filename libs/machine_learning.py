@@ -176,7 +176,7 @@ def vect2rast(vector_file, rast_file, asrast, column, format='GTiff',
     trainingset = set(arr[~null])
     if len(trainingset) in (0, 1):
         raise TypeError("The trainning dataset is: ", trainingset)
-    print("The trainning dataset has this classes: ", sorted(trainingset))
+    #print("The trainning dataset has this classes: ", sorted(trainingset))
     del(arr)
     del(layer)
     vect = None

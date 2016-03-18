@@ -154,6 +154,8 @@ class STEMToolsDialog(BaseDialog):
             # --------------------------------------------------------------
             # Feature selector
             logfile = os.path.splitext(out)[0]+"_log.log"
+            if os.path.exists(logfile):
+                os.remove(logfile)
             if not self.LocalCheck.isChecked():
                 logfile = STEMUtils.pathClientWinToServerLinux(logfile)
             
