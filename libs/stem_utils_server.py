@@ -108,7 +108,28 @@ class STEMSettings:
         else:
             return str("")
 
-
+    @staticmethod
+    def saveLastDir(inputComponent, inputPath, tool=""):
+        if tool:
+            tool = re.sub(r"[^\w\s]", '', tool)
+            tool = re.sub(r"\s+", '_', tool)
+        name = inputComponent.objectName()
+        value = os.path.dirname(inputPath)
+        if value is None:
+            value = ""
+        STEMSettings.setValue(tool + "/" + name + "_last", value)
+    
+    @staticmethod
+    def restoreLastDir(inputComponent, tool=""):
+        if tool:
+            tool = re.sub(r"[^\w\s]", '', tool)
+            tool = re.sub(r"\s+", '_', tool)
+        name = inputComponent.objectName()
+        value = STEMSettings.value(tool + "/" + name + "_last", "", unicode)
+        if value is None:
+            vale = ""
+        return value
+        
     @staticmethod
     def saveWidgetsValue(ui, tool=""):
         """Save the parameters used into a tool in the STEMSettings

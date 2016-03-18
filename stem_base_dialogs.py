@@ -1124,10 +1124,11 @@ class BaseDialog(QDialog, baseDialog):
         if multi:
             mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
                                                  caption="Selezionare i file "
-                                                 "di input", directory="")
+                                                 "di input", directory=STEMSettings.restoreLastDir(line, self.toolname))
             for fil in mydir:
                 if os.path.exists(fil):
                     line.addItem(fil)
+                    STEMSettings.saveLastDir(line, fil, self.toolname)
                 elif fil != '':
                     STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
                     pass
@@ -1138,19 +1139,21 @@ class BaseDialog(QDialog, baseDialog):
                 label = "Selezionare la directory dei files"
                 mydir = QFileDialog.getExistingDirectory(parent=None,
                                                          caption=label,
-                                                         directory="")
+                                                         directory=STEMSettings.restoreLastDir(line, self.toolname))
             else:
                 mydir = QFileDialog.getOpenFileName(parent=None, filter=filt,
                                                     caption="Selezionare il "
                                                     "file di input",
-                                                    directory="")
+                                                    directory=STEMSettings.restoreLastDir(line, self.toolname))
             if os.path.exists(mydir):
                 try:
                     line.setText(mydir)
+                    STEMSettings.saveLastDir(line, mydir, self.toolname)
                     return
                 except AttributeError:
                     try:
                         line.addItem(mydir)
+                        STEMSettings.saveLastDir(line, mydir, self.toolname)
                         return
                     except Exception:
                         STEMMessageHandler.error(u"Errore caricando il file")
@@ -1161,7 +1164,7 @@ class BaseDialog(QDialog, baseDialog):
 
         :param obj line: the QLineEdit object to update
         """
-        fileName = QFileDialog.getSaveFileName(None, "Salva file", "")
+        fileName = QFileDialog.getSaveFileName(None, "Salva file", STEMSettings.restoreLastDir(line, tool=self.toolname))
         if fileName:
             if suffix:
                 if fileName.rfind(suffix) == -1:
@@ -1169,6 +1172,7 @@ class BaseDialog(QDialog, baseDialog):
             try:
                 self.save(fileName)
                 line.setText(fileName)
+                STEMSettings.saveLastDir(line, fileName, tool=self.toolname)
             except (IOError, OSError), error:
                 STEMMessageHandler.error(u'Il file<b>{0}</b> non può essere salvato. Errore: {1}'.format(fileName, error.strerror))
 
