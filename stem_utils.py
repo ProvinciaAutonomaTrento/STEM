@@ -673,7 +673,13 @@ class STEMUtils:
         rast = gdal.Open(image_src)
         banda = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue()
-        
+    
+    @staticmethod
+    def getFormat(image_src):
+        rast = gdal.Open(image_src)
+        driver = rast.GetDriver()
+        return driver.ShortName
+    
     @staticmethod
     def copySetNodata(image, image_src, number):
         if local:
