@@ -668,47 +668,37 @@ class STEMUtils:
 
         return inp
 
-    @staticmethod    
-    def hasNaN(image):
-        def analyze(log):
-            d = json.loads(log)
-            try:
-                nodata_value = d['bands'][0]['noDataValue']
-                if str(nodata_value).lower() == 'nan':
-                    return True
-                else:
-                    return False
-            except:
-                return False
-        gdalinfo_command = "gdalinfo -json {0}".format(image)
-        gdalinfo_command = gdalinfo_command.split()
-        runcom = subprocess.Popen(gdalinfo_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        log, err = runcom.communicate()
-        analyze(log)
+    @staticmethod
+    def hasNaN(image_src):
+        rast = gdal.Open(image_src)
+        banda = raste.GetRasterBand(1)
+        nodata = band.GetNoDataValue()
         
     @staticmethod
-    def NaNToNumber(image, number):
+    def NaNToNumber(image, image_src, number):
         if local:
             path = tempfile.gettempdir()
         else:
-            # Esecuzione sul server, ma il file viene generato sul client
-            # Quindi bisogna usare un path accessibile a server e client
-
-            # soluzione temporanea: scelgo il path locale del primo mapping definito dall'utente
-            # TODO: aggiungere alla tabella un radio button per scegliere la cartella dei file temporanei
             try:
                 path = STEMUtils.get_temp_dir()
             except:
                 STEMMessageHandler.error("È necessario configurare almeno un mapping fra le "
                                          "risorse locali e remote")
                 return False, False, False
-        outname = "nodata_{name}".format(name=inp).strip()
+        outname = "nodata_{name}".format(name=image).strip()
         out = os.path.join(path, outname)
-        com = "gdal_calc.py -A {0} --outfile={1} --overwrite --calc=A --NoDataValue={2}".format(image, transformed_image, number)
+        com = "gdal_calc.py -A {0} --outfile={1} --overwrite --calc=A --NoDataValue={2}".format(image_src, out, number)
         com = com.split()
         runcom = subprocess.Popen(com, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log, err = runcom.communicate()
         return outname, out
+    
+    @staticmethod
+    def removeNaN(image, image_src, number):
+        if hasNaN(image_src):
+            return NanToNumber(image, image_src, number)
+        else:
+            return image, image_src
 
 class STEMMessageHandler:
     """
