@@ -482,7 +482,7 @@ class STEMToolsDialog(BaseDialog):
                                      transform=trasf)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0].__dict__.keys()))
-                    mltb.find_best(model, strategy=lambda x: x,
+                    mltb.find_best(model, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
@@ -493,7 +493,7 @@ class STEMToolsDialog(BaseDialog):
                     with open(bpkpath, 'r') as bpkl:
                         best = pkl.load(bpkl)
                     order, models = mltb.find_best(models=best,
-                                                   strategy=lambda x: x,
+                                                   strategy=return_argument,
                                                    key='score_test')
                     best = mltb.select_best(best=models)
                 log.debug('Best models:')
