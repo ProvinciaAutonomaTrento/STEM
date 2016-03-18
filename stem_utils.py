@@ -669,13 +669,13 @@ class STEMUtils:
         return inp
 
     @staticmethod
-    def hasNaN(image_src):
+    def isNodataNan(image_src):
         rast = gdal.Open(image_src)
         banda = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue()
         
     @staticmethod
-    def NaNToNumber(image, image_src, number):
+    def copySetNodata(image, image_src, number):
         if local:
             path = tempfile.gettempdir()
         else:
@@ -694,9 +694,9 @@ class STEMUtils:
         return outname, out
     
     @staticmethod
-    def removeNaN(image, image_src, number):
-        if hasNaN(image_src):
-            return NanToNumber(image, image_src, number)
+    def copyRemoveNan(image, image_src, number):
+        if isNodataNan(image_src):
+            return copySetNodata(image, image_src, number)
         else:
             return image, image_src
 
