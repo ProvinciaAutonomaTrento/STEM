@@ -671,7 +671,7 @@ class STEMUtils:
     @staticmethod
     def hasNaN(image_src):
         rast = gdal.Open(image_src)
-        banda = raste.GetRasterBand(1)
+        banda = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue()
         
     @staticmethod
