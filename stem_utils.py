@@ -296,7 +296,7 @@ class STEMUtils:
                 if val == 0 and first == "Seleziona banda":
                     return None
                 elif val != 0 and first == "Seleziona banda":
-                    return val + 2
+                    return val
                 elif first != "Seleziona banda":
                     return val + 1
             else:
