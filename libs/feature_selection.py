@@ -171,9 +171,8 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
                                "equal values")
 
         if np.isnan(dist.max()):
-            message = "WARNING: Distace is NaN, this could happen when" + \
-                         " the number of training for a class is too low" + \
-                         " and the covariance matrix is not invertible."
+            message = "Attenzione, distanza NaN. la matrice di covarianza non e` invertibile: i campioni di training potrebbero" + \
+                    " essere troppo pochi, oppure ci potrebbero essere bande tutte con valori uguali. "
             communicate(("WARNING: Distace is NaN, this could happen when"
                          " the number of training for a class is too low"
                          " and the covariance matrix is not invertible."),
@@ -194,7 +193,7 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
             res[i] = dict(features=fs, distance=dist[idistmax])
 
         if check == round(dist[idistmax], precision):
-            message = "Square root of 2."
+            message = "La distanza ha raggiunto il punto di saturazione."
             return res, message
     return res, message
 
