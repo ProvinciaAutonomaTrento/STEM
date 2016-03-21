@@ -46,10 +46,15 @@ class STEMToolsDialog(BaseDialog):
         self.AddLayerToCanvas.hide()
         self._insertMultipleInput(multi=True)
 
-        label = "Comprimere il file di output"
-        self._insertCheckbox(label, 1, output=True)
+        label_compr = "Comprimere il file di output"
+        self._insertCheckbox(label_compr, 1, output=True)
+        self.checkbox.stateChanged.connect(self.compressStateChanged)
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
+    def compressStateChanged(self):
+        checked = self.checkbox.isChecked()
+        self.TextOut.setText(STEMUtils.check_las_compress(self.TextOut.text(), checked))
 
     def show_(self):
         self.switchClippingMode()

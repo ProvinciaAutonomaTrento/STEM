@@ -664,7 +664,7 @@ class STEMUtils:
             return inp + '.laz'
         elif not compr and inp.endswith('.laz'):
             inp = inp.rstrip('.laz')
-            return inp + '.laz'
+            return inp + '.las'
 
         return inp
 
