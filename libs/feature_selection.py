@@ -126,7 +126,7 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
     mu = fgroup(classes, data, mean)
     cv = fgroup(classes, data, cov)
     ##########################################################################
-    # STRART
+    # START
     ##########################################################################
     # computing JM for single features
     classes_comb = list(combinations(sorted(mu.keys()), 2))
@@ -164,12 +164,19 @@ def seq_forward_floating_fs(data, classes, strategy=np.mean, precision=6,
             dist = np.array([jm(f_id, mu, cv, strategy, classes_comb, bhatN)
                              for f_id in features_comb])
         except:
-            raise RuntimeError("WARNING: Distace is NaN, this could happen"
-                               " when the number of training for a class is"
-                               "  too low and the covariance matrix is not "
-                               "invertible or in some bands there are two "
-                               "equal values")
-
+#             raise RuntimeError("WARNING: Distace is NaN, this could happen"
+#                                " when the number of training for a class is"
+#                                "  too low and the covariance matrix is not "
+#                                "invertible or in some bands there are two "
+#                                "equal values")
+            message = "Attenzione, distanza NaN. la matrice di covarianza non e` invertibile: i campioni di training potrebbero" + \
+                    " essere troppo pochi, oppure ci potrebbero essere bande tutte con valori uguali. "
+            communicate(("WARNING: Distace is NaN, this could happen when"
+                         " the number of training for a class is too low"
+                         " and the covariance matrix is not invertible."),
+                        verbose=verbose, logging=logging)
+            info(i, np.nan, fs, verbose, logging)
+            return res, message
         if np.isnan(dist.max()):
             message = "Attenzione, distanza NaN. la matrice di covarianza non e` invertibile: i campioni di training potrebbero" + \
                     " essere troppo pochi, oppure ci potrebbero essere bande tutte con valori uguali. "
@@ -212,7 +219,8 @@ class SSF(object):
         self.logfile = logfile
 
     def setup_logfile(self):
-        self.logfile = STEMLoggingServer(self.logfile)
+        if self.logfile is not None:
+            self.logfile = STEMLoggingServer(self.logfile)
 
     def __repr__(self):
         return "SSF(strategy=%r, precision=%r)" % (self.strategy,
