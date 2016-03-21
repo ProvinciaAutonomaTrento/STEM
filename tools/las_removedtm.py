@@ -110,6 +110,8 @@ class STEMToolsDialog(BaseDialog):
                 out_task = STEMUtils.pathClientWinToServerLinux(out)
                 dtm_source_task = STEMUtils.pathClientWinToServerLinux(dtm_source)
             las.initialize()
+            if os.path.exists(out_task):
+                os.remove(out_task)
             com = las.chm(source_task, out_task, dtm_source_task,
                           compressed=compres,
                           local=self.LocalCheck.isChecked())
