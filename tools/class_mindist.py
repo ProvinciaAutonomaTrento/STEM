@@ -264,6 +264,7 @@ class STEMToolsDialog(BaseDialog):
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
             fscolumns = None
+            infile = None
             if feat == 'file':
                 infile = self.TextInOpt.text()
                 if os.path.exists(infile):
@@ -326,7 +327,7 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            if fscolumns is not None:
+            if fscolumns is not None and infile is not None:
                 if not self.LocalCheck.isChecked():
                     infile = STEMUtils.pathClientWinToServerLinux(infile)
                 X = mltb.data_transform(X=X, y=y, scaler=None,
