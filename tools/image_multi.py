@@ -48,7 +48,8 @@ class STEMToolsDialog(BaseDialog):
 
         formats = ['GTIFF', 'ENVI']
         self._insertFirstCombobox('Formato di output', 0, formats)
-
+        self.BaseInputCombo.currentIndexChanged.connect(self.output_file_type_changed)
+        
         mets = ['Selezionare il formato di output', 'numeri interi',
                 'numeri decimali']
         self.digit = None
@@ -62,6 +63,13 @@ class STEMToolsDialog(BaseDialog):
 
         self.helpui.fillfromUrl(self.SphinxUrl())
 
+    def output_file_type_changed(self):
+        output = os.path.splitext(self.TextOut.text())[0]
+        if self.BaseInputCombo.currentText() == 'GTIFF':
+            self.TextOut.setText(output + ".tiff")
+        elif self.BaseInputCombo.currentText() == 'ENVI':
+            self.TextOut.setText(output)
+        
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
