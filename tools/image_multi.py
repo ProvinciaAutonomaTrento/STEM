@@ -66,7 +66,7 @@ class STEMToolsDialog(BaseDialog):
     def output_file_type_changed(self):
         output = os.path.splitext(self.TextOut.text())[0]
         if self.BaseInputCombo.currentText() == 'GTIFF':
-            self.TextOut.setText(output + ".tiff")
+            self.TextOut.setText(output + ".tif")
         elif self.BaseInputCombo.currentText() == 'ENVI':
             self.TextOut.setText(output)
         
