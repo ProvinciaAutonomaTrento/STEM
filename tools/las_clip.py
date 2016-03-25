@@ -115,7 +115,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 inv = False
             com = las.clip(source, temp_out, area, inverted=inv, compressed=compres,
-                           forced=self.MethodInput.currentText())
+                           forced=self.MethodInput.currentText(), local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
         except:

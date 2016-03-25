@@ -441,7 +441,7 @@ class stemLAS():
         self.pdalxml = tmp_file.name
         return 0
 
-    def union(self, inps, out, compressed=False):
+    def union(self, inps, out, compressed=False, local=False):
         """Merge several LAS file into one LAS file
 
         :param str inp: full path for the input LAS file
@@ -452,7 +452,12 @@ class stemLAS():
             command = ['pdal', 'pipeline']
             self.union_xml_pdal(inps, out, compressed)
             command.extend(['-i', self.pdalxml])
-            self._run_command(command)
+            if not local:
+                xml = read_file(self.pdalxml)
+                pipe = libpdalpython.PyPipeline(xml)
+                pipe.execute()
+            else:          
+                self._run_command(command)
             return command
         else:
             raise Exception("pdal è necessario per unire più file LAS")
@@ -493,7 +498,7 @@ class stemLAS():
         return 0
 
     def clip(self, inp, out, area, inverted=False, forced=False,
-             compressed=False):
+             compressed=False, local=False):
         """
         :param str inp: full path for the input LAS file
         :param str out: full path for the outpu LAS file
@@ -514,6 +519,7 @@ class stemLAS():
                 print("Non è possibile utilizzare l'opzione 'Maschera inversa'"
                       " con la libreria liblas")
             command.extend(['-i', inp, '-o', out, '-e', area])
+            self._run_command(command)
         else:
             if not wkt:
                 coors = area.split()
@@ -524,7 +530,12 @@ class stemLAS():
                                                                  maxy=coors[3])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
-        self._run_command(command)
+            if not local:
+                xml = read_file(self.pdalxml)
+                pipe = libpdalpython.PyPipeline(xml)
+                pipe.execute()
+            else:          
+                self._run_command(command)
         return command
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
@@ -664,16 +675,17 @@ class stemLAS():
                 self.lasinfo(inp)
                 command.extend(['--drop-returns',
                                 '1 {last}'.format(last=max(self.returns))])
+            self._run_command(command)
         else:
             self.filter_xml_pdal(inp, out, compressed, x, y, z,
                                  inte, angle, clas, retur)
             command.extend(['-i', self.pdalxml])
-        if not local:
-            xml = read_file(self.pdalxml)
-            pipe = libpdalpython.PyPipeline(xml)
-            pipe.execute()
-        else:
-            self._run_command(command)
+            if not local:
+                xml = read_file(self.pdalxml)
+                pipe = libpdalpython.PyPipeline(xml)
+                pipe.execute()
+            else:
+                self._run_command(command)
         return command
 
     def bosco(self, inp, prefix):
