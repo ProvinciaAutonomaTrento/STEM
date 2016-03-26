@@ -168,7 +168,7 @@ class STEMToolsDialog(BaseDialog):
         #    resolution = None
         cgdal.write()
 
-        STEMMessageHandler.success("{ou} file created".format(ou=out_orig))
-
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(out_orig, 'raster')
+
+        STEMMessageHandler.success("{ou} file created".format(ou=out_orig))

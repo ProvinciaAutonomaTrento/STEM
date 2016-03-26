@@ -30,6 +30,7 @@ from pyro_stem import LAS_PORT
 import sys
 from las_stem import stemLAS
 import traceback
+import time
 from stem_utils import STEMMessageHandler, STEMUtils
 import os
 
@@ -72,6 +73,12 @@ class STEMToolsDialog(BaseDialog):
                                                                    name=LASPYROOBJNAME))
             las.initialize()
             las.bosco(source, out)
+            t = time.time()
+            while not os.path.isfile(self.TextOut.text()):
+                if time.time()-t > 5:
+                    STEMMessageHandler.error("{ou} LAS file not created".format(ou=self.TextOut.text()))
+                    return
+                time.sleep(.1)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
         except:
             error = traceback.format_exc()
