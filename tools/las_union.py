@@ -92,7 +92,7 @@ class STEMToolsDialog(BaseDialog):
                 out  = STEMUtils.pathClientWinToServerLinux(out)
 
             las.initialize()
-            com = las.union(items, out, compres)
+            com = las.union(items, out, compres, local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             t = time.time()
             while not os.path.isfile(out_locale):

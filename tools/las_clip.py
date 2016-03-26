@@ -116,7 +116,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 inv = False
             com = las.clip(source, temp_out, area, inverted=inv, compressed=compres,
-                           forced=self.MethodInput.currentText())
+                           forced=self.MethodInput.currentText(), local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             t = time.time()
             while not os.path.isfile(out):
