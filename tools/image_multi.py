@@ -34,6 +34,7 @@ from gdal_stem import convertGDAL
 from pyro_stem import PYROSERVER
 from pyro_stem import GDALCONVERTPYROOBJNAME
 from pyro_stem import GDAL_PORT
+import os
 
 from PyQt4.QtGui import QMessageBox
 
