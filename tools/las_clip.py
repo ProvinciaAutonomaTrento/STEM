@@ -51,9 +51,9 @@ class STEMToolsDialog(BaseDialog):
         label_inv = "Maschera inversa"
         self._insertSecondCheckbox(label_inv, 0)
 
-        label_lib = "Scegliere la libreria da utilizzare"
-        libs = [None, 'pdal', 'liblas']
-        self._insertMethod(libs, label_lib, 1)
+#         label_lib = "Scegliere la libreria da utilizzare"
+#         libs = [None, 'pdal', 'liblas']
+#         self._insertMethod(libs, label_lib, 1)
 
         label_compr = "Comprimere il file di output"
         self._insertCheckbox(label_compr, 1, output=True)
@@ -116,7 +116,7 @@ class STEMToolsDialog(BaseDialog):
             else:
                 inv = False
             com = las.clip(source, temp_out, area, inverted=inv, compressed=compres,
-                           forced=self.MethodInput.currentText(), local=self.LocalCheck.isChecked())
+                           forced='pdal', local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             t = time.time()
             while not os.path.isfile(out):

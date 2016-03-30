@@ -64,9 +64,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertFifthLineEdit(label5, 6)
         label6 = "Inserire il valore della classe da tenere"
         self._insertSixthLineEdit(label6, 7)
-        label_lib = "Scegliere la libreria da utilizzare"
-        libs = [None, 'pdal', 'liblas']
-        self._insertMethod(libs, label_lib, 8)
+#         label_lib = "Scegliere la libreria da utilizzare"
+#         libs = [None, 'pdal', 'liblas']
+#         self._insertMethod(libs, label_lib, 8)
 
         label_compr = "Comprimere il file di output"
         self._insertCheckbox(label_compr, 1, output=True)
@@ -125,7 +125,7 @@ class STEMToolsDialog(BaseDialog):
             ret = self.check_return()
 
             com = las.filterr(source, out, xs, ys, zs, ints, angs, clas,
-                              retur=ret, forced=self.MethodInput.currentText(),
+                              retur=ret, forced='pdal',
                               compressed=compres,
                               local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
