@@ -530,12 +530,13 @@ class stemLAS():
                                                                  maxy=coors[3])
             self.clip_xml_pdal(inp, out, area, compressed, inverted)
             command.extend(['-i', self.pdalxml])
-            if not local:
-                xml = read_file(self.pdalxml)
-                pipe = libpdalpython.PyPipeline(xml)
-                pipe.execute()
-            else:          
-                self._run_command(command)
+#             if not local:
+#                 xml = read_file(self.pdalxml)
+#                 pipe = libpdalpython.PyPipeline(xml)
+#                 pipe.execute()
+#             else:          
+#                 self._run_command(command)
+            self._run_command(command)
         return command
 
     def filter_xml_pdal(self, inp, out, compres, x=None, y=None, z=None,
