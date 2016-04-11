@@ -331,9 +331,9 @@ class STEMToolsDialog(BaseDialog):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
             elif feat == 'manuale':
-                cols = STEMUtils.checkLayers(inrast, self.layer_list2, False,
+                ncolumnschoose = STEMUtils.checkLayers(inrast, self.layer_list2, False,
                                              True)
-                fscolumns = np.loadtxt(cols)
+                #fscolumns = np.loadtxt(cols)
                 com.extend(['-feature-selection-file', "tmp_manual_select"])
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
