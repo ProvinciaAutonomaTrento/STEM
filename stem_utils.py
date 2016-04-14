@@ -558,7 +558,7 @@ class STEMUtils:
         hFile = codecs.open(historypath, 'a', encoding='utf-8')
         if details is not None:
             hFile.write('# {}\n'.format(details))
-        hFile.write(" ".join(command) + '\n')
+        hFile.write(" ".join(str(c) for c in command) + '\n')
         hFile.close()
 
     @staticmethod
