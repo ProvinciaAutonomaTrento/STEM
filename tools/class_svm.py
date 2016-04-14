@@ -522,9 +522,9 @@ class STEMToolsDialog(BaseDialog):
                                            "correttamente".format(name=out))
             else:
                 STEMMessageHandler.success("Esecuzione completata")
-            STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
+            #STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
         except:
-            STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
+            #STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return
