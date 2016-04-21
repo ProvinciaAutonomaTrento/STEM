@@ -257,7 +257,7 @@ class STEMToolsDialog(BaseDialog):
                     i = 0
                     for n in fscolumns:
                         if n == 1:
-                            nlayerchoose_new.append(ncolumnschoose[i])
+                            nlayerchoose_new.append(nlayerchoose[i])
                         i += 1
                     nlayerchoose = nlayerchoose_new
             elif feat == 'manuale':
