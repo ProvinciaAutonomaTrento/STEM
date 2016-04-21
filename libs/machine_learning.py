@@ -326,7 +326,7 @@ def find_best(models, strategy=np.mean, key='scores', logging=None):
     return order, best
 
 
-def read_chunks(rast, nchunks, chunkrows):
+def read_chunks(rast, nchunks, chunkrows, ubands):
     """Return a generator with the raster data splitted in chunks"""
     def read_chunk(bands, yoff, xsize, ysize):
         """Return a list of arrays with the bands values"""
@@ -334,7 +334,7 @@ def read_chunks(rast, nchunks, chunkrows):
                                  xsize, ysize).flatten()
                 for band in bands]
     rxsize, rysize = rast.RasterXSize, rast.RasterYSize
-    bands = [rast.GetRasterBand(i) for i in range(1, rast.RasterCount + 1)]
+    bands = [rast.GetRasterBand(i) for i in ubands]
     for chunk in range(nchunks):
         yoff = chunk * chunkrows
         ysize = chunkrows if chunk < (nchunks - 1) else rysize - yoff
@@ -380,7 +380,7 @@ def extract_vector_fields(layer, icols):
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
                      use_columns=None, delimiter=SEP, nodata=None,
-                     logging=None):
+                     logging=None, ubands=None):
     """Extract the training samples given a Raster map and a shape with the
     categories. Return two numpy array with the training data and categories
 
@@ -415,14 +415,13 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
                          asrast=rast, column=column, nodata=nodata)
         # rows, cols = rast.RasterYSize, rast.RasterXSize
         pixels = get_index_pixels(trst, nodata)
-        nbands = rast.RasterCount
+        nbands = ubands if ubands is not None else range(1, rast.RasterCount + 1)
         # Add all the band in the input raster map
-        bands = [rast.GetRasterBand(i) for i in range(1, nbands + 1)]
+        bands = [rast.GetRasterBand(i) for i in nbands]
         # add the training category
         bands.append(trst.GetRasterBand(1))
         data = read_pixels(bands, pixels)
-        header = delimiter.join([str(i) for i in range(1, nbands + 1)] +
-                                ['training', ])
+        header = delimiter.join([str(i) for i in nbands] + ['training', ])
         trst = None
         os.remove(tmp_file)
         gc.collect()  # force to free memory of unreferenced objects
@@ -466,7 +465,8 @@ def run_model(model, data, logging=None):
 
 def apply_models(input_file, output_file, models, X, y, transformations,
                  transform=None, untransform=None, use_columns=None,
-                 memory_factor=1., logging=None, format=None, fieldname=None):
+                 memory_factor=1., logging=None, format=None, fieldname=None,
+                 bands=None):
     """Apply a machine learning model using the sklearn interface to a raster
     data.
 
@@ -490,7 +490,6 @@ def apply_models(input_file, output_file, models, X, y, transformations,
 
     if transform is not None:
         y = transform(y)
-
     # instantiate and train the model and create the empty raster map
     for model in models:
         model['mod'] = model['model'](**model.get('kwargs', {}))
@@ -536,7 +535,9 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                            '(buffer of rows: %d)') % (nchunks, brows))
         # TODO: fix read_chunks to read and use only the selected
         # features and not all bands
-        for chunk, data in enumerate(read_chunks(rast, nchunks, brows)):
+        nbands = bands if bands is not None else range(1, rast.RasterCount + 1)
+        logging.debug('apply_models: nbands %d' % len(nbands))
+        for chunk, data in enumerate(read_chunks(rast, nchunks, brows, nbands)):
             # trasform input data following the users options
             for trans in transformations:
                 data = trans.transform(data)
@@ -628,7 +629,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         osrc.Destroy()
 
 
-class MLToolBox(object):    
+class MLToolBox(object):
     def __init__(self, *args, **kwargs):
         """The MLToolBox class can be instantiate without any argument,
         however if the argument are given then they are set using the
@@ -642,7 +643,7 @@ class MLToolBox(object):
         self.set_params(*args, **kwargs)
 
     def set_params(self, raster=None, vector=None, column=None,
-                   use_columns=None,
+                   use_columns=None, use_bands=None,
                    output='{0}', models=None, training_csv=None,
                    scoring=None, nodata=NODATA,
                    n_folds=5, n_jobs=1, n_best=1, best_strategy=BEST_STRATEGY_MEAN,
@@ -660,6 +661,7 @@ class MLToolBox(object):
         :param column: Column name with the data that will be used to train
                        the models.
         :type column: str, column name
+        :param use_bands: indexes list of bands to use
         :param output_file: Output file where the model results are stored.
         :type output_file: output file/path
         :param models: List of dictionaries containing the models that will
@@ -711,6 +713,7 @@ class MLToolBox(object):
         self.output = output
         self.column = column
         self.use_columns = use_columns
+        self.use_bands = use_bands
         self.training_csv = training_csv
         self.models = models
         self.scoring = scoring
@@ -718,7 +721,7 @@ class MLToolBox(object):
         self.n_folds = n_folds
         self.n_jobs = n_jobs
         self.n_best = n_best
-        
+
         if best_strategy == BEST_STRATEGY_MEAN:
             self.best_strategy = np.mean
         elif best_strategy == BEST_STRATEGY_MIN:
@@ -727,8 +730,8 @@ class MLToolBox(object):
             self.best_strategy = np.median
         else:
             assert False, 'best_strategy sconosciuta'
-        
-        
+
+
         self.tvector = tvector
         self.tcolumn = tcolumn
         self.traster = traster
@@ -750,41 +753,41 @@ class MLToolBox(object):
                             'fselector', 'decomposer',
                             'transform', 'untransform',
                             'memory_factor', 'logging')
-             
+
         if self.logging:
             msg = 'MLToolBox.set_params({})'
             params = self.get_params()
             par = ', '.join(['{}={}'.format(k, params[k])
                              for k in self._attributes])
             self.logging.debug(msg.format(par))
-            
-    def getMessage(self):        
+
+    def getMessage(self):
         return self.message
-    
+
     def getVector(self):
         return self.vector
-    
+
     def getColumn(self):
         return self.column
-    
+
     def getUseColumns(self):
         return self.use_columns
-    
+
     def getRaster(self):
         return self.raster
-    
+
     def getTVector(self):
         return self.tvector
-    
+
     def getTColumn(self):
         return self.tvector
-    
+
     def getTRaster(self):
         return self.traster
-    
+
     def get_params(self):
         return {key: getattr(self, key) for key in self._attributes}
-              
+
     def extract_training(self, vector_file=None, column=None, use_columns=None,
                          csv_file=None, raster_file=None, delimiter=SEP,
                          nodata=None, logging=None):
@@ -817,7 +820,7 @@ class MLToolBox(object):
         self.use_columns = (self.use_columns if use_columns is None
                             else use_columns)
         self.training_csv = self.training_csv if csv_file is None else csv_file
-        
+
         self.nodata = nodata
         self.X, self.y = extract_training(vector_file=self.vector,
                                           column=self.column,
@@ -825,7 +828,7 @@ class MLToolBox(object):
                                           csv_file=self.training_csv,
                                           raster_file=self.raster,
                                           delimiter=delimiter,
-                                          nodata=nodata,
+                                          nodata=nodata, ubands=self.use_bands,
                                           logging=self.logging)
         return self.X, self.y
 
@@ -869,6 +872,7 @@ class MLToolBox(object):
                                                   csv_file=self.test_csv,
                                                   raster_file=self.traster,
                                                   delimiter=delimiter,
+                                                  ubands=self.use_bands,
                                                   nodata=nodata)
         return self.Xtest, self.ytest
 
@@ -935,7 +939,7 @@ class MLToolBox(object):
                 if fsfit:
                     self.fselector.fit(Xt, y)
                     if hasattr(self.fselector, 'message') and self.fselector is not None:
-                        self.message = self.fselector.message                    
+                        self.message = self.fselector.message
                     if (hasattr(self.fselector, 'scores_') and
                             hasattr(self.fselector, 'pvalues_')):
                         outpath = os.path.split(fsfile)
@@ -1133,7 +1137,7 @@ class MLToolBox(object):
                      transform=self.transform, untransform=self.untransform,
                      memory_factor=self.memory_factor,
                      use_columns=self.use_columns, logging=self.logging,
-                     format=format, fieldname=field)
+                     format=format, fieldname=field, bands=self.use_bands)
 
 
 def get_parser():
@@ -1157,7 +1161,7 @@ def main():
         # decomment this two lines if you want activate the logging
         #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
-                
+
         machine_stem = MLToolBox()
         daemon = Pyro4.Daemon(host=PYROSERVER, port=ML_PORT)
         uri = daemon.register(machine_stem,objectId=MLPYROOBJNAME,force=True)

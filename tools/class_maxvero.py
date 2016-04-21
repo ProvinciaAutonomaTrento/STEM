@@ -187,8 +187,7 @@ class STEMToolsDialog(BaseDialog):
 
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list2)
+                nlayerchoose = [int(i) for i in STEMUtils.getNumSubset(inrastsource)]
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
@@ -248,18 +247,26 @@ class STEMToolsDialog(BaseDialog):
                         '--best-strategy', 'mean', invectsource, invectcol])
             fscolumns = None
             infile = None
+
             if feat == 'file':
                 infile = self.TextInOpt.text()
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+                    nlayerchoose_new = []
+                    i = 0
+                    for n in fscolumns:
+                        if n == 1:
+                            nlayerchoose_new.append(ncolumnschoose[i])
+                        i += 1
+                    nlayerchoose = nlayerchoose_new
             elif feat == 'manuale':
-                cols = STEMUtils.checkLayers(inrast, self.layer_list2, False,
-                                             True)
-                fscolumns = np.loadtxt(cols)
+                nlayerchoose = STEMUtils.checkLayers(inrast,
+                                                     self.layer_list2, True)
+                nlayerchoose = [int(n) for n in nlayerchoose]
                 com.extend(['-feature-selection-file', "tmp_manual_select"])
 
-            if ncolumnschoose:
+            if ncolumnschoose is not None:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
                 com.extend(['-e', '--output-raster-name', self.TextOut.text()])
@@ -276,7 +283,7 @@ class STEMToolsDialog(BaseDialog):
                 inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
                 optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
-                            use_columns=ncolumnschoose,
+                            use_columns=ncolumnschoose, use_bands=nlayerchoose,
                             raster=inrastsource, traster=None,
                             models=models, scoring='accuracy',
                             n_folds=nfold, n_jobs=1, n_best=1,
@@ -311,12 +318,14 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            if fscolumns is not None and infile is not None:
-                if not self.LocalCheck.isChecked():
-                    infile = STEMUtils.pathClientWinToServerLinux(infile)
-                X = mltb.data_transform(X=X, y=y, scaler=None,
-                                        fscolumns=fscolumns,
-                                        fsfile=infile, fsfit=True)
+#            if fscolumns is not None:
+#                print "fscolumns {fs}".format(fs=fscolumns)
+#                print "infile {fs}".format(fs=infile)
+#                if not self.LocalCheck.isChecked() and infile:
+#                    infile = STEMUtils.pathClientWinToServerLinux(infile)
+#                X = mltb.data_transform(X=X, y=y, scaler=None,
+#                                        fscolumns=fscolumns,
+#                                        fsfile=infile, fsfit=True)
             # -----------------------------------------------------------------------
             # Extract test samples
             log.debug('Extract test samples')

@@ -42,6 +42,7 @@ from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
 
+
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow())
@@ -143,6 +144,12 @@ class STEMToolsDialog(BaseDialog):
     def columnsChange2(self):
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
 
+    def crossVali(self):
+        if self.checkbox2.isChecked():
+            self.Linedit3.setEnabled(True)
+        else:
+            self.Linedit3.setEnabled(False)
+
     def methodChanged(self):
         if self.MethodInput.currentText() == 'file':
             self.labelFO.setEnabled(True)
@@ -163,12 +170,6 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonInOpt.setEnabled(False)
             self.label_layer2.setEnabled(False)
             self.layer_list2.setEnabled(False)
-
-    def crossVali(self):
-        if self.checkbox2.isChecked():
-            self.Linedit3.setEnabled(True)
-        else:
-            self.Linedit3.setEnabled(False)
 
     def show_(self):
         self.switchClippingMode()
@@ -200,8 +201,7 @@ class STEMToolsDialog(BaseDialog):
 
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list2)
+                nlayerchoose = [int(i) for i in STEMUtils.getNumSubset(inrastsource)]
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
@@ -224,14 +224,6 @@ class STEMToolsDialog(BaseDialog):
                 except:
                     pass
                 prefcsv += "_{n}".format(n=len(ncolumnschoose))
-            n = int(self.Linedit.text())
-
-            models = [{'name': 'knn%d_w%s' % (n, self.weight),
-                       'model': KNeighborsClassifier,
-                       'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
-            feat = str(self.MethodInput.currentText())
-            infile = self.TextInOpt.text()
-            prefcsv += "_{n}_{w}".format(n=n, w=self.weight)
 
             if self.checkbox2.isChecked():
                 nfold = int(self.Linedit3.text())
@@ -239,6 +231,13 @@ class STEMToolsDialog(BaseDialog):
             else:
                 nfold = None
 
+            models = [{'name': 'knn%d_w%s' % (n, self.weight),
+                       'model': KNeighborsClassifier,
+                       'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
+            feat = str(self.MethodInput.currentText())
+
+            n = int(self.Linedit.text())
+            prefcsv += "_{n}_{w}".format(n=n, w=self.weight)
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
                 optvectsource = STEMUtils.getLayersSource(optvect)
@@ -270,12 +269,21 @@ class STEMToolsDialog(BaseDialog):
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+                    nlayerchoose_new = []
+                    i = 0
+                    for n in fscolumns:
+                        if n == 1:
+                            nlayerchoose_new.append(ncolumnschoose[i])
+                        i += 1
+                    nlayerchoose = nlayerchoose_new
+
             elif feat == 'manuale':
-                cols = STEMUtils.checkLayers(inrast, self.layer_list2, False,
-                                             True)
-                fscolumns = np.loadtxt(cols)
+                nlayerchoose = STEMUtils.checkLayers(inrast,
+                                                     self.layer_list2, True)
+                nlayerchoose = [int(n) for n in nlayerchoose]
                 com.extend(['-feature-selection-file', "tmp_manual_select"])
-            if ncolumnschoose:
+
+            if ncolumnschoose is not None:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
                 com.extend(['-e', '--output-raster-name', self.TextOut.text()])
@@ -292,7 +300,7 @@ class STEMToolsDialog(BaseDialog):
                 inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
                 optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
-                            use_columns=ncolumnschoose,
+                            use_columns=ncolumnschoose, use_bands=nlayerchoose,
                             raster=inrastsource, traster=None,
                             models=models, scoring='accuracy',
                             n_folds=nfold, n_jobs=1, n_best=1,
@@ -327,12 +335,14 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            if fscolumns is not None and infile is not None:
-                if not self.LocalCheck.isChecked():
-                    infile = STEMUtils.pathClientWinToServerLinux(infile)
-                X = mltb.data_transform(X=X, y=y, scaler=None,
-                                        fscolumns=fscolumns,
-                                        fsfile=infile, fsfit=True)
+#            if fscolumns is not None:
+#                print "fscolumns {fs}".format(fs=fscolumns)
+#                print "infile {fs}".format(fs=infile)
+#                if not self.LocalCheck.isChecked() and infile:
+#                    infile = STEMUtils.pathClientWinToServerLinux(infile)
+#                X = mltb.data_transform(X=X, y=y, scaler=None,
+#                                        fscolumns=fscolumns,
+#                                        fsfile=infile, fsfit=True)
             # -----------------------------------------------------------------------
             # Extract test samples
             log.debug('Extract test samples')

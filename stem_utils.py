@@ -125,24 +125,24 @@ class STEMUtils:
             STEMMessageHandler.error("Problema ricaricando il layer {na}, "
                                      "potrebbe non essere stato scritto "
                                      "correttamente".format(na=layerName))
-            
+
         layer = QgsRasterLayer(filename, layerName)
         renderer = layer.renderer()
         provider = layer.dataProvider()
         layer_extent = layer.extent()
         uses_band = renderer.usesBands()
         myType = renderer.dataType(uses_band[0])
-        stats = provider.bandStatistics(uses_band[0], 
-                                        QgsRasterBandStats.All, 
-                                        layer_extent, 
+        stats = provider.bandStatistics(uses_band[0],
+                                        QgsRasterBandStats.All,
+                                        layer_extent,
                                         0)
         myEnhancement = QgsContrastEnhancement(myType)
         contrast_enhancement = QgsContrastEnhancement.StretchToMinimumMaximum
-        
+
         myEnhancement.setContrastEnhancementAlgorithm(contrast_enhancement,True)
         myEnhancement.setMinimumValue(stats.minimumValue)
         myEnhancement.setMaximumValue(stats.maximumValue)
-        
+
         layer.renderer().setContrastEnhancement(myEnhancement)
 
         if not layer.isValid():
@@ -151,7 +151,7 @@ class STEMUtils:
                                      "correttamente".format(na=layerName))
         else:
             STEMUtils.registry.addMapLayer(layer)
-        
+
     @staticmethod
     def getLayer(layerName):
         """Return the layer object starting from the name
@@ -518,6 +518,7 @@ class STEMUtils:
             return [str(i) for i in range(1, src_ds.GetSubDatasets() + 1)]
         else:
             return [str(i) for i in range(1, src_ds.RasterCount + 1)]
+        scr_ds = None
 
     @staticmethod
     def saveParameters():
@@ -666,8 +667,7 @@ class STEMUtils:
             return inp + '.laz'
         elif not compr and inp.endswith('.laz'):
             inp = inp.rstrip('.laz')
-            return inp + '.las'
-
+            return inp + '.laz'
         return inp
 
     @staticmethod
@@ -675,13 +675,13 @@ class STEMUtils:
         rast = gdal.Open(image_src)
         banda = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue()
-    
+
     @staticmethod
     def getFormat(image_src):
         rast = gdal.Open(image_src)
         driver = rast.GetDriver()
         return driver.ShortName
-    
+
     @staticmethod
     def copySetNodata(image, image_src, number):
         if local:
@@ -701,13 +701,14 @@ class STEMUtils:
         runcom = subprocess.Popen(com, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log, err = runcom.communicate()
         return outname, out
-    
+
     @staticmethod
     def copyRemoveNan(image, image_src, number):
         if isNodataNan(image_src):
             return copySetNodata(image, image_src, number)
         else:
             return image, image_src
+
 
 class STEMMessageHandler:
     """

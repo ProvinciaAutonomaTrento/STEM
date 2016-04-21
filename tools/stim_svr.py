@@ -113,7 +113,7 @@ class STEMToolsDialog(BaseDialog):
 
         label = "Creare output"
         self._insertCheckbox(label, 13)
-        
+
         self.horizontalLayout_field = QHBoxLayout()
         self.labelfield = QLabel()
         self.labelfield.setObjectName("labelfield")
@@ -128,7 +128,7 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
-        
+
         self.helpui.fillfromUrl(self.SphinxUrl())
 
     def outputStateChanged(self):
@@ -291,6 +291,13 @@ class STEMToolsDialog(BaseDialog):
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+                    ncolumnschoose_new = []
+                    i = 0
+                    for n in fscolumns:
+                        if n == 1:
+                            ncolumnschoose_new.append(ncolumnschoose[i])
+                        i += 1
+                    ncolumnschoose = ncolumnschoose_new
             elif feat == 'manuale':
                 ncolumnschoose = STEMUtils.checkLayers(invectsource,
                                                        self.layer_list2, False)
@@ -515,7 +522,7 @@ class STEMToolsDialog(BaseDialog):
                     fname = str(self.TextOutField.text())
                 else:
                     fname = None
-                    
+
                 if not self.LocalCheck.isChecked():
                     temp_out = STEMUtils.pathClientWinToServerLinux(out)
                 else:

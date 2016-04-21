@@ -34,10 +34,10 @@ from stem_utils_server import STEMSettings
 import traceback
 from machine_learning import MLToolBox, SEP, BEST_STRATEGY_MEAN
 from exported_objects import return_argument
+import os
+import pickle as pkl
 from sklearn.svm import SVC
 import numpy as np
-import pickle as pkl
-import os
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
@@ -143,6 +143,12 @@ class STEMToolsDialog(BaseDialog):
     def columnsChange2(self):
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
 
+    def crossVali(self):
+        if self.checkbox2.isChecked():
+            self.Linedit3.setEnabled(True)
+        else:
+            self.Linedit3.setEnabled(False)
+
     def kernelChanged(self):
         if self.BaseInputCombo.currentText() == 'lineare':
             self.LabelLinedit2.setEnabled(False)
@@ -177,12 +183,6 @@ class STEMToolsDialog(BaseDialog):
             self.BrowseButtonInOpt.setEnabled(False)
             self.label_layer2.setEnabled(False)
             self.layer_list2.setEnabled(False)
-
-    def crossVali(self):
-        if self.checkbox2.isChecked():
-            self.Linedit3.setEnabled(True)
-        else:
-            self.Linedit3.setEnabled(False)
 
     def show_(self):
         self.switchClippingMode()
@@ -243,7 +243,6 @@ class STEMToolsDialog(BaseDialog):
         return []
 
     def onRunLocal(self):
-        # Support Vector Machines
         STEMSettings.saveWidgetsValue(self, self.toolName)
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
@@ -255,7 +254,6 @@ class STEMToolsDialog(BaseDialog):
         invect = str(self.BaseInput.currentText())
         invectsource = STEMUtils.getLayersSource(invect)
         invectcol = str(self.layer_list.currentText())
-        
         cut, cutsource, mask = self.cutInput(invect, invectsource,
                                              'vector', local=self.LocalCheck.isChecked())
         prefcsv = "svm_{vect}_{col}".format(vect=invect, col=invectcol)
@@ -267,8 +265,7 @@ class STEMToolsDialog(BaseDialog):
 
             if inrast != "":
                 inrastsource = STEMUtils.getLayersSource(inrast)
-                nlayerchoose = STEMUtils.checkLayers(inrastsource,
-                                                     self.layer_list2)
+                nlayerchoose = [int(i) for i in STEMUtils.getNumSubset(inrastsource)]
                 rasttyp = STEMUtils.checkMultiRaster(inrastsource,
                                                      self.layer_list2)
                 cut, cutsource, mask = self.cutInput(inrast, inrastsource,
@@ -330,11 +327,20 @@ class STEMToolsDialog(BaseDialog):
                 if os.path.exists(infile):
                     com.extend(['--feature-selection-file', infile])
                     fscolumns = np.loadtxt(infile)
+                    nlayerchoose_new = []
+                    i = 0
+                    for n in fscolumns:
+                        if n == 1:
+                            nlayerchoose_new.append(ncolumnschoose[i])
+                        i += 1
+                    nlayerchoose = nlayerchoose_new
             elif feat == 'manuale':
-                ncolumnschoose = STEMUtils.checkLayers(inrast, self.layer_list2, False,
-                                             True)
+                nlayerchoose = STEMUtils.checkLayers(inrast,
+                                                     self.layer_list2, True)
+                nlayerchoose = [int(n) for n in nlayerchoose]
                 #fscolumns = np.loadtxt(cols)
                 com.extend(['-feature-selection-file', "tmp_manual_select"])
+
             if ncolumnschoose:
                 com.extend(['-u', ncolumnschoose])
             if self.checkbox.isChecked():
@@ -348,12 +354,11 @@ class STEMToolsDialog(BaseDialog):
                 mltb = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                     port=ML_PORT,
                                                                     name=MLPYROOBJNAME))
-
                 invectsource = STEMUtils.pathClientWinToServerLinux(invectsource)
                 inrastsource = STEMUtils.pathClientWinToServerLinux(inrastsource)
                 optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
-                            use_columns=ncolumnschoose,
+                            use_columns=ncolumnschoose, use_bands=nlayerchoose,
                             raster=inrastsource, traster=None,
                             models=models, scoring='accuracy',
                             n_folds=nfold, n_jobs=1, n_best=1,
@@ -388,12 +393,14 @@ class STEMToolsDialog(BaseDialog):
             X = X.astype(float)
             log.debug('Training sample shape: {val}'.format(val=X.shape))
 
-            if fscolumns is not None and infile is not None:
-                if not self.LocalCheck.isChecked():
-                    infile = STEMUtils.pathClientWinToServerLinux(infile)
-                X = mltb.data_transform(X=X, y=y, scaler=None,
-                                        fscolumns=fscolumns,
-                                        fsfile=infile, fsfit=True)
+#            if fscolumns is not None:
+#                print "fscolumns {fs}".format(fs=fscolumns)
+#                print "infile {fs}".format(fs=infile)
+#                if not self.LocalCheck.isChecked() and infile:
+#                    infile = STEMUtils.pathClientWinToServerLinux(infile)
+#                X = mltb.data_transform(X=X, y=y, scaler=None,
+#                                        fscolumns=fscolumns,
+#                                        fsfile=infile, fsfit=True)
             # -----------------------------------------------------------------------
             # Extract test samples
             log.debug('Extract test samples')
@@ -506,7 +513,6 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-
                 if not self.LocalCheck.isChecked():
                     temp_out = STEMUtils.pathClientWinToServerLinux(out)
                 else:
