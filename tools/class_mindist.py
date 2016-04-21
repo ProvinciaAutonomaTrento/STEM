@@ -231,12 +231,13 @@ class STEMToolsDialog(BaseDialog):
             else:
                 nfold = None
 
+            n = int(self.Linedit.text())
+
             models = [{'name': 'knn%d_w%s' % (n, self.weight),
                        'model': KNeighborsClassifier,
                        'kwargs': {'n_neighbors': n, 'weights': self.weight}}]
             feat = str(self.MethodInput.currentText())
 
-            n = int(self.Linedit.text())
             prefcsv += "_{n}_{w}".format(n=n, w=self.weight)
             optvect = str(self.BaseInputOpt.currentText())
             if optvect:
