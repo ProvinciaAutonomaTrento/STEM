@@ -689,164 +689,118 @@ class stemLAS():
                 self._run_command(command)
         return command
 
-    def bosco(self, inp, prefix):
-        """
-        :param str inp: full path for the input LAS file
-        :param str prefix: prefix for the output LAS file
-        """
-        try:
-            import readline
-        except ImportError:
-            import pyreadline as readline
-        from smop.runtime import *
-        import copy
-        import struct
-        from bosco_stem import read_las_header, readlas_1_2_
-        from bosco_stem import compute_layers_, compute_types_
-        h_sterpaglia = 1.0
-        dim_celle = 4
-        n_layers_TOT = 0
-        layer1_TOT = 0
-        layer2_TOT = 0
-        layer3_TOT = 0
-        layer4_TOT = 0
-        n_layers_riga = 0
-        layer1_riga = 0
-        layer2_riga = 0
-        layer3_riga = 0
-        layer4_riga = 0
-        presenza_punti = 0
-        zona = [2]
-        size_zona = len(zona)
-        for fascia in range(0, size_zona):
-            row_offset = 1
-            data_TOT = []
-            lasHeaderInfo = read_las_header(inp)
-            fid = open(inp, "rb")
-            fid.seek(24)
-            ionMajor = struct.unpack('B', fid.read(1))[0]
-            VersionMinor = struct.unpack('B', fid.read(1))[0]
-            fid.seek(96)
-            OffsetToPointData = struct.unpack('I', fid.read(4))[0]
-            fid.seek(131)
-            XScaleFactor = struct.unpack('d', fid.read(8))[0]
-            YScaleFactor = struct.unpack('d', fid.read(8))[0]
-            ZScaleFactor = struct.unpack('d', fid.read(8))[0]
-            XOffset = struct.unpack('d', fid.read(8))[0]
-            YOffset = struct.unpack('d', fid.read(8))[0]
-            ZOffset = struct.unpack('d', fid.read(8))[0]
-            dato = readlas_1_2_(inp, char('xyzir'))
-            X = dato[0].X
-            Y = dato[0].Y
-            Z = dato[0].Z
-            R = dato[0].returnNumber
-            I = dato[0].intensity
-
-            data = [X, Y, Z, R, I]
-
-            data_inferiore = [[], [], [], [], []]
-            data_superiore = [[], [], [], [], []]
-            for i in range(0, len(X)):
-                if Z[i] <= h_sterpaglia:
-                    data_inferiore[0].append(X[i])
-                    data_inferiore[1].append(Y[i])
-                    data_inferiore[2].append(Z[i])
-                    data_inferiore[3].append(R[i])
-                    data_inferiore[4].append(I[i])
-                else:
-                    data_superiore[0].append(X[i])
-                    data_superiore[1].append(Y[i])
-                    data_superiore[2].append(Z[i])
-                    data_superiore[3].append(R[i])
-                    data_superiore[4].append(I[i])
-            data = data_superiore
-
-            npoint = len(data[0])
-            h = 5
-            fid.close()
-            min_x = min(data[0])
-            max_x = max(data[0])
-            max_y = max(data[1])
-            min_y = min(data[1])
-            columns = ceil(max_x - min_x)
-            lines = ceil(max_y - min_y)
-            x_coord = copy_(min_x)
-            y_coord = copy_(max_y)
-            ris = 1
-            x_coord = x_coord - (ris / 2)
-            y_coord = y_coord + (ris / 2)
-            mtrows = int(ceil(lines / dim_celle) * dim_celle)
-            mtcols = int(ceil(columns / dim_celle) * dim_celle)
-            tmp = zeros_(mtrows, mtcols)
-            k = 1
-            for i in range(0, int(ceil(lines / (dim_celle / 2)) * (dim_celle / 2)),
-                           dim_celle):
-                for j in range(int(ceil(columns / dim_celle))):
-                    tmp[arange_(i, i + dim_celle - 1),
-                        arange_(j * dim_celle, (j + 1) * dim_celle-1)] = k
-                    k = k + 1
-            S = tmp[0:lines, 0:columns]
-            tmp = zeros_(ceil(lines / (dim_celle / 2)) * (dim_celle / 2),
-                         ceil(columns / (dim_celle / 2)) * (dim_celle / 2))
-            k = 1
-            for i in range(0, int(ceil(lines / (dim_celle / 2)) * (dim_celle / 2)),
-                           int(dim_celle / 2)):
-                for j in range(int(ceil(columns / (dim_celle / 2)))):
-                    tmp[arange_(i, i + (dim_celle / 2) - 1),
-                        arange_(j * (dim_celle / 2),
-                                (j + 1) * (dim_celle / 2) - 1)] = k
-                    k = k + 1
-            nseed = max_(max_(S))
-            print nseed
-            data_fil = 0
-            nseed
-            for i in range(1, nseed):
-                print 'i=' + str(i)
-                data_tmp = [[], [], [], [], []]
-                for j in range(npoint):
-                    x_c = round_(data[0][j] - x_coord) - 1
-                    y_c = round_(y_coord - data[1][j]) - 1
-                    if (x_c >= 0) and (y_c >= 0) and (x_c < columns) and (y_c < lines):
-                        if (S[y_c, x_c] == i):
-                            for di in range(len(data_tmp)):
-                                data_tmp[di].append(data[di][j])
-                if len(data_tmp[0]) > 3:
-                    print 'ans=' + str(len(data_tmp[0]))
-                    n_layers, h_medie, T = compute_layers_(data_tmp, nargout=3)
-                    data_tmp_T = copy.deepcopy(data_tmp)
-                    data_tmp_T.append(T)
-                    _type = compute_types_(data_tmp_T, n_layers, h_medie)
-                    data_tmp_type = copy.deepcopy(data_tmp_T)
-                    data_tmp_type.append(_type)
-                    if len(data_TOT) == 0:
-                        data_TOT = copy.deepcopy(data_tmp_type)
-                    else:
-                        for di in range(len(data_TOT)):
-                            data_TOT[di].extend(data_tmp_type[di])
-
-            size_data_inferiore = len(data_inferiore[0])
-            T_inf = np.empty(size_data_inferiore)
-            T_inf.fill(5)
-            T_inf = T_inf.tolist()
-            Type_inf = copy.deepcopy(T_inf)
-            data_inferiore.append(T_inf)
-            data_inferiore.append(Type_inf)
-            for i in range(len(data_TOT)):
-                data_TOT[i].extend(data_inferiore[i])
-
-            savefile = 'fascia_{num}.txt'.format(num=str(zona[fascia]))
-            fid = open(savefile, 'w')
-            for i in range(len(data_TOT[0])):
-                fid.write("%f %f %f %f %f %f %f\n" % (data_TOT[0][i],
-                                                      data_TOT[1][i],
-                                                      data_TOT[2][i],
-                                                      data_TOT[3][i],
-                                                      data_TOT[4][i],
-                                                      data_TOT[5][i],
-                                                      data_TOT[6][i]))
-            fid.close()
-            out = "{pref}_{num}.las".format(pref=prefix, num=str(zona[fascia]))
-            self.txt2las(savefile, out)
+    def bosco(self, inp, out):
+        import os
+        import sys
+        import numpy as np
+        from laspy.file import File
+        
+        import layers
+        import typess
+        
+        # -------------------------------------------------------------------------------- 
+        # --------------------------- Vegetation Classifier --------------------------- 
+        # -------------------------------------------------------------------------------- 
+        # Coded by Lake Ishikawa
+        # Base on algorithms published by G. Serafini and G. Webber
+        
+        # Define global parameters to use
+        h_sterpaglia = 1    # Points below this height will be considered "ground"
+        cell_size = 4        # Define the size of the square to divide the dataset into for classification (same squares will share same class)
+        
+        # Read input file
+        inFile = File(inp, mode = "r")
+        
+        # Find out what the point format looks like.
+        print("--------------------------------------------")
+        print("--- Welcome to vegetation-classifier 1.0 ---")
+        print("--------------------------------------------")
+        
+        print("---Input file format:-----------------------")
+        pointformat = inFile.point_format
+        for spec in inFile.point_format:
+            print(spec.name)
+            
+        # Grab all of the points from the file.
+        all_points = np.vstack([inFile.x, inFile.y, inFile.z, inFile.return_num, inFile.intensity]).transpose()
+        
+        print("---Header info:-----------------------------")
+        max = inFile.header.max
+        min = inFile.header.min
+        print("Scale: " + str(inFile.header.scale))
+        print("Offset: " + str(inFile.header.offset))
+        print("Max: " + str(max))
+        print("Min: " + str(min))
+        
+        print("---Number of points:------------------------")
+        print(len(all_points))
+        
+        # Divide in small chunks so you don't run out of memory
+        #chunk_points = all_points[:
+        
+        # Filter out sterpaglia
+        sterpaglia_points = []
+        for p in all_points:
+            if h_sterpaglia > p[2]:
+                sterpaglia_points.append(p)
+        print("---Sterpaglia points:-----------------------")
+        print(len(sterpaglia_points))
+        
+        # Take non-sterpaglia points
+        valid_points = []
+        for p in all_points:
+            if h_sterpaglia <= p[2]:
+                valid_points.append(p)
+        print("---Non-sterpaglia points:-------------------")
+        print(len(valid_points))
+        
+        
+        # Calculate the number of required tile squares
+        tilesNumX = int((inFile.header.max[0] - inFile.header.min[0]) / cell_size) + 1
+        tilesNumY = int((inFile.header.max[1] - inFile.header.min[1]) / cell_size) + 1
+        print("---Number of tiles: " + str(tilesNumX)+ " x " + str(tilesNumY))
+        
+        # Construct tile map data to map points to their tiles.
+        # Every tile will contain the points that are inside that tile.
+        tiles = [None] * (tilesNumX * tilesNumY)
+        for p in valid_points:
+            x = int((p[0] - min[0]) / cell_size)
+            y = int((p[1] - min[1]) / cell_size)
+            cellId = y*tilesNumX + x;
+            if tiles[ cellId ] == None: tiles[ cellId ] = []
+            tiles[ cellId ].append(p)
+            
+        # Process every tile with its points!
+        clusters = []
+        for i, tile in enumerate(tiles):
+            if 1%100 == 0:
+                print("Processing tile " + str(i+1) + "/" + str(len(tiles)))
+            
+            # Only if it has any point at all
+            if tile != None:
+                # ALGORYTHM PART 1 - LAYER NUMBER COMPUTATION
+                newClusters = layers.compute_layers(tile)
+                clusters.extend(newClusters)
+                
+                # ALGORYTHM PART 2 - TYPE COMPUTATION
+                typess.compute_types(newClusters)
+            
+        # Write everything to a txt!
+        fid = open("fascia.txt", 'w')
+        for cluster in clusters:
+            for i in range(len(cluster.points)):
+                point = cluster.points[i]
+                type = cluster.typess[i]
+                fid.write("%f %f %f %f %f %f %f\n" % (point[0], point[1], point[2], point[3], point[4], cluster.clusterId+1, type))
+            
+        # Sterpaglia
+        for p in sterpaglia_points:
+            fid.write("%f %f %f %f %f %f %f\n" % (p[0], p[1], p[2], p[3], p[4], 5, 5))
+            
+        # Convert to las
+        fid.close()
+        exe_string = "txt2las -i fascia.txt -o {0} -parse xyzricp".format(out)
+        os.system(exe_string)
 
     def zonal_statistics(self, inlas, invect, output, stats, overwrite=False,
                          ogrdriver='ESRI Shapefile'):
