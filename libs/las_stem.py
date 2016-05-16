@@ -724,36 +724,40 @@ class stemLAS():
         # Grab all of the points from the file.
         all_points = np.vstack([inFile.x, inFile.y, inFile.z, inFile.return_num, inFile.intensity]).transpose()
         
-        print("---Header info:-----------------------------")
-        max = inFile.header.max
-        min = inFile.header.min
-        print("Scale: " + str(inFile.header.scale))
-        print("Offset: " + str(inFile.header.offset))
-        print("Max: " + str(max))
-        print("Min: " + str(min))
+        max_return_num = max(set(inFile.return_num))
         
-        print("---Number of points:------------------------")
-        print(len(all_points))
+#         print("---Header info:-----------------------------")
+        maximum = inFile.header.max
+        minimum = inFile.header.min
+#         print("Scale: " + str(inFile.header.scale))
+#         print("Offset: " + str(inFile.header.offset))
+#         print("Max: " + str(max))
+#         print("Min: " + str(min))
+#         
+#         print("---Number of points:------------------------")
+#         print(len(all_points))
         
         # Divide in small chunks so you don't run out of memory
         #chunk_points = all_points[:
         
-        # Filter out sterpaglia
-        sterpaglia_points = []
-        for p in all_points:
-            if h_sterpaglia > p[2]:
-                sterpaglia_points.append(p)
-        print("---Sterpaglia points:-----------------------")
-        print(len(sterpaglia_points))
-        
-        # Take non-sterpaglia points
-        valid_points = []
-        for p in all_points:
-            if h_sterpaglia <= p[2]:
-                valid_points.append(p)
-        print("---Non-sterpaglia points:-------------------")
-        print(len(valid_points))
-        
+#         # Filter out sterpaglia
+#         sterpaglia_points = []
+#         for p in all_points:
+#             if h_sterpaglia > p[2]:
+#                 sterpaglia_points.append(p)
+#         print("---Sterpaglia points:-----------------------")
+#         print(len(sterpaglia_points))
+#         
+#         # Take non-sterpaglia points
+#         valid_points = []
+#         for p in all_points:
+#             if h_sterpaglia <= p[2]:
+#                 valid_points.append(p)
+#         print("---Non-sterpaglia points:-------------------")
+#         print(len(valid_points))
+
+        sterpaglia_points = [p for p in all_points if h_sterpaglia > p[2]]
+        valid_points = [p for p in all_points if h_sterpaglia <= p[2]]
         
         # Calculate the number of required tile squares
         tilesNumX = int((inFile.header.max[0] - inFile.header.min[0]) / cell_size) + 1
@@ -764,11 +768,14 @@ class stemLAS():
         # Every tile will contain the points that are inside that tile.
         tiles = [None] * (tilesNumX * tilesNumY)
         for p in valid_points:
-            x = int((p[0] - min[0]) / cell_size)
-            y = int((p[1] - min[1]) / cell_size)
-            cellId = y*tilesNumX + x;
-            if tiles[ cellId ] == None: tiles[ cellId ] = []
-            tiles[ cellId ].append(p)
+            try:
+                x = int((p[0] - minimum[0]) / cell_size)
+                y = int((p[1] - minimum[1]) / cell_size)
+                cellId = y*tilesNumX + x;
+                if tiles[ cellId ] == None: tiles[ cellId ] = []
+                tiles[ cellId ].append(p)
+            except IndexError:
+                print "x:{0}; y:{1}; tilesNumX:{2}; cellId:{3}".format(x, y, tilesNumX, cellId)
             
         # Process every tile with its points!
         clusters = []
@@ -779,7 +786,7 @@ class stemLAS():
             # Only if it has any point at all
             if tile != None:
                 # ALGORYTHM PART 1 - LAYER NUMBER COMPUTATION
-                newClusters = layers.compute_layers(tile)
+                newClusters = layers.compute_layers(tile, max_return_num)
                 clusters.extend(newClusters)
                 
                 # ALGORYTHM PART 2 - TYPE COMPUTATION

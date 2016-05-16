@@ -13,7 +13,7 @@ delta_h = 2
 stacco = 0.3
 
 ## Compute the layers
-def compute_layers(points):
+def compute_layers(points, max_return_num):
 	#print("---Number of points in the tile:" + str(len(points)))
 	
 	# First, divide the points in 1 or 2 clusters (considering cluster's point percentage must be >15%)
@@ -25,7 +25,7 @@ def compute_layers(points):
 		
 	# One layer check (may return to 2 layers)
 	if len(clusters) == 1:
-		splitLayers(clusters)
+		splitLayers(clusters, max_return_num)
 		
 	# Merge again if needed
 	if len(clusters) == 2:
@@ -80,7 +80,7 @@ def mergeLayers(clusters):
 		clusters[0].append(clusters[1])
 		clusters.remove(clusters[1])
 		
-def splitLayers(clusters):
+def splitLayers(clusters, max_return_num):
 	# Don't even try with less than 10 points
 	if len(clusters[0].points) < 10: return
 	
@@ -88,8 +88,8 @@ def splitLayers(clusters):
 	if clusters[0].thickness() <= thickness_min: return
 		
 	# Count R2 and R1
-	returns = [0, 0, 0, 0]
-	returnsHeights = [0, 0, 0, 0]
+	returns = [0 for x in range(max_return_num)]
+	returnsHeights = [0 for x in range(max_return_num)]
 	for p in clusters[0].points:
 		returns[int(p[3])-1] += 1
 		returnsHeights[int(p[3])-1] += p[2]
