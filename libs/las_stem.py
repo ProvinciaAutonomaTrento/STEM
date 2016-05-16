@@ -775,7 +775,8 @@ class stemLAS():
                 if tiles[ cellId ] == None: tiles[ cellId ] = []
                 tiles[ cellId ].append(p)
             except IndexError as err:
-                raise err("x:{0}; y:{1}; tilesNumX:{2}; cellId:{3}".format(x, y, tilesNumX, cellId))
+                print "x:{0}; y:{1}; tilesNumX:{2}; cellId:{3}".format(x, y, tilesNumX, cellId)
+                raise err
             
         # Process every tile with its points!
         clusters = []
