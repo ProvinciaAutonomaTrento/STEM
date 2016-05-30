@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//docstring/source/conf.py=utf-8
+encoding//libs/__init__.py=utf-8
 encoding//libs/bosco_stem.py=utf-8
 encoding//libs/classifiers.py=utf-8
 encoding//libs/exported_objects.py=utf-8
