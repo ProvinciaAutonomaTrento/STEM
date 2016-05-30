@@ -640,9 +640,9 @@ def main():
         #os.environ["PYRO_LOGFILE"] = "pyrograss.log"
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
-        grass_stem = stemGRASS()
+#         grass_stem = stemGRASS()
         daemon = Pyro4.Daemon(host=PYROSERVER, port=GRASS_PORT)
-        uri = daemon.register(grass_stem,objectId=GRASSPYROOBJNAME,force=True)
+        uri = daemon.register(stemGRASS,objectId=GRASSPYROOBJNAME,force=True)
         ns = Pyro4.locateNS()
         ns.register("PyroGrassStem",uri)
         daemon.requestLoop()

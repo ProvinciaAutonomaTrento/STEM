@@ -921,14 +921,14 @@ def main():
         #os.environ["PYRO_LOGFILE"] = "pyrolas.log"
         #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
         import Pyro4
-        gdalinfo_stem = file_info()
-        gdalconvert_stem = convertGDAL()
-        ogrinfo_stem = infoOGR()
+#         gdalinfo_stem = file_info()
+#         gdalconvert_stem = convertGDAL()
+#         ogrinfo_stem = infoOGR()
         # Trilogis daemon configuration with objectId 2015-11-06
         daemon = Pyro4.Daemon(host=PYROSERVER, port=GDAL_PORT)
-        uri1 = daemon.register(gdalinfo_stem,objectId=GDALINFOPYROOBJNAME,force=True)
-        uri2 = daemon.register(gdalconvert_stem,objectId=GDALCONVERTPYROOBJNAME,force=True)
-        uri3 = daemon.register(ogrinfo_stem,objectId=OGRINFOPYROOBJNAME,force=True)
+        uri1 = daemon.register(file_info,objectId=GDALINFOPYROOBJNAME,force=True)
+        uri2 = daemon.register(convertGDAL,objectId=GDALCONVERTPYROOBJNAME,force=True)
+        uri3 = daemon.register(infoOGR,objectId=OGRINFOPYROOBJNAME,force=True)
         ns = Pyro4.locateNS()
         ns.register("PyroGdalInfoStem",uri1)
         ns.register("PyroGdalConvertStem",uri2)
