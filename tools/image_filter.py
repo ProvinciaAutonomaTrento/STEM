@@ -204,7 +204,7 @@ class STEMToolsDialog(BaseDialog):
             STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ)
 
             if not local:
-                gs.__pyroRelease()
+                gs._pyroRelease()
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
