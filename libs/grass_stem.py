@@ -103,7 +103,9 @@ def temporaryFilesGRASS(name, local=True):
     :param bool local: true to create local grass connection otherwise it
                        try to connetc with the server
     """
-    pid = os.getpid()
+#     pid = os.getpid()
+    import uuid
+    pid = uuid.uuid4()
     tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
     tempout = 'stem_output_{pid}'.format(pid=pid)
     grassdatabase, location, grassbin, epsg = QGISettingsGRASS(local=local)
