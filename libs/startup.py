@@ -10,13 +10,16 @@ from machine_learning import MLToolBox
 from gdal_stem import file_info, convertGDAL, infoOGR
 from grass_stem import stemGRASS
 import Pyro4
+import gdal
 import os
         
 GLOBAL_SERVER_PORT = 6000
 
 def main():
+    gdal.AllRegister()
+    
     Pyro4.config.SERVERTYPE = "multiplex"
-    os.environ["PYRO_LOGFILE"] = "/root/pyrodebug.log"
+    os.environ["PYRO_LOGFILE"] = "/opt/pyrodebug.log"
     os.environ["PYRO_LOGLEVEL"] = "DEBUG"
     daemon = Pyro4.Daemon(host = PYROSERVER, port = GLOBAL_SERVER_PORT)
         
