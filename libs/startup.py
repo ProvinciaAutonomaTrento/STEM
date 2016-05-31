@@ -19,8 +19,8 @@ def main():
     gdal.AllRegister()
     
     Pyro4.config.SERVERTYPE = "multiplex"
-    os.environ["PYRO_LOGFILE"] = "/opt/pyrodebug.log"
-    os.environ["PYRO_LOGLEVEL"] = "DEBUG"
+    #os.environ["PYRO_LOGFILE"] = "/opt/pyrodebug.log"
+    #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
     daemon = Pyro4.Daemon(host = PYROSERVER, port = GLOBAL_SERVER_PORT)
         
     uri_las = daemon.register(stemLAS, objectId = LASPYROOBJNAME, force = True)
