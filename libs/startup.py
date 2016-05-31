@@ -14,6 +14,7 @@ import Pyro4
 GLOBAL_SERVER_PORT = 6000
 
 def main():
+    Pyro4.config.SERVERTYPE = "multiplex"
     daemon = Pyro4.Daemon(host = PYROSERVER, port = GLOBAL_SERVER_PORT)
         
     uri_las = daemon.register(stemLAS, objectId = LASPYROOBJNAME, force = True)
