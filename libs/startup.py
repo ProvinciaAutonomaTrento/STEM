@@ -18,7 +18,8 @@ GLOBAL_SERVER_PORT = 6000
 def main():
     gdal.AllRegister()
     
-    Pyro4.config.SERVERTYPE = "multiplex"
+    Pyro4.config.SERVERTYPE = "thread"
+    Pyro4.config.THREADPOOL_SIZE = 1
     #os.environ["PYRO_LOGFILE"] = "/opt/pyrodebug.log"
     #os.environ["PYRO_LOGLEVEL"] = "DEBUG"
     daemon = Pyro4.Daemon(host = PYROSERVER, port = GLOBAL_SERVER_PORT)
