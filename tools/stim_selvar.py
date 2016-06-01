@@ -159,8 +159,13 @@ class STEMToolsDialog(BaseDialog):
                                     fsfile=temp_out, fsfit=True)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
+            
+            if not self.LocalCheck.isChecked():
+                mltb._pyroRelease()
             return
         except:
+            if not self.LocalCheck.isChecked():
+                mltb._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

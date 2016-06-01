@@ -180,8 +180,13 @@ class STEMToolsDialog(BaseDialog):
             if message is not None:
                 QMessageBox.warning(self, "Attenzione", message)
             
+            if not self.LocalCheck.isChecked():
+                mltb._pyroRelease()
+            
             return
         except:
+            if not self.LocalCheck.isChecked():
+                mltb._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             QMessageBox.warning(self, "Errore", error)

@@ -119,8 +119,13 @@ class STEMToolsDialog(BaseDialog):
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.reloadVectorLayer(name)
-
+                
+            if not self.LocalCheck.isChecked():
+                ogrinfo._pyroRelease()
         except:
+            if not self.LocalCheck.isChecked():
+                ogrinfo._pyroRelease()
+            
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

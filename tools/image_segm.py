@@ -159,7 +159,12 @@ class STEMToolsDialog(BaseDialog):
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
                 if self.TextOut2.text():
                     STEMUtils.addLayerIntoCanvas(self.TextOut2.text(), typ)
+                
+            if not local:
+                gs._pyroRelease()
         except:
+            if not local:
+                gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

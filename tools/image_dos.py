@@ -160,7 +160,12 @@ class STEMToolsDialog(BaseDialog):
                                       'raster', remove=False)
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')
+                
+            if not local:
+                gs._pyroRelease()
         except:
+            if not local:
+                gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

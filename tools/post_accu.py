@@ -123,7 +123,11 @@ class STEMToolsDialog(BaseDialog):
 
             self.finished(self.TextOut.text())
 
+            if not local:
+                gs._pyroRelease()
         except:
+            if not local:
+                gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

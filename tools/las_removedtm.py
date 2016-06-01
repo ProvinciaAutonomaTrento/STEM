@@ -129,7 +129,12 @@ class STEMToolsDialog(BaseDialog):
                     return
                 time.sleep(.1)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out_orig))
+            
+            if not self.LocalCheck.isChecked():
+                las._pyroRelease()
         except:
+            if not self.LocalCheck.isChecked():
+                las._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

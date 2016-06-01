@@ -73,6 +73,7 @@ class STEMToolsDialog(BaseDialog):
                                                                    name=LASPYROOBJNAME))
             las.initialize()
             las.bosco(source, out)
+            
             t = time.time()
             while not os.path.isfile(self.TextOut.text()):
                 if time.time()-t > 5:
@@ -80,7 +81,13 @@ class STEMToolsDialog(BaseDialog):
                     return
                 time.sleep(.1)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=self.TextOut.text()))
+            
+            if not local:
+                las._pyroRelease()
         except:
+            if not local:
+                las._pyroRelease()
+            
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

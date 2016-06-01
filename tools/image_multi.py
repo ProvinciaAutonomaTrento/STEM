@@ -173,3 +173,6 @@ class STEMToolsDialog(BaseDialog):
             STEMUtils.addLayerIntoCanvas(out_orig, 'raster')
 
         STEMMessageHandler.success("{ou} file created".format(ou=out_orig))
+        
+        if not local:
+            cgdal._pyroRelease()

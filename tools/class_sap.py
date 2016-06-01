@@ -102,7 +102,11 @@ class STEMToolsDialog(BaseDialog):
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
             # TODO test
+            if not local:
+                gs._pyroRelease()
         except:
+            if not local:
+                gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

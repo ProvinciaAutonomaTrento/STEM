@@ -122,7 +122,12 @@ class STEMToolsDialog(BaseDialog):
             STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
+            
+            if not local:
+                las._pyroRelease()
         except:
+            if not local:
+                las._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

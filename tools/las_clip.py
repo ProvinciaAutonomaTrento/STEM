@@ -119,13 +119,19 @@ class STEMToolsDialog(BaseDialog):
                            forced='pdal', local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
             t = time.time()
+            
             while not os.path.isfile(out):
                 if time.time()-t > 5:
                     STEMMessageHandler.error("{ou} LAS file not created".format(ou=out))
                     return
                 time.sleep(.1)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out))
+            
+            if not self.LocalCheck.isChecked():
+                las._pyroRelease()
         except:
+            if not self.LocalCheck.isChecked():
+                las._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return

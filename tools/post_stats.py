@@ -111,7 +111,11 @@ class STEMToolsDialog(BaseDialog):
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=self.TextOut.text()))
 
+            if not local:
+                gs._pyroRelease()
         except:
+            if not local:
+                gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)
             return
