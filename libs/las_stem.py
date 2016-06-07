@@ -902,10 +902,10 @@ class stemLAS():
                     if s in ['hcv', 'max', 'mean']:
                         val = statistics[s](zs)
                     elif s == 'c2m':
-                        val = statistics[s](zs, 2)
+                        val = statistics[s](np.asarray(zs), 2)
                     elif s == 'cmean':
                         mean = np.mean(zs)
-                        val = statistics[s](zs, mean)
+                        val = statistics[s](np.asarray(zs), mean)
                     else:
                         perc = int(s.replace('p', ''))
                         val = statistics[s](zs, perc)
