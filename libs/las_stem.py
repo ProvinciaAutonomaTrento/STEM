@@ -212,6 +212,16 @@ class stemLAS():
         if compres:
             writer.append(self._add_option_file('true', val='compression'))
         return writer
+    
+    def _add_txt_write(self, output):
+        """Add the writer element in the Pipeline XML file
+
+        :param str output: the output txt full path
+        """
+        writer = Element('Writer')
+        writer.set("type", "writers.text")
+        writer.append(self._add_option_file(output))
+        return writer
 
     def _add_reader(self, inpu):
         """Add the reader element in the Pipeline XML file
@@ -475,6 +485,40 @@ class stemLAS():
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
         root = self._create_xml()
         write = self._add_write(out, compres)
+        filt = Element('Filter')
+        filt.set("type", "filters.crop")
+
+        if inverted:
+            clip_inverted = self._add_option_file('true', val='outside')
+            filt.append(clip_inverted)
+
+        clip = self._add_option_file(bbox, val='polygon')
+#         if inverted:
+#             clip.set("outside", "true")
+        filt.append(clip)
+        filt.append(self._add_reader(inp))
+        write.append(filt)
+        root.append(write)
+        if sys.platform == 'win32':
+            tmp_file.write(tostring(root, 'iso-8859-1'))
+        else:
+            tmp_file.write(tostring(root, 'utf-8'))
+        tmp_file.close()
+        self.pdalxml = tmp_file.name
+        return 0
+    
+    def clip_txt_pdal(self, inp, out, bbox, inverted=False):
+        """Clip a LAS file using a polygon, returns text file
+
+        :param str inp: full path for the input LAS file
+        :param str out: full path for the output txt file
+        :param str bbox: a well-known text string to crop the LAS file
+        :param bool inverted: invert the cropping logic and only take points
+                              outside the cropping polygon
+        """
+        tmp_file = tempfile.NamedTemporaryFile(delete=False)
+        root = self._create_xml()
+        write = self._add_txt_write(out)
         filt = Element('Filter')
         filt.set("type", "filters.crop")
 
@@ -853,32 +897,32 @@ class stemLAS():
             newlayer.CreateField(field)
         for inFeature in newlayer:
             inGeom = inFeature.GetGeometryRef()
-            outlas = tempFileName()
-            self.clip_xml_pdal(inlas, outlas, inGeom.ExportToWkt(), True)
+            output_file = tempFileName()
+            self.clip_txt_pdal(inlas, output_file, inGeom.ExportToWkt())
             
-            # extract output file name
-            import xml.etree.ElementTree as ElementTree
-            
-            tree = ElementTree.parse(self.pdalxml)
-            root = tree.getroot()
-            
-            # substitute output type to be text (for easier processing)
-            elements = root.findall("Writer[@type='writers.las']")
-            elements[0].attrib['type'] = 'writers.text'
-            pdalxml_csv_output = self.pdalxml + "_csv_output"
-            tree.write(pdalxml_csv_output)           
-            
-            tree = ElementTree.parse(self.pdalxml)
-            root = tree.getroot()
-            elements = root.findall("Writer[@type='writers.las']/Option[@name='filename']")
-          
-            # get pipeline output file
-            output_file = elements[0].text
+#             # extract output file name
+#             import xml.etree.ElementTree as ElementTree
+#             
+#             tree = ElementTree.parse(self.pdalxml)
+#             root = tree.getroot()
+#             
+#             # substitute output type to be text (for easier processing)
+#             elements = root.findall("Writer[@type='writers.las']")
+#             elements[0].attrib['type'] = 'writers.text'
+#             pdalxml_csv_output = self.pdalxml + "_csv_output"
+#             tree.write(pdalxml_csv_output)           
+#             
+#             tree = ElementTree.parse(self.pdalxml)
+#             root = tree.getroot()
+#             elements = root.findall("Writer[@type='writers.las']/Option[@name='filename']")
+#           
+#             # get pipeline output file
+#             output_file = elements[0].text
             
             # execute the pipeline using the command line tools
-            p = subprocess.Popen(['pdal', 'pipeline', '-i', pdalxml_csv_output], shell=False, stdin=PIPE,
+            p = subprocess.Popen(['pdal', 'pipeline', '-i', self.pdalxml], shell=False, stdin=PIPE,
                                  stdout=PIPE, stderr=PIPE)
-            out, err = p.communicate()            
+            out, err = p.communicate()
             
             if p.returncode != 0:
                 raise Exception("Errore eseguendo pdal pipeline: "+err)
