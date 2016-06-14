@@ -131,6 +131,12 @@ class STEMToolsDialog(BaseDialog):
 
         self.helpui.fillfromUrl(self.SphinxUrl())
 
+    def check_input_cross_validation(self):
+        if self.checkbox2.isChecked():
+            if str(self.BaseInputOpt.currentText()) == '' or str(self.BaseInputCombo2.currentText()) == '':
+                return "La cross validation ha bisogno di un vettoriale per la validazione e di una colonna per la validazione."
+        return ""
+
     def outputStateChanged(self):
         if self.checkbox.isChecked():
             self.LabelOut.setEnabled(True)

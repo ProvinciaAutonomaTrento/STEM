@@ -134,7 +134,11 @@ class BaseDialog(QDialog, baseDialog):
         e = [] if self.local_execution() else self.check_server_paths()
         if e:
             errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
-
+        
+        e = self.check_input_cross_validation()
+        if e:
+            errors.append(e)
+        
         errors.extend(self.check_form_fields())
 
         if errors:
@@ -143,6 +147,9 @@ class BaseDialog(QDialog, baseDialog):
 
         self.onRunLocal()
         self.accept()
+
+    def check_input_cross_validation(self):
+        return ''
 
     def get_input_path_fields(self):
         """Metodo astratto
