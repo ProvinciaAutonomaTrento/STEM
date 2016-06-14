@@ -138,6 +138,10 @@ class BaseDialog(QDialog, baseDialog):
         e = self.check_input_cross_validation()
         if e:
             errors.append(e)
+
+        e = self.check_number_of_folds()
+        if e:
+            errors.append(e)
         
         errors.extend(self.check_form_fields())
 
@@ -147,6 +151,9 @@ class BaseDialog(QDialog, baseDialog):
 
         self.onRunLocal()
         self.accept()
+
+    def check_number_of_folds(self):
+        return ""
 
     def check_input_cross_validation(self):
         return ''

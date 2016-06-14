@@ -124,6 +124,11 @@ class STEMToolsDialog(BaseDialog):
             if str(self.BaseInputOpt.currentText()) == '' or str(self.BaseInputCombo2.currentText()) == '':
                 return "La cross validation ha bisogno di un vettoriale per la validazione e di una colonna per la validazione."
         return ""
+    
+    def check_number_of_folds(self):
+        if self.layer_list.count() < int(self.Linedit3.text()):
+            return "Il numero di folds deve essere minore di " + self.layer_list.count()
+        return ""
 
     def outputStateChanged(self):
         if self.checkbox.isChecked():
