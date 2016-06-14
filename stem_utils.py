@@ -418,8 +418,8 @@ class STEMUtils:
                                        QMessageBox.No)
 
             if res == QMessageBox.Yes:
-                if os.path.exists(fileName) and not os.path.isdir(fileName):
-                    os.remove(fileName)
+#                 if os.path.exists(fileName) and not os.path.isdir(fileName):
+#                     os.remove(fileName)
                 return True, True
             else:
                 return False, False
