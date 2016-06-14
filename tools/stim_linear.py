@@ -93,7 +93,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSecondCombobox(label, 7)
 
         ls = "Indice di accuratezza per la selezione del modello"
-        self._insertThirdCombobox(ls, 8, ['R²', 'MSE'])
+        self._insertThirdCombobox(ls, 8, [u'R²', u'MSE'])
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
                                  empty=True)
