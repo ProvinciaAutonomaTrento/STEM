@@ -40,6 +40,7 @@ import os
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
+from osgeo import ogr
 
 
 class STEMToolsDialog(BaseDialog):
@@ -126,8 +127,14 @@ class STEMToolsDialog(BaseDialog):
         return ""
     
     def check_number_of_folds(self):
-        if self.layer_list.count() < int(self.Linedit3.text()):
-            return "Il numero di folds deve essere minore di " + self.layer_list.count()
+        if self.checkbox2.isChecked():
+            invect = str(self.BaseInput.currentText())
+            invectsource = STEMUtils.getLayersSource(invect)
+            vect = ogr.Open(invectsource)
+            layer = vect.GetLayer()
+            nfeatures = layer.GetFeatureCount()
+            if nfeatures < int(self.Linedit3.text()):
+                return "The number of features ({}) can not be lower than the number of folds ({}).".format(nfeatures, int(self.Linedit3.text()))
         return ""
 
     def outputStateChanged(self):
