@@ -631,7 +631,7 @@ class STEMUtils:
         :param encoded: STEMSettings.value("mappingTable", None)
         :raram return: python object [[r0,r0],[r1,r1]]
         """
-        if encoded:
+        if encoded is not None:
             table = pickle.loads(base64.b64decode(encoded))
             if all([type(x) == list and len(x) in [0, 2] for x in table]):
                 # converto dal vecchio formato
