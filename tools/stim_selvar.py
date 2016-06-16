@@ -38,7 +38,7 @@ from gdal_stem import infoOGR
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
-
+from PyQt4.QtCore import Qt
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -56,9 +56,8 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
-        self._insertFirstLineEdit(label="Numero variabili da selezionare",
-                                  posnum=0)
-
+        self._insertFirstLineEdit(label="Numero variabili da selezionare", posnum=0)
+        
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -68,6 +67,7 @@ class STEMToolsDialog(BaseDialog):
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
 
     def onClosing(self):
         self.onClosing(self)
@@ -85,6 +85,7 @@ class STEMToolsDialog(BaseDialog):
             infovect = infoOGR()
             infovect.initialize(invectsource)
             ncolumnschoose = infovect.getColumns(invectcol)
+            
             num_var = int(self.Linedit.text())
             if num_var >= len(ncolumnschoose):
                 STEMMessageHandler.error("Numero di variabili selezionato "

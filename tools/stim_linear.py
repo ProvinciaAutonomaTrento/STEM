@@ -41,6 +41,8 @@ from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
 from osgeo import ogr
+from PyQt4.QtCore import SIGNAL
+from functools import partial
 
 
 class STEMToolsDialog(BaseDialog):
@@ -85,24 +87,29 @@ class STEMToolsDialog(BaseDialog):
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(6, label="Vettoriale di validazione")
+        self._insertFourthCombobox("Vettoriale di mappa", 6)
+        STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
+        
+
+        self._insertSingleInputOption(7, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 7)
+        self._insertSecondCombobox(label, 8)
 
         ls = "Indice di accuratezza per la selezione del modello"
-        self._insertThirdCombobox(ls, 8, [u'R²', u'MSE'])
+        self._insertThirdCombobox(ls, 9, [u'R²', u'MSE'])
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2,
                                  empty=True)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 9)
+        self._insertCheckbox(label, 10)
 
+        # colonna per i valori della stima
         self.horizontalLayout_field = QHBoxLayout()
         self.labelfield = QLabel()
         self.labelfield.setObjectName("labelfield")
@@ -113,12 +120,35 @@ class STEMToolsDialog(BaseDialog):
         self.TextOutField.setMaxLength(9)
         self.horizontalLayout_field.addWidget(self.TextOutField)
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
+        
+        # inserimento output mappa
+        self._insertSecondOutput("Risultato mappa", 6)
+        self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
+        self.connect(self.BrowseButton2, SIGNAL("clicked()"),
+                     partial(self.browseDir, self.TextOut2))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
+        
+        self.BaseInputCombo4.currentIndexChanged.connect(self.map_vector_status_changed)
+
+        self.map_vector_status_changed() # we don't want to have output enabled the first time
 
         self.helpui.fillfromUrl(self.SphinxUrl())
+
+    def map_vector_status_changed(self):
+        if self.BaseInputCombo4.currentText() == '':
+            self.LabelOut2.setEnabled(False)
+            self.TextOut2.setEnabled(False)
+            self.BrowseButton2.setEnabled(False)
+#             self.AddLayerToCanvas.setEnabled(False)
+#             self.labelfield.setEnabled(False)
+#             self.TextOutField.setEnabled(False)
+        else:
+            self.LabelOut2.setEnabled(True)
+            self.TextOut2.setEnabled(True)
+            self.BrowseButton2.setEnabled(True)
 
     def check_input_cross_validation(self):
         if self.checkbox2.isChecked():

@@ -32,6 +32,7 @@ import time
 import subprocess
 from collections import namedtuple
 import json
+from shutil import rmtree
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -423,7 +424,8 @@ class STEMUtils:
                     layers = STEMUtils.registry.mapLayersByName(layerName)
                     if layers:
                         STEMUtils.registry.removeMapLayer(layers[0])
-                    os.remove(fileName)
+#                     os.remove(fileName)
+                    shutil.rmtree(fileName, True)
                 return True, True
             else:
                 return False, False
