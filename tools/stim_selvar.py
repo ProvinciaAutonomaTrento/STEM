@@ -56,10 +56,22 @@ class STEMToolsDialog(BaseDialog):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
         self.BaseInput.currentIndexChanged.connect(self.columnsChange)
 
+        self._insertFirstCombobox(label = "Colonne da non considerare nella selezione", posnum=3, combo=True)
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+        column_to_estimate = self.layer_list.currentText()
+        self.BaseInputCombo.removeItem(column_to_estimate)
+
         self._insertFirstLineEdit(label="Numero variabili da selezionare", posnum=0)
+        
+        self.layer_list.currentIndexChanged.connect(self.column_to_estimate_changed)
         
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+
+    def column_to_estimate_changed(self):
+        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+        column_to_estimate = self.layer_list.currentText()
+        self.BaseInputCombo.removeItem(column_to_estimate)
 
     def show_(self):
         self.switchClippingMode()
@@ -85,6 +97,14 @@ class STEMToolsDialog(BaseDialog):
             infovect = infoOGR()
             infovect.initialize(invectsource)
             ncolumnschoose = infovect.getColumns(invectcol)
+            
+            # TODO I should add this to the GUI, and remove the checked elements from ncolumnschoose
+            for i in range(self.BaseInputCombo.count()):
+                item = self.BaseInputCombo.model().item(i)
+                if item.checkState() == Qt.Checked:
+                    val = str(item.text())
+                    key = self._keysStats(val)
+                    itemlist.append(key[0])
             
             num_var = int(self.Linedit.text())
             if num_var >= len(ncolumnschoose):

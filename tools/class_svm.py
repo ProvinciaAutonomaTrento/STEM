@@ -76,44 +76,49 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstLineEdit(label="Inserire il parametro C", posnum=3)
         self._insertSecondLineEdit(label="Inserire il valore di gamma",
                                    posnum=4)
+        self._insertFourthLineEdit(label="Inserire il valore di r", posnum=5)
+        self._insertFifthLineEdit(label="Inserire il valore del grado del polinomio", posnum=6)
 
         mets = ['no', 'manuale', 'file']
 
         self.lm = "Selezione feature"
-        self._insertMethod(mets, self.lm, 5)
+        self._insertMethod(mets, self.lm, 7)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
 
         self.llcc = "Selezionare le bande da utilizzare cliccandoci sopra"
-        self._insertLayerChooseCheckBox2Options(self.llcc, pos=6)
+        self._insertLayerChooseCheckBox2Options(self.llcc, pos=8)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged)
         STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
         self.label_layer2.setEnabled(False)
         self.layer_list2.setEnabled(False)
 
         self.lio = "File di selezione"
-        self._insertFileInputOption(self.lio, 7,
+        self._insertFileInputOption(self.lio, 9,
                                     filt="Text file (*.txt *.text)")
         self.labelFO.setEnabled(False)
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertSingleInputOption(8, label="Vettoriale di validazione")
+        self._insertSingleInputOption(10, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
         #self.labelOpt.setEnabled(False)
 
         label = "Seleziona la colonna per la validazione"
-        self._insertSecondCombobox(label, 9)
+        self._insertSecondCombobox(label, 11)
 
         STEMUtils.addColumnsName(self.BaseInputOpt, self.BaseInputCombo2)
         self.BaseInputOpt.currentIndexChanged.connect(self.columnsChange2)
 
         label = "Creare output"
-        self._insertCheckbox(label, 10)
+        self._insertCheckbox(label, 12)
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
+        self.kernelChanged()
+        
         self.helpui.fillfromUrl(self.SphinxUrl())
 
     def check_input_cross_validation(self):
@@ -156,18 +161,35 @@ class STEMToolsDialog(BaseDialog):
             self.Linedit3.setEnabled(False)
 
     def kernelChanged(self):
-        if self.BaseInputCombo.currentText() == 'lineare':
+        kernel = self.BaseInputCombo.currentText()
+        if kernel == 'lineare':
             self.LabelLinedit2.setEnabled(False)
             self.Linedit2.setEnabled(False)
-        else:
+            self.LabelLinedit4.setEnabled(False)
+            self.Linedit4.setEnabled(False)
+            self.LabelLinedit5.setEnabled(False)
+            self.Linedit5.setEnabled(False)
+        elif kernel == 'polinomiale':
             self.LabelLinedit2.setEnabled(True)
             self.Linedit2.setEnabled(True)
-        if self.BaseInputCombo.currentText() == 'polinomiale':
-            self.LabelLinedit2.setText(self.tr("", "Inserire il valore del "
-                                               "grado del polinomio"))
-        elif self.BaseInputCombo.currentText() in ['RBF', 'sigmoidale']:
-            self.LabelLinedit2.setText(self.tr("",
-                                               "Inserire il valore di gamma"))
+            self.LabelLinedit4.setEnabled(True)
+            self.Linedit4.setEnabled(True)
+            self.LabelLinedit5.setEnabled(True)
+            self.Linedit5.setEnabled(True)
+        elif kernel == 'sigmoidale':
+            self.LabelLinedit2.setEnabled(True)
+            self.Linedit2.setEnabled(True)
+            self.LabelLinedit4.setEnabled(True)
+            self.Linedit4.setEnabled(True)
+            self.LabelLinedit5.setEnabled(False)
+            self.Linedit5.setEnabled(False)
+        elif kernel == 'RBF':
+            self.LabelLinedit2.setEnabled(True)
+            self.Linedit2.setEnabled(True)
+            self.LabelLinedit4.setEnabled(False)
+            self.Linedit4.setEnabled(False)
+            self.LabelLinedit5.setEnabled(False)
+            self.Linedit5.setEnabled(False)
 
     def methodChanged(self):
         if self.MethodInput.currentText() == 'file':
@@ -200,32 +222,38 @@ class STEMToolsDialog(BaseDialog):
     def getModel(self, csv):
         kernel = str(self.BaseInputCombo.currentText())
         c = float(self.Linedit.text())
-        if kernel in ['RBF', 'sigmoidale']:
-            if kernel == 'RBF':
-                k = 'rbf'
-            else:
-                k = 'sigmoid'
+        if kernel == 'RBF':
+            k = 'rbf'
             g = float(self.Linedit2.text())
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVC,
-                     'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVR,
+                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y,
+                                'probability': True}}], csv
+        elif kernel == 'sigmoidale':
+            k = 'sigmoid'
+            g = float(self.Linedit2.text())
+            coef0 = float(self.Linedit4.text())
+            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
+            return [{'name': 'SVC_k%s_C%f_g%f_r%d' % (k, c, g, coef0), 'model': SVR,
+                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y, 'coef0': coef0,
                                 'probability': True}}], csv
         elif kernel == 'lineare':
             k = 'linear'
             csv += "_{ke}_{c}".format(ke=k, c=c)
-            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVC,
+            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVR,
                      'kwargs': {'kernel': k, 'C': c,
                                 'probability': True}}], csv
         else:
             k = 'poly'
             g = float(self.Linedit2.text())
-            d = 3 # TODO ask pietro
+            coef0 = float(self.Linedit4.text())
+            d = int(self.Linedit5.text())
             csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_d%02d_C%f_g%f' % (k, d, c, g),
-                     'model': SVC, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
-                                              'degree': d, 'probability': True}
+            return [{'name': 'SVC_k%s_d%02d_r%d_C%f_g%f' % (k, d, coef0, c, g),
+                     'model': SVR, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
+                                              'epsilon': y, 'degree': d, 'coef0': coef0,
+                                              'probability': True}
                      }], csv
-
 
     def get_input_path_fields(self):
         """Fornisce al padre una lista di path di input da verificare
