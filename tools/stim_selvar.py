@@ -54,24 +54,22 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChoose(pos=1)
         self.label_layer.setText(self.tr("", self.labelcol))
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
-
-        self._insertFirstCombobox(label = "Colonne da non considerare nella selezione", posnum=3, combo=True)
-        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
-        column_to_estimate = self.layer_list.currentText()
-        self.BaseInputCombo.removeItem(column_to_estimate)
+        
+        self._insertLayerChooseCheckBox2(label = "Colonne da non considerare nella selezione", pos=3, combo=True)
 
         self._insertFirstLineEdit(label="Numero variabili da selezionare", posnum=0)
         
-        self.layer_list.currentIndexChanged.connect(self.column_to_estimate_changed)
-        
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
+        self.layer_list.currentIndexChanged.connect(self.column_to_estimate_changed)
+        self.BaseInput.currentIndexChanged.connect(self.columnsChange)
+        self.column_to_estimate_changed()
 
     def column_to_estimate_changed(self):
-        STEMUtils.addColumnsName(self.BaseInput, self.BaseInputCombo)
+        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
         column_to_estimate = self.layer_list.currentText()
-        self.BaseInputCombo.removeItem(column_to_estimate)
+        self.layer_list2.removeItem(self.layer_list2.findText(column_to_estimate))
 
     def show_(self):
         self.switchClippingMode()
@@ -79,7 +77,7 @@ class STEMToolsDialog(BaseDialog):
 
     def columnsChange(self):
         STEMUtils.addColumnsName(self.BaseInput, self.layer_list)
-        STEMUtils.addColumnsName(self.BaseInput, self.layer_list2)
+        self.column_to_estimate_changed()
 
     def onClosing(self):
         self.onClosing(self)
@@ -98,13 +96,11 @@ class STEMToolsDialog(BaseDialog):
             infovect.initialize(invectsource)
             ncolumnschoose = infovect.getColumns(invectcol)
             
-            # TODO I should add this to the GUI, and remove the checked elements from ncolumnschoose
-            for i in range(self.BaseInputCombo.count()):
-                item = self.BaseInputCombo.model().item(i)
+            for i in range(self.layer_list2.count()):
+                item = self.layer_list2.model().item(i)
                 if item.checkState() == Qt.Checked:
                     val = str(item.text())
-                    key = self._keysStats(val)
-                    itemlist.append(key[0])
+                    ncolumnschoose.remove(val)
             
             num_var = int(self.Linedit.text())
             if num_var >= len(ncolumnschoose):
