@@ -222,42 +222,41 @@ class STEMToolsDialog(BaseDialog):
             self.layer_list2.setEnabled(False)
 
     def getModel(self, csv):
-        kernel = str(self.BaseInputCombo.currentText())
-        c = float(self.Linedit.text())
-        y = float(self.Linedit2.text())
+        kernel_name = {
+            'RBF': 'rbf',
+            'sigmoidale': 'sigmoid',
+            'polinomiale': 'poly',
+            'lineare': 'linear'
+        }
         
-        if kernel == 'RBF':
-            k = 'rbf'
-            g = float(self.Linedit4.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y,
-                                'probability': True}}], csv
-        elif kernel == 'sigmoidale':
-            k = 'sigmoid'
-            g = float(self.Linedit4.text())
-            coef0 = float(self.Linedit5.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f_r%d' % (k, c, g, coef0), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y, 'coef0': coef0,
-                                'probability': True}}], csv
-        elif kernel == 'lineare':
-            k = 'linear'
-            csv += "_{ke}_{c}".format(ke=k, c=c)
-            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c,
-                                'probability': True}}], csv
-        else:
-            k = 'poly'
-            g = float(self.Linedit4.text())
-            coef0 = float(self.Linedit5.text())
-            d = int(self.Linedit6.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_d%02d_r%d_C%f_g%f' % (k, d, coef0, c, g),
-                     'model': SVR, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
-                                              'epsilon': y, 'degree': d, 'coef0': coef0,
-                                              'probability': True}
-                     }], csv
+        kernel = str(self.BaseInputCombo.currentText())
+        params = {'probability': True}       
+        params['kernel'] = kernel_name[kernel]
+        name = 'SVR_k{}'.format(params['kernel'])
+        
+        if self.Linedit.text():
+            params['C'] = float(self.Linedit.text())
+            name += '_C{}'.format(params['C'])
+            
+        if self.Linedit2.text():
+            params['epsilon'] = float(self.Linedit2.text())
+            
+        if kernel in ['RBF', 'sigmoidale', 'polinomiale']:
+            if self.Linedit4.text():
+                params['gamma'] = float(self.Linedit4.text())
+                name += '_g{}'.format(params['gamma'])
+                
+            if kernel in ['sigmoidale', 'polinomiale']:
+                if self.Linedit5.text():
+                    params['coef0'] = float(self.Linedit5.text())
+                    name += '_r{}'.format(params['coef0'])
+                    
+                if kernel == 'polinomiale':
+                    if self.Linedit6.text():
+                        params['degree'] = int(self.Linedit6.text())
+                        name += '_d{}'.format(params['degree'])
+                        
+        return [{'name': name, 'model': SVR, 'kwargs': params}], csv + name
 
     def crossVali(self):
         if self.checkbox2.isChecked():

@@ -220,40 +220,38 @@ class STEMToolsDialog(BaseDialog):
         self.onClosing(self)
 
     def getModel(self, csv):
+        kernel_name = {
+            'RBF': 'rbf',
+            'sigmoidale': 'sigmoid',
+            'polinomiale': 'poly',
+            'lineare': 'linear'
+        }
+        
         kernel = str(self.BaseInputCombo.currentText())
-        c = float(self.Linedit.text())
-        if kernel == 'RBF':
-            k = 'rbf'
-            g = float(self.Linedit2.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f' % (k, c, g), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y,
-                                'probability': True}}], csv
-        elif kernel == 'sigmoidale':
-            k = 'sigmoid'
-            g = float(self.Linedit2.text())
-            coef0 = float(self.Linedit4.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_C%f_g%f_r%d' % (k, c, g, coef0), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c, 'gamma': g, 'epsilon': y, 'coef0': coef0,
-                                'probability': True}}], csv
-        elif kernel == 'lineare':
-            k = 'linear'
-            csv += "_{ke}_{c}".format(ke=k, c=c)
-            return [{'name': 'SVC_k%s_C%f' % (k, c), 'model': SVR,
-                     'kwargs': {'kernel': k, 'C': c,
-                                'probability': True}}], csv
-        else:
-            k = 'poly'
-            g = float(self.Linedit2.text())
-            coef0 = float(self.Linedit4.text())
-            d = int(self.Linedit5.text())
-            csv += "_{ke}_{ga}_{c}".format(ke=k, ga=g, c=c)
-            return [{'name': 'SVC_k%s_d%02d_r%d_C%f_g%f' % (k, d, coef0, c, g),
-                     'model': SVR, 'kwargs': {'kernel': k, 'C': c, 'gamma': g,
-                                              'epsilon': y, 'degree': d, 'coef0': coef0,
-                                              'probability': True}
-                     }], csv
+        params = {'probability': True}       
+        params['kernel'] = kernel_name[kernel]
+        name = 'SVC_k{}'.format(params['kernel'])
+        
+        if self.Linedit.text():
+            params['C'] = float(self.Linedit.text())
+            name += '_C{}'.format(params['C'])
+            
+        if kernel in ['RBF', 'sigmoidale', 'polinomiale']:
+            if self.Linedit2.text():
+                params['gamma'] = float(self.Linedit2.text())
+                name += '_g{}'.format(params['gamma'])
+                
+            if kernel in ['sigmoidale', 'polinomiale']:
+                if self.Linedit4.text():
+                    params['coef0'] = float(self.Linedit4.text())
+                    name += '_r{}'.format(params['coef0'])
+                    
+                if kernel == 'polinomiale':
+                    if self.Linedit5.text():
+                        params['degree'] = int(self.Linedit5.text())
+                        name += '_d{}'.format(params['degree'])
+                        
+        return [{'name': name, 'model': SVC, 'kwargs': params}], csv + name
 
     def get_input_path_fields(self):
         """Fornisce al padre una lista di path di input da verificare
