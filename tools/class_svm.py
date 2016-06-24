@@ -122,12 +122,23 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         
         self.helpui.fillfromUrl(self.SphinxUrl())
-
-    def check_input_cross_validation(self):
+        
+    def check_number_of_folds(self):
         if self.checkbox2.isChecked():
-            if str(self.BaseInputOpt.currentText()) == '' or str(self.BaseInputCombo2.currentText()) == '':
-                return "La cross validation ha bisogno di un vettoriale per la validazione e di una colonna per la validazione."
+            invect = str(self.BaseInput.currentText())
+            invectsource = STEMUtils.getLayersSource(invect)
+            vect = ogr.Open(invectsource)
+            layer = vect.GetLayer()
+            nfeatures = layer.GetFeatureCount()
+            if nfeatures < int(self.Linedit3.text()):
+                return u"Il numero di features ({}) non può essere inferiore al numero di fold ({}).".format(nfeatures, int(self.Linedit3.text()))
         return ""
+
+    def check_vettoriale_validazione(self):
+        if self.BaseInputOpt.currentText() != "" and self.BaseInputCombo2.currentText() == "":
+            return "Devi specificare una colonna per la validazione"
+        else:
+            return ""   
 
     def outputStateChanged(self):
         if self.checkbox.isChecked():

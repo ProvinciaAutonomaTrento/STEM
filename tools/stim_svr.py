@@ -166,6 +166,23 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
         
+    def check_number_of_folds(self):
+        if self.checkbox2.isChecked():
+            invect = str(self.BaseInput.currentText())
+            invectsource = STEMUtils.getLayersSource(invect)
+            vect = ogr.Open(invectsource)
+            layer = vect.GetLayer()
+            nfeatures = layer.GetFeatureCount()
+            if nfeatures < int(self.Linedit3.text()):
+                return u"Il numero di features ({}) non può essere inferiore al numero di fold ({}).".format(nfeatures, int(self.Linedit3.text()))
+        return ""        
+
+    def check_vettoriale_validazione(self):
+        if self.BaseInputOpt.currentText() != "" and self.BaseInputCombo2.currentText() == "":
+            return "Devi specificare una colonna per la validazione"
+        else:
+            return ""    
+        
     def map_vector_status_changed(self):
         if self.BaseInputCombo4.currentText() == '':
             self.LabelOut2.setEnabled(False)
@@ -178,12 +195,6 @@ class STEMToolsDialog(BaseDialog):
             self.LabelOut2.setEnabled(True)
             self.TextOut2.setEnabled(True)
             self.BrowseButton2.setEnabled(True)
-
-    def check_input_cross_validation(self):
-        if self.checkbox2.isChecked():
-            if str(self.BaseInputOpt.currentText()) == '' or str(self.BaseInputCombo2.currentText()) == '':
-                return "La cross validation ha bisogno di un vettoriale per la validazione e di una colonna per la validazione."
-        return ""
 
     def outputStateChanged(self):
         if self.checkbox.isChecked():
@@ -326,12 +337,6 @@ class STEMToolsDialog(BaseDialog):
             return 'mean_squared_error'
         else:
             return 'r2'
-
-    def crossVali(self):
-        if self.checkbox2.isChecked():
-            self.Linedit3.setEnabled(True)
-        else:
-            self.Linedit3.setEnabled(False)
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)

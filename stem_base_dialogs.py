@@ -114,14 +114,13 @@ class BaseDialog(QDialog, baseDialog):
         QDialog.reject(self)
 
     def run(self):
-        """Function for accept button"""
+        """Function for accept button"""        
         if not self.overwrite and self.TextOut.isEnabled():
-            old_overwrite = self.overwrite
             res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
             if not res: return
             
         if hasattr(self, 'TextOut2'):
-            if old_overwrite and self.TextOut2.isEnabled():
+            if self.TextOut2.isEnabled():
                 res, self.overwrite = STEMUtils.fileExists(self.TextOut.text())
                 if not res: return
 
@@ -134,12 +133,12 @@ class BaseDialog(QDialog, baseDialog):
         e = [] if self.local_execution() else self.check_server_paths()
         if e:
             errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
-        
-        e = self.check_input_cross_validation()
-        if e:
-            errors.append(e)
 
         e = self.check_number_of_folds()
+        if e:
+            errors.append(e)
+            
+        e = self.check_vettoriale_validazione()
         if e:
             errors.append(e)
         
@@ -152,11 +151,11 @@ class BaseDialog(QDialog, baseDialog):
         self.onRunLocal()
         self.accept()
 
-    def check_number_of_folds(self):
+    def check_vettoriale_validazione(self):
         return ""
 
-    def check_input_cross_validation(self):
-        return ''
+    def check_number_of_folds(self):
+        return ""
 
     def get_input_path_fields(self):
         """Metodo astratto
