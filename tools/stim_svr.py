@@ -43,7 +43,7 @@ from functools import partial
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
-
+from osgeo import ogr
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
