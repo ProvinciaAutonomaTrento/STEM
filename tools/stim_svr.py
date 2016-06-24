@@ -26,7 +26,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit
+from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit, QComboBox
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
@@ -38,6 +38,8 @@ from sklearn.svm import SVR
 import numpy as np
 import pickle as pkl
 import os
+from PyQt4.QtCore import SIGNAL
+from functools import partial
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
@@ -76,8 +78,6 @@ class STEMToolsDialog(BaseDialog):
                                    posnum=5)
         self._insertFifthLineEdit(label="Inserire il valore di r", posnum=6)
         self._insertSixthLineEdit(label="Inserire il valore del grado del polinomio", posnum=7)
-
-        self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
 
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
@@ -118,6 +118,7 @@ class STEMToolsDialog(BaseDialog):
         label = "Creare output"
         self._insertCheckbox(label, 15)
 
+        # colonna per i valori della stima
         self.horizontalLayout_field = QHBoxLayout()
         self.labelfield = QLabel()
         self.labelfield.setObjectName("labelfield")
@@ -128,14 +129,55 @@ class STEMToolsDialog(BaseDialog):
         self.TextOutField.setMaxLength(9)
         self.horizontalLayout_field.addWidget(self.TextOutField)
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
+        
+        # vettoriale di mappa
+        self.horizontalLayout_combo4 = QHBoxLayout()
+        self.horizontalLayout_combo4.setObjectName("horizontalLayout_combo4")
+        self.LabelCombo4 = QLabel()
+        self.LabelCombo4.setObjectName("LabelCombo4")
+        self.LabelCombo4.setWordWrap(True)
+        self.horizontalLayout_combo4.addWidget(self.LabelCombo4)
+        self.BaseInputCombo4 = QComboBox()
+        self.BaseInputCombo4.setEditable(True)
+        self.BaseInputCombo4.setObjectName("BaseInputCombo4")
+        self.horizontalLayout_combo4.addWidget(self.BaseInputCombo4)
+        
+        self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo4)
+        self.LabelCombo4.setText(self.tr("", "Vettoriale di mappa"))
+        STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
+        
+        # inserimento output mappa
+        self._insertSecondOutput("Risultato mappa", 6)
+        self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
+        self.connect(self.BrowseButton2, SIGNAL("clicked()"),
+                     partial(self.browseDir, self.TextOut2))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
-
+        
+        self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
         self.kernelChanged()
-
+        
+        self.BaseInputCombo4.currentIndexChanged.connect(self.map_vector_status_changed)
+        self.map_vector_status_changed() # we don't want to have output enabled the first time
+        
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
+        
+    def map_vector_status_changed(self):
+        if self.BaseInputCombo4.currentText() == '':
+            self.LabelOut2.setEnabled(False)
+            self.TextOut2.setEnabled(False)
+            self.BrowseButton2.setEnabled(False)
+#             self.AddLayerToCanvas.setEnabled(False)
+#             self.labelfield.setEnabled(False)
+#             self.TextOutField.setEnabled(False)
+        else:
+            self.LabelOut2.setEnabled(True)
+            self.TextOut2.setEnabled(True)
+            self.BrowseButton2.setEnabled(True)
 
     def check_input_cross_validation(self):
         if self.checkbox2.isChecked():

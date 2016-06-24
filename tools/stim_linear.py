@@ -26,7 +26,7 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 
 __revision__ = '$Format:%H$'
 
-from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit
+from PyQt4.QtGui import QHBoxLayout, QLabel, QLineEdit, QComboBox
 
 from stem_base_dialogs import BaseDialog
 from stem_utils import STEMUtils, STEMMessageHandler, STEMLogging
@@ -87,10 +87,6 @@ class STEMToolsDialog(BaseDialog):
         self.TextInOpt.setEnabled(False)
         self.BrowseButtonInOpt.setEnabled(False)
 
-        self._insertFourthCombobox("Vettoriale di mappa", 6)
-        STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
-        
-
         self._insertSingleInputOption(7, label="Vettoriale di validazione")
         STEMUtils.addLayerToComboBox(self.BaseInputOpt, 0, empty=True)
         #self.BaseInputOpt.setEnabled(False)
@@ -121,6 +117,22 @@ class STEMToolsDialog(BaseDialog):
         self.horizontalLayout_field.addWidget(self.TextOutField)
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
         
+        # vettoriale di mappa
+        self.horizontalLayout_combo4 = QHBoxLayout()
+        self.horizontalLayout_combo4.setObjectName("horizontalLayout_combo4")
+        self.LabelCombo4 = QLabel()
+        self.LabelCombo4.setObjectName("LabelCombo4")
+        self.LabelCombo4.setWordWrap(True)
+        self.horizontalLayout_combo4.addWidget(self.LabelCombo4)
+        self.BaseInputCombo4 = QComboBox()
+        self.BaseInputCombo4.setEditable(True)
+        self.BaseInputCombo4.setObjectName("BaseInputCombo4")
+        self.horizontalLayout_combo4.addWidget(self.BaseInputCombo4)
+        
+        self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo4)
+        self.LabelCombo4.setText(self.tr("", "Vettoriale di mappa"))
+        STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
+        
         # inserimento output mappa
         self._insertSecondOutput("Risultato mappa", 6)
         self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
@@ -128,12 +140,14 @@ class STEMToolsDialog(BaseDialog):
                      partial(self.browseDir, self.TextOut2))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
         
         self.BaseInputCombo4.currentIndexChanged.connect(self.map_vector_status_changed)
-
         self.map_vector_status_changed() # we don't want to have output enabled the first time
+
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
 
         self.helpui.fillfromUrl(self.SphinxUrl())
 

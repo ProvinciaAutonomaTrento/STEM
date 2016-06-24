@@ -760,6 +760,7 @@ class BaseDialog(QDialog, baseDialog):
         self.BaseInputCombo2.setEditable(True)
         self.BaseInputCombo2.setObjectName("BaseInputCombo2")
         self.horizontalLayout_combo2.addWidget(self.BaseInputCombo2)
+        
         self.verticalLayout_options.insertLayout(posnum,
                                                  self.horizontalLayout_combo2)
         if items:
@@ -789,7 +790,7 @@ class BaseDialog(QDialog, baseDialog):
             [self.BaseInputCombo3.addItem(m) for m in items]
         self.LabelCombo3.setText(self.tr("", label))
 
-    def _insertFourthCombobox(self, label, posnum, items=None):
+    def _insertFourthCombobox(self, label, posnum, items = None):
         """Function to add a third ComboBox Widget
 
         :param int posnum: the position of form in the input layout
@@ -806,8 +807,8 @@ class BaseDialog(QDialog, baseDialog):
         self.BaseInputCombo4.setEditable(True)
         self.BaseInputCombo4.setObjectName("BaseInputCombo4")
         self.horizontalLayout_combo4.addWidget(self.BaseInputCombo4)
-        self.verticalLayout_options.insertLayout(posnum,
-                                                 self.horizontalLayout_combo4)
+        
+        self.verticalLayout_options.insertLayout(posnum, self.horizontalLayout_combo4)
         if items:
             [self.BaseInputCombo4.addItem(m) for m in items]
         self.LabelCombo4.setText(self.tr("", label))

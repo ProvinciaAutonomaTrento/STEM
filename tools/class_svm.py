@@ -119,6 +119,8 @@ class STEMToolsDialog(BaseDialog):
         
         self.kernelChanged()
         
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
+        
         self.helpui.fillfromUrl(self.SphinxUrl())
 
     def check_input_cross_validation(self):
