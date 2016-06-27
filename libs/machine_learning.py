@@ -878,7 +878,7 @@ class MLToolBox(object):
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
                        decomposer=None, trans=None, fscolumns=None,
-                       fsfile=None, fsfit=False, logging=None, is_out_col_names = False):
+                       fsfile=None, fsfit=False, logging=None):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
@@ -980,16 +980,9 @@ class MLToolBox(object):
                                 ).format(fsfile))
             try:
                 if hasattr(self.fselector, 'support_'):
-                    support = self.fselector.support_
+                    np.savetxt(fsfile, self.fselector.support_)
                 else:
-                    support = self.fselector.get_support()
-                
-                if is_out_col_names:
-                    with open(fsfile, 'w') as file_selection_file:
-                        for column_index, isSelected in enumerate(support):
-                            file_selection_file.write(self.use_columns[column_index] + "\n")
-                else:
-                    np.savetxt(fsfile, support)
+                    np.savetxt(fsfile, self.fselector.get_support())
             except AttributeError:
                 print("Selected feature are not saved in: %s" % fsfile)
                 pass

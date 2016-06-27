@@ -596,8 +596,10 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                if optvect:
-                    finalinp = optvectsource
+                map_vector = str(self.BaseInput4.currentText())
+                if map_vector:
+                    map_vec_source = STEMUtils.getLayersSource(map_vector)
+                    finalinp = map_vec_source
                 else:
                     finalinp = None
                 if self.TextOutField.text():
