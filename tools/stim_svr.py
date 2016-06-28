@@ -131,27 +131,21 @@ class STEMToolsDialog(BaseDialog):
         self.verticalLayout_output.insertLayout(4, self.horizontalLayout_field)
         
         # vettoriale di mappa
-        self.horizontalLayout_combo4 = QHBoxLayout()
-        self.horizontalLayout_combo4.setObjectName("horizontalLayout_combo4")
-        self.LabelCombo4 = QLabel()
-        self.LabelCombo4.setObjectName("LabelCombo4")
-        self.LabelCombo4.setWordWrap(True)
-        self.horizontalLayout_combo4.addWidget(self.LabelCombo4)
-        self.BaseInputCombo4 = QComboBox()
-        self.BaseInputCombo4.setEditable(True)
-        self.BaseInputCombo4.setObjectName("BaseInputCombo4")
-        self.horizontalLayout_combo4.addWidget(self.BaseInputCombo4)
+        self.horizontalLayout_combo5 = QHBoxLayout()
+        self.horizontalLayout_combo5.setObjectName("horizontalLayout_combo5")
+        self.LabelCombo5 = QLabel()
+        self.LabelCombo5.setObjectName("LabelCombo5")
+        self.LabelCombo5.setWordWrap(True)
+        self.horizontalLayout_combo5.addWidget(self.LabelCombo5)
+        self.BaseInputCombo5 = QComboBox()
+        self.BaseInputCombo5.setEditable(True)
+        self.BaseInputCombo5.setObjectName("BaseInputCombo5")
+        self.horizontalLayout_combo5.addWidget(self.BaseInputCombo5)
         
-        self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo4)
-        self.LabelCombo4.setText(self.tr("", "Vettoriale di mappa"))
-        STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
+        self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo5)
+        self.LabelCombo5.setText(self.tr("", "Vettoriale di mappa"))
+        STEMUtils.addLayerToComboBox(self.BaseInputCombo5, 0, empty=True)
         
-        # inserimento output mappa
-        self._insertSecondOutput("Risultato mappa", 6)
-        self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
-        self.connect(self.BrowseButton2, SIGNAL("clicked()"),
-                     partial(self.browseDir, self.TextOut2))
-
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         
         self.outputStateChanged()
@@ -159,9 +153,6 @@ class STEMToolsDialog(BaseDialog):
         
         self.BaseInputCombo.currentIndexChanged.connect(self.kernelChanged)
         self.kernelChanged()
-        
-        self.BaseInputCombo4.currentIndexChanged.connect(self.map_vector_status_changed)
-        self.map_vector_status_changed() # we don't want to have output enabled the first time
         
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -181,20 +172,7 @@ class STEMToolsDialog(BaseDialog):
         if self.BaseInputOpt.currentText() != "" and self.BaseInputCombo2.currentText() == "":
             return "Devi specificare una colonna per la validazione"
         else:
-            return ""    
-        
-    def map_vector_status_changed(self):
-        if self.BaseInputCombo4.currentText() == '':
-            self.LabelOut2.setEnabled(False)
-            self.TextOut2.setEnabled(False)
-            self.BrowseButton2.setEnabled(False)
-#             self.AddLayerToCanvas.setEnabled(False)
-#             self.labelfield.setEnabled(False)
-#             self.TextOutField.setEnabled(False)
-        else:
-            self.LabelOut2.setEnabled(True)
-            self.TextOut2.setEnabled(True)
-            self.BrowseButton2.setEnabled(True)
+            return ""
 
     def outputStateChanged(self):
         if self.checkbox.isChecked():
@@ -570,7 +548,7 @@ class STEMToolsDialog(BaseDialog):
                     test = mltb.test(Xtest=Xtest, ytest=ytest, X=X, y=y,
                                      transform=trasf)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
-                               header=SEP.join(test[0].__dict__.keys()))
+                               header=SEP.join(test[0]._asdict().keys()))
                     mltb.find_best(model, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
@@ -596,7 +574,7 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                map_vector = str(self.BaseInput4.currentText())
+                map_vector = str(self.BaseInputCombo5.currentText())
                 if map_vector:
                     map_vec_source = STEMUtils.getLayersSource(map_vector)
                     finalinp = map_vec_source

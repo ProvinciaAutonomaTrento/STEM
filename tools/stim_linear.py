@@ -132,20 +132,11 @@ class STEMToolsDialog(BaseDialog):
         self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo4)
         self.LabelCombo4.setText(self.tr("", "Vettoriale di mappa"))
         STEMUtils.addLayerToComboBox(self.BaseInputCombo4, 0, empty=True)
-        
-        # inserimento output mappa
-        self._insertSecondOutput("Risultato mappa", 6)
-        self.BrowseButton2.setText(self.tr(name, "Sfoglia"))
-        self.connect(self.BrowseButton2, SIGNAL("clicked()"),
-                     partial(self.browseDir, self.TextOut2))
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
         
         self.outputStateChanged()
         self.checkbox.stateChanged.connect(self.outputStateChanged)
-        
-        self.BaseInputCombo4.currentIndexChanged.connect(self.map_vector_status_changed)
-        self.map_vector_status_changed() # we don't want to have output enabled the first time
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -156,19 +147,6 @@ class STEMToolsDialog(BaseDialog):
             return "Devi specificare una colonna per la validazione"
         else:
             return ""   
-
-    def map_vector_status_changed(self):
-        if self.BaseInputCombo4.currentText() == '':
-            self.LabelOut2.setEnabled(False)
-            self.TextOut2.setEnabled(False)
-            self.BrowseButton2.setEnabled(False)
-#             self.AddLayerToCanvas.setEnabled(False)
-#             self.labelfield.setEnabled(False)
-#             self.TextOutField.setEnabled(False)
-        else:
-            self.LabelOut2.setEnabled(True)
-            self.TextOut2.setEnabled(True)
-            self.BrowseButton2.setEnabled(True)
     
     def check_number_of_folds(self):
         if self.checkbox2.isChecked():
@@ -511,7 +489,7 @@ class STEMToolsDialog(BaseDialog):
                                                    strategy=return_argument)
                     best = mltb.select_best(best=models)
                 log.debug('Execute the model to the whole raster map.')
-                map_vector = str(self.BaseInput4.currentText())
+                map_vector = str(self.BaseInputCombo4.currentText())
                 if map_vector:
                     map_vec_source = STEMUtils.getLayersSource(map_vector)
                     finalinp = map_vec_source

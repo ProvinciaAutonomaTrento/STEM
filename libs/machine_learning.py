@@ -32,6 +32,7 @@ from sklearn.cross_validation import cross_val_score, LeaveOneOut
 from sklearn.linear_model import LassoLarsIC
 from sklearn.svm.classes import SVC
 from exported_objects import CVResult, TestResult, return_argument #added
+from sklearn.preprocessing.imputation import Imputer
 
 try:
     import Pyro4
