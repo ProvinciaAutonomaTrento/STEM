@@ -114,6 +114,28 @@ class STEMUtils:
                     layerlist.append(layer.name())
 
         combo.addItems(layerlist)
+        
+    @staticmethod
+    def addLayerToTable(table):
+        table.clearContents()
+        layerlist = []
+        layermap = STEMUtils.registry.mapLayers()
+        for _, layer in layermap.iteritems():
+            layerlist.append(layer.source())
+        position = 0
+        for fil in layerlist:
+            if os.path.exists(fil):
+                table.insertRow(position)
+                table.setItem(position, 0, QTableWidgetItem(fil))
+                try:
+                    rast = gdal.Open(fil)
+                    band = rast.GetRasterBand(1)
+                    nodata = band.GetNoDataValue()
+                    table.setItem(position, 1, QTableWidgetItem(str(nodata)))
+                except:
+                    table.setItem(position, 1, QTableWidgetItem("Non disponibile"))
+                table.resizeColumnsToContents()
+                position += 1
 
     @staticmethod
     def addLayerIntoCanvasMaxMin(filename):
@@ -533,9 +555,9 @@ class STEMUtils:
         # TODO maybe add the possibility to choose where save the file
         f = tempfile.NamedTemporaryFile(delete=False)
         for k in keys:
-            line = "{key}:  {value}\n".format(key=k,
+            table = "{key}:  {value}\n".format(key=k,
                                               value=STEMSettings.value(k, ""))
-            f.write(line)
+            f.write(table)
         f.close()
         STEMMessageHandler.information("STEM Plugin", 'Impostazioni salvate '
                                        'nel file {0}'.format(f.name))

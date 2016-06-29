@@ -44,8 +44,8 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
         self.toolName = name
 
-        self._insertMultipleInput(True)
-        STEMUtils.addLayerToComboBox(self.BaseInput, 1, source=True)
+        self._insertMultipleInputTable()
+        STEMUtils.addLayerToTable(self.BaseInput)
 
         formats = ['GTIFF', 'ENVI']
         self._insertFirstCombobox('Formato di output', 0, formats)
@@ -57,8 +57,8 @@ class STEMToolsDialog(BaseDialog):
         self.lm = "Selezionare la tipologia del formato di output"
         self._insertMethod(mets, self.lm, 1)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
-        #label = "Risoluzione per tutte le bande del file di output"
-        #self._insertFirstLineEdit(label, 2)
+        label = "Risoluzione per tutte le bande del file di output"
+        self._insertFirstLineEdit(label, 2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -105,10 +105,10 @@ class STEMToolsDialog(BaseDialog):
         items = []
 
         if len(self.BaseInput.selectedItems()) != 0:
-            items = self.BaseInput.selectedItems()
+            items = [item for index, item in enumerate(self.BaseInput.selectedItems()) if index % 2 == 0]
         else:
-            for index in xrange(self.BaseInput.count()):
-                items.append(self.BaseInput.item(index))
+            for index in xrange(self.BaseInput.rowCount()):
+                items.append(self.BaseInput.itemAt(0, index))
         sources = [i.text() for i in items]
 
         return sources

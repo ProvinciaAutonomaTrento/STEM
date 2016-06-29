@@ -36,6 +36,21 @@ from stem_utils import PathMapping
 from stem_utils_server import STEMSettings, inverse_mask
 import gdal_stem
 
+try:
+    import osgeo.gdal as gdal
+except ImportError:
+    try:
+        import gdal
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
+try:
+    import osgeo.ogr as ogr
+except ImportError:
+    try:
+        import ogr
+    except ImportError:
+        raise 'Python GDAL library not found, please install python-gdal'
+
 baseDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'base.ui'))[0]
 helpDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'help.ui'))[0]
 settingsDialog = uic.loadUiType(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ui', 'settings.ui'))[0]
@@ -54,6 +69,144 @@ def escapeAndJoin(strList):
         joined += escaped + " "
     return joined.strip()
 
+class TableWidgetDragRows(QTableWidget):
+    def __init__(self, *args, **kwargs):
+        QTableWidget.__init__(self, *args, **kwargs)
+
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        self.viewport().setAcceptDrops(True)
+        self.setDragDropOverwriteMode(False)
+        self.setDropIndicatorShown(True)
+
+        self.setSelectionMode(QAbstractItemView.SingleSelection) 
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setDragDropMode(QAbstractItemView.InternalMove)   
+
+    def dropEvent(self, event):
+        if event.source() == self and (event.dropAction() == Qt.MoveAction or self.dragDropMode() == QAbstractItemView.InternalMove):
+            success, row, col, topIndex = self.dropOn(event)
+            if success:             
+                selRows = self.getSelectedRowsFast()                        
+
+                top = selRows[0]
+                # print 'top is %d'%top
+                dropRow = row
+                if dropRow == -1:
+                    dropRow = self.rowCount()
+                # print 'dropRow is %d'%dropRow
+                offset = dropRow - top
+                # print 'offset is %d'%offset
+
+                for i, row in enumerate(selRows):
+                    r = row + offset
+                    if r > self.rowCount() or r < 0:
+                        r = 0
+                    self.insertRow(r)
+                    # print 'inserting row at %d'%r
+
+
+                selRows = self.getSelectedRowsFast()
+                # print 'selected rows: %s'%selRows
+
+                top = selRows[0]
+                # print 'top is %d'%top
+                offset = dropRow - top                
+                # print 'offset is %d'%offset
+                for i, row in enumerate(selRows):
+                    r = row + offset
+                    if r > self.rowCount() or r < 0:
+                        r = 0
+
+                    for j in range(self.columnCount()):
+                        # print 'source is (%d, %d)'%(row, j)
+                        # print 'item text: %s'%self.item(row,j).text()
+                        source = QTableWidgetItem(self.item(row, j))
+                        # print 'dest is (%d, %d)'%(r,j)
+                        self.setItem(r, j, source)
+
+                # Why does this NOT need to be here?
+                # for row in reversed(selRows):
+                    # self.removeRow(row)
+
+                event.accept()
+
+        else:
+            QTableView.dropEvent(event)                
+
+    def getSelectedRowsFast(self):
+        selRows = []
+        for item in self.selectedItems():
+            if item.row() not in selRows:
+                selRows.append(item.row())
+        return selRows
+
+    def droppingOnItself(self, event, index):
+        dropAction = event.dropAction()
+
+        if self.dragDropMode() == QAbstractItemView.InternalMove:
+            dropAction = Qt.MoveAction
+
+        if event.source() == self and event.possibleActions() & Qt.MoveAction and dropAction == Qt.MoveAction:
+            selectedIndexes = self.selectedIndexes()
+            child = index
+            while child.isValid() and child != self.rootIndex():
+                if child in selectedIndexes:
+                    return True
+                child = child.parent()
+
+        return False
+
+    def dropOn(self, event):
+        if event.isAccepted():
+            return False, None, None, None
+
+        index = QModelIndex()
+        row = -1
+        col = -1
+
+        if self.viewport().rect().contains(event.pos()):
+            index = self.indexAt(event.pos())
+            if not index.isValid() or not self.visualRect(index).contains(event.pos()):
+                index = self.rootIndex()
+
+        if self.model().supportedDropActions() & event.dropAction():
+            if index != self.rootIndex():
+                dropIndicatorPosition = self.position(event.pos(), self.visualRect(index), index)
+
+                if dropIndicatorPosition == QAbstractItemView.AboveItem:
+                    row = index.row()
+                    col = index.column()
+                    # index = index.parent()
+                elif dropIndicatorPosition == QAbstractItemView.BelowItem:
+                    row = index.row() + 1
+                    col = index.column()
+                    # index = index.parent()
+                else:
+                    row = index.row()
+                    col = index.column()
+
+            if not self.droppingOnItself(event, index):
+                # print 'row is %d'%row
+                # print 'col is %d'%col
+                return True, row, col, index
+
+        return False, None, None, None
+
+    def position(self, pos, rect, index):
+        r = QAbstractItemView.OnViewport
+        margin = 2
+        if pos.y() - rect.top() < margin:
+            r = QAbstractItemView.AboveItem
+        elif rect.bottom() - pos.y() < margin:
+            r = QAbstractItemView.BelowItem 
+        elif rect.contains(pos, True):
+            r = QAbstractItemView.OnItem
+
+        if r == QAbstractItemView.OnItem and not (self.model().flags(index) & Qt.ItemIsDropEnabled):
+            r = QAbstractItemView.AboveItem if pos.y() < rect.center().y() else QAbstractItemView.BelowItem
+
+        return r
 
 class BaseDialog(QDialog, baseDialog):
     """The main class for all the tools.
@@ -244,6 +397,34 @@ class BaseDialog(QDialog, baseDialog):
         self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
         self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
                      partial(self.browseInFile, self.BaseInput, multi=multi,
+                             filt='*'))
+        
+    def _insertMultipleInputTable(self):
+        """Function to add ListWidget where insert multiple input file names, adds information about the value of nodata"""
+        self.horizontalLayout_input = QVBoxLayout()
+        self.horizontalLayout_input.setObjectName("horizontalLayout_input")
+        self.label = QLabel()
+        self.label.setObjectName("label")
+        self.label.setWordWrap(True)
+        self.horizontalLayout_input.addWidget(self.label)
+        self.BaseInput = TableWidgetDragRows()
+        self.BaseInput.insertColumn(0)
+        self.BaseInput.insertColumn(1)
+        self.BaseInput.setHorizontalHeaderLabels(['File', 'Valore di nodata'])
+        self.BaseInput.setGeometry(QRect(10, 30, 341, 211))
+        self.BaseInput.setObjectName("BaseInputTable")
+        self.BaseInput.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.BaseInput.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.BaseInput.setDragDropMode(QAbstractItemView.InternalMove)
+        self.horizontalLayout_input.addWidget(self.BaseInput)
+        self.BrowseButtonIn = QPushButton()
+        self.BrowseButtonIn.setObjectName("BrowseButtonIn")
+        self.horizontalLayout_input.addWidget(self.BrowseButtonIn)
+        self.verticalLayout_input.insertLayout(0, self.horizontalLayout_input)
+        self.label.setText(self.tr("", "Dati di input"))
+        self.BrowseButtonIn.setText(self.tr("", "Sfoglia"))
+        self.connect(self.BrowseButtonIn, SIGNAL("clicked()"),
+                     partial(self.browseInFile, self.BaseInput, table=True,
                              filt='*'))
 
     def _insertFileInput(self, pos=0, multi=False,
@@ -1133,7 +1314,7 @@ class BaseDialog(QDialog, baseDialog):
             return
 
     def browseInFile(self, line, filt="LAS file (*.las *.laz)", multi=False,
-                     dire=False):
+                     dire=False, table=False):
         """Function to select existing file in a directory
 
         :param obj line: the QLineEdit object to update
@@ -1141,6 +1322,28 @@ class BaseDialog(QDialog, baseDialog):
         :param bool multi: True to select more files
         :param bool dire: True to select a directory instead a file
         """
+        if table:
+            mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
+                                                 caption="Selezionare i file "
+                                                 "di input", directory=STEMSettings.restoreLastDir(line, self.toolname))
+            position = self.BaseInput.rowCount()
+            for fil in mydir:
+                if os.path.exists(fil):
+                    line.insertRow(position)
+                    line.setItem(position, 0, QTableWidgetItem(fil))
+                    try:
+                        rast = gdal.Open(fil)
+                        band = rast.GetRasterBand(1)
+                        nodata = band.GetNoDataValue()
+                        line.setItem(position, 1, QTableWidgetItem(str(nodata)))
+                    except:
+                        line.setItem(position, 1, QTableWidgetItem("Non disponibile"))
+                    line.resizeColumnsToContents()
+                    position += 1
+                elif fil != '':
+                    STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
+                    pass
+            return
         if multi:
             mydir = QFileDialog.getOpenFileNames(parent=None, filter=filt,
                                                  caption="Selezionare i file "
@@ -1153,7 +1356,6 @@ class BaseDialog(QDialog, baseDialog):
                     STEMMessageHandler.warning(u"'%s' file non è presente." % fil)
                     pass
             return
-
         else:
             if dire:
                 label = "Selezionare la directory dei files"
