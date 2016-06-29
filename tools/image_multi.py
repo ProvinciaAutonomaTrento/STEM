@@ -57,8 +57,8 @@ class STEMToolsDialog(BaseDialog):
         self.lm = "Selezionare la tipologia del formato di output"
         self._insertMethod(mets, self.lm, 1)
         self.MethodInput.currentIndexChanged.connect(self.methodChanged)
-        label = "Risoluzione per tutte le bande del file di output"
-        self._insertFirstLineEdit(label, 2)
+#         label = "Risoluzione per tutte le bande del file di output"
+#         self._insertFirstLineEdit(label, 2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
