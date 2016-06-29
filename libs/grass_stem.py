@@ -105,7 +105,7 @@ def temporaryFilesGRASS(name, local=True):
     """
 #     pid = os.getpid()
     import uuid
-    pid = uuid.uuid4()
+    pid = str(uuid.uuid4()).replace('-', '_')
     tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
     tempout = 'stem_output_{pid}'.format(pid=pid)
     grassdatabase, location, grassbin, epsg = QGISettingsGRASS(local=local)
