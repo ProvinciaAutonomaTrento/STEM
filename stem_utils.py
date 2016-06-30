@@ -620,7 +620,7 @@ class STEMUtils:
         :param bool inp: DEPRECATED
         :param boo gui_warning: notifica all'utente gli errori
         """
-        if not sys.platform == 'win32':
+        if not sys.platform == 'win32' or path is None:
             return path
 
         table = STEMUtils.get_mapping_table()

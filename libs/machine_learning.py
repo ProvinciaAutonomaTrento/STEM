@@ -829,7 +829,7 @@ class MLToolBox(object):
                                           csv_file=self.training_csv,
                                           raster_file=self.raster,
                                           delimiter=delimiter,
-                                          nodata=nodata, ubands=self.use_bands,
+                                          nodata=None, ubands=self.use_bands,
                                           logging=self.logging)
         return self.X, self.y
 
@@ -874,7 +874,7 @@ class MLToolBox(object):
                                                   raster_file=self.traster,
                                                   delimiter=delimiter,
                                                   ubands=self.use_bands,
-                                                  nodata=nodata)
+                                                  nodata=None)
         return self.Xtest, self.ytest
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
