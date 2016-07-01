@@ -423,7 +423,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         # add the training category
         bands.append(trst.GetRasterBand(1))
         data = read_pixels(bands, pixels)
-        bad_values = [b.GetNoDataValue() for b in bands]
+        bad_values = set([b.GetNoDataValue() for b in bands])
         data = data[~np.isnan(data).any(1)]
         for bad_value in bad_values:
             data = data[~(data == bad_value).any(1)]
