@@ -33,6 +33,7 @@ from sklearn.linear_model import LassoLarsIC
 from sklearn.svm.classes import SVC
 from exported_objects import CVResult, TestResult, return_argument #added
 from sklearn.preprocessing.imputation import Imputer
+import math
 
 try:
     import Pyro4
@@ -223,22 +224,22 @@ def get_index_pixels(trst, nodata):
         lcols.append(col)
         pixels[row] = lcols
     return pixels
-
-
+ 
+ 
 def read_pixels(bands, pixels):
     """Return an array with the training values of each pixel"""
     def read_band(band, pixels):
         """Return an arrays with the value of a band"""
-        res = []
+        res = []           
+         
         for row in sorted(pixels.keys()):
             buf = band.ReadAsArray(0, int(row), band.XSize, 1, band.XSize, 1)[0]
             cols = pixels[row]
             for col in cols:
                 res.append(buf[col])
-        return np.array(res, dtype=buf.dtype)
-
+        return np.array(res, dtype=buf.dtype)                 
+ 
     return np.array([read_band(b, pixels) for b in bands]).T
-
 
 def epixels(band, pixels):
     """Extract value from a raster band and return a numpy array"""
@@ -422,6 +423,10 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         # add the training category
         bands.append(trst.GetRasterBand(1))
         data = read_pixels(bands, pixels)
+        bad_values = [b.GetNoDataValue() for b in bands]
+        data = data[~np.isnan(data).any(1)]
+        for bad_value in bad_values:
+            data = data[~(data == bad_value).any(1)]
         header = delimiter.join([str(i) for i in nbands] + ['training', ])
         trst = None
         os.remove(tmp_file)
@@ -829,7 +834,7 @@ class MLToolBox(object):
                                           csv_file=self.training_csv,
                                           raster_file=self.raster,
                                           delimiter=delimiter,
-                                          nodata=None, ubands=self.use_bands,
+                                          nodata=nodata, ubands=self.use_bands,
                                           logging=self.logging)
         return self.X, self.y
 
@@ -874,7 +879,7 @@ class MLToolBox(object):
                                                   raster_file=self.traster,
                                                   delimiter=delimiter,
                                                   ubands=self.use_bands,
-                                                  nodata=None)
+                                                  nodata=nodata)
         return self.Xtest, self.ytest
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
