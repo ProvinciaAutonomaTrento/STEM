@@ -364,8 +364,8 @@ def columns2indexes(fields, columns):
     >>> column_indexes(fields, ['c1', 'c2', 'c3' ])
     array([1, 2, 3])
     """
-    return np.array([i for i in range(len(fields))
-                     if fields[i].name in columns])
+    return np.array([i for i, item in enumerate(fields) if item.name in columns])
+#     return np.array([i for i in range(len(fields)) if fields[i].name in columns])
 
 
 def extract_vector_fields(layer, icols):
@@ -438,7 +438,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         vect = ogr.Open(vector_file)
         layer = vect.GetLayer()
         fields = layer.schema
-        itraining = columns2indexes(fields, column)
+        itraining = columns2indexes(fields, [column])
         icols = columns2indexes(fields, use_columns)
         training = np.array(list(extract_vector_fields(layer, itraining))).T[0]
         dt = np.array(list(extract_vector_fields(layer, icols)))
