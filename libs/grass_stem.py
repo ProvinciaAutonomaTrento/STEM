@@ -447,8 +447,7 @@ class stemGRASS():
                 raise Exception("Errore eseguendo GRASS: "
                                 "Errore eseguendo r.in.lidar {err}".format(err=errp))
         except:
-            raise Exception("Probabilmente r.in.lidar non è presente nella"
-                            "vostra versione di GRASS GIS")
+            raise Exception(u"Probabilmente r.in.lidar non è presente nella vostra versione di GRASS GIS")
         com = ['g.region']
         com.extend(outp.split())
         libs_save_command(com)

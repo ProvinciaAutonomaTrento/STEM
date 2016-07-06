@@ -112,6 +112,7 @@ class STEMToolsDialog(BaseDialog):
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
         try:
+            gs = None
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             namepan = str(self.BaseInput2.currentText())
@@ -177,7 +178,7 @@ class STEMToolsDialog(BaseDialog):
             if not local:
                 gs._pyroRelease()
         except:
-            if not local:
+            if not local and gs is not None:
                 gs._pyroRelease()
             error = traceback.format_exc()
             STEMMessageHandler.error(error)

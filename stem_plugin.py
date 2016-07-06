@@ -108,6 +108,7 @@ class STEMPlugin:
                                          PathMapping('/mnt/alfresco_root_dir', 'Z:\\')])
             STEMSettings.setValue("epsgcode", r"32632")
             STEMSettings.setValue("memory", "1")
+            
     def unload(self):
         """Unload the plugin"""
         self.toolbox.setVisible(False)
