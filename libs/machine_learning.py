@@ -606,7 +606,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                                ).format(model['field']))
             olayer.CreateField(ogr.FieldDefn(model['field'], ofieldtype))
 
-        # read the vector input data and features splitted in chunksS
+        # read the vector input data and features splitted in chunks
         dchunk = split_in_chunk(extract_vector_fields(olayer, icols))
         fchunk = split_in_chunk(olayer)
         for features, data in zip(fchunk, dchunk):
