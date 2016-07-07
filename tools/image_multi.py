@@ -173,7 +173,7 @@ class STEMToolsDialog(BaseDialog):
         
         nodata = None
         if self.Linedit.text():
-            nodata = int(self.Linedit.text())
+            nodata = float(self.Linedit.text())
         
         cgdal.write(nodata = nodata)
 
