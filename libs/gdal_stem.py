@@ -557,7 +557,7 @@ class convertGDAL:
             output += fi.bands
         return output
 
-    def write(self, res=None, leave_output=False):
+    def write(self, res=None, leave_output=False, nodata = None):
         """Write the output file"""
         targetband = 0
         for f in range(len(self.file_infos)):
@@ -565,10 +565,10 @@ class convertGDAL:
             if fi.bands > 1:
                 for b in range(fi.bands):
                     targetband += 1
-                    fi.copy_into(self.output, targetband, b + 1, res=res)
+                    fi.copy_into(self.output, targetband, b + 1, res=res, nodata_arg = nodata)
             else:
                 targetband += 1
-                fi.copy_into(self.output, targetband, res=res)
+                fi.copy_into(self.output, targetband, res=res, nodata_arg = nodata)
         if leave_output == False:
             self.output = None
 
@@ -649,6 +649,7 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
     to_write = Numeric.choose(nodata_test, (data_src, data_dst))
 
     t_band.WriteArray(to_write, t_xoff, t_yoff)
+    t_band.SetNoDataValue(nodata)
 
     return 0
 

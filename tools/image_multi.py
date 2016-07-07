@@ -60,6 +60,9 @@ class STEMToolsDialog(BaseDialog):
 #         label = "Risoluzione per tutte le bande del file di output"
 #         self._insertFirstLineEdit(label, 2)
 
+        label = "Valore di NODATA"
+        self._insertFirstLineEdit(label, 2)
+
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -167,7 +170,12 @@ class STEMToolsDialog(BaseDialog):
         #    resolution = float(self.Linedit.text())
         #else:
         #    resolution = None
-        cgdal.write()
+        
+        nodata = None
+        if self.Linedit.text():
+            nodata = int(self.Linedit.text())
+        
+        cgdal.write(nodata = nodata)
 
         if self.AddLayerToCanvas.isChecked():
             STEMUtils.addLayerIntoCanvas(out_orig, 'raster')
