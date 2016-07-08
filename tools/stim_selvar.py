@@ -173,7 +173,7 @@ class STEMToolsDialog(BaseDialog):
                 temp_out = out
             X = mltb.data_transform(X=X, y=y, scaler=None, fselector=fselector,
                                     decomposer=None, fscolumns=None,
-                                    fsfile=temp_out, fsfit=True)
+                                    fsfile=temp_out, fsfit=True, called_from_selvar = True)
             STEMMessageHandler.success("Il file {name} è stato scritto "
                                        "correttamente".format(name=out))
             

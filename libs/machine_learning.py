@@ -884,7 +884,7 @@ class MLToolBox(object):
 
     def data_transform(self, X=None, y=None, scaler=None, fselector=None,
                        decomposer=None, trans=None, fscolumns=None,
-                       fsfile=None, fsfit=False, logging=None):
+                       fsfile=None, fsfit=False, logging=None, called_from_selvar = False):
         """Transform a data-set scaling values, reducing the number of
         features and appling decomposition.
 
@@ -986,9 +986,21 @@ class MLToolBox(object):
                                 ).format(fsfile))
             try:
                 if hasattr(self.fselector, 'support_'):
+                    # feature selection
                     np.savetxt(fsfile, self.fselector.support_)
                 else:
-                    np.savetxt(fsfile, self.fselector.get_support())
+                    # selezione variabili per la stima
+                    support = self.fselector.get_support()
+                    if called_from_selvar:
+                        vect = ogr.Open(self.vector)
+                        layer = vect.GetLayer()
+                        fields = layer.schema
+                        ignored_cols_indexes = sorted([i for i, item in enumerate(fields) if item.name not in self.use_columns])
+                        support = support.tolist()
+                        for index in ignored_cols_indexes:
+                            support.insert(index, False)
+                        support = np.array(support)
+                    np.savetxt(fsfile, support)
             except AttributeError:
                 print("Selected feature are not saved in: %s" % fsfile)
                 pass
