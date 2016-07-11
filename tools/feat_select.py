@@ -39,7 +39,6 @@ import os
 from pyro_stem import PYROSERVER
 from pyro_stem import MLPYROOBJNAME
 from pyro_stem import ML_PORT
-from PyQt4.QtGui import QMessageBox
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -187,7 +186,6 @@ class STEMToolsDialog(BaseDialog):
         except:
             if not self.LocalCheck.isChecked():
                 mltb._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
-            QMessageBox.warning(self, "Errore", error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

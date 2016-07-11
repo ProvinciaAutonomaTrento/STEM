@@ -107,6 +107,6 @@ class STEMToolsDialog(BaseDialog):
         except:
             if not self.LocalCheck.isChecked():
                 las._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

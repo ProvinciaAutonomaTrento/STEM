@@ -89,12 +89,12 @@ class STEMToolsDialog(BaseDialog):
             if infoname.getType() in [1, 4, -2147483647, -2147483644]:
                 geotype = 'point'
             elif infoname.getType() in [3, 6, -2147483645, -2147483642]:
-                error = "Geometria non supportata, creare i centroidi con " \
+                self.error = "Geometria non supportata, creare i centroidi con " \
                         "lo strumento dedicato di QGIS"
-                STEMMessageHandler.error(error)
+                STEMMessageHandler.error(self.error)
             else:
-                error = "Geometria non supportata"
-                STEMMessageHandler.error(error)
+                self.error = "Geometria non supportata"
+                STEMMessageHandler.error(self.error)
                 return
             name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
@@ -142,6 +142,6 @@ class STEMToolsDialog(BaseDialog):
         except:
             if not local and gs is not None:
                 gs._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

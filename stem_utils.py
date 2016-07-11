@@ -844,7 +844,7 @@ class STEMMessageHandler:
 
         STEMMessageHandler.warning("STEM",
                                    "Errore! Controllare i messaggi di log di QGIS", 0)
-        QgsMessageLog.logMessage(message, "STEM Plugin")
+        #QgsMessageLog.logMessage(message, "STEM Plugin")
 
     @staticmethod
     def messageBar(title, text, level, timeout):

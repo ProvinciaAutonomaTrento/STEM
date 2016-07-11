@@ -479,6 +479,6 @@ class STEMToolsDialog(BaseDialog):
                 mltb._pyroRelease()
                 
             STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

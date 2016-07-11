@@ -23,6 +23,8 @@ import platform
 from functools import partial
 from types import StringType, UnicodeType
 
+import traceback
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4 import uic
@@ -208,6 +210,39 @@ class TableWidgetDragRows(QTableWidget):
 
         return r
 
+class CustomMessageBoxWithDetail(QMessageBox):
+
+        def __init__(self):
+            QMessageBox.__init__(self)
+            self.setSizeGripEnabled(True)
+
+#         def resizeEvent(self, event):
+#             result = super(CustomMessageBoxWithDetail, self).resizeEvent(event)
+#             details_box = self.findChild(QTextEdit)
+#             if details_box is not None:
+#                 details_box.setFixedSize(details_box.sizeHint())
+#     
+#             return result
+
+        def event(self, e):
+            result = QMessageBox.event(self, e)
+     
+            self.setMinimumHeight(0)
+            self.setMaximumHeight(16777215)
+            self.setMinimumWidth(0)
+            self.setMaximumWidth(16777215)
+            self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+     
+            textEdit = self.findChild(QTextEdit)
+            if textEdit is not None :
+                textEdit.setMinimumHeight(0)
+                textEdit.setMaximumHeight(16777215)
+                textEdit.setMinimumWidth(0)
+                textEdit.setMaximumWidth(16777215)
+                textEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+     
+            return result
+
 class BaseDialog(QDialog, baseDialog):
     """The main class for all the tools.
     It has most of the functions to exchange information beetween user, tool
@@ -243,9 +278,22 @@ class BaseDialog(QDialog, baseDialog):
         self.rect_str = None
         self.mask = None
         self.overwrite = False
+        self.error = None
         
         self.helpui = helpDialog()
         STEMUtils.stemMkdir()
+
+    def error_detail(self):
+        message_box = CustomMessageBoxWithDetail()
+        message_box.setWindowTitle("Errore")
+        message_box.setText("STEM ha incontrato un errore interno")
+        message_box.setDetailedText(self.error)
+        message_box.setIcon(QMessageBox.Warning)
+        self.error = None
+        message_box.setStandardButtons(QMessageBox.Ok)
+        message_box.setDefaultButton(QMessageBox.Ok)
+        message_box.setEscapeButton(QMessageBox.Ok)
+        ret = message_box.exec_()
 
     def _reject(self):
         """Function for reject button"""
@@ -301,7 +349,14 @@ class BaseDialog(QDialog, baseDialog):
             QMessageBox.question(self, "Errore", '\n\n'.join(errors))
             return
 
-        self.onRunLocal()
+        try:
+            self.onRunLocal()
+        except:
+             self.error = traceback.format_exc()
+        finally:
+            if self.error is not None:
+                self.error_detail()
+        
         self.accept()
 
     def check_vettoriale_validazione(self):

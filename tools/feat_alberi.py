@@ -70,6 +70,6 @@ class STEMToolsDialog(BaseDialog):
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

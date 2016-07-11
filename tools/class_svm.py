@@ -581,6 +581,6 @@ class STEMToolsDialog(BaseDialog):
             #STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
             if not self.LocalCheck.isChecked():
                 mltb._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

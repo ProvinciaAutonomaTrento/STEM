@@ -22,6 +22,7 @@ encoding//tools/class_sap.py=utf-8
 encoding//tools/class_svm.py=utf-8
 encoding//tools/error_reduction.py=utf-8
 encoding//tools/feat_alberi.py=utf-8
+encoding//tools/feat_delin.py=utf-8
 encoding//tools/feat_geometry.py=utf-8
 encoding//tools/feat_select.py=utf-8
 encoding//tools/feat_texture.py=utf-8

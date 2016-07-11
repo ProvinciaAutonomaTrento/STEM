@@ -84,6 +84,7 @@ class STEMToolsDialog(BaseDialog):
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
+        
         com = ['python', 'mlcmd.py']
         log = STEMLogging()
         try:
@@ -183,6 +184,6 @@ class STEMToolsDialog(BaseDialog):
         except:
             if not self.LocalCheck.isChecked():
                 mltb._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

@@ -167,6 +167,6 @@ class STEMToolsDialog(BaseDialog):
         except:
             if not local and gs is not None:
                 gs._pyroRelease()
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return

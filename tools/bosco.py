@@ -88,6 +88,6 @@ class STEMToolsDialog(BaseDialog):
             if not local:
                 las._pyroRelease()
             
-            error = traceback.format_exc()
-            STEMMessageHandler.error(error)
+            self.error = traceback.format_exc()
+            STEMMessageHandler.error(self.error)
             return
