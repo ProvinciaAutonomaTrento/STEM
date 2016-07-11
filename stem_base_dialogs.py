@@ -72,6 +72,9 @@ def escapeAndJoin(strList):
     return joined.strip()
 
 class TableWidgetDragRows(QTableWidget):
+    """A custom implementation derived from QTableWidget that supports dragging & dropping.
+    """
+    
     def __init__(self, *args, **kwargs):
         QTableWidget.__init__(self, *args, **kwargs)
 
@@ -211,10 +214,12 @@ class TableWidgetDragRows(QTableWidget):
         return r
 
 class CustomMessageBoxWithDetail(QMessageBox):
+    """A custom implementation derived from QMessageBox that implements resizing.
+    """
 
-        def __init__(self):
-            QMessageBox.__init__(self)
-            self.setSizeGripEnabled(True)
+    def __init__(self):
+        QMessageBox.__init__(self)
+        self.setSizeGripEnabled(True)
 
 #         def resizeEvent(self, event):
 #             result = super(CustomMessageBoxWithDetail, self).resizeEvent(event)
@@ -224,24 +229,24 @@ class CustomMessageBoxWithDetail(QMessageBox):
 #     
 #             return result
 
-        def event(self, e):
-            result = QMessageBox.event(self, e)
-     
-            self.setMinimumHeight(0)
-            self.setMaximumHeight(16777215)
-            self.setMinimumWidth(0)
-            self.setMaximumWidth(16777215)
-            self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-     
-            textEdit = self.findChild(QTextEdit)
-            if textEdit is not None :
-                textEdit.setMinimumHeight(0)
-                textEdit.setMaximumHeight(16777215)
-                textEdit.setMinimumWidth(0)
-                textEdit.setMaximumWidth(16777215)
-                textEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-     
-            return result
+    def event(self, e):
+        result = QMessageBox.event(self, e)
+ 
+        self.setMinimumHeight(0)
+        self.setMaximumHeight(16777215)
+        self.setMinimumWidth(0)
+        self.setMaximumWidth(16777215)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+ 
+        textEdit = self.findChild(QTextEdit)
+        if textEdit is not None :
+            textEdit.setMinimumHeight(0)
+            textEdit.setMaximumHeight(16777215)
+            textEdit.setMinimumWidth(0)
+            textEdit.setMaximumWidth(16777215)
+            textEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+ 
+        return result
 
 class BaseDialog(QDialog, baseDialog):
     """The main class for all the tools.
