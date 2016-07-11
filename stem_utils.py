@@ -842,9 +842,9 @@ class STEMMessageHandler:
         #
         # iface.messageBar().pushItem(messageBarItem)
 
-        STEMMessageHandler.warning("STEM",
-                                   "Errore! Controllare i messaggi di log di QGIS", 0)
+#         STEMMessageHandler.warning("STEM", "Errore! Controllare i messaggi di log di QGIS", 0)
         #QgsMessageLog.logMessage(message, "STEM Plugin")
+        pass
 
     @staticmethod
     def messageBar(title, text, level, timeout):

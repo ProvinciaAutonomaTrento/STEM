@@ -286,7 +286,8 @@ class BaseDialog(QDialog, baseDialog):
     def error_detail(self):
         message_box = CustomMessageBoxWithDetail()
         message_box.setWindowTitle("Errore")
-        message_box.setText("STEM ha incontrato un errore interno")
+        message_box.setText("STEM ha riscontrato un errore interno")
+        message_box.setInformativeText("Vuoi avere maggiori informazioni?")
         message_box.setDetailedText(self.error)
         message_box.setIcon(QMessageBox.Warning)
         self.error = None
