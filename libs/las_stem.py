@@ -933,8 +933,7 @@ class stemLAS():
             zs = []
             with open(output_file) as csvfile:
                 reader = csv.DictReader(csvfile)
-                for row in reader:
-                    zs.append(float(row['Z']))
+                zs = [float(row['Z']) for row in reader]
                 
 #             xml = read_file(self.pdalxml)            
 #             pipe = libpdalpython.PyPipeline(xml)                     
