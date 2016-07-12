@@ -304,7 +304,7 @@ class STEMToolsDialog(BaseDialog):
                 optvectcols = None
 
             from regressors import LINEAR
-            model = LINEAR
+            models = LINEAR
 
             trasf, utrasf = self.getTransform()
             scor = self.getScoring()
@@ -316,7 +316,7 @@ class STEMToolsDialog(BaseDialog):
             out = str(self.TextOut.text())
 
             com.extend(['--n-folds', str(nfold), '--n-jobs', '1', '--n-best',
-                        '1', '--scoring', scor, '--models', str(model),
+                        '1', '--scoring', scor, '--models', str(models),
                         '--csv-cross', crosspath, '--csv-training', trnpath,
                         '--best-strategy', 'mean', invectsource, invectcol])
 
@@ -339,7 +339,7 @@ class STEMToolsDialog(BaseDialog):
                 optvectsource = STEMUtils.pathClientWinToServerLinux(optvectsource)
             mltb.set_params(vector=invectsource, column=invectcol,
                             use_columns=ncolumnschoose,
-                            raster=inrastsource, models=model,
+                            raster=inrastsource, models=models,
                             scoring=scor, n_folds=nfold, n_jobs=1,
                             tvector=optvectsource, tcolumn=optvectcols,
                             traster=None, n_best=1,
@@ -419,35 +419,36 @@ class STEMToolsDialog(BaseDialog):
 
             # ---------------------------------------------------------------
             # Cross Models
-            log.debug('Cross-validation of the models')
             best = None
-            bpkpath = os.path.join(home,
-                                   "{pref}_best_pickle.csv".format(pref=prefcsv))
-            if (not os.path.exists(crosspath) or overwrite):
-                cross = mltb.cross_validation(X=X, y=y, transform=trasf)
-                np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
-                           header=SEP.join(['id', 'name', 'mean', 'max',
-                                                  'min', 'std', 'time']))
-                mltb.find_best(model)
-                best = mltb.select_best()
-                with open(bpkpath, 'w') as bpkl:
-                    pkl.dump(best, bpkl)
-            else:
-                log.debug('    Read cross-validation results from file:')
-                log.debug('      -  %s' % crosspath)
-                try:
-                    with open(bpkpath, 'r') as bpkl:
-                        best = pkl.load(bpkl)
-                except:
-                    STEMMessageHandler.error("Problem reading file {name} "
-                                             "please remove all files with"
-                                             "prefix {pre} in {path}".format(
-                                             name=bpkpath, pre=prefcsv,
-                                             path=home))
-                order, models = mltb.find_best(models=best)
-                best = mltb.select_best(best=models)
-            log.debug('Best models:')
-            log.debug(best)
+            if self.checkbox2.isChecked():
+                log.debug('Cross-validation of the models')
+                bpkpath = os.path.join(home,
+                                       "{pref}_best_pickle.csv".format(pref=prefcsv))
+                if (not os.path.exists(crosspath) or overwrite):
+                    cross = mltb.cross_validation(X=X, y=y, transform=trasf)
+                    np.savetxt(crosspath, cross, delimiter=SEP, fmt='%s',
+                               header=SEP.join(['id', 'name', 'mean', 'max',
+                                                      'min', 'std', 'time']))
+                    mltb.find_best(models)
+                    best = mltb.select_best()
+                    with open(bpkpath, 'w') as bpkl:
+                        pkl.dump(best, bpkl)
+                else:
+                    log.debug('    Read cross-validation results from file:')
+                    log.debug('      -  %s' % crosspath)
+                    try:
+                        with open(bpkpath, 'r') as bpkl:
+                            best = pkl.load(bpkl)
+                    except:
+                        STEMMessageHandler.error("Problem reading file {name} "
+                                                 "please remove all files with"
+                                                 "prefix {pre} in {path}".format(
+                                                 name=bpkpath, pre=prefcsv,
+                                                 path=home))
+                    order, models = mltb.find_best(models=best)
+                    best = mltb.select_best(best=models)
+                log.debug('Best models:')
+                log.debug(best)
 
             # ---------------------------------------------------------------
             # test Models
@@ -464,7 +465,7 @@ class STEMToolsDialog(BaseDialog):
                                      transform=None)
                     np.savetxt(testpath, test, delimiter=SEP, fmt='%s',
                                header=SEP.join(test[0]._asdict().keys()))
-                    mltb.find_best(model, strategy=return_argument,
+                    mltb.find_best(models, strategy=return_argument,
                                    key='score_test')
                     best = mltb.select_best()
                     with open(bpkpath, 'w') as bpkl:
