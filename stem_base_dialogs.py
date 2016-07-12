@@ -289,6 +289,7 @@ class BaseDialog(QDialog, baseDialog):
         STEMUtils.stemMkdir()
 
     def error_detail(self):
+        STEMMessageHandler.warning("STEM", "Errore!", 0)
         message_box = CustomMessageBoxWithDetail()
         message_box.setWindowTitle("Errore STEM")
         message_box.setText("STEM ha riscontrato un errore durante l'esecuzione.")
