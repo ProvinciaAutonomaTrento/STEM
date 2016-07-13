@@ -87,6 +87,7 @@ class TableWidgetDragRows(QTableWidget):
         self.setSelectionMode(QAbstractItemView.SingleSelection) 
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setDragDropMode(QAbstractItemView.InternalMove)   
+        self.keyPressEvent = self.handleDeleteKeyPress
 
     def dropEvent(self, event):
         if event.source() == self and (event.dropAction() == Qt.MoveAction or self.dragDropMode() == QAbstractItemView.InternalMove):
@@ -212,6 +213,12 @@ class TableWidgetDragRows(QTableWidget):
             r = QAbstractItemView.AboveItem if pos.y() < rect.center().y() else QAbstractItemView.BelowItem
 
         return r
+    
+    def handleDeleteKeyPress(self, event):
+        if event.key() == Qt.Key_Delete:
+            rows = self.getSelectedRowsFast()
+            for row in rows:
+                self.removeRow(row)
 
 class CustomMessageBoxWithDetail(QMessageBox):
     """A custom implementation derived from QMessageBox that implements resizing.
@@ -289,7 +296,9 @@ class BaseDialog(QDialog, baseDialog):
         STEMUtils.stemMkdir()
 
     def error_detail(self):
-        STEMMessageHandler.warning("STEM", "Errore!", 0)
+        # motivazione: rimosso perche` potrebbe "coprire" altri errori dietro,
+        # per esempio se accade un errore durante l'estrazione di feature lidar da poligoni
+#         STEMMessageHandler.warning("STEM", "Errore!", 0)
         message_box = CustomMessageBoxWithDetail()
         message_box.setWindowTitle("Errore STEM")
         message_box.setText("STEM ha riscontrato un errore durante l'esecuzione.")
