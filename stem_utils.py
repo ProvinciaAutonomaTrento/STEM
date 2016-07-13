@@ -200,7 +200,7 @@ class STEMUtils:
 
         #print 'layerName: {} layer: {} '.format(layerName, layer)
         if layer:
-            return layer.source()
+            return str(layer.source())
         else:
             return None
 
@@ -638,7 +638,7 @@ class STEMUtils:
             STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
                                        ' potrebbero esserci problemi nelle '
                                        'prossimi analisi')
-        return path
+        return str(path)
 
     @staticmethod
     def get_temp_dir():
