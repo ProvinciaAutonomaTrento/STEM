@@ -77,9 +77,6 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 class STEMLoggingServer:
     """Class to log information of modules in a file"""
-
-    self.logger = None
-
     def __init__(self, logname):
         self.logger = logging.getLogger("{}_{}_stem.log".format(filenamelogname, id_generator()))
         fh = logging.FileHandler(logname)
