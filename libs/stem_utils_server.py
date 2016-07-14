@@ -70,15 +70,12 @@ def read_file(filename, mode='rb', encoding='UTF-8'):
         output = f.read().decode(encoding)
     return output
 
-import string
-import random
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-
 class STEMLoggingServer:
     """Class to log information of modules in a file"""
     def __init__(self, logname):
-        self.logger = logging.getLogger("{}_{}_stem.log".format(filenamelogname, id_generator()))
+        import uuid
+        unique_id = str(uuid.uuid4()).replace('-', '_')
+        self.logger = logging.getLogger("{}_{}_stem.log".format(filenamelogname, unique_id))
         fh = logging.FileHandler(logname)
         self.logger.level(logging.DEBUG)
         self.logger.addHandler(fh)

@@ -18,8 +18,9 @@ import tempfile
 import random
 import itertools
 from collections import namedtuple
-import logging as logg
+import logging
 from pprint import pformat
+from stem_utils_server import STEMLoggingServer
 import math
 
 # to check the amount of free memory available for the analisys
@@ -748,7 +749,7 @@ class MLToolBox(object):
         self.transform = transform
         self.untransform = untransform
         self.memory_factor = memory_factor
-        self.logging = logging if logging else logg
+        self.logging = logging if logging else STEMLoggingServer(self.output)
         self._attributes = ('raster', 'vector',
                             'output', 'column',
                             'training_csv', 'models',

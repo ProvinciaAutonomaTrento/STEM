@@ -103,11 +103,11 @@ def temporaryFilesGRASS(name, local=True):
     :param bool local: true to create local grass connection otherwise it
                        try to connetc with the server
     """
-#     pid = os.getpid()
+#     unique_id = os.getpid()
     import uuid
-    pid = str(uuid.uuid4()).replace('-', '_')
-    tempin = 'stem_{name}_{pid}'.format(name=name, pid=pid)
-    tempout = 'stem_output_{pid}'.format(pid=pid)
+    unique_id = str(uuid.uuid4()).replace('-', '_')
+    tempin = 'stem_{name}_{unique_id}'.format(name=name, unique_id=unique_id)
+    tempout = 'stem_output_{unique_id}'.format(unique_id=unique_id)
     grassdatabase, location, grassbin, epsg = QGISettingsGRASS(local=local)
     if local:
         gs = stemGRASS()
@@ -116,7 +116,7 @@ def temporaryFilesGRASS(name, local=True):
         gs = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                           port=GRASS_PORT,
                                                           name=GRASSPYROOBJNAME))
-    gs.initialize(pid, grassdatabase, location, grassbin, epsg)
+    gs.initialize(unique_id, grassdatabase, location, grassbin, epsg)
     return tempin, tempout, gs
 
 
