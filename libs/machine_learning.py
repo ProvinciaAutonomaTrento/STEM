@@ -18,7 +18,7 @@ import tempfile
 import random
 import itertools
 from collections import namedtuple
-import logging
+import logging as logg
 from pprint import pformat
 from stem_utils_server import STEMLoggingServer
 import math
@@ -749,7 +749,7 @@ class MLToolBox(object):
         self.transform = transform
         self.untransform = untransform
         self.memory_factor = memory_factor
-        self.logging = logging if logging else STEMLoggingServer(self.output)
+        self.logging = logging if logging else logg
         self._attributes = ('raster', 'vector',
                             'output', 'column',
                             'training_csv', 'models',
