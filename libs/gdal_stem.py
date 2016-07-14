@@ -55,6 +55,7 @@ from pyro_stem import GDALINFOPYROOBJNAME
 from pyro_stem import GDALCONVERTPYROOBJNAME
 from pyro_stem import OGRINFOPYROOBJNAME
 import gc
+import math
 
 NP2GDAL_CONVERSION = {
   "int8": 1,
@@ -631,24 +632,19 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
                             nodata):
     """Copy a band of raster into the output file with nodata values.
 
-       Function copied from gdal_merge.py
+       Function modified, based on gdal_merge.py
     """
-    try:
-        import numpy as Numeric
-    except ImportError:
-        import Numeric
-
     s_band = s_fh.GetRasterBand(s_band_n)
+    old_no_data = s_band.GetNoDataValue()
     t_band = t_fh.GetRasterBand(t_band_n)
 
     data_src = s_band.ReadAsArray(s_xoff, s_yoff, s_xsize, s_ysize,
                                   t_xsize, t_ysize)
-    data_dst = t_band.ReadAsArray(t_xoff, t_yoff, t_xsize, t_ysize)
-
-    nodata_test = Numeric.equal(data_src, nodata)
-    to_write = Numeric.choose(nodata_test, (data_src, data_dst))
-
-    t_band.WriteArray(to_write, t_xoff, t_yoff)
+    if math.isnan(old_no_data):
+        data_src[numpy.isnan(data_src)] = nodata
+    else:
+        data_src[data_src == old_no_data] = nodata
+    t_band.WriteArray(data_src, t_xoff, t_yoff)
     t_band.SetNoDataValue(nodata)
 
     return 0

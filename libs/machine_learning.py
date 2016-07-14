@@ -20,6 +20,7 @@ import itertools
 from collections import namedtuple
 import logging as logg
 from pprint import pformat
+import math
 
 # to check the amount of free memory available for the analisys
 import psutil
@@ -33,7 +34,6 @@ from sklearn.linear_model import LassoLarsIC
 from sklearn.svm.classes import SVC
 from exported_objects import CVResult, TestResult, return_argument #added
 from sklearn.preprocessing.imputation import Imputer
-import math
 
 try:
     import Pyro4

@@ -107,7 +107,7 @@ class STEMToolsDialog(BaseDialog):
     def get_input_sources(self):
         items = []
 
-        if len(self.BaseInput.selectedItems()) != 0:
+        if len(self.BaseInput.getSelectedRowsFast()) != 0:
             items = [item for index, item in enumerate(self.BaseInput.selectedItems()) if index % 2 == 0]
         else:
             for index in xrange(self.BaseInput.rowCount()):
