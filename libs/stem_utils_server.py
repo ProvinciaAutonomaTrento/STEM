@@ -73,24 +73,19 @@ def read_file(filename, mode='rb', encoding='UTF-8'):
 class STEMLoggingServer:
     """Class to log information of modules in a file"""
     def __init__(self, logname):
-        import uuid
-        unique_id = str(uuid.uuid4()).replace('-', '_')
-        self.logger = logging.getLogger("{}_{}_stem.log".format(logname, unique_id))
-        fh = logging.FileHandler(logname)
-        self.logger.level(logging.DEBUG)
-        self.logger.addHandler(fh)
-        self.logger.propagate = False
+        logfile = logname
+        reload(logging)
         logging.basicConfig(filename=logfile, filemode='w',
                             level=logging.DEBUG)
 
     def debug(self, text):
-        self.logger.debug(text)
+        logging.debug(text)
 
     def warning(self, text):
-        self.logger.warning(text)
+        logging.warning(text)
 
     def info(self, text):
-        self.logger.info(text)
+        logging.info(text)
 
 class STEMSettings:
     """
