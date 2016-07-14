@@ -17,8 +17,8 @@ import time
 import tempfile
 import random
 import itertools
-from collections import namedtuple
 import logging as logg
+from collections import namedtuple
 from pprint import pformat
 from stem_utils_server import STEMLoggingServer
 import math

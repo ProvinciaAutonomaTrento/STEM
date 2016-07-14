@@ -75,7 +75,7 @@ class STEMLoggingServer:
     def __init__(self, logname):
         import uuid
         unique_id = str(uuid.uuid4()).replace('-', '_')
-        self.logger = logging.getLogger("{}_{}_stem.log".format(filenamelogname, unique_id))
+        self.logger = logging.getLogger("{}_{}_stem.log".format(logname, unique_id))
         fh = logging.FileHandler(logname)
         self.logger.level(logging.DEBUG)
         self.logger.addHandler(fh)
