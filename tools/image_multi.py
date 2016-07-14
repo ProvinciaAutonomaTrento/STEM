@@ -105,15 +105,10 @@ class STEMToolsDialog(BaseDialog):
         return []
 
     def get_input_sources(self):
-        items = []
-
         if len(self.BaseInput.getSelectedRowsFast()) != 0:
-            items = [item for index, item in enumerate(self.BaseInput.selectedItems()) if index % 2 == 0]
+            sources = [str(item.text()) for index, item in enumerate(self.BaseInput.selectedItems()) if index % 2 == 0]
         else:
-            for index in xrange(self.BaseInput.rowCount()):
-                items.append(self.BaseInput.itemAt(0, index))
-        sources = [i.text() for i in items]
-
+            sources = [str(self.BaseInput.item(row, 0).text()) for row in xrange(self.BaseInput.rowCount())]
         return sources
 
     def onRunLocal(self):
