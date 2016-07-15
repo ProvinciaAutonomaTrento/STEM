@@ -94,6 +94,10 @@ class STEMToolsDialog(BaseDialog):
             las.initialize()
             com = las.union(items, out, compres, local=self.LocalCheck.isChecked())
             STEMUtils.saveCommand(com)
+
+            if not self.LocalCheck.isChecked():
+                las._pyroRelease()
+            
             t = time.time()
             while not os.path.isfile(out_locale):
                 if time.time()-t > 5:
@@ -101,9 +105,6 @@ class STEMToolsDialog(BaseDialog):
                     return
                 time.sleep(.1)
             STEMMessageHandler.success("{ou} LAS file created".format(ou=out_locale))
-            
-            if not self.LocalCheck.isChecked():
-                las._pyroRelease()
         except:
             if not self.LocalCheck.isChecked():
                 las._pyroRelease()
