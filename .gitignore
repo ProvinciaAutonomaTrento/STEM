@@ -24,3 +24,8 @@ local.properties
 
 # CDT-specific
 .cproject
+
+# auxiliary projects for testing and las validation
+lasverify_patched.py
+test.py
+test_pdal.py

@@ -259,14 +259,26 @@ class stemLAS():
         else:
             raise Exception('Not able to find a library to work with LAS files')
 
-    def _run_command(self, comm):
+    def _run_command(self, comm, disable_win_errors = False):
         """Run the command and return the output
 
         :param list comm: the list containing the command to run
         """
-        com = subprocess.Popen(comm, stdin=PIPE,
-                               stdout=PIPE, stderr=PIPE)
-        out, err = com.communicate()
+        if disable_win_errors:
+            import win32api
+            import win32con
+            previous_error_mode = win32api.SetErrorMode(win32con.SEM_FAILCRITICALERRORS |
+                                                        win32con.SEM_NOGPFAULTERRORBOX)
+            try:
+                com = subprocess.Popen(comm, stdin=PIPE,
+                                       stdout=PIPE, stderr=PIPE)
+                out, err = com.communicate()
+            finally:
+                win32api.SetErrorMode(previous_error_mode)
+        else:
+            com = subprocess.Popen(comm, stdin=PIPE,
+                                   stdout=PIPE, stderr=PIPE)
+            out, err = com.communicate()
 
         # Pdal da` errore anche se restituisce 0 come returncode
         if err != '':
@@ -418,8 +430,11 @@ class stemLAS():
                 xml = read_file(self.pdalxml)
                 pipe = libpdalpython.PyPipeline(xml)
                 pipe.execute()
-            else:          
-                self._run_command(command)
+            else:
+                if sys.platform.startswith("win"):
+                    self._run_command(command, disable_win_errors = True)
+                else:
+                    self._run_command(command)
             return command
         else:
             raise Exception("pdal è necessario per calcolare il CHM")
