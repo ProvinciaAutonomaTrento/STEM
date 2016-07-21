@@ -411,6 +411,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         band = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue() if nodata is None else nodata
         raster_file_nodata = band.GetNoDataValue()
+        
         tmp_file = os.path.join(tempfile.gettempdir(),
                                 'tmprast%d' % random.randint(1000, 9999))
         # vect_file, rast_file, asrast, column, format='GTiff',
@@ -427,6 +428,9 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         data = read_pixels(bands, pixels)
         
         if not np.isnan(raster_file_nodata):
+            if np.isnan(data).any():
+                raise Exception("There are some pixels with NaN value in the raster, but the value of nodata is not NaN.")
+            
             data = data[~(data == raster_file_nodata).any(1)]
         else:
             data = data[~np.isnan(data).any(1)] # if nodata is nan, we simply remove nan (note that == does not work with nan)
