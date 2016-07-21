@@ -34,7 +34,7 @@ from sklearn.cross_validation import cross_val_score, LeaveOneOut
 from sklearn.linear_model import LassoLarsIC
 from sklearn.svm.classes import SVC
 from exported_objects import CVResult, TestResult, return_argument #added
-from sklearn.preprocessing.imputation import Imputer
+from sklearn.preprocessing import Imputer
 
 try:
     import Pyro4
@@ -410,6 +410,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         rast = read_raster(raster_file)
         band = rast.GetRasterBand(1)
         nodata = band.GetNoDataValue() if nodata is None else nodata
+        raster_file_nodata = band.GetNoDataValue()
         tmp_file = os.path.join(tempfile.gettempdir(),
                                 'tmprast%d' % random.randint(1000, 9999))
         # vect_file, rast_file, asrast, column, format='GTiff',
@@ -424,10 +425,13 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         # add the training category
         bands.append(trst.GetRasterBand(1))
         data = read_pixels(bands, pixels)
-        bad_values = set([b.GetNoDataValue() for b in bands])
-        data = data[~np.isnan(data).any(1)]
-        for bad_value in bad_values:
-            data = data[~(data == bad_value).any(1)]
+        
+        if not np.isnan(raster_file_nodata):
+            data[np.isnan(data)] = raster_file_nodata  # we interpret NaN as nodata
+            data = data[~(data == raster_file_nodata).any(1)]
+        else:
+            data = data[~np.isnan(data).any(1)] # if nodata is nan, we simply remove nan (note that == does not work with nan)
+            
         header = delimiter.join([str(i) for i in nbands] + ['training', ])
         trst = None
         os.remove(tmp_file)
@@ -523,6 +527,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
     if use_columns is None:
         # the input file is a raster
         rast = read_raster(input_file)
+        nodata_value = rast.GetRasterBand(1).GetNoDataValue()
         # create the raster outputs
         for model in models:
             print(output_file.format(model['name']))
@@ -544,21 +549,36 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         # features and not all bands
         nbands = bands if bands is not None else range(1, rast.RasterCount + 1)
         logging.debug('apply_models: nbands %d' % len(nbands))
+
         for chunk, data in enumerate(read_chunks(rast, nchunks, brows, nbands)):
+            if not np.isnan(nodata_value):
+                nan_values = np.isnan(data).any(1)
+                nodata_values = (data == nodata_value).any(1)
+                data[np.isnan(data)] = nodata_value  # we interpret NaN as nodata
+            else:
+                nan_values = np.isnan(data).any(1)
+                nodata_values = np.isnan(data).any(1)
+                data[np.isnan(data)] = -9999
+
+            # put nan and nodata to -9999
+            data[np.isnan(data)] = nodata_value
+            
             # trasform input data following the users options
             for trans in transformations:
                 data = trans.transform(data)
-
+                
             # run the model to the data
             for model in models:
                 yoff = chunk * brows
                 ysize = brows if chunk < (nchunks - 1) else rysize - yoff
-                # predict
+                
                 predict = run_model(model, data, logging=logging
                                     ).astype(dtype=np.uint32)
                 if untransform is not None:
                     predict = untransform(predict)
                 # write_chunk(band, data, yoff, rxsize, ysize)
+                predict[nodata_values] = nodata_value
+                #predict[nan_values] = np.nan                
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
 

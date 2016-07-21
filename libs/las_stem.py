@@ -74,6 +74,9 @@ def get_value(x,y, band, band_type, geomt):
     py = int((y - geomt[3]) / geomt[5])  # y pixel
     try:
         structval = band.ReadAsArray(px, py, 1, 1)
+        nodata_value = band.GetNoDataValue()
+        if structval == nodata_value:
+            return None
         val = structval[0][0]
         if cmp(val, 0) == -1:
             val = 0
