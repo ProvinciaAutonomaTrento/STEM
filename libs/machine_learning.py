@@ -576,9 +576,9 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                                     ).astype(dtype=np.uint32)
                 if untransform is not None:
                     predict = untransform(predict)
-                # write_chunk(band, data, yoff, rxsize, ysize)
-                predict[nodata_values] = nodata_value
-                #predict[nan_values] = np.nan                
+                # note that we have -9999 as NODATA
+                predict[nodata_values] = NODATA
+                predict[nan_values] = NODATA                
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
 
