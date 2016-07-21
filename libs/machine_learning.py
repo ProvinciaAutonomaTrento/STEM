@@ -427,7 +427,6 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         data = read_pixels(bands, pixels)
         
         if not np.isnan(raster_file_nodata):
-            data[np.isnan(data)] = raster_file_nodata  # we interpret NaN as nodata
             data = data[~(data == raster_file_nodata).any(1)]
         else:
             data = data[~np.isnan(data).any(1)] # if nodata is nan, we simply remove nan (note that == does not work with nan)
@@ -552,11 +551,8 @@ def apply_models(input_file, output_file, models, X, y, transformations,
 
         for chunk, data in enumerate(read_chunks(rast, nchunks, brows, nbands)):
             if not np.isnan(nodata_value):
-                nan_values = np.isnan(data).any(1)
                 nodata_values = (data == nodata_value).any(1)
-                data[np.isnan(data)] = nodata_value  # we interpret NaN as nodata
             else:
-                nan_values = np.isnan(data).any(1)
                 nodata_values = np.isnan(data).any(1)
                 data[np.isnan(data)] = -9999
 
@@ -577,8 +573,8 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 if untransform is not None:
                     predict = untransform(predict)
                 # note that we have -9999 as NODATA
-                predict[nodata_values] = NODATA
-                predict[nan_values] = NODATA                
+                #predict[nodata_values] = NODATA
+                #predict[nan_values] = NODATA                
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
 
