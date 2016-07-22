@@ -651,7 +651,7 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
     nodata_test = Numeric.equal(data_src, nodata)
     to_write = Numeric.choose(nodata_test, (data_src, data_dst))
 
-    if math.isnan(old_no_data):
+    if old_nod_data is not None and math.isnan(old_no_data):
         to_write[numpy.isnan(to_write)] = nodata
     else:
         to_write[to_write == old_no_data] = nodata
@@ -804,17 +804,20 @@ class file_info:
         bandmask = target_ds.GetRasterBand(1)
         datamask = bandmask.ReadAsArray(0, 0, xcount, ycount)
 
+        nodata = self.band.GetNoDataValue() if self.band.GetNoDataValue() is not None else -9999
+
         # read raster as arrays
         for b in range(1, self.bands + 1):
             banddataraster = self.s_fh.GetRasterBand(b)
             dataraster = banddataraster.ReadAsArray(xoff, yoff, xcount, ycount)
 
             outband = numpy.ma.masked_array(dataraster, datamask)
-            outband_null = numpy.ma.filled(outband.astype(float), numpy.nan)
+            outband_null = numpy.ma.filled(outband.astype(float), nodata)
             outband_null = outband_null.astype(datatype, copy=False)
             t_band = output.GetRasterBand(b)
 
             t_band.WriteArray(outband_null, xoff, yoff)
+            t_band.SetNoDataValue(float(nodata))  # TODO should it be float?
 
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None, res=None):
         """Copy this files image into target file.

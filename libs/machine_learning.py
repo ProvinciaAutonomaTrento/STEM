@@ -427,7 +427,7 @@ def extract_training(vector_file, column, csv_file, raster_file=None,
         bands.append(trst.GetRasterBand(1))
         data = read_pixels(bands, pixels)
         
-        if not np.isnan(raster_file_nodata):
+        if raster_file_nodata is not None and not np.isnan(raster_file_nodata):
             if np.isnan(data).any():
                 raise Exception("There are some pixels with NaN value in the raster, but the value of nodata is not NaN.")
             
@@ -554,7 +554,7 @@ def apply_models(input_file, output_file, models, X, y, transformations,
         logging.debug('apply_models: nbands %d' % len(nbands))
 
         for chunk, data in enumerate(read_chunks(rast, nchunks, brows, nbands)):
-            if not np.isnan(nodata_value):
+            if nodata_value is not None and not np.isnan(nodata_value):
                 nodata_values = (data == nodata_value).any(1)
             else:
                 nodata_values = np.isnan(data).any(1)
@@ -573,12 +573,11 @@ def apply_models(input_file, output_file, models, X, y, transformations,
                 ysize = brows if chunk < (nchunks - 1) else rysize - yoff
                 
                 predict = run_model(model, data, logging=logging
-                                    ).astype(dtype=np.uint32)
+                                    ).astype(dtype=np.int32)
                 if untransform is not None:
                     predict = untransform(predict)
                 # note that we have -9999 as NODATA
-                #predict[nodata_values] = NODATA
-                #predict[nan_values] = NODATA                
+                predict[nodata_values] = NODATA
                 write_chunk(model['band'], predict, yoff, rxsize, ysize)
                 gc.collect()  # force to free memory of unreferenced objects
 
