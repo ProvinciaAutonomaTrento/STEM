@@ -54,11 +54,9 @@ FILTER_NONE = """
 import numpy as np
 
 def filter(ins,outs):
-   cls = ins['Z']
+   cls = np.array(ins['Z'], np.float32)
 
-   excluded_classes = [None]
-
-   keep = np.not_equal(cls, excluded_classes[0])
+   keep = ~np.isnan(cls)
 
    outs['Mask'] = keep
    return True
@@ -75,10 +73,10 @@ def get_value(x,y, band, band_type, geomt):
     try:
         structval = band.ReadAsArray(px, py, 1, 1)
         nodata_value = band.GetNoDataValue()
-        if structval == nodata_value:
-            return None
         val = structval[0][0]
-        if cmp(val, 0) == -1:
+        if val == nodata_value:
+            return None
+        elif cmp(val, 0) == -1:
             val = 0
         return val
     except:
