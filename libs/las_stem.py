@@ -50,7 +50,7 @@ def filter(ins,outs):
     return True
 """
 
-FILTER_NONE = """
+FILTER_NAN = """
 import numpy as np
 
 def filter(ins,outs):
@@ -374,7 +374,7 @@ class stemLAS():
         filt_ret.set("type", "filters.predicate")
         funct = self._add_option_file('filter', val='function')
         modu = self._add_option_file('anything', val='module')
-        source = self._add_option_file(FILTER_NONE, val='source')
+        source = self._add_option_file(FILTER_NAN, val='source')
         filt_ret.append(funct)
         filt_ret.append(modu)
         filt_ret.append(source)
