@@ -54,7 +54,7 @@ FILTER_NONE = """
 import numpy as np
 
 def filter(ins,outs):
-   cls = np.array(ins['Z'], np.float32)
+   cls = ins['Z']
 
    keep = ~np.isnan(cls)
 
@@ -75,12 +75,12 @@ def get_value(x,y, band, band_type, geomt):
         nodata_value = band.GetNoDataValue()
         val = structval[0][0]
         if val == nodata_value:
-            return None
+            return np.nan
         elif cmp(val, 0) == -1:
             val = 0
         return val
     except:
-        return None
+        return np.nan
 
 def chm(ins,outs):
     inrast = r'{NAME}'
@@ -96,8 +96,8 @@ def chm(ins,outs):
         try:
             z = get_value(Xs[i], Ys[i], band, band_type, geomtransf)
         except:
-            z = None
-        if z:
+            z = np.nan
+        if not np.isnan(z):
             z = Zs[i] - z
             if cmp(z,0) == -1:
                 z = 0
