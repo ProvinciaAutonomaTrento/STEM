@@ -346,9 +346,6 @@ class BaseDialog(QDialog, baseDialog):
         e = self.check_paths_validity()
         if e:
             errors.append('I seguenti percorsi inseriti non sono validi:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
-        
-        print(u'errors: {}'.format(u', '.join(errors)))
-        return # put here for testing purposes
     
         e = [] if self.local_execution() else self.check_server_paths()
         if e:
@@ -415,7 +412,6 @@ class BaseDialog(QDialog, baseDialog):
         errors = []
         
         for p in [x for x in self.get_input_path_fields() if x is not None]:
-            print(u'{}'.format(p))
             if not os.path.exists(p):
                 errors.append(p)
         # TextOut e` comune a tutti i plugin
