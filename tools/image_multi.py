@@ -105,11 +105,11 @@ class STEMToolsDialog(BaseDialog):
         return []
 
     def get_input_sources(self):
-        if len(self.BaseInput.getSelectedRowsFast()) != 0:
-            sources = [str(item.text()) for index, item in enumerate(self.BaseInput.selectedItems()) if index % 2 == 0]
+        selected_rows = self.BaseInput.getSelectedRowsFast()
+        if len(selected_rows) != 0:
+            return [str(self.BaseInput.item(row, 0).text()) for row in selected_rows]
         else:
-            sources = [str(self.BaseInput.item(row, 0).text()) for row in xrange(self.BaseInput.rowCount())]
-        return sources
+            return [str(self.BaseInput.item(row, 0).text()) for row in xrange(self.BaseInput.rowCount())]
 
     def onRunLocal(self):
         # Accatastamento
