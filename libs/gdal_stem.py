@@ -651,7 +651,7 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
     nodata_test = Numeric.equal(data_src, nodata)
     to_write = Numeric.choose(nodata_test, (data_src, data_dst))
 
-    if old_nod_data is not None and math.isnan(old_no_data):
+    if old_no_data is not None and math.isnan(old_no_data):
         to_write[numpy.isnan(to_write)] = nodata
     else:
         to_write[to_write == old_no_data] = nodata
