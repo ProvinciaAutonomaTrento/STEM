@@ -820,12 +820,6 @@ class file_info:
             t_band.WriteArray(outband_null, xoff, yoff)
             t_band.SetNoDataValue(float(nodata))  # TODO should it be float?
 
-    def iround(self, x):
-        """iround(number) -> integer
-        Round a number to the nearest integer."""
-        y = round(x) - .5
-        return int(y) + (y > 0)
-
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None, res=None):
         """Copy this files image into target file.
 
@@ -885,10 +879,13 @@ class file_info:
             return 1
 
         # Compute source window in pixel coordinates.
-        sw_xoff = self.iround((tgw_ulx - self.geotransform[0]) / self.geotransform[1])
-        sw_yoff = self.iround((tgw_uly - self.geotransform[3]) / self.geotransform[5])
-        sw_xsize = tw_xsize
-        sw_ysize = tw_ysize
+        sw_xoff = int((tgw_ulx - self.geotransform[0]) / self.geotransform[1])
+        sw_yoff = int((tgw_uly - self.geotransform[3]) / self.geotransform[5])
+        sw_xsize = int((tgw_lrx - self.geotransform[0]) \
+                       / self.geotransform[1] + 0.5) - sw_xoff
+        sw_ysize = int((tgw_lry - self.geotransform[3]) \
+                       / self.geotransform[5] + 0.5) - sw_yoff
+
 
         if sw_xsize < 1 or sw_ysize < 1:
             return 1
