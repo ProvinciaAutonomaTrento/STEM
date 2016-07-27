@@ -639,26 +639,27 @@ def raster_copy_with_nodata(s_fh, s_xoff, s_yoff, s_xsize, s_ysize, s_band_n,
         import numpy as Numeric
     except ImportError:
         import Numeric
-
+ 
     s_band = s_fh.GetRasterBand(s_band_n)
     old_no_data = s_band.GetNoDataValue()
     t_band = t_fh.GetRasterBand(t_band_n)
-
+ 
     data_src = s_band.ReadAsArray(s_xoff, s_yoff, s_xsize, s_ysize,
                                   t_xsize, t_ysize)
     data_dst = t_band.ReadAsArray(t_xoff, t_yoff, t_xsize, t_ysize)
-
+ 
     nodata_test = Numeric.equal(data_src, nodata)
     to_write = Numeric.choose(nodata_test, (data_src, data_dst))
-
+ 
     if old_no_data is not None and math.isnan(old_no_data):
         to_write[numpy.isnan(to_write)] = nodata
     else:
         to_write[to_write == old_no_data] = nodata
-
+ 
+    t_band.Fill(nodata)
     t_band.WriteArray(to_write, t_xoff, t_yoff)
     t_band.SetNoDataValue(nodata)
-
+ 
     return 0
 
 
@@ -819,6 +820,12 @@ class file_info:
             t_band.WriteArray(outband_null, xoff, yoff)
             t_band.SetNoDataValue(float(nodata))  # TODO should it be float?
 
+    def iround(self, x):
+        """iround(number) -> integer
+        Round a number to the nearest integer."""
+        y = round(x) - .5
+        return int(y) + (y > 0)
+
     def copy_into(self, t_fh, t_band=1, s_band=1, nodata_arg=None, res=None):
         """Copy this files image into target file.
 
@@ -878,12 +885,10 @@ class file_info:
             return 1
 
         # Compute source window in pixel coordinates.
-        sw_xoff = int((tgw_ulx - self.geotransform[0]) / self.geotransform[1])
-        sw_yoff = int((tgw_uly - self.geotransform[3]) / self.geotransform[5])
-        sw_xsize = int((tgw_lrx - self.geotransform[0])
-                       / self.geotransform[1] + 0.5) - sw_xoff
-        sw_ysize = int((tgw_lry - self.geotransform[3])
-                       / self.geotransform[5] + 0.5) - sw_yoff
+        sw_xoff = self.iround((tgw_ulx - self.geotransform[0]) / self.geotransform[1])
+        sw_yoff = self.iround((tgw_uly - self.geotransform[3]) / self.geotransform[5])
+        sw_xsize = tw_xsize
+        sw_ysize = tw_ysize
 
         if sw_xsize < 1 or sw_ysize < 1:
             return 1

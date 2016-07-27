@@ -30,3 +30,5 @@ lasverify_patched.py
 test.py
 test_pdal.py
 test_cut_input.py
+convert_geotransform.py
+test_accatastamento.py
