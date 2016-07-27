@@ -60,7 +60,7 @@ class STEMToolsDialog(BaseDialog):
 #         label = "Risoluzione per tutte le bande del file di output"
 #         self._insertFirstLineEdit(label, 2)
 
-        label = "Valore di NODATA"
+        label = "Valore di NODATA (default -9999)"
         self._insertFirstLineEdit(label, 2)
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -166,7 +166,7 @@ class STEMToolsDialog(BaseDialog):
         #else:
         #    resolution = None
         
-        nodata = None
+        nodata = -9999.0
         if self.Linedit.text():
             nodata = float(self.Linedit.text())
         

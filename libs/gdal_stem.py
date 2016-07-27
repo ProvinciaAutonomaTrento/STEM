@@ -887,10 +887,8 @@ class file_info:
         # Compute source window in pixel coordinates.
         sw_xoff = self.iround((tgw_ulx - self.geotransform[0]) / self.geotransform[1])
         sw_yoff = self.iround((tgw_uly - self.geotransform[3]) / self.geotransform[5])
-        sw_xsize = int((tgw_lrx - self.geotransform[0]) \
-                       / self.geotransform[1] + 0.5) - sw_xoff
-        sw_ysize = int((tgw_lry - self.geotransform[3]) \
-                       / self.geotransform[5] + 0.5) - sw_yoff
+        sw_xsize = tw_xsize
+        sw_ysize = tw_ysize
 
         if sw_xsize < 1 or sw_ysize < 1:
             return 1
