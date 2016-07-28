@@ -54,8 +54,9 @@ class STEMToolsDialog(BaseDialog):
 
         min_height = "Valore minimo dell'altezza degli alberi (metri)"
         self._insertThirdLineEdit(min_height, 2)
-        STEMSettings.restoreWidgetsValue(self, self.toolName)
+        self.QGISextent.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
+        STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)

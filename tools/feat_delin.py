@@ -58,6 +58,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFifthLineEdit(min_alb, 4)
         self.Linedit5.setText('0.65')
 
+        self.QGISextent.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
