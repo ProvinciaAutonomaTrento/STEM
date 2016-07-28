@@ -121,7 +121,9 @@ class STEMUtils:
         layerlist = []
         layermap = STEMUtils.registry.mapLayers()
         for _, layer in layermap.iteritems():
-            layerlist.append(layer.source())
+            # 1 is 'raster' in the LayerType enum
+            if layer.type() == 1:
+                layerlist.append(layer.source())
         position = 0
         for fil in layerlist:
             if os.path.exists(fil):
