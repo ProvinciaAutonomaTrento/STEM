@@ -95,7 +95,7 @@ CODES = {'ab': {'a': 1.62898357199892E-04, 'b': 1.70656012564636,
                 'c': 0.985265642143746, 'd0': 3.69465, 'mh': 27.0},
          'pn': {'a': 1.28924310780902E-04, 'b': 1.76308589457555,
                 'c': 0.938444909041497, 'd0': 3.69465, 'mh': 34.1},
-         'ps': {'a': 1.01825735269425E-04, 'd': 1.91818421016015,
+         'ps': {'a': 1.01825735269425E-04, 'b': 1.91818421016015,
                 'c': 0.830164143958094, 'd0': 3.69465, 'mh': 34.1}}
 
 
@@ -313,7 +313,13 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     for fid, vals in coordinate.iteritems():
         outFeature = ogr.Feature(layerDefinition)
         hull = vals[0].ConvexHull()
+#         if int(fid) == 161:
+#             with open(r"C:\dati_stem\NullShapeBeforeSegmentation.txt", "w") as f:
+#                 f.write("{}".format(hull))
         hull.Segmentize(0.1)
+#         if int(fid) == 161:
+#             with open(r"C:\dati_stem\NullShape.txt", "w") as f:
+#                 f.write("{}".format(hull))
         outFeature.SetField(fieldIdName, int(fid))
         outFeature.SetField(fieldHeightName, float(vals[1]))
         outFeature.SetGeometry(hull)
