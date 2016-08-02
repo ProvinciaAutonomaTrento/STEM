@@ -42,7 +42,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertSingleInput()
         STEMUtils.addLayerToComboBox(self.BaseInput, 1)
 
-        self._insertFileInput(pos=1)
+        self._insertFileInput(pos=1, filterr="Text file (*.txt)")
         self.lf = "Selezionare file con i parametri 6s"
         self.labelF.setText(self.tr("", self.lf))
 
