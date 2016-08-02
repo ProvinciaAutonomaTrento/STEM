@@ -141,6 +141,7 @@ class STEMUtils:
 
     @staticmethod
     def addLayerIntoCanvasMaxMin(filename):
+        t = time.time()
         while not QFileInfo(filename).exists():
             if time.time()-t > 5:
                 STEMMessageHandler.error("{ou} file does not appear to exist".format(ou=filename))
