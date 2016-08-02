@@ -246,6 +246,7 @@ class STEMUtils:
         :param str typ: the type of data
         """
         # E` necessario un po' di tempo per rilevare l'esistenza del file
+        t = time.time()
         while not QFileInfo(filename).exists():
             if time.time()-t > 5:
                 STEMMessageHandler.error("{ou} file does not appear to exist".format(ou=filename))

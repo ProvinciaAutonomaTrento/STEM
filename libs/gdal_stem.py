@@ -219,23 +219,26 @@ def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
     Hmax = data.max()
     stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2)
     thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
+    
     # define parameters for the new raster
     xcount = int((fi.lrx - fi.ulx) / fi.geotransform[1])
     ycount = int((fi.uly - fi.lry) / fi.geotransform[1])
-    target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1,
-                                                   gdal.GDT_UInt32)
+    target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1, gdal.GDT_UInt32)
     target_ds.SetGeoTransform((fi.ulx, fi.geotransform[1], 0, fi.uly, 0,
                                fi.geotransform[5]))
     shape_datasource = ogr.Open(invect)
     shape_layer = shape_datasource.GetLayer()
+    
     # create for target raster the same projection as for the value raster
     raster_srs = osr.SpatialReference()
     raster_srs.ImportFromWkt(fi.s_fh.GetProjectionRef())
     target_ds.SetProjection(raster_srs.ExportToWkt())
+    
     # rasterize zone polygon to raster
     gdal.RasterizeLayer(target_ds, [1], shape_layer, None, None, [1],
                         ['ATTRIBUTE=id', 'ALL_TOUCHED=TRUE'])
     trees_indices = gdal_array.DatasetReadAsArray(target_ds)
+    
     target_ds = None
     it = True
     fieldIdName = 'id'
