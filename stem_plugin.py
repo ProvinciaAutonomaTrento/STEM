@@ -38,6 +38,7 @@ from stem_base_dialogs import SettingsDialog, helpDialog
 from stem_toolbox import STEMToolbox
 from stem_utils import STEMMessageHandler, STEMUtils, PathMapping
 from stem_utils_server import STEMSettings
+import codecs
 
 BASE_CONFIG_KEYS = "grasspath grassdata grasslocation grasspathserver grassdataserver grasslocationserver".split()
 
@@ -132,7 +133,8 @@ class STEMPlugin:
             if sys.platform != 'win32':
                 shutil.copy(STEMSettings.s.fileName(), myfile)
             else:
-                with open(myfile, 'w') as f:
+                with codecs.open(myfile,'w',encoding='utf8') as f:
+                #with open(myfile, 'w') as f:
                     STEMSettings.saveToFile(f)
             STEMMessageHandler.success("Configurazione salvata in {n}, si prega "
                                        "di rimuovere i tools non utili".format(n=myfile))
@@ -144,7 +146,8 @@ class STEMPlugin:
         if myfile:
             import ConfigParser
             newconfig = ConfigParser.ConfigParser()
-            newconfig.read(myfile)
+            #newconfig.read(myfile)
+            newconfig.readfp(codecs.open(myfile, "r", "utf8"))
             newsections = newconfig.sections()
 
             for news in newsections:

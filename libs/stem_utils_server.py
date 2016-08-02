@@ -233,18 +233,18 @@ class STEMSettings:
     @staticmethod
     def saveToFile(fil):
         groups = []
-        fil.write("[General]\n")
+        fil.write(u"[General]\n")
         for k in STEMSettings.s.childKeys():
-            fil.write("{ke}={va}\n".format(ke=k, va=STEMSettings.s.value(k)))
-        fil.write("\n")
+            fil.write(u"{ke}={va}\n".format(ke=k, va=STEMSettings.s.value(k)))
+        fil.write(u"\n")
         for k in STEMSettings.allKeys():
             if k.find('/') != -1:
                 key = k.split('/')
                 if key[0] not in groups:
-                    fil.write("\n[{ke}]\n".format(ke=key[0]))
+                    fil.write(u"\n[{ke}]\n".format(ke=key[0]))
                     groups.append(key[0])
-                fil.write("{ke}={va}\n".format(ke=key[1],
-                                               va=STEMSettings.s.value(k)))
+                fil.write(u"{ke}={va}\n".format(ke=key[1],
+                                                va=STEMSettings.s.value(k)))
 
 
 def libs_save_command(command, details=None):
