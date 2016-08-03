@@ -92,7 +92,7 @@ class STEMToolsDialog(BaseDialog):
         com = ['python', 'gdal_stem.py']
         try:
             name = str(self.BaseInput.currentText())
-            source = STEMUtils.getLayersSource(name)
+            source = str(STEMUtils.getLayersSource(name))
             specie = STEMUtils.checkLayers(source, self.layer_list, False)
             dia = STEMUtils.checkLayers(source, self.layer_list2, False)
             hei = STEMUtils.checkLayers(source, self.layer_list3, False)
@@ -114,6 +114,7 @@ class STEMToolsDialog(BaseDialog):
                 ogrinfo = infoOGR()
             else:
                 import Pyro4
+                source = STEMUtils.pathClientWinToServerLinux(source)
                 ogrinfo = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
                                                                        port=GDAL_PORT,
                                                                        name=OGRINFOPYROOBJNAME))
