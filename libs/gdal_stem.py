@@ -133,7 +133,7 @@ def createMaskFromBbox(coord):
     return poly
 
 class TreesTools:
-    def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
+    def position_alberi(self, inrast, outvect, minsearch, maxsearch, minheigh,
                         ogrdriver='ESRI Shapefile', overwrite=False):
         """Function to calculate the position of three from CHM
     
@@ -203,7 +203,7 @@ class TreesTools:
             raise 'No points found in the give CHM'
     
     
-    def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
+    def definizione_chiome(self, inrast, invect, outvect, minsearch, maxsearch, minheigh,
                            tresh_crown=0.65, tresh_seed=0.65,
                            ogrdriver='ESRI Shapefile', overwrite=False):
         """Function to extract """
