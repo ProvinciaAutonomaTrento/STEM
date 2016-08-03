@@ -54,6 +54,7 @@ from pyro_stem import GDAL_PORT
 from pyro_stem import GDALINFOPYROOBJNAME
 from pyro_stem import GDALCONVERTPYROOBJNAME
 from pyro_stem import OGRINFOPYROOBJNAME
+from pyro_stem import TREESTOOLSNAME
 import gc
 import math
 
@@ -131,204 +132,204 @@ def createMaskFromBbox(coord):
     poly.AddGeometry(ring)
     return poly
 
-
-def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
-                    ogrdriver='ESRI Shapefile', overwrite=False):
-    """Function to calculate the position of three from CHM
-
-    """
-    try:
-        import osgeo.gdal_array as gdal_array
-    except ImportError:
-        raise 'Python gdal_array library not found, please install python-gdal'
-    fi = file_info()
-    fi.init_from_name(inrast)
-    resolution = fi.geotransform[1]
-    data = gdal_array.DatasetReadAsArray(fi.s_fh)
-    Hmax = numpy.percentile(data, 99)
-    border = int(numpy.ceil(minsearch / 2))
-    stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2, 2)
-    thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
-    # create output shapefile
-    fieldIdName = 'id'
-    filedIdType = ogr.OFTInteger
-    fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
-    fieldHeightName = 'height'
-    fieldHeightType = ogr.OFTReal
-    fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
-    srs = osr.SpatialReference()
-    srs.ImportFromWkt(fi.projection)
-    driver = ogr.GetDriverByName(ogrdriver)
-    if overwrite:
-        driver.DeleteDataSource(outvect)
-    shapeData = driver.CreateDataSource(outvect)
-    layer = shapeData.CreateLayer('trees_pos', srs, ogr.wkbPoint)
-    layer.CreateFields([fieldId, fieldHeight])
-    layerDefinition = layer.GetLayerDefn()
-    output = False
-    fid = 1
-    for rowind in range(border, len(data[:-border])):
-        row = data[rowind]
-        for colind in range(border, len(row[:-border])):
-            val = row[colind]
-            distances = [abs(x - val) for x in thSearchFilSize]
-            val_moving = stepsSearchFilSize[distances.index(min(distances))]
-            minR = rowind - numpy.floor(val_moving / 2)
-            if minR < 0:
-                minR = 0
-            minC = colind - numpy.floor(val_moving / 2)
-            if minC < 0:
-                minC = 0
-            maxR = (rowind + numpy.floor(val_moving / 2)) + 1
-            maxC = (colind + numpy.floor(val_moving / 2)) + 1
-            masked = data[minR: maxR, minC: maxC]
-            if val == masked.max() and val > minheigh:
-                x, y = fi.indexes_to_coors(colind, rowind)
-                point = ogr.Geometry(ogr.wkbPoint)
-                point.SetPoint(0, x, y)
-                buf = point.Buffer(val_moving / 2 * resolution)
-                layer.SetSpatialFilter(buf)
-                if layer.GetFeatureCount() == 0:
-                    feature = ogr.Feature(layerDefinition)
-                    feature.SetField(fieldHeightName, float(val))
-                    feature.SetField(fieldIdName, fid)
-                    feature.SetGeometry(point)
-                    layer.CreateFeature(feature)
-                    fid += 1
-                    output = True
-                layer.SetSpatialFilter(None)
-    shapeData.Destroy()
-    if not output:
-        raise 'No points found in the give CHM'
-
-
-def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
-                       tresh_crown=0.65, tresh_seed=0.65,
-                       ogrdriver='ESRI Shapefile', overwrite=False):
-    """Function to extract """
-    try:
-        import osgeo.gdal_array as gdal_array
-    except ImportError:
-        raise 'Python gdal_array library not found, please install python-gdal'
-    TRESHSeed = tresh_seed
-    TRESHCrown = tresh_crown
-    fi = file_info()
-    fi.init_from_name(inrast)
-    data_nan = gdal_array.DatasetReadAsArray(fi.s_fh)
-    data = numpy.ma.masked_array(data_nan, numpy.isnan(data_nan))
-    Hmax = data.max()
-    stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2)
-    thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
+class TreesTools:
+    def position_alberi(inrast, outvect, minsearch, maxsearch, minheigh,
+                        ogrdriver='ESRI Shapefile', overwrite=False):
+        """Function to calculate the position of three from CHM
     
-    # define parameters for the new raster
-    xcount = int((fi.lrx - fi.ulx) / fi.geotransform[1])
-    ycount = int((fi.uly - fi.lry) / fi.geotransform[1])
-    target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1, gdal.GDT_UInt32)
-    target_ds.SetGeoTransform((fi.ulx, fi.geotransform[1], 0, fi.uly, 0,
-                               fi.geotransform[5]))
-    shape_datasource = ogr.Open(invect)
-    shape_layer = shape_datasource.GetLayer()
+        """
+        try:
+            import osgeo.gdal_array as gdal_array
+        except ImportError:
+            raise 'Python gdal_array library not found, please install python-gdal'
+        fi = file_info()
+        fi.init_from_name(inrast)
+        resolution = fi.geotransform[1]
+        data = gdal_array.DatasetReadAsArray(fi.s_fh)
+        Hmax = numpy.percentile(data, 99)
+        border = int(numpy.ceil(minsearch / 2))
+        stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2, 2)
+        thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
+        # create output shapefile
+        fieldIdName = 'id'
+        filedIdType = ogr.OFTInteger
+        fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
+        fieldHeightName = 'height'
+        fieldHeightType = ogr.OFTReal
+        fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(fi.projection)
+        driver = ogr.GetDriverByName(ogrdriver)
+        if overwrite:
+            driver.DeleteDataSource(outvect)
+        shapeData = driver.CreateDataSource(outvect)
+        layer = shapeData.CreateLayer('trees_pos', srs, ogr.wkbPoint)
+        layer.CreateFields([fieldId, fieldHeight])
+        layerDefinition = layer.GetLayerDefn()
+        output = False
+        fid = 1
+        for rowind in range(border, len(data[:-border])):
+            row = data[rowind]
+            for colind in range(border, len(row[:-border])):
+                val = row[colind]
+                distances = [abs(x - val) for x in thSearchFilSize]
+                val_moving = stepsSearchFilSize[distances.index(min(distances))]
+                minR = rowind - numpy.floor(val_moving / 2)
+                if minR < 0:
+                    minR = 0
+                minC = colind - numpy.floor(val_moving / 2)
+                if minC < 0:
+                    minC = 0
+                maxR = (rowind + numpy.floor(val_moving / 2)) + 1
+                maxC = (colind + numpy.floor(val_moving / 2)) + 1
+                masked = data[minR: maxR, minC: maxC]
+                if val == masked.max() and val > minheigh:
+                    x, y = fi.indexes_to_coors(colind, rowind)
+                    point = ogr.Geometry(ogr.wkbPoint)
+                    point.SetPoint(0, x, y)
+                    buf = point.Buffer(val_moving / 2 * resolution)
+                    layer.SetSpatialFilter(buf)
+                    if layer.GetFeatureCount() == 0:
+                        feature = ogr.Feature(layerDefinition)
+                        feature.SetField(fieldHeightName, float(val))
+                        feature.SetField(fieldIdName, fid)
+                        feature.SetGeometry(point)
+                        layer.CreateFeature(feature)
+                        fid += 1
+                        output = True
+                    layer.SetSpatialFilter(None)
+        shapeData.Destroy()
+        if not output:
+            raise 'No points found in the give CHM'
     
-    # create for target raster the same projection as for the value raster
-    raster_srs = osr.SpatialReference()
-    raster_srs.ImportFromWkt(fi.s_fh.GetProjectionRef())
-    target_ds.SetProjection(raster_srs.ExportToWkt())
     
-    # rasterize zone polygon to raster
-    gdal.RasterizeLayer(target_ds, [1], shape_layer, None, None, [1],
-                        ['ATTRIBUTE=id', 'ALL_TOUCHED=TRUE'])
-    trees_indices = gdal_array.DatasetReadAsArray(target_ds)
-    
-    target_ds = None
-    it = True
-    fieldIdName = 'id'
-    filedIdType = ogr.OFTInteger
-    fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
-    fieldHeightName = 'height'
-    fieldHeightType = ogr.OFTReal
-    fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
-    srs = osr.SpatialReference()
-    srs.ImportFromWkt(fi.projection)
-    driver = ogr.GetDriverByName(ogrdriver)
-    if overwrite:
-        driver.DeleteDataSource(outvect)
-    shapeData = driver.CreateDataSource(outvect)
-    layer = shapeData.CreateLayer('trees', srs, ogr.wkbPolygon)
-    layer.CreateFields([fieldId, fieldHeight])
-    layerDefinition = layer.GetLayerDefn()
-    coordinate = {}
-    gc.collect()
-    crowns = trees_indices.copy()
-    old_crowns = trees_indices.copy()
-    checks = trees_indices.copy()
-    checks[:] = 0
-    while it:
-        it = False
-        indexes = ((crowns != 0) * (checks == 0)).nonzero()
-        for ind in range(1, len(indexes[0])):
-            row = indexes[0][ind]
-            col = indexes[1][ind]
-            treeid = crowns[row, col]
-            coordSeed = numpy.where(trees_indices == treeid)
-            coordCrown = numpy.where(crowns == treeid)
-            rvSeed = data[coordSeed[0], coordSeed[1]][0]
-            Crownvals = data[coordCrown[0], coordCrown[1]]
-            rvCrown = Crownvals.mean()
-            distances = [abs(x - rvSeed) for x in thSearchFilSize]
-            dist = stepsSearchFilSize[distances.index(min(distances))]
-            fildata = numpy.zeros([4, 3])
-            if treeid not in coordinate.keys():
-                coordinate[treeid] = [ogr.Geometry(ogr.wkbMultiPoint), rvSeed]
-            try:
-                fildata[0, 0] = row - 1
-                fildata[0, 1] = col
-                fildata[0, 2] = data[row - 1, col]
-                fildata[1, 0] = row
-                fildata[1, 1] = col - 1
-                fildata[1, 2] = data[row, col - 1]
-                fildata[2, 0] = row
-                fildata[2, 1] = col + 1
-                fildata[2, 2] = data[row, col + 1]
-                fildata[3, 0] = row + 1
-                fildata[3, 1] = col
-                fildata[3, 2] = data[row + 1, col]
-            except:
-                continue
-            gfil = ((fildata[:, 2] < (data[row, col] + data[row, col]*0.005)) *
-                    (fildata[:, 2] > (rvSeed * TRESHSeed)) *
-                    (fildata[:, 2] > (rvCrown * TRESHCrown)) *
-                    (fildata[:, 2] <= (rvSeed + (rvSeed * 0.05))) *
-                    (abs(coordSeed[0] - fildata[:, 0]) < dist) *
-                    (abs(coordSeed[1] - fildata[:, 1]) < dist))
-            fildata = fildata[gfil, :]
-            for pp in range(len(fildata)):
-                rr = fildata[pp, 0]
-                kk = fildata[pp, 1]
-                if crowns[rr, kk] == 0 and data[rr, kk] >= minheigh:
-                    crowns[rr, kk] = crowns[row, col]
-                    x, y = fi.indexes_to_coors(kk, rr)
-                    poi = ogr.Geometry(ogr.wkbPoint)
-                    poi.AddPoint(x, y)
-                    coordinate[treeid][0].AddGeometry(poi)
-                    it = True
-        checks = old_crowns.copy()
-        old_crowns = crowns.copy()
-    for fid, vals in coordinate.iteritems():
-        outFeature = ogr.Feature(layerDefinition)
-        hull = vals[0].ConvexHull()
-#         if int(fid) == 161:
-#             with open(r"C:\dati_stem\NullShapeBeforeSegmentation.txt", "w") as f:
-#                 f.write("{}".format(hull))
-        hull.Segmentize(0.1)
-#         if int(fid) == 161:
-#             with open(r"C:\dati_stem\NullShape.txt", "w") as f:
-#                 f.write("{}".format(hull))
-        outFeature.SetField(fieldIdName, int(fid))
-        outFeature.SetField(fieldHeightName, float(vals[1]))
-        outFeature.SetGeometry(hull)
-        layer.CreateFeature(outFeature)
-        outFeature.Destroy()
-    shapeData.Destroy()
+    def definizione_chiome(inrast, invect, outvect, minsearch, maxsearch, minheigh,
+                           tresh_crown=0.65, tresh_seed=0.65,
+                           ogrdriver='ESRI Shapefile', overwrite=False):
+        """Function to extract """
+        try:
+            import osgeo.gdal_array as gdal_array
+        except ImportError:
+            raise 'Python gdal_array library not found, please install python-gdal'
+        TRESHSeed = tresh_seed
+        TRESHCrown = tresh_crown
+        fi = file_info()
+        fi.init_from_name(inrast)
+        data_nan = gdal_array.DatasetReadAsArray(fi.s_fh)
+        data = numpy.ma.masked_array(data_nan, numpy.isnan(data_nan))
+        Hmax = data.max()
+        stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2)
+        thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
+        
+        # define parameters for the new raster
+        xcount = int((fi.lrx - fi.ulx) / fi.geotransform[1])
+        ycount = int((fi.uly - fi.lry) / fi.geotransform[1])
+        target_ds = gdal.GetDriverByName('MEM').Create('', xcount, ycount, 1, gdal.GDT_UInt32)
+        target_ds.SetGeoTransform((fi.ulx, fi.geotransform[1], 0, fi.uly, 0,
+                                   fi.geotransform[5]))
+        shape_datasource = ogr.Open(invect)
+        shape_layer = shape_datasource.GetLayer()
+        
+        # create for target raster the same projection as for the value raster
+        raster_srs = osr.SpatialReference()
+        raster_srs.ImportFromWkt(fi.s_fh.GetProjectionRef())
+        target_ds.SetProjection(raster_srs.ExportToWkt())
+        
+        # rasterize zone polygon to raster
+        gdal.RasterizeLayer(target_ds, [1], shape_layer, None, None, [1],
+                            ['ATTRIBUTE=id', 'ALL_TOUCHED=TRUE'])
+        trees_indices = gdal_array.DatasetReadAsArray(target_ds)
+        
+        target_ds = None
+        it = True
+        fieldIdName = 'id'
+        filedIdType = ogr.OFTInteger
+        fieldId = ogr.FieldDefn(fieldIdName, filedIdType)
+        fieldHeightName = 'height'
+        fieldHeightType = ogr.OFTReal
+        fieldHeight = ogr.FieldDefn(fieldHeightName, fieldHeightType)
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(fi.projection)
+        driver = ogr.GetDriverByName(ogrdriver)
+        if overwrite:
+            driver.DeleteDataSource(outvect)
+        shapeData = driver.CreateDataSource(outvect)
+        layer = shapeData.CreateLayer('trees', srs, ogr.wkbPolygon)
+        layer.CreateFields([fieldId, fieldHeight])
+        layerDefinition = layer.GetLayerDefn()
+        coordinate = {}
+        gc.collect()
+        crowns = trees_indices.copy()
+        old_crowns = trees_indices.copy()
+        checks = trees_indices.copy()
+        checks[:] = 0
+        while it:
+            it = False
+            indexes = ((crowns != 0) * (checks == 0)).nonzero()
+            for ind in range(1, len(indexes[0])):
+                row = indexes[0][ind]
+                col = indexes[1][ind]
+                treeid = crowns[row, col]
+                coordSeed = numpy.where(trees_indices == treeid)
+                coordCrown = numpy.where(crowns == treeid)
+                rvSeed = data[coordSeed[0], coordSeed[1]][0]
+                Crownvals = data[coordCrown[0], coordCrown[1]]
+                rvCrown = Crownvals.mean()
+                distances = [abs(x - rvSeed) for x in thSearchFilSize]
+                dist = stepsSearchFilSize[distances.index(min(distances))]
+                fildata = numpy.zeros([4, 3])
+                if treeid not in coordinate.keys():
+                    coordinate[treeid] = [ogr.Geometry(ogr.wkbMultiPoint), rvSeed]
+                try:
+                    fildata[0, 0] = row - 1
+                    fildata[0, 1] = col
+                    fildata[0, 2] = data[row - 1, col]
+                    fildata[1, 0] = row
+                    fildata[1, 1] = col - 1
+                    fildata[1, 2] = data[row, col - 1]
+                    fildata[2, 0] = row
+                    fildata[2, 1] = col + 1
+                    fildata[2, 2] = data[row, col + 1]
+                    fildata[3, 0] = row + 1
+                    fildata[3, 1] = col
+                    fildata[3, 2] = data[row + 1, col]
+                except:
+                    continue
+                gfil = ((fildata[:, 2] < (data[row, col] + data[row, col]*0.005)) *
+                        (fildata[:, 2] > (rvSeed * TRESHSeed)) *
+                        (fildata[:, 2] > (rvCrown * TRESHCrown)) *
+                        (fildata[:, 2] <= (rvSeed + (rvSeed * 0.05))) *
+                        (abs(coordSeed[0] - fildata[:, 0]) < dist) *
+                        (abs(coordSeed[1] - fildata[:, 1]) < dist))
+                fildata = fildata[gfil, :]
+                for pp in range(len(fildata)):
+                    rr = fildata[pp, 0]
+                    kk = fildata[pp, 1]
+                    if crowns[rr, kk] == 0 and data[rr, kk] >= minheigh:
+                        crowns[rr, kk] = crowns[row, col]
+                        x, y = fi.indexes_to_coors(kk, rr)
+                        poi = ogr.Geometry(ogr.wkbPoint)
+                        poi.AddPoint(x, y)
+                        coordinate[treeid][0].AddGeometry(poi)
+                        it = True
+            checks = old_crowns.copy()
+            old_crowns = crowns.copy()
+        for fid, vals in coordinate.iteritems():
+            outFeature = ogr.Feature(layerDefinition)
+            hull = vals[0].ConvexHull()
+    #         if int(fid) == 161:
+    #             with open(r"C:\dati_stem\NullShapeBeforeSegmentation.txt", "w") as f:
+    #                 f.write("{}".format(hull))
+            hull.Segmentize(0.1)
+    #         if int(fid) == 161:
+    #             with open(r"C:\dati_stem\NullShape.txt", "w") as f:
+    #                 f.write("{}".format(hull))
+            outFeature.SetField(fieldIdName, int(fid))
+            outFeature.SetField(fieldHeightName, float(vals[1]))
+            outFeature.SetGeometry(hull)
+            layer.CreateFeature(outFeature)
+            outFeature.Destroy()
+        shapeData.Destroy()
 
 
 class infoOGR:
@@ -949,13 +950,15 @@ def main():
 #         ogrinfo_stem = infoOGR()
         # Trilogis daemon configuration with objectId 2015-11-06
         daemon = Pyro4.Daemon(host=PYROSERVER, port=GDAL_PORT)
-        uri1 = daemon.register(file_info,objectId=GDALINFOPYROOBJNAME,force=True)
-        uri2 = daemon.register(convertGDAL,objectId=GDALCONVERTPYROOBJNAME,force=True)
-        uri3 = daemon.register(infoOGR,objectId=OGRINFOPYROOBJNAME,force=True)
+        uri0 = daemon.register(TreesTools, objectId=TREESTOOLSNAME, force=True)
+        uri1 = daemon.register(file_info, objectId=GDALINFOPYROOBJNAME, force=True)
+        uri2 = daemon.register(convertGDAL, objectId=GDALCONVERTPYROOBJNAME, force=True)
+        uri3 = daemon.register(infoOGR, objectId=OGRINFOPYROOBJNAME, force=True)
         ns = Pyro4.locateNS()
-        ns.register("PyroGdalInfoStem",uri1)
-        ns.register("PyroGdalConvertStem",uri2)
-        ns.register("PyroOgrStem",uri3)
+        ns.register("PyroTreesToolsStem", uri0)
+        ns.register("PyroGdalInfoStem", uri1)
+        ns.register("PyroGdalConvertStem", uri2)
+        ns.register("PyroOgrStem", uri3)
         daemon.requestLoop()
     else:
         if args.volume:

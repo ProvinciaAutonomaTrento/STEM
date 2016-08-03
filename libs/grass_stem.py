@@ -385,7 +385,7 @@ class stemGRASS():
             raise Exception("Errore eseguendo GRASS: "
                             "Errore eseguendo i.group {err}".format(err=err))
 
-    def export_grass(self, outemp, finalout, typ, remove=True):
+    def export_grass(self, outemp, finalout, typ, remove=True, forced_output = False):
         """Export the result of analisys
 
         :param str outemp: the output in GRASS
@@ -396,10 +396,15 @@ class stemGRASS():
         import grass.script.core as gcore
 
         if typ == 'raster' or typ == 'image':
-            runcom = gcore.Popen(['r.out.gdal',
-                                  'input={outemp}'.format(outemp=outemp),
-                                  'output={final}'.format(final=finalout)],
+            command = ['r.out.gdal',
+                       'input={outemp}'.format(outemp=outemp),
+                       'output={final}'.format(final=finalout)]
+            if forced_output:
+                command.append('type=Float64')
+                command.append('nodata=-9999.0')
+            runcom = gcore.Popen(command,
                                  stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                
             out, err = runcom.communicate()
             # print out,err
             if runcom.returncode != 0:

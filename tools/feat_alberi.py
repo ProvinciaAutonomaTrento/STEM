@@ -31,11 +31,14 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from gdal_stem import position_alberi
+from gdal_stem import TreesTools
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 import traceback
-
+import Pyro4
+from pyro_stem import PYROSERVER
+from pyro_stem import TREESTOOLSNAME
+from pyro_stem import GDAL_PORT
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -63,13 +66,29 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
-            position_alberi(source, self.TextOut.text(),
-                            float(self.Linedit.text()),
-                            float(self.Linedit2.text()),
-                            float(self.Linedit3.text()),
-                            overwrite=self.overwrite)
+            out = str(self.TextOut.text())
+            
+            if self.LocalCheck.isChecked():
+                trees_tools = TreesTools()
+                trees_tools.position_alberi(source, out,
+                                            float(self.Linedit.text()),
+                                            float(self.Linedit2.text()),
+                                            float(self.Linedit3.text()),
+                                            overwrite=self.overwrite)
+            else:
+                trees_tools = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                           port=GDAL_PORT,
+                                                                           name=TREESTOOLSNAME))
+                remote_source = STEMUtils.pathClientWinToServerLinux(source)
+                remote_out = STEMUtils.pathClientWinToServerLinux(out)
+                trees_tools.position_alberi(remote_source, remote_out,
+                                            float(self.Linedit.text()),
+                                            float(self.Linedit2.text()),
+                                            float(self.Linedit3.text()),
+                                            overwrite=self.overwrite)
+            
             if self.AddLayerToCanvas.isChecked():
-                STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
+                STEMUtils.addLayerIntoCanvas(out, 'vector')
         except:
             self.error = traceback.format_exc()
             STEMMessageHandler.error(self.error)

@@ -503,7 +503,7 @@ class STEMUtils:
 
 
     @staticmethod
-    def exportGRASS(gs, overwrite, output, tempout, typ, remove=True):
+    def exportGRASS(gs, overwrite, output, tempout, typ, remove=True, forced_output = False):
         """Export data from GRASS environment
 
         :param obj gs: a stemGRASS object
@@ -538,7 +538,7 @@ class STEMUtils:
             STEMUtils.removeFiles(newdir)
         else:
             try:
-                gs.export_grass(tempout, output, typ, remove)
+                gs.export_grass(tempout, output, typ, remove, forced_output = forced_output)
             except Exception as e:
                 print 'gs.export_grass error:', e
         STEMUtils.removeFiles(original_dir)
