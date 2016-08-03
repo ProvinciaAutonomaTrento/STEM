@@ -78,7 +78,7 @@ class STEMToolsDialog(BaseDialog):
 #        self.layer_list.setToolTip(tooltip)
 #        self.label_layer.setToolTip(tooltip)
 
-        self.LabelOut.setText(self.tr(name, "Prefisso del risultato"))
+        self.LabelOut.setText(self.tr(name, "Risultato"))
         self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
