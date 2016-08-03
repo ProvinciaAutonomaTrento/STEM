@@ -23,11 +23,14 @@ __copyright__ = '(C) 2014 Luca Delucchi'
 __revision__ = '$Format:%H$'
 
 from stem_base_dialogs import BaseDialog
-from gdal_stem import definizione_chiome
+from gdal_stem import TreesTools
 from stem_utils import STEMUtils, STEMMessageHandler
 from stem_utils_server import STEMSettings
 import traceback
-
+import Pyro4
+from pyro_stem import PYROSERVER
+from pyro_stem import TREESTOOLSNAME
+from pyro_stem import GDAL_PORT
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
@@ -76,13 +79,30 @@ class STEMToolsDialog(BaseDialog):
             source = STEMUtils.getLayersSource(name)
             name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
-            definizione_chiome(source, source2, self.TextOut.text(),
-                               int(self.Linedit.text()),
-                               int(self.Linedit2.text()),
-                               int(self.Linedit3.text()),
-                               float(self.Linedit4.text()),
-                               float(self.Linedit5.text()),
-                               overwrite=self.overwrite)
+            out = str(self.TextOut.text())
+            if self.LocalCheck.isChecked():
+                trees_tools = TreesTools()
+                trees_tools.definizione_chiome(source, source2, out,
+                                               int(self.Linedit.text()),
+                                               int(self.Linedit2.text()),
+                                               int(self.Linedit3.text()),
+                                               float(self.Linedit4.text()),
+                                               float(self.Linedit5.text()),
+                                               overwrite=self.overwrite)
+            else:
+                trees_tools = Pyro4.Proxy("PYRO:{name}@{ip}:{port}".format(ip=PYROSERVER,
+                                                                           port=GDAL_PORT,
+                                                                           name=TREESTOOLSNAME))
+                remote_source = STEMUtils.pathClientWinToServerLinux(source)
+                remote_source2 = STEMUtils.pathClientWinToServerLinux(source2)
+                remote_out = STEMUtils.pathClientWinToServerLinux(out)
+                trees_tools.definizione_chiome(remote_source, remote_source2, remote_out,
+                                               int(self.Linedit.text()),
+                                               int(self.Linedit2.text()),
+                                               int(self.Linedit3.text()),
+                                               float(self.Linedit4.text()),
+                                               float(self.Linedit5.text()),
+                                               overwrite=self.overwrite)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')
         except:
