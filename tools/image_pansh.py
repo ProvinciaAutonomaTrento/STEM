@@ -169,9 +169,16 @@ class STEMToolsDialog(BaseDialog):
     #        pdb.set_trace()
             coms.append(com)
             STEMUtils.saveCommand(com)
+            
+            group_name = '{}_group'.format(tempout)
+            input = ['{}_red'.format(tempout), '{}_green'.format(tempout), '{}_blue'.format(tempout)]
+            com_gruppo = 'i.group group={group_name} subgroup={group_name} input={input}'.format(group_name = group_name, input = ','.join(input))
+            coms.append(com_gruppo.split())
+            STEMUtils.saveCommand(com_gruppo)
+            
             gs.run_grass(coms)
-
-            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ)
+            
+            STEMUtils.exportGRASS(gs, self.overwrite, output, group_name, typ)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
