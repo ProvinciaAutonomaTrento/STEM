@@ -59,6 +59,9 @@ class STEMToolsDialog(BaseDialog):
         self.LabelOut.setText(self.tr("", "Nome della nuova colonna con il "
                                       "volume. Massimo 10 caratteri"))
         self.TextOut.setMaxLength(10)
+        
+    def check_server_paths(self):
+        return []
 
     def check_paths_validity(self):
         errors = []
