@@ -84,12 +84,12 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2, is_checkable=False)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, is_checkable=False)
 
     def indexChanged2(self):
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4, is_checkable=False)
 
     def show_(self):
         self.switchClippingMode()
