@@ -48,22 +48,22 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChooseCheckBox(label="Selezionare la banda per il "
                                         "canale rosso", combo=False)
 
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
 
         self._insertLayerChooseCheckBox2(label="Selezionare la banda per il "
                                          "canale infrarosso", combo=False)
 
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2, is_checkable=False)
 
         self._insertLayerChooseCheckBox3(label="Selezionare la banda per il "
                                          "canale verde", combo=False)
 
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True, is_checkable=False)
 
         self._insertLayerChooseCheckBox4(label="Selezionare la banda per il "
                                          "canale blue", combo=False)
 
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True, is_checkable=False)
 
         methods = ['arvi', 'dvi', 'evi', 'evi2', 'gari', 'gemi', 'ipvi',
                    'ndvi', 'savi', 'sr', 'vari']
@@ -76,10 +76,10 @@ class STEMToolsDialog(BaseDialog):
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
     def indexChanged(self):
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2, is_checkable=False)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, True, is_checkable=False)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list4, True, is_checkable=False)
 
     def show_(self):
         self.switchClippingMode()

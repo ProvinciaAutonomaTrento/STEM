@@ -363,7 +363,8 @@ class STEMUtils:
             checkCombo.addItem("Seleziona banda")
             model = checkCombo.model()
             item = model.item(0)
-            item.setCheckState(Qt.Unchecked)
+            if is_checkable:
+                item.setCheckState(Qt.Unchecked)
             i += 1
         for n in range(1, gdalBands + 1):
             st = "Banda {i}".format(i=n)
