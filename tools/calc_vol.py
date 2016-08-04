@@ -92,6 +92,7 @@ class STEMToolsDialog(BaseDialog):
         com = ['python', 'gdal_stem.py']
         try:
             name = str(self.BaseInput.currentText())
+            original_name = name
             source = str(STEMUtils.getLayersSource(name))
             specie = STEMUtils.checkLayers(source, self.layer_list, False)
             dia = STEMUtils.checkLayers(source, self.layer_list2, False)
@@ -122,7 +123,7 @@ class STEMToolsDialog(BaseDialog):
             ogrinfo.calc_vol(out, hei, dia, specie)
 
             if self.AddLayerToCanvas.isChecked():
-                STEMUtils.reloadVectorLayer(name)
+                STEMUtils.reloadVectorLayer(original_name)
                 
             if not self.LocalCheck.isChecked():
                 ogrinfo._pyroRelease()
