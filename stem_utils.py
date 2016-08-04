@@ -340,8 +340,8 @@ class STEMUtils:
                 return form.text().split(',')
 
     @staticmethod
-    def addLayersNumber(combo, checkCombo=None, empty=False):
-        """Add the subsets name  of a rasterto a ComboBox
+    def addLayersNumber(combo, checkCombo=None, empty=False, is_checkable=True):
+        """Add the subsets name  of a raster to a ComboBox
 
         :param obj combo: a ComboBox containing the list of vector files
         :param obj checkCombo: the ComboBox to fill with column's name
@@ -380,7 +380,8 @@ class STEMUtils:
                 item = model.item(n + 2 - i)
             else:
                 item = model.item(n - i)
-            item.setCheckState(Qt.Unchecked)
+            if is_checkable:
+                item.setCheckState(Qt.Unchecked)
 
     @staticmethod
     def addColumnsName(combo, checkCombo, multi=False, empty=False):

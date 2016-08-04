@@ -46,22 +46,22 @@ class STEMToolsDialog(BaseDialog):
         self._insertLayerChooseCheckBox(label="Selezionare la banda per il canale rosso",
                                         combo=False)
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
 
         self._insertLayerChooseCheckBox2(label="Selezionare la banda per il canale verde",
                                          combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list2, is_checkable=False)
 
         self._insertLayerChooseCheckBox3(label="Selezionare la banda per il canale blu",
                                          combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list3, is_checkable=False)
 
         self._insertSecondSingleInput(5)
         STEMUtils.addLayerToComboBox(self.BaseInput2, 1)
         self._insertLayerChooseCheckBox4(label="Selezionare la banda con risoluzione migliore",
                                          combo=False, pos=6)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list4, is_checkable=False)
 
         methods = ['brovey', 'ihs', 'pca']
         self._insertMethod(methods, "Seleziona tipo di Pansharpening", 0)
