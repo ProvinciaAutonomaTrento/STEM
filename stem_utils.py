@@ -539,10 +539,8 @@ class STEMUtils:
             shutil.rmtree(newdir)
             STEMUtils.removeFiles(newdir)
         else:
-            try:
-                gs.export_grass(tempout, output, typ, remove, forced_output = forced_output)
-            except Exception as e:
-                print 'gs.export_grass error:', e
+            gs.export_grass(tempout, output, typ, remove, forced_output = forced_output)
+
         STEMUtils.removeFiles(original_dir)
 
     @staticmethod
