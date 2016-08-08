@@ -749,24 +749,26 @@ class stemLAS():
                 self._run_command(command)
         return command
 
-    def bosco(self, inp, out):
+    def bosco(self, inp, out, h_sterpaglia = 1, cell_size = 4, thickness_min = None, R2_min_perc = None, delta_R = None):
         import os
         import sys
         import numpy as np
         from laspy.file import File
         
-        import layers
+        import layers as ls
         import typess
+        
+        h_sterpaglia = h_sterpaglia if h_sterpaglia is not None else 1
+        cell_size = cell_size if cell_size is not None else 4
+        
+        layers = ls.LayersComputation()
+        layers.initialize(h_sterpaglia, cell_size, thickness_min, R2_min_perc, delta_R)
         
         # -------------------------------------------------------------------------------- 
         # --------------------------- Vegetation Classifier --------------------------- 
         # -------------------------------------------------------------------------------- 
         # Coded by Lake Ishikawa
         # Base on algorithms published by G. Serafini and G. Webber
-        
-        # Define global parameters to use
-        h_sterpaglia = 1    # Points below this height will be considered "ground"
-        cell_size = 4        # Define the size of the square to divide the dataset into for classification (same squares will share same class)
         
         # Read input file
         inFile = File(inp, mode = "r")
@@ -871,7 +873,7 @@ class stemLAS():
         os.system(exe_string)
 
     def zonal_statistics(self, inlas, invect, output, stats, overwrite=False,
-                         ogrdriver='ESRI Shapefile'):
+                         ogrdriver='ESRI Shapefile', dimension='Z'):
         """Calculate statistics of point cloud heigths for each polygon in
         invect
 
@@ -889,7 +891,7 @@ class stemLAS():
                       'p50': np.percentile, 'p60': np.percentile,
                       'p70': np.percentile, 'p80': np.percentile,
                       'p90': np.percentile, 'c2m': number_return,
-                      'cmean': number_return}
+                      'cmean': number_return, 'median': np.median}
         vect = infoOGR()
         vect.initialize(invect)
         if vect.getType() not in [ogr.wkbPolygon, ogr.wkbPolygon25D,
@@ -949,7 +951,7 @@ class stemLAS():
             zs = []
             with open(output_file) as csvfile:
                 reader = csv.DictReader(csvfile)
-                zs = [float(row['Z']) for row in reader]
+                zs = [float(row[dimension]) for row in reader]
                 
 #             xml = read_file(self.pdalxml)            
 #             pipe = libpdalpython.PyPipeline(xml)                     
@@ -958,7 +960,7 @@ class stemLAS():
 #             zs = map(lambda x: x[2], data)
             if len(zs) != 0:
                 for s in stats:
-                    if s in ['hcv', 'max', 'mean']:
+                    if s in ['hcv', 'max', 'mean', 'median']:
                         val = statistics[s](zs)
                     elif s == 'c2m':
                         val = statistics[s](np.asarray(zs), 2)

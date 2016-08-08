@@ -42,7 +42,13 @@ class STEMToolsDialog(BaseDialog):
         self.iface = iface
 
         self._insertFileInput()
-
+        
+        self._insertFirstLineEdit('Altezza arbusti', 0)
+        self._insertSecondLineEdit('Dimensione celle', 1)
+        self._insertThirdLineEdit('Min thickness', 2)
+        self._insertFourthLineEdit('R2 min perc', 3)
+        self._insertFifthLineEdit('Delta R', 4)
+        
         self.QGISextent.hide()
         self.AddLayerToCanvas.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
@@ -61,6 +67,13 @@ class STEMToolsDialog(BaseDialog):
             source = str(self.TextIn.text())
             out = str(self.TextOut.text())
             local = self.LocalCheck.isChecked()
+            
+            altezza_arbusti = self.Linedit.text.strip() if self.Linedit.text.strip() else None
+            dimensione_celle = self.Linedit2.text.strip() if self.Linedit2.text.strip() else None
+            min_thickness = self.Linedit3.text.strip() if self.Linedit3.text.strip() else None
+            R2_min_perch = self.Linedit4.text.strip() if self.Linedit4.text.strip() else None
+            delta_R = self.Linedit5.text.strip() if self.Linedit5.text.strip() else None
+            
             if local:
                 las = stemLAS()
             else:
@@ -72,7 +85,13 @@ class STEMToolsDialog(BaseDialog):
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
             las.initialize()
-            las.bosco(source, out)
+            las.bosco(source, 
+                      out, 
+                      altezza_arbusti,
+                      dimensione_celle,
+                      min_thickness,
+                      R2_min_perch,
+                      delta_R)
             
             if not local:
                 las._pyroRelease()

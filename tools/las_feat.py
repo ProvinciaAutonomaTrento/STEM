@@ -39,20 +39,23 @@ from pyro_stem import LAS_PORT
 from PyQt4.QtCore import Qt
 
 
-STATS = {'max': "Valore massimo altezza punti", 'mean': "Altezza media punti",
-         'hcv': "Coefficiente di variazione altezza punti",
-         'p10': "10mo percentile altezze punti",
-         'p20': "20mo percentile altezze punti",
-         'p30': "30mo percentile altezze punti",
-         'p40': "40mo percentile altezze punti",
-         'p50': "50mo percentile altezze punti",
-         'p60': "60mo percentile altezze punti",
-         'p70': "70mo percentile altezze punti",
-         'p80': "80mo percentile altezze punti",
-         'p90': "90mo percentile altezze punti",
+STATS = {'max': "Valore massimo della dimensione selezionata",
+         'mean': "Altezza media della dimensione selezionata", 
+         'median': "Altezza mediana della dimensione selezionata",
+         'hcv': "Coefficiente di variazione della dimensione selezionata",
+         'p10': "10mo percentile della dimensione selezionata",
+         'p20': "20mo percentile della dimensione selezionata",
+         'p30': "30mo percentile della dimensione selezionata",
+         'p40': "40mo percentile della dimensione selezionata",
+         'p50': "50mo percentile della dimensione selezionata",
+         'p60': "60mo percentile della dimensione selezionata",
+         'p70': "70mo percentile della dimensione selezionata",
+         'p80': "80mo percentile della dimensione selezionata",
+         'p90': "90mo percentile della dimensione selezionata",
          'c2m': "Numero ritorni sopra 2 metri diviso il totale dei ritorni",
-         'cmean': "Numero ritorni sopra l'altezza media diviso il totale dei ritorni"}
+         'cmean': "Numero ritorni sopra la media della dimensione selezionata diviso il totale dei ritorni"}
 
+DIMENSIONS = ["Z","X","Y","Intensity","ReturnNumber","NumberOfReturns","ScanDirectionFlag","EdgeOfFlightLine","Classification","ScanAngleRank","UserData","PointSourceId","GpsTime","Red","Green","Blue"]
 
 class STEMToolsDialog(BaseDialog):
 
@@ -68,7 +71,9 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(label="Seleziona le statistiche da calcolare",
                                   posnum=0, combo=True)
         self.BaseInputCombo.addItems(STATS.values())
-
+        self._insertSecondCombobox(label="Seleziona la dimensione",
+                                   posnum=1)
+        self.BaseInputCombo2.addItems(DIMENSIONS)
         self.helpui.fillfromUrl(self.SphinxUrl())
 
         STEMSettings.restoreWidgetsValue(self, self.toolName)
@@ -106,6 +111,7 @@ class STEMToolsDialog(BaseDialog):
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
             out = str(self.TextOut.text())
+            dimension = self.BaseInputCombo2.currentText
             if local:
                 las = stemLAS()
             else:
@@ -118,7 +124,7 @@ class STEMToolsDialog(BaseDialog):
                                                                    port=LAS_PORT,
                                                                    name=LASPYROOBJNAME))
             stats = self._selectedStats()
-            las.zonal_statistics(source, invectsource, out, stats, self.overwrite)
+            las.zonal_statistics(source, invectsource, out, stats, self.overwrite, dimension=dimension)
             STEMMessageHandler.success("{ou} file created".format(ou=self.TextOut.text()))
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'vector')

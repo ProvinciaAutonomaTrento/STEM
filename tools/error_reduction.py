@@ -54,7 +54,7 @@ class STEMToolsDialog(BaseDialog):
         self._insertFirstCombobox(label, 1, items)
         self.BaseInputCombo.currentIndexChanged.connect(self.operatorChanged)
 
-        self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari"
+        self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari (in pixel)"
         self.lf = "Inserire la dimensione minima da tenere in considerazione"
         self._insertFirstLineEdit(self.ln, 2)
 

@@ -60,7 +60,7 @@ class STEMToolsDialog(BaseDialog):
         lm = "Selezionare il metodo per il neighbors"
         self._insertMethod(methods, lm, 2)
 
-        self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari"
+        self.ln = "Dimensione del Neighborhood, dev'essere un numero dispari (in pixel)"
         self.lf = "Numero di ripetizioni del filtro"
         self._insertFirstLineEdit(self.ln, 3)
 
