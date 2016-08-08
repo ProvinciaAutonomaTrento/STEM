@@ -574,11 +574,11 @@ class STEMToolsDialog(BaseDialog):
             else:
                 STEMMessageHandler.success("Esecuzione completata")
                 
-            #STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
+            STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
             if not self.LocalCheck.isChecked():
                 mltb._pyroRelease()
         except:
-            #STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
+            STEMUtils.removeFiles(home, "{pr}*".format(pr=prefcsv))
             if not self.LocalCheck.isChecked():
                 mltb._pyroRelease()
             self.error = traceback.format_exc()
