@@ -261,7 +261,7 @@ class STEMToolsDialog(BaseDialog):
         }
         
         kernel = str(self.BaseInputCombo.currentText())
-        params = {'probability': True}       
+        params = {}
         params['kernel'] = kernel_name[kernel]
         name = 'SVR_k{}'.format(params['kernel'])
         
