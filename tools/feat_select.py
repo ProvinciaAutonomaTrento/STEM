@@ -45,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
         BaseDialog.__init__(self, name, iface.mainWindow(), suffix='.txt')
         self.toolName = name
         self.iface = iface
-        self._insertSingleInput(label='Dati di input vettoriale')
+        self._insertSingleinput(label='Dati di input vettoriale di training')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self.labelcol = "Seleziona la colonna con indicazione della classe"
         self._insertLayerChoose(pos=1)

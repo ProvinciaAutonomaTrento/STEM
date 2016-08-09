@@ -51,7 +51,7 @@ class STEMToolsDialog(BaseDialog):
         self.toolName = name
         self.iface = iface
 
-        self._insertSingleInput(label='Dati di input vettoriale')
+        self._insertSingleinput(label='Dati di input vettoriale di training')
         STEMUtils.addLayerToComboBox(self.BaseInput, 0)
         self.labelcol = "Seleziona la colonna con indicazione del parametro da stimare"
         self._insertLayerChoose(pos=1)
@@ -71,13 +71,13 @@ class STEMToolsDialog(BaseDialog):
         self.lk = 'Selezionare il kernel da utilizzare'
         self._insertFirstCombobox(self.lk, 2, kernels)
         
-        self._insertFirstLineEdit(label="Inserire il parametro C", posnum=3)
-        self._insertSecondLineEdit(label="Inserire il valore di epsilon",
+        self._insertFirstLineEdit(label="Inserire il parametro C (opzionale)", posnum=3)
+        self._insertSecondLineEdit(label="Inserire il valore di epsilon (opzionale)",
                                    posnum=4)
-        self._insertFourthLineEdit(label="Inserire il valore di gamma",
+        self._insertFourthLineEdit(label="Inserire il valore di gamma (opzionale)",
                                    posnum=5)
-        self._insertFifthLineEdit(label="Inserire il valore di r", posnum=6)
-        self._insertSixthLineEdit(label="Inserire il valore del grado del polinomio", posnum=7)
+        self._insertFifthLineEdit(label="Inserire il valore di r (opzionale)", posnum=6)
+        self._insertSixthLineEdit(label="Inserire il valore del grado del polinomio (opzionale)", posnum=7)
 
         trasf = ['nessuna', 'logaritmo', 'radice quadrata']
 
