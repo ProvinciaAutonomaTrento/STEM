@@ -68,11 +68,11 @@ class STEMToolsDialog(BaseDialog):
             out = str(self.TextOut.text())
             local = self.LocalCheck.isChecked()
             
-            altezza_arbusti = self.Linedit.text.strip() if self.Linedit.text.strip() else None
-            dimensione_celle = self.Linedit2.text.strip() if self.Linedit2.text.strip() else None
-            min_thickness = self.Linedit3.text.strip() if self.Linedit3.text.strip() else None
-            R2_min_perch = self.Linedit4.text.strip() if self.Linedit4.text.strip() else None
-            delta_R = self.Linedit5.text.strip() if self.Linedit5.text.strip() else None
+            altezza_arbusti = self.Linedit.text().strip() if self.Linedit.text().strip() else None
+            dimensione_celle = self.Linedit2.text().strip() if self.Linedit2.text().strip() else None
+            min_thickness = self.Linedit3.text().strip() if self.Linedit3.text().strip() else None
+            R2_min_perch = self.Linedit4.text().strip() if self.Linedit4.text().strip() else None
+            delta_R = self.Linedit5.text().strip() if self.Linedit5.text().strip() else None
             
             if local:
                 las = stemLAS()
