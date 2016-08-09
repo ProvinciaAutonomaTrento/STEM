@@ -26,19 +26,19 @@ class LayersComputation():
         #print("---Number of points in the tile:" + str(len(points)))
 
         # First, divide the points in 1 or 2 clusters (considering cluster's point percentage must be >15%)
-        clusters = clusterify(points)
+        clusters = self.clusterify(points)
 
         # If there are 2 layers, check minum distance and merge if needed
         if len(clusters) == 2:
-            mergeLayers(clusters)
+            self.mergeLayers(clusters)
 
         # One layer check (may return to 2 layers)
         if len(clusters) == 1:
-            splitLayers(clusters, max_return_num)
+            self.splitLayers(clusters, max_return_num)
 
         # Merge again if needed
         if len(clusters) == 2:
-            mergeLayers(clusters)
+            self.mergeLayers(clusters)
 
         return clusters
 
