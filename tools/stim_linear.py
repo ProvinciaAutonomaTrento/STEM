@@ -493,6 +493,11 @@ class STEMToolsDialog(BaseDialog):
                 map_vector = str(self.BaseInputCombo4.currentText())
                 if map_vector:
                     map_vec_source = STEMUtils.getLayersSource(map_vector)
+                    map_cut, map_cutsource, map_mask = self.cutInput(map_vector, map_vec_source,
+                                                                     'vector', local=self.LocalCheck.isChecked())
+                    if map_cut:
+                        map_vector = map_cut
+                        map_vec_source = map_cutsource
                     finalinp = map_vec_source
                 else:
                     finalinp = None
