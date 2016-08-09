@@ -31,6 +31,7 @@ import traceback
 from gdal_stem import file_info
 import types
 import sys
+import os
 
 
 class STEMToolsDialog(BaseDialog):
@@ -99,7 +100,15 @@ class STEMToolsDialog(BaseDialog):
                     mask = STEMUtils.pathClientWinToServerLinux(mask)
                 gs.check_mask(mask, inverse_mask())
 
-            fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
+            if local:
+                fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()))
+            else:
+                import uuid
+                unique_id = str(uuid.uuid4()).replace('-', '_')
+                fname = STEMUtils.writeFile(str(self.TextArea.toPlainText()),
+                                            name = str(os.path.join(STEMUtils.get_temp_dir(), unique_id)))
+                fname = STEMUtils.pathClientWinToServerLinux(fname)
+                
             startcom = ['r.reclass', 'rules={fn}'.format(fn=fname)]
 
             if len(nlayerchoose) > 1:
