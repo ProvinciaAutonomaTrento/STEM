@@ -142,7 +142,7 @@ class STEMToolsDialog(BaseDialog):
         self.BaseInputCombo5.setObjectName("BaseInputCombo5")
         self.horizontalLayout_combo5.addWidget(self.BaseInputCombo5)
         
-        self.verticalLayout_output.insertLayout(5, self.horizontalLayout_combo5)
+        self.verticalLayout_input.insertLayout(2, self.horizontalLayout_combo5)
         self.LabelCombo5.setText(self.tr("", "Vettoriale di mappa"))
         STEMUtils.addLayerToComboBox(self.BaseInputCombo5, 0, empty=True)
         
