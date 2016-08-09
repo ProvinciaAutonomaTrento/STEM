@@ -84,7 +84,7 @@ class LayersComputation():
 
     ## Check that layers have a minimum distance and if not, merge
     def mergeLayers(self, clusters):
-        if clusters[0].minHeight - clusters[1].maxHeight < self.self.delta_h_min:
+        if clusters[0].minHeight - clusters[1].maxHeight < self.delta_h_min:
             # Reduce to 1 layer
             clusters[0].append(clusters[1])
             clusters.remove(clusters[1])
