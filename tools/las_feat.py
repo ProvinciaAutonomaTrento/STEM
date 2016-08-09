@@ -111,7 +111,7 @@ class STEMToolsDialog(BaseDialog):
             invect = str(self.BaseInput.currentText())
             invectsource = STEMUtils.getLayersSource(invect)
             out = str(self.TextOut.text())
-            dimension = self.BaseInputCombo2.currentText
+            dimension = self.BaseInputCombo2.currentText()
             if local:
                 las = stemLAS()
             else:
