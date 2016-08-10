@@ -123,6 +123,21 @@ def filter(ins,outs):
     return True
 """
 
+def mode(a, axis=0):
+    scores = np.unique(np.ravel(a))       # get ALL unique values
+    testshape = list(a.shape)
+    testshape[axis] = 1
+    oldmostfreq = np.zeros(testshape)
+    oldcounts = np.zeros(testshape)
+
+    for score in scores:
+        template = (a == score)
+        counts = np.expand_dims(np.sum(template, axis),axis)
+        mostfrequent = np.where(counts > oldcounts, score, oldmostfreq)
+        oldcounts = np.maximum(counts, oldcounts)
+        oldmostfreq = mostfrequent
+
+    return mostfrequent, oldcounts
 
 def number_return(inps, value):
     """Count the number of inps major than value and after divide them for
@@ -891,7 +906,7 @@ class stemLAS():
                       'p50': np.percentile, 'p60': np.percentile,
                       'p70': np.percentile, 'p80': np.percentile,
                       'p90': np.percentile, 'c2m': number_return,
-                      'cmean': number_return, 'median': np.median}
+                      'cmean': number_return, 'mode': mode}
         vect = infoOGR()
         vect.initialize(invect)
         if vect.getType() not in [ogr.wkbPolygon, ogr.wkbPolygon25D,

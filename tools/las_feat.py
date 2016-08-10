@@ -41,7 +41,7 @@ from PyQt4.QtCore import Qt
 
 STATS = {'max': "Valore massimo della dimensione selezionata",
          'mean': "Media della dimensione selezionata", 
-         'median': "Mediana della dimensione selezionata",
+         'mode': "Moda della dimensione selezionata",
          'hcv': "Coefficiente di variazione della dimensione selezionata",
          'p10': "10mo percentile della dimensione selezionata",
          'p20': "20mo percentile della dimensione selezionata",
