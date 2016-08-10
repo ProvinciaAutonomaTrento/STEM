@@ -136,7 +136,7 @@ class TreesTools:
     def position_alberi(self, inrast, outvect, minsearch, maxsearch, minheigh,
                         ogrdriver='ESRI Shapefile', overwrite=False):
         """Function to calculate the position of three from CHM
-    
+
         """
         try:
             import osgeo.gdal_array as gdal_array
@@ -201,8 +201,8 @@ class TreesTools:
         shapeData.Destroy()
         if not output:
             raise 'No points found in the give CHM'
-    
-    
+
+
     def definizione_chiome(self, inrast, invect, outvect, minsearch, maxsearch, minheigh,
                            tresh_crown=0.65, tresh_seed=0.65,
                            ogrdriver='ESRI Shapefile', overwrite=False):
@@ -220,7 +220,7 @@ class TreesTools:
         Hmax = data.max()
         stepsSearchFilSize = numpy.arange(minsearch, maxsearch + 2)
         thSearchFilSize = numpy.linspace(minheigh, Hmax, len(stepsSearchFilSize))
-        
+
         # define parameters for the new raster
         xcount = int((fi.lrx - fi.ulx) / fi.geotransform[1])
         ycount = int((fi.uly - fi.lry) / fi.geotransform[1])
@@ -229,17 +229,17 @@ class TreesTools:
                                    fi.geotransform[5]))
         shape_datasource = ogr.Open(invect)
         shape_layer = shape_datasource.GetLayer()
-        
+
         # create for target raster the same projection as for the value raster
         raster_srs = osr.SpatialReference()
         raster_srs.ImportFromWkt(fi.s_fh.GetProjectionRef())
         target_ds.SetProjection(raster_srs.ExportToWkt())
-        
+
         # rasterize zone polygon to raster
         gdal.RasterizeLayer(target_ds, [1], shape_layer, None, None, [1],
                             ['ATTRIBUTE=id', 'ALL_TOUCHED=TRUE'])
         trees_indices = gdal_array.DatasetReadAsArray(target_ds)
-        
+
         target_ds = None
         it = True
         fieldIdName = 'id'
@@ -317,18 +317,17 @@ class TreesTools:
         for fid, vals in coordinate.iteritems():
             outFeature = ogr.Feature(layerDefinition)
             hull = vals[0].ConvexHull()
-    #         if int(fid) == 161:
-    #             with open(r"C:\dati_stem\NullShapeBeforeSegmentation.txt", "w") as f:
-    #                 f.write("{}".format(hull))
             hull.Segmentize(0.1)
-    #         if int(fid) == 161:
-    #             with open(r"C:\dati_stem\NullShape.txt", "w") as f:
-    #                 f.write("{}".format(hull))
-            outFeature.SetField(fieldIdName, int(fid))
-            outFeature.SetField(fieldHeightName, float(vals[1]))
-            outFeature.SetGeometry(hull)
-            layer.CreateFeature(outFeature)
-            outFeature.Destroy()
+
+            # check geometries type and remove not polygonal one
+            if hull.GetGeometryType() in [ogr.wkbPolygon25D, ogr.wkbPolygon,
+                                          ogr.wkbMultiPolygonM, ogr.wkbMultiPolygonZM]:
+                outFeature.SetField(fieldIdName, int(fid))
+                outFeature.SetField(fieldHeightName, float(vals[1]))
+                outFeature.SetGeometry(hull)
+                layer.CreateFeature(outFeature)
+                outFeature.Destroy()
+        import ipdb; ipdb.set_trace()
         shapeData.Destroy()
 
 
