@@ -48,7 +48,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertLayerChoose()
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
 
         items = ['6s']
         label = "Seleziona l'algortimo da utilizzare"
@@ -105,6 +105,10 @@ class STEMToolsDialog(BaseDialog):
 
             outnames.append(tempout)
             para = self.TextIn.text().strip()
+            
+            if not local and sys.platform == 'win32':
+                para = STEMUtils.pathClientWinToServerLinux(para)
+            
             if not para:
                 STEMMessageHandler.error("Selezionare il file con i parametri s6")
                 return
