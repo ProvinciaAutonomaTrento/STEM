@@ -35,6 +35,8 @@ import glob
 import os
 import sys
 
+from functools import partial
+from PyQt4.QtCore import SIGNAL
 
 def basename(name):
     suffix = ['.tif', '.TIF']
@@ -46,7 +48,7 @@ def basename(name):
 
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
-        BaseDialog.__init__(self, name, iface.mainWindow())
+        BaseDialog.__init__(self, name, iface.mainWindow(), suffix="")
         self.toolName = name
         self.iface = iface
 
@@ -74,6 +76,7 @@ class STEMToolsDialog(BaseDialog):
         self.Linedit4.setEnabled(False)
 
         self.LabelOut.setText('Selezionare prefisso per salvare i risultati')
+        
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
     
