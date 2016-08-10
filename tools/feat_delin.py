@@ -61,7 +61,6 @@ class STEMToolsDialog(BaseDialog):
         self._insertFifthLineEdit(min_alb, 4)
         self.Linedit5.setText('0.65')
 
-        self.QGISextent.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -77,8 +76,24 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
+            
+            rasttyp = STEMUtils.checkMultiRaster(source)
+            cut, cutsource, mask = self.cutInput(name, source, rasttyp, local=self.LocalCheck.isChecked())
+            
+            if cut:
+                name = cut
+                source = cutsource
+            
             name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
+            
+            cut, cutsource, mask = self.cutInput(name2, source2,
+                                     'vector', local=self.LocalCheck.isChecked())
+            
+            if cut:
+                name2 = cut
+                source2 = cutsource
+            
             out = str(self.TextOut.text())
             if self.LocalCheck.isChecked():
                 trees_tools = TreesTools()

@@ -57,7 +57,6 @@ class STEMToolsDialog(BaseDialog):
 
         min_height = "Valore minimo dell'altezza degli alberi (metri)"
         self._insertThirdLineEdit(min_height, 2)
-        self.QGISextent.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
@@ -66,6 +65,13 @@ class STEMToolsDialog(BaseDialog):
         try:
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
+            rasttyp = STEMUtils.checkMultiRaster(source)
+            cut, cutsource, mask = self.cutInput(name, source, rasttyp, local=self.LocalCheck.isChecked())
+            
+            if cut:
+                name = cut
+                source = cutsource
+            
             out = str(self.TextOut.text())
             
             if self.LocalCheck.isChecked():
