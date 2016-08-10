@@ -118,7 +118,7 @@ class STEMToolsDialog(BaseDialog):
             if self.checkbox.isChecked():
                 com.append('-r')
             if self.checkbox2.isChecked():
-                com.append('-r')
+                com.append('-b')
             if self.checkbox3.isChecked():
                 com.append('-a')
             coms.append(com)

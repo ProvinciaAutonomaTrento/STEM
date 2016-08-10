@@ -92,6 +92,7 @@ class STEMToolsDialog(BaseDialog):
                 self.error = "Geometria non supportata, creare i centroidi con " \
                         "lo strumento dedicato di QGIS"
                 STEMMessageHandler.error(self.error)
+                return
             else:
                 self.error = "Geometria non supportata"
                 STEMMessageHandler.error(self.error)
