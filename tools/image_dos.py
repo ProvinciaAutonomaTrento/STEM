@@ -139,6 +139,8 @@ class STEMToolsDialog(BaseDialog):
                 tempouts.append(tempout)
                 if not local and sys.platform == 'win32':
                     source = STEMUtils.pathClientWinToServerLinux(sources[sou])
+                else:
+                    source = sources[sou]
                 gs.import_grass(source, tempin, 'raster', [1])
             com = ['i.landsat.toar', 'input={name}'.format(name=pref),
                    'output={outname}'.format(outname='_'.join([pref, suffix])),
