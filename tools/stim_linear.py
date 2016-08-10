@@ -348,7 +348,7 @@ class STEMToolsDialog(BaseDialog):
                             transform=trasf, untransform=utrasf)
 
             nodata = -9999
-            overwrite = False
+            overwrite = True
             # ------------------------------------------------------------
             # Extract training samples
 
@@ -406,9 +406,8 @@ class STEMToolsDialog(BaseDialog):
                     Xtest, ytest = mltb.extract_test(csv_file=temp_testpath,
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
-                    f = open(testpath, "w")
-                    np.savetxt(f, dt, delimiter=SEP, header="# last column is the training.")
-                    f.close()
+                    with open(testpath, "w") as f:
+                        np.savetxt(f, dt, delimiter=SEP, header="# last column is the training.")
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)
