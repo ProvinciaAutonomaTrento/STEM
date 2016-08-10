@@ -43,11 +43,11 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertFileInput()
         
-        self._insertFirstLineEdit('Altezza arbusti', 0)
-        self._insertSecondLineEdit('Dimensione celle', 1)
-        self._insertThirdLineEdit('Min thickness', 2)
-        self._insertFourthLineEdit('R2 min perc', 3)
-        self._insertFifthLineEdit('Delta R', 4)
+        self._insertFirstLineEdit('Altezza arbusti (opzionale, default 1)', 0)
+        self._insertSecondLineEdit('Dimensione celle (opzionale, default 4)', 1)
+        self._insertThirdLineEdit('Min thickness (opzionale, default 9)', 2)
+        self._insertFourthLineEdit('R2 min perc (opzionale, default 0.10)', 3)
+        self._insertFifthLineEdit('Delta R (opzionale, default 3)', 4)
         
         self.QGISextent.hide()
         self.AddLayerToCanvas.hide()
@@ -68,11 +68,11 @@ class STEMToolsDialog(BaseDialog):
             out = str(self.TextOut.text())
             local = self.LocalCheck.isChecked()
             
-            altezza_arbusti = self.Linedit.text().strip() if self.Linedit.text().strip() else None
-            dimensione_celle = self.Linedit2.text().strip() if self.Linedit2.text().strip() else None
-            min_thickness = self.Linedit3.text().strip() if self.Linedit3.text().strip() else None
-            R2_min_perch = self.Linedit4.text().strip() if self.Linedit4.text().strip() else None
-            delta_R = self.Linedit5.text().strip() if self.Linedit5.text().strip() else None
+            altezza_arbusti = int(self.Linedit.text().strip()) if self.Linedit.text().strip() else None
+            dimensione_celle = int(self.Linedit2.text().strip()) if self.Linedit2.text().strip() else None
+            min_thickness = int(self.Linedit3.text().strip()) if self.Linedit3.text().strip() else None
+            R2_min_perch = float(self.Linedit4.text().strip()) if self.Linedit4.text().strip() else None
+            delta_R = int(self.Linedit5.text().strip()) if self.Linedit5.text().strip() else None
             
             if local:
                 las = stemLAS()

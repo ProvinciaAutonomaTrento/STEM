@@ -749,7 +749,7 @@ class stemLAS():
                 self._run_command(command)
         return command
 
-    def bosco(self, inp, out, h_sterpaglia = 1, cell_size = 4, thickness_min = None, R2_min_perc = None, delta_R = None):
+    def bosco(self, inp, out, h_sterpaglia = None, cell_size = None, thickness_min = None, R2_min_perc = None, delta_R = None):
         import os
         import sys
         import numpy as np
@@ -762,7 +762,7 @@ class stemLAS():
         cell_size = cell_size if cell_size is not None else 4
         
         layers = ls.LayersComputation()
-        layers.initialize(h_sterpaglia, cell_size, thickness_min, R2_min_perc, delta_R)
+        layers.initialize(thickness_min = thickness_min, R2_min_perc = R2_min_perc, delta_R = delta_R)
         
         # -------------------------------------------------------------------------------- 
         # --------------------------- Vegetation Classifier --------------------------- 
