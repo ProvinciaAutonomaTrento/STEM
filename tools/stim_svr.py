@@ -592,9 +592,9 @@ class STEMToolsDialog(BaseDialog):
 
                 if not self.LocalCheck.isChecked():
                     temp_out = STEMUtils.pathClientWinToServerLinux(out)
+                    finalinp = STEMUtils.pathClientWinToServerLinux(finalinp) if finalinp is not None else None
                 else:
                     temp_out = out
-                    finalinp = STEMUtils.pathClientwinToServerLinux(finalinp)
                 mltb.execute(input_file=finalinp, best=best, transform=trasf,
                              untransform=utrasf, output_file=temp_out,
                              field=fname)
