@@ -975,7 +975,7 @@ class stemLAS():
 #             zs = map(lambda x: x[2], data)
             if len(zs) != 0:
                 for s in stats:
-                    if s in ['hcv', 'max', 'mean', 'median']:
+                    if s in ['hcv', 'max', 'mean', 'mode']:
                         val = statistics[s](zs)
                     elif s == 'c2m':
                         val = statistics[s](np.asarray(zs), 2)
