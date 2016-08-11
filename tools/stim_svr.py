@@ -594,6 +594,7 @@ class STEMToolsDialog(BaseDialog):
                     temp_out = STEMUtils.pathClientWinToServerLinux(out)
                 else:
                     temp_out = out
+                    finalinp = STEMUtils.pathClientwinToServerLinux(finalinp)
                 mltb.execute(input_file=finalinp, best=best, transform=trasf,
                              untransform=utrasf, output_file=temp_out,
                              field=fname)
