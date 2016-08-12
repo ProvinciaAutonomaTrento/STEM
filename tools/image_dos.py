@@ -121,7 +121,7 @@ class STEMToolsDialog(BaseDialog):
             gs = None
             coms = []
             tempouts = []
-            outdir = self.TextOut.text()
+            outdir = str(self.TextOut.text())
             metfile = str(self.TextIn.text())
             sourcedir = str(self.TextDir.text())
             pref = str(self.Linedit.text())
