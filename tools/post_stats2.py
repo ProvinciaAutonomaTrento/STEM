@@ -45,7 +45,7 @@ class STEMToolsDialog(BaseDialog):
 
         self._insertLayerChooseCheckBox(label="Selezionare la banda su cui "
                                         "calcolare le statistice", combo=False)
-        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list)
+        STEMUtils.addLayersNumber(self.BaseInput, self.layer_list, is_checkable=False)
         self.BaseInput.currentIndexChanged.connect(self.indexChanged)
 
         self._insertSecondSingleInput(pos=2, label="Raster delle aree su cui "
@@ -55,7 +55,7 @@ class STEMToolsDialog(BaseDialog):
                                                "aree da utilizzare",
                                          combo=False)
         self.BaseInput2.currentIndexChanged.connect(self.indexChanged2)
-        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2)
+        STEMUtils.addLayersNumber(self.BaseInput2, self.layer_list2, is_checkable=False)
         self.AddLayerToCanvas.hide()
 
 #        self._insertLayerChooseCheckBox()
