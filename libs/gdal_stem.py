@@ -327,7 +327,7 @@ class TreesTools:
                 outFeature.SetGeometry(hull)
                 layer.CreateFeature(outFeature)
                 outFeature.Destroy()
-        import ipdb; ipdb.set_trace()
+        #import ipdb; ipdb.set_trace()
         shapeData.Destroy()
 
 

@@ -474,7 +474,7 @@ class STEMToolsDialog(BaseDialog):
                                                      nodata=nodata)
                     dt = np.concatenate((Xtest.T, ytest[None, :]), axis=0).T
                     with open(testpath, "w") as f:
-                        p.savetxt(f, dt, delimiter=SEP, header="# last column is the training.")
+                        np.savetxt(f, dt, delimiter=SEP, header="# last column is the training.")
                 else:
                     log.debug('    Load from:')
                     log.debug('      - %s' % trnpath)
