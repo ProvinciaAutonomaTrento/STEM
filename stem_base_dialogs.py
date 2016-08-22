@@ -349,7 +349,7 @@ class BaseDialog(QDialog, baseDialog):
     
         e = [] if self.local_execution() else self.check_server_paths()
         if e:
-            errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• '+x for x in e]))
+            errors.append('I seguenti path non possono essere usati per elaborazioni remote:\n\n' + u'\n\n'.join([u'• {}'.format(x) for x in e]))
 
         e = self.check_number_of_folds()
         if e:
@@ -436,6 +436,7 @@ class BaseDialog(QDialog, baseDialog):
         paths = self.get_input_path_fields() + self.get_output_path_fields()
         if not self.TextOut.isHidden() and self.TextOut.isEnabled():
             paths.append(self.TextOut.text())
+        print('input :{}, output: {}, all: {}'.format(self.get_input_path_fields(), self.get_output_path_fields(), paths))
         errors = []
         for p in paths:
             if STEMUtils.pathClientWinToServerLinux(p, gui_warning=False) == p:

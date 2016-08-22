@@ -595,6 +595,7 @@ class STEMToolsDialog(BaseDialog):
                     finalinp = STEMUtils.pathClientWinToServerLinux(finalinp) if finalinp is not None else None
                 else:
                     temp_out = out
+                print('finalinp: '.format(finalinp))
                 mltb.execute(input_file=finalinp, best=best, transform=trasf,
                              untransform=utrasf, output_file=temp_out,
                              field=fname)
