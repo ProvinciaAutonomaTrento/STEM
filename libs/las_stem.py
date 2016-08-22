@@ -979,6 +979,7 @@ class stemLAS():
                         val = statistics[s](zs)
                     elif s == 'mode':
                         val, _ = mode(np.asarray(zs))
+                        val = val[0] #we estract the element from the array
                     elif s == 'c2m':
                         val = statistics[s](np.asarray(zs), 2)
                     elif s == 'cmean':
