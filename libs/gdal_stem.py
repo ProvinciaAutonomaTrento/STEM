@@ -319,7 +319,10 @@ class TreesTools:
             hull.Segmentize(0.1)
 
             # check geometries type and remove not polygonal one 
-            if hull.GetGeometryType() in [ogr.wkbPolygon25D, ogr.wkbPolygon]:
+            if hull.GetGeometryType() in [ogr.wkbPolygon25D,
+                                          ogr.wkbPolygon,
+                                          ogr.wkbMultiPolygonM,
+                                          ogr.wkbMultiPolygonZM]:
                 outFeature.SetField(fieldIdName, int(fid))
                 outFeature.SetField(fieldHeightName, float(vals[1]))
                 outFeature.SetGeometry(hull)
