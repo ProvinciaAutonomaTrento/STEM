@@ -280,7 +280,10 @@ class STEMToolsDialog(BaseDialog):
         prima di invocare onRunLocal().
         """
         optvect = str(self.BaseInputOpt.currentText())
-        return [STEMUtils.getLayersSource(optvect)]
+        if optvect:
+            return [STEMUtils.getLayersSource(optvect)]
+        else:
+            return []
 
     def check_form_fields(self):
         """
