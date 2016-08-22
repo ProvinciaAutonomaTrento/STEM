@@ -99,7 +99,6 @@ CODES = {'ab': {'a': 1.62898357199892E-04, 'b': 1.70656012564636,
          'ps': {'a': 1.01825735269425E-04, 'b': 1.91818421016015,
                 'c': 0.830164143958094, 'd0': 3.69465, 'mh': 34.1}}
 
-
 def formula_vol(a, b, c, d0, d, h):
     """"""
     power1 = numpy.power(d - d0, b)
@@ -319,9 +318,8 @@ class TreesTools:
             hull = vals[0].ConvexHull()
             hull.Segmentize(0.1)
 
-            # check geometries type and remove not polygonal one
-            if hull.GetGeometryType() in [ogr.wkbPolygon25D, ogr.wkbPolygon,
-                                          ogr.wkbMultiPolygonM, ogr.wkbMultiPolygonZM]:
+            # check geometries type and remove not polygonal one 
+            if hull.GetGeometryType() in [ogr.wkbPolygon25D, ogr.wkbPolygon]:
                 outFeature.SetField(fieldIdName, int(fid))
                 outFeature.SetField(fieldHeightName, float(vals[1]))
                 outFeature.SetGeometry(hull)
