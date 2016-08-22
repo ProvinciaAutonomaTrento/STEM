@@ -120,6 +120,8 @@ class STEMToolsDialog(BaseDialog):
                 zonesource = zonecutsource
 
             pid = tempin.split('_')[2]
+            if not local and sys.platform == 'win32':
+                zonesource = STEMUtils.pathClientWinToServerLinux(zonesource)
             zonetempin = 'stem_{name}_{pid}'.format(name=zonename, pid=pid)
             gs.import_grass(zonesource, zonetempin, typ, zonenlayerchoose)
 
