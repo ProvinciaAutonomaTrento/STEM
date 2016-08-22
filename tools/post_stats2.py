@@ -134,7 +134,7 @@ class STEMToolsDialog(BaseDialog):
                    'percentile={p}'.format(p=perc),
                    'zones={zon}'.format(zon=zonetempin)]
             if output:
-                com.append('output={name}'.format(name=self.TextOut.text()))
+                com.append('output={name}'.format(name=output))
             else:
                 STEMMessageHandler.error("Si prega di inserire il nome del "
                                          "file di output")
