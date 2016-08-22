@@ -106,9 +106,9 @@ class LayersComputation():
         ## Condition 2 - number of r2s
         if returns[1] <= len(clusters[0].points) * self.R2_min_perc: return
 
-        # Calculate r1 and r2 average
-        r1AvgHeight = returnsHeights[0] / returns[0]
-        r2AvgHeight = returnsHeights[1] / returns[1]
+        # Calculate r1 and r2 average (NOTA: se returns[i] e` zero, setto l'average a zero.
+        r1AvgHeight = returnsHeights[0] / returns[0] if returns[0] != 0 else 0
+        r2AvgHeight = returnsHeights[1] / returns[1] if returns[1] != 0 else 0
 
         ##Condition 3 - delta average return heights
         if r1AvgHeight - r2AvgHeight <= self.delta_R: return;
