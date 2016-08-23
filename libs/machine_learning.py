@@ -972,8 +972,12 @@ class MLToolBox(object):
 
                         outrep = "score_pvalue_{suf}".format(suf=checkshp(outpath[1]))
                         outf = open(os.path.join(outpath[0], outrep), 'w')
-                        outf.write("scores: {co}\n".format(co=self.fselector.scores_))
-                        outf.write("pvalues: {it}\n".format(it=self.fselector.pvalues_))
+                        scores = self.fselector.scores_.tolist()
+                        pvalues = self.fselector.pvalues_.tolist()
+                        cols_scores_map = ['{} = {}'.format(col_name, score) for col_name, score in zip(self.use_columns, scores)]
+                        cols_pvalues_map = ['{} = {}'.format(col_name, pvalue) for col_name, pvalue in zip(self.use_columns, pvalues)]
+                        outf.write("scores: {}\n".format('; '.join(cols_scores_map)))
+                        outf.write("pvalues: {}\n".format('; '.join(cols_pvalues_map)))
                         outf.close()
                     ##Xt = self.fselector.transform(Xt)
                 if self.fselector not in self._trans:
