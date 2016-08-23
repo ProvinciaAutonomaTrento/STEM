@@ -355,6 +355,8 @@ class BaseDialog(QDialog, baseDialog):
         if e:
             errors.append(e)
             
+        e = self.check_cell_size()
+            
         e = self.check_vettoriale_validazione()
         if e:
             errors.append(e)
@@ -374,6 +376,9 @@ class BaseDialog(QDialog, baseDialog):
                 self.error_detail()
         
         self.accept()
+
+    def check_cell_size(self):
+        return ""
 
     def check_vettoriale_validazione(self):
         return ""

@@ -54,6 +54,12 @@ class STEMToolsDialog(BaseDialog):
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
 
+    def check_cell_size(self):
+        dimensione_celle = int(self.Linedit2.text().strip()) if self.Linedit2.text().strip() else None
+        if dimensione_celle and dimensione_celle < 4:
+            return "Dimensione celle deve essere > 4."
+        return ""
+
     def show_(self):
         self.switchClippingMode()
         self.show_(self)
