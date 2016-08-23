@@ -45,7 +45,6 @@ def basename(name):
             return name.replace(suf, '')
     return None
 
-
 class STEMToolsDialog(BaseDialog):
     def __init__(self, iface, name):
         BaseDialog.__init__(self, name, iface.mainWindow(), suffix="")
@@ -136,16 +135,26 @@ class STEMToolsDialog(BaseDialog):
                 sources = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(files[0], local)
             for sou in range(len(sources)):
-                tempin = basename(files[sou])
-                tempout = "{pref}_{suf}{key}".format(pref=pref, suf=suffix,
-                                                     key=sou + 1)
-                tempouts.append(tempout)
+#                 tempin = basename(files[sou])
+                key = basename(files[sou]).split('_B')[-1]
+                tempin = '{}.{}'.format(pref, key)
+                if (key != 'QA'):
+                    # we don't output the quality assurance band
+                    tempout = "{pref}_{suf}{key}".format(pref=pref, suf=suffix,
+                                                         key=key)
+                    tempouts.append(tempout)
                 if not local and sys.platform == 'win32':
                     source = STEMUtils.pathClientWinToServerLinux(sources[sou])
                 else:
                     source = sources[sou]
                 gs.import_grass(source, tempin, 'raster', [1])
-            com = ['i.landsat.toar', 'input={name}'.format(name=pref),
+
+            if not local and sys.platform == 'win32':
+                metfile = STEMUtils.pathClientWinToServerLinux(metfile)
+            else:
+                metfile = metfile
+                                
+            com = ['i.landsat.toar', 'input={name}'.format(name=pref + '.'),
                    'output={outname}'.format(outname='_'.join([pref, suffix])),
                    'metfile={met}'.format(met=metfile),
                    'method={met}'.format(met=method)]
@@ -162,6 +171,8 @@ class STEMToolsDialog(BaseDialog):
                 out = "{di}_{name}.tif".format(di=outdir, name=tpo)
                 if not local and sys.platform == 'win32':
                     output = STEMUtils.pathClientWinToServerLinux(out, False)
+                else:
+                    output = out
                 STEMUtils.exportGRASS(gs, self.overwrite, output, tpo,
                                       'raster', remove=False)
                 if self.AddLayerToCanvas.isChecked():
