@@ -319,10 +319,14 @@ class TreesTools:
             hull.Segmentize(0.1)
 
             # check geometries type and remove not polygonal one 
+            # NOTE: in gdal 1.11 (the version we use, as documented in the instructions for the project)
+            #       we do not have ogr.wkbMultiPolygonM, ogr.wkbMultiPolygonZM
+#             if hull.GetGeometryType() in [ogr.wkbPolygon25D,
+#                                           ogr.wkbPolygon,
+#                                           ogr.wkbMultiPolygonM,
+#                                           ogr.wkbMultiPolygonZM]:
             if hull.GetGeometryType() in [ogr.wkbPolygon25D,
-                                          ogr.wkbPolygon,
-                                          ogr.wkbMultiPolygonM,
-                                          ogr.wkbMultiPolygonZM]:
+                                          ogr.wkbPolygon]:
                 outFeature.SetField(fieldIdName, int(fid))
                 outFeature.SetField(fieldHeightName, float(vals[1]))
                 outFeature.SetGeometry(hull)
