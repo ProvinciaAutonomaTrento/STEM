@@ -134,9 +134,8 @@ class STEMToolsDialog(BaseDialog):
                 files = cut
                 sources = cutsource
             tempin, tempout, gs = temporaryFilesGRASS(files[0], local)
-            for sou in range(len(sources)):
-#                 tempin = basename(files[sou])
-                key = basename(files[sou]).split('_B')[-1]
+            for sou in sources:
+                key = basename(sou).split('_B')[-1]
                 tempin = '{}.{}'.format(pref, key)
                 if (key != 'QA'):
                     # we don't output the quality assurance band
@@ -144,9 +143,9 @@ class STEMToolsDialog(BaseDialog):
                                                          key=key)
                     tempouts.append(tempout)
                 if not local and sys.platform == 'win32':
-                    source = STEMUtils.pathClientWinToServerLinux(sources[sou])
+                    source = STEMUtils.pathClientWinToServerLinux(sou)
                 else:
-                    source = sources[sou]
+                    source = sou
                 gs.import_grass(source, tempin, 'raster', [1])
 
             if not local and sys.platform == 'win32':
