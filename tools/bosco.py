@@ -57,7 +57,7 @@ class STEMToolsDialog(BaseDialog):
     def check_cell_size(self):
         dimensione_celle = int(self.Linedit2.text().strip()) if self.Linedit2.text().strip() else None
         if dimensione_celle and dimensione_celle < 4:
-            return "Dimensione celle deve essere > 4."
+            return "Dimensione celle deve essere maggiore o uguale a 4."
         return ""
 
     def show_(self):
