@@ -76,6 +76,7 @@ class STEMToolsDialog(BaseDialog):
 
         self.LabelOut.setText('Selezionare prefisso per salvare i risultati')
         
+        self.QGISextent.hide()
         self.helpui.fillfromUrl(self.SphinxUrl())
         STEMSettings.restoreWidgetsValue(self, self.toolName)
     
