@@ -90,7 +90,7 @@ class STEMToolsDialog(BaseDialog):
                 gs.check_mask(mask, inverse_mask())
             gs.find_program('i.spec.sam', '--help')
             com = ['i.spec.sam', 'group={name}'.format(name=tempin),
-                   'matrix={name}'.forma(name=matrixfile),
+                   'matrix={name}'.format(name=matrixfile),
                    'output={outname}'.format(outname=tempout)]
 
             coms.append(com)

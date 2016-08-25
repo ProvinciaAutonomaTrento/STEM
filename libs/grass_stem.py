@@ -619,7 +619,7 @@ class stemGRASS():
         if check:
             return True
         else:
-            err = "Errore eseguendo GRASS: il comdando {co} non sembra " \
+            err = "Errore eseguendo GRASS: il comando {co} non sembra " \
                   "essere presente, si prega di installarlo".format(co=command)
             raise Exception(err)
 

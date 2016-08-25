@@ -77,12 +77,12 @@ class STEMToolsDialog(BaseDialog):
             name = str(self.BaseInput.currentText())
             source = STEMUtils.getLayersSource(name)
             
-            rasttyp = STEMUtils.checkMultiRaster(source)
-            cut, cutsource, mask = self.cutInput(name, source, rasttyp, local=self.LocalCheck.isChecked())
-            
-            if cut:
-                name = cut
-                source = cutsource
+#             rasttyp = STEMUtils.checkMultiRaster(source)
+#             cut, cutsource, mask = self.cutInput(name, source, rasttyp, local=self.LocalCheck.isChecked())
+#             
+#             if cut:
+#                 name = cut
+#                 source = cutsource
             
             name2 = str(self.BaseInput2.currentText())
             source2 = STEMUtils.getLayersSource(name2)
