@@ -99,7 +99,7 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ,
-                                  False)
+                                  False, local = local)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
             # TODO test

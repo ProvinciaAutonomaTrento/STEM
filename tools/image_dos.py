@@ -174,7 +174,7 @@ class STEMToolsDialog(BaseDialog):
                 else:
                     output = out
                 STEMUtils.exportGRASS(gs, self.overwrite, output, tpo,
-                                      'raster', remove=False)
+                                      'raster', remove=False, local = local)
                 if self.AddLayerToCanvas.isChecked():
                     STEMUtils.addLayerIntoCanvas(out, 'raster')
                 

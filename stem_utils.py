@@ -505,7 +505,7 @@ class STEMUtils:
 
 
     @staticmethod
-    def exportGRASS(gs, overwrite, output, tempout, typ, remove=True, forced_output = False):
+    def exportGRASS(gs, overwrite, output, tempout, typ, remove=True, forced_output = False, local = True):
         """Export data from GRASS environment
 
         :param obj gs: a stemGRASS object
@@ -516,14 +516,22 @@ class STEMUtils:
         :param bool remove: True to remove the mapset, otherwise it is kept
         """
         original_dir = os.path.dirname(output)
+        if not local:
+            original_dir = STEMUtils.pathServerLinuxToClientWin(original_dir)
+        
         if typ == 'vector':
-
-            newdir = os.path.join(tempfile.gettempdir(), "shpdir")
+            if local:
+                path = tempfile.gettempdir()
+            else:
+                path = STEMUtils.get_temp_dir()
+            newdir = os.path.join(path, "shpdir")
             if not os.path.exists(newdir):
                 os.mkdir(newdir)
             original_basename = os.path.basename(output)
             tmp = os.path.join(newdir, original_basename)
             try:
+                if not local:
+                    tmp = STEMUtils.pathClientWinToServerLinux(tmp)
                 gs.export_grass(tempout, tmp, typ)
                 saved = True
             except:
@@ -646,6 +654,18 @@ class STEMUtils:
             STEMMessageHandler.warning("STEM Plugin", 'Percorso non convertibile,'
                                        ' potrebbero esserci problemi nelle '
                                        'prossimi analisi')
+        return str(path)
+    
+    @staticmethod
+    def pathServerLinuxToClientWin(path):
+        table = STEMUtils.get_mapping_table()
+        for remote, local in table:
+            try:
+                path = os.path.join(local, os.path.relpath(path, remote)).replace('\\','/')
+            except Exception as e:
+                pass
+            else:
+                converted = True
         return str(path)
 
     @staticmethod

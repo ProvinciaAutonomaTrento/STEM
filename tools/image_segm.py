@@ -148,12 +148,12 @@ class STEMToolsDialog(BaseDialog):
             gs.run_grass(coms)
 
             STEMUtils.exportGRASS(gs, self.overwrite, output,
-                                  tempout, typ, False)
+                                  tempout, typ, False, local = local)
 
             if self.TextOut2.text():
                 STEMUtils.exportGRASS(gs, self.overwrite, output2,
                                       'goodness_{name}'.format(name=tempout),
-                                      typ)
+                                      typ, local = local)
             else:
                 gs.removeMapset()
             if self.AddLayerToCanvas.isChecked():

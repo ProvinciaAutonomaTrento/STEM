@@ -147,7 +147,7 @@ class STEMToolsDialog(BaseDialog):
                               resolution=reso, region=bbox, classes=classes)
 
             STEMUtils.exportGRASS(gs, self.overwrite, output, tempout,
-                                  'raster')
+                                  'raster', local = local)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), 'raster')

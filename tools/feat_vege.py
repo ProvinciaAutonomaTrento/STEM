@@ -154,7 +154,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.run_grass([com])
 
-            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ, forced_output = True)
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ, forced_output = True, local = local)
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
             

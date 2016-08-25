@@ -133,7 +133,8 @@ class STEMToolsDialog(BaseDialog):
                    'points_column={pc}'.format(pc=self.BaseInputCombo.currentText())]
             STEMUtils.saveCommand(com)
             gs.run_grass([com])
-            STEMUtils.exportGRASS(gs, self.overwrite, output, tempin2, typ)
+            
+            STEMUtils.exportGRASS(gs, self.overwrite, output, tempin2, typ, local = local)
 
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)

@@ -125,7 +125,7 @@ class STEMToolsDialog(BaseDialog):
 
             gs.create_group(outputs, tempout)
             STEMUtils.exportGRASS(gs, self.overwrite, output, tempout, typ,
-                                  False)
+                                  False, local = local)
             gs.removeMapset()
             if self.AddLayerToCanvas.isChecked():
                 STEMUtils.addLayerIntoCanvas(self.TextOut.text(), typ)
