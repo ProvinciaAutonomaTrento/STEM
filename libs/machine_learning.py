@@ -378,7 +378,7 @@ def extract_vector_fields(layer, icols):
     # significantly faster
     layer.ResetReading()
     for f in layer:
-        yield [f.GetField(i) for i in icols]
+        yield [f.GetField(int(i)) for i in icols]
 
 
 def extract_training(vector_file, column, csv_file, raster_file=None,
