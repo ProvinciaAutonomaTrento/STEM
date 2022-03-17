@@ -1,0 +1,4 @@
+[Master]
+
+init-hook='sys.path = list(); sys.path.extend(['../STEM', '../STEM/libs', '../STEM/tools'])
+

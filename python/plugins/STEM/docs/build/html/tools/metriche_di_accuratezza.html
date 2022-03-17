@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metriche di accuratezza &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Stima di parametri" href="toc_stima_parametri.html" />
+    <link rel="prev" title="Filtro maggioranza" href="filtro_maggioranza.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Metriche di accuratezza</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="metriche-di-accuratezza">
+<h1>Metriche di accuratezza<a class="headerlink" href="#metriche-di-accuratezza" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo serve per calcolare una serie di metriche di accuratezza su di un’immagine classificata. In particulare il modulo calcola la matrice di confusione dell’immagine di input rispetto all’immagine/vettore di riferimento. Viene calcolata inoltre la kappa accuracy (e la sua varianza), l’errore di omissione e commisisone, il numero totale di pixels classificati correttamente, la superficie totale in numero di pixel e percentuale di pixels correttamente classificati.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.kappa.html">r.kappa</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Mappa classificata</strong>: mappa classificata in formato raster.</p>
+<p><strong>Input mappa training area (sia raster che vettoriale)</strong>: mappa delle aree di riferimento. Può essere sia in formato raster che vettoriale.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona la colonna da considerare per le statistiche</strong>: nel caso l’input sia un vettoriale indicare la colonna contente le classi di riferimento.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: file di testo contenente le metriche di accuratezza.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

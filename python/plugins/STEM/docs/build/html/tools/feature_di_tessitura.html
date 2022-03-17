@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feature di tessitura &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Feature geometriche" href="feature_geometriche.html" />
+    <link rel="prev" title="Estrazione feature" href="toc_estrazioni_feature.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Feature di tessitura</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="feature-di-tessitura">
+<h1>Feature di tessitura<a class="headerlink" href="#feature-di-tessitura" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo crea mappe raster contenti le feature di tessitura estratte a partire da un layer raster specificato dall’utente. Il modulo calcola caratteristiche tessiturali basate su matrici di dipendenza spaziale a 0, 45, 90, e 135 gradi di distanza (default = 1). Il modulo assume livelli di grigio che vanno da 0 a 255 come input. L’ingresso è riscalato automaticamente a 0 a 255 se la gamma del file di input è al di fuori di questo intervallo.
+In generale, più variabili costituiscono feature di tessitura: differenze nei valori di livello di grigio, grossolanità come scala di differenze dei livelli di grigio, la presenza o la mancanza di direzionalità e di schemi regolari. Una feature di tessitura può essere caratterizzata da toni (proprietà di intensità dei liveli di grigio) e da struttura (relazioni spaziali). Dal momento che le feature di tessitura sono altamente dipendenti dalla scala, si possono verificare strutture gerarchiche tra le feature.</p>
+<p>Il modulo prende in input un layer raster e calcola le caratteristiche tessiturali basandosi su matrici di dipendenza spaziale in direzione nord-sud, est-ovest, nord-ovest, sud-ovest e nelle direzioni con un fianco a fianco, in zona (ad esempio, una distanza di 1). L’uscita consiste in quattro immagini per ogni funzione strutturale, una per ogni direzione.</p>
+<p>Un modello di struttura comunemente usato è basato sulla cosiddetta matrice di co-occorrenza dei livelli di grigio. Questa matrice è un istogramma bidimensionale di livelli di grigio per ogni coppia di pixel che sono separati da una relazione spaziale fissa. La matrice approssima la distribuzione di probabilità congiunta di una coppia di pixel. Diverse misure di tessitura sono direttamente calcolate sulla matrice di co-occorrenza dei livelli di grigio.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.texture.html">r.texture</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare il raster da utilizzare tra quelli attualmente aperti in QGIS.</p>
+<p><strong>Selezionare le bande da utilizzare</strong>: selezionare le bande che si vogliono utilizzare; se non si seleziona nulla vengono utilizzate tutte le bande.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Metodi per calcolare la tessitura</strong>: si possono scegliere diversi metodi di calcolo delle feature di tessitura</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>Somma media (SA)</em>: questa misura fornisce la media dei livelli di grigio all’interno della finestra mobile.</p></li>
+<li><p><em>Entropia (ENT)</em>: questa misura analizza la casualità. ENT è alto quando i valori della finestra mobile hanno valori simili. ENT è bassa quando i valori sono vicini a 0 o 1 (cioè quando i pixel nella finestra locale sono uniformi).</p></li>
+<li><p><em>Differenza di entropie (DE)</em>.</p></li>
+<li><p><em>Somma di entropie (SE)</em>.</p></li>
+<li><p><em>Varianza (VAR)</em>: fornisce una misura della varianza dei toni di grigio all’interno della finestra mobile.</p></li>
+<li><p><em>Differenza di varianze (DV)</em>.</p></li>
+<li><p><em>Somma di varianze (SV)</em>.</p></li>
+<li><p><em>Secondo momento angolare (ASM, chiamato anche uniformità)</em>: questa è una misura di uniformità locale ed è l’opposto dell’entropia. Alti valori di ASM si verificano quando i pixel nella finestra mobile sono molto simili. Nota: la radice quadrata del’ASM è talvolta usata come misura di consistenza, e si chiama energia.</p></li>
+<li><p><em>Inverse Moment Difference (IDM, chiamato anche omogeneità)</em>: tale misura è legata inversamente alla misura di contrasto. Si tratta di una misura diretta dell’omogeneità locale di un’immagine digitale. Valori bassi sono associati a bassa omogeneità e viceversa.</p></li>
+<li><p><em>Contrasto (CON)</em>: questa misura analizza il contrasto dell’immagine (localmente variazioni a livello di grigio), come la dipendenza lineare dei livelli di grigio dei pixel vicini (somiglianza). Tipicamente alto quando la scala della trama locale è maggiore della distanza.</p></li>
+<li><p><em>Correlazione (COR)</em>: questa misura analizza la dipendenza lineare dei livelli di grigio di pixel adiacenti. Tipicamente alto quando la scala della trama locale è maggiore della distanza.</p></li>
+<li><p><em>Misure di informazione di correlazione (MOC)</em>.</p></li>
+<li><p><em>Coefficiente di correlazione massimo (MC)</em>.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Dimensione della finestra mobile</strong>: dimensione della finestra mobile su cui sono calcolate le feature di tessitura.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

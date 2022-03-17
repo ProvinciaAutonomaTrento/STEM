@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Segmentazione &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dark object subtraction" href="dark_object_subtraction.html" />
+    <link rel="prev" title="Filtro riduzione del rumore" href="filtro_riduzione_del_rumore.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Segmentazione</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="segmentazione">
+<h1>Segmentazione<a class="headerlink" href="#segmentazione" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo effettua la segmentazione di immagini. La segmentazione di immagini è il processo di raggruppamento dei pixel simili in segmenti distinti. In letteratura esistono molti algoritmi di segmentazione; in questo tool è implementato un algoritmo di region growing: l’algoritmo parte da punti “seme” da cui il segmento si espande ai pixel contigui che soddisfano alcuni criteri definiti dall’utente.
+Più nel dettaglio, l’algoritmo di region growing esamina iterativamente tutti i segmenti nella mappa raster, calcolando la somiglianza fra il segmento analizzato (secondo una formula di distanza) e ciascuno dei segmenti ad esso vicini.
+Due segmenti saranno uniti se, e solo se, soddisfano una serie di criteri, tra cui:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>i due segmenti sono reciprocamente simili tra loro (la distanza di somiglianza è inferiore rispetto alla soglia di ingresso), e</p></li>
+<li><p>la somiglianza fra di essi è maggiore rispetto agli altri segmenti adiacenti. Il processo viene ripetuto fino a quando non è possibile eseguire ulteriori fusioni delle regioni.</p></li>
+</ul>
+</div></blockquote>
+<p>Ad ogni oggetto trovato durante il processo di segmentazione viene assegnato un ID univoco.
+Nota che la segmentazione differesce dalla classificazione dove tutti i pixel simili tra loro sono assegnati alla stessa classe e non devono essere contigui (nella segmentazione devono essere contigui!).
+Il risultati di una segmentazione di un’immagine può essere utile per conto proprio o essere utilizzato come un passo di preprocessing per la classificazione delle immagini.
+La segmentazione è una fase di pre-elaborazione in grado di ridurre il rumore e velocizzare la classificazione.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/i.segment.html">i.segment</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare il raster su cui eseguire la segmentazione.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona il threshold da utilizzare</strong>: seleziona il threshold di “somiglianza” con il quale suddividere in segmenti l’immagine. La somiglianza tra i segmenti e gli oggetti non uniti è utilizzata per determinare quali pixel possono essere fusi fra loro in unico oggetto. Valori di distanza piccoli indicano una corrispondenza più stretta, con un punteggio di somiglianza pari a zero per i pixel identici. Durante la normale elaborazione, le fusioni sono consentite soltanto quando la somiglianza tra due segmenti è inferiore al valore di soglia. La soglia deve essere maggiore di 0 e minore di 1. Una soglia 0 consentirebbe di unire solo pixels con valori identici, mentre una soglia 1 consentirebbe di unire tutti i pixel in un’unica regione. Test empirici iniziali indicano che valori di soglia nell’intervallo 0.2-0.01 sono valori ragionevoli: ad ogni modo tale valore dipende dalla tipologia di immagine e di oggetti presi in considerazione. Si raccomanda di iniziare con un valore basso, ad esempio 0.01, e quindi eseguire la segmentazione gerarchica utilizzando l’uscita dell’ultima esecuzione come “seme” per la corsa successiva.</p>
+<p><strong>Seleziona il metodo di calcolo della similarità</strong>: seleziona il metodo per calcolare la similarità fra pixel adiacienti.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>euclidean</em>: calcola la distanza euclidea fra i valori dei due pixel adiacenti.</p></li>
+<li><p><em>manhattan</em>: calcola la distanza Manhattan fra i valori dei due pixel adiacenti.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Numero massimo di iterazioni</strong>: rappresenta il numero massimo di iterazioni eseguite dall’algoritmo durante il processo di aggregazione dei segmenti. Più il numero è elevato, più il processo è completo, richiedendo tuttavia un maggior tempo di elaborazione. Il numero impostato di default rappresenta un valore inferiore al di sotto del quale è consigliabile non andare.</p>
+<p><strong>Selezionare il numero minimo di pixel in un segmento</strong>: rappresenta il numero minimo di pixel di cui deve essere composto ogni singolo segmento. Durante l’iterazione finale del processo, qualora un segmento abbia dimensione minima inferiore, verrà aggregato on il segmento adiacente più simile anche se la somiglianza è superiore alla soglia (vedi spiegazione threshold di similarità).</p>
+<p><strong>Inserire il valore di memoria da utilizzare in MB</strong>: esprime il valore in MB di RAM da utilizzare per il processo in corso.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+<p><strong>Goodness of fit</strong>: La bontà di adattamento per ciascun pixel viene calcolato come 1 - distanza del pixel dal segmento a cui appartiene. La distanza è calcolata con il metodo di somiglianza selezionato. Il valore 1 significa valori identici, mentre il valore 0 significa massima distanza possibile.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

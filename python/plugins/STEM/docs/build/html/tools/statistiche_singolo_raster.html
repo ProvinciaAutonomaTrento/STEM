@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistiche su singolo raster &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Statistiche su due raster" href="statistiche_su_due_raster.html" />
+    <link rel="prev" title="Aggregazione ad aree" href="aggregazione_ad_aree.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Statistiche su singolo raster</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="statistiche-su-singolo-raster">
+<h1>Statistiche su singolo raster<a class="headerlink" href="#statistiche-su-singolo-raster" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo calcola una serie di statistiche sul raster fornito in input dall’utente. Fornisce in uscita un file di testo con le statistiche. Le statistiche calcolate sono:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>n</em>: numero totale di pixels;</p></li>
+<li><p><em>null_cells</em>: numero totale di pixels nulli;</p></li>
+<li><p><em>cells</em>: numero totale di pixels non nulli;</p></li>
+<li><p><em>min</em>: valore minimo dei pixels dell’immagine;</p></li>
+<li><p><em>max</em>: valore massimo dei pixels dell’immagine;</p></li>
+<li><p><em>range</em>: range dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>mean</em>: valore medio dei pixels dell’immagine;</p></li>
+<li><p><em>mean_of_abs</em>: valore minimo del valore assoluto dei pixels dell’immagine;</p></li>
+<li><p><em>stddev</em>: deviazione standard dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>variance</em>: varianza dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>coeff_var</em>: coefficiente di variazione dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>sum</em>: somma dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>first_quartile</em>: primo quartile dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>median</em>: mediana dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>third_quartile</em>: terzo quartile dei valori dei pixels dell’immagine;</p></li>
+<li><p><em>percentile_n</em>: n-esimo percentile dei valori dei pixels dell’immagine;</p></li>
+</ul>
+</div></blockquote>
+<p>Esempio del contenuto del file di testo di output:</p>
+<blockquote>
+<div><img alt="../_images/statistiche_esempio_input_1.png" src="../_images/statistiche_esempio_input_1.png" />
+</div></blockquote>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare il raster di input.</p>
+<p><strong>Selezionare la banda su cui calcolare le statistiche</strong>: selezionare la banda del raster di input su cui calcolare le statistiche.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Percentile da calcolare</strong>: percentile da calcolare (da 1 a 99).</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: file di testo in cui salvare il risultato. L’estensione .txt va specificata.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

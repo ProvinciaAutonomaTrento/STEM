@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support Vector Machines &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Minima distanza" href="minima_distanza.html" />
+    <link rel="prev" title="Classificazione supervisionata" href="toc_classi.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Support Vector Machines</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="support-vector-machines">
+<h1>Support Vector Machines<a class="headerlink" href="#support-vector-machines" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo effettua la classificazione di immagini o vettori usando l’algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM). L’algoritmo SVM si basa sul principio che lo spazio delle feature di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione è effettuata utilizzando una funzione kernel di tipo gaussiano Radial Basis Function.
+Gli input al classificatore sono un file vettoriale contente una colonna con l’indicazione della classe in formato numerico (1,2,…,N) e un immagine raster da classificare.
+L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>File raster</strong>: immagine raster da classificare.</p>
+<p><strong>Training aree</strong>: file vettoriale contente le aree di training e l’indicazione delle classi.</p>
+<p><strong>Seleziona la colonna con codice classe</strong>: selezionare tra le colonne del file vettoriale quella che indica le classi.</p>
+<p><strong>Aree di validazione</strong> (opzionale): file vettoriale contente le aree di validazione e l’indicazione delle classi (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training). Se non si hanno aree di validazione selezionare nuovamente Training aree.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Creazione mappa</strong>: se la casella è spuntata verrà generata la mappa in formato ‘.tif’.</p>
+<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
+<p><strong>File features</strong> (opzionale): selezionare il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features”.</p>
+<p><strong>Valore C</strong> (opzionale): parametro di regolarizzazione.</p>
+<p><strong>Valore di sigma</strong> (opzionale): parametro del kernel RBF.</p>
+<p><strong>Numero fold cross validation</strong> (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L’accuratezza finale sarà la media delle N accuratezze.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output in formato “.tif”.</p>
+<p><strong>Output info modello</strong>: inserire il percorso di un file .txt per le informazioni del modello di classificazione.</p>
+<p><strong>Output Metriche accuratezza</strong>: inserire il percorso di un file .txt per le metriche di accuratezza.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

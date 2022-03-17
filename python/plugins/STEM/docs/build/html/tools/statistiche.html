@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Statistiche &mdash; Documentazione STEM 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Documentazione STEM 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Post-elaborazione stima" href="toc_post_stima.html" />
+    <link rel="next" title="Struttura bosco" href="toc_struttura.html" />
+    <link rel="prev" title="Metriche di accuratezza" href="metriche_di_accuratezza.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head>
+  <body role="document">
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Statistiche</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="statistiche">
+<h1>Statistiche<a class="headerlink" href="#statistiche" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo calcola una serie di statistiche sul raster fornito in input dall&#8217;utente. Fornisce in uscita un file di testo con le statistiche. Le statistiche calcolate sono:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>n</em>: numero totale di pixels;</li>
+<li><em>null_cells</em>: numero totale di pixels nulli;</li>
+<li><em>cells</em>: numero totale di pixels non nulli;</li>
+<li><em>min</em>: valore minimo dei pixels dell&#8217;immagine;</li>
+<li><em>max</em>: valore massimo dei pixels dell&#8217;immagine;</li>
+<li><em>range</em>: range dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>mean</em>: valore medio dei pixels dell&#8217;immagine;</li>
+<li><em>mean_of_abs</em>: valore minimo del valore assoluto dei pixels dell&#8217;immagine;</li>
+<li><em>stddev</em>: deviazione standard dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>variance</em>: varianza dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>coeff_var</em>: coefficiente di variazione dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>sum</em>: somma dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>first_quartile</em>: primo quartile dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>median</em>: mediana dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>third_quartile</em>: terzo quartile dei valori dei pixels dell&#8217;immagine;</li>
+<li><em>percentile_n</em>: n-esimo percentile dei valori dei pixels dell&#8217;immagine;</li>
+</ul>
+</div></blockquote>
+<p>Esempio del contenuto del file di testo di output:</p>
+<blockquote>
+<div><img alt="../_images/statistiche_esempio_input_1.png" src="../_images/statistiche_esempio_input_1.png" />
+</div></blockquote>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare il raster di input.</p>
+<p><strong>Selezionare la banda su cui calcolare le statistiche</strong>: selezionare la banda del raster di input su cui calcolare le statistiche.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Percentile da calcolare</strong>: percentile da calcolare (da 1 a 99).</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: file di testo in cui salvare il risultato. L&#8217;estensione .txt va specificata.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Luca Delucchi, Michele Dalponte, Francesco Nex.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

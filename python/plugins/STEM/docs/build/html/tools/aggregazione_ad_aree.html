@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aggregazione ad aree &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Statistiche su singolo raster" href="statistiche_singolo_raster.html" />
+    <link rel="prev" title="Post-elaborazione" href="toc_post_stima.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Aggregazione ad aree</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="aggregazione-ad-aree">
+<h1>Aggregazione ad aree<a class="headerlink" href="#aggregazione-ad-aree" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile del catasto sull’area di competenza).
+Per ogni area del secondo vettoriale vengono calcolate le statistiche di uno o più parametri di interesse (ad es. altezze medie, volume totale, ecc.) memorizzati nel primo file.
+Questo modulo e’ utile per aggregare in aree di maggiore dimensioni risultati ottenuti a livello di singoli alberi, o misure puntuali a terra (es. misure di volumi di singoli alberi).
+Il file di output e’ uguale al file delle aree di input, in cui viene aggiunta una colonna relativa al prodotto richiesto.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/v.vect.stats.html">v.vect.stats</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Se il primo dato di input da aggregare è poligonale il tempo richiesto per il calcolo è esponenzialmente più lento. Si consiglia di estrarre i centroidi utilizzando lo strumento di QGIS <cite>Vettore -&gt; Strumenti di geometria -&gt; Centroidi del poligono</cite></p>
+</div>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Vettoriale di punti</strong>: nella finestra compaiono i file vettoriali attualmente aperti in QGIS.
+Selezionare il vettoriale relativo ai parametri di interesse.</p>
+<p><strong>Vettoriale di aree su cui aggregare</strong>: nella finestra compaiono i file vettoriali attualmente aperti in QGIS. Selezionare il vettoriale relativo alla suddivisione in aree di interesse.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona la colonna da considerare per le statistiche</strong>: seleziona uno o più parametri di interesse memorizzati sul vettoriale di punti o aree e su cui si vogliono calcolare le statistiche.</p>
+<p><strong>Metodo statistico di aggregazione</strong>: Seleziona il parametro statistico da considerare sull’area di applicazione. I parametri statistici implementati sono:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>sum</em>: calcola la somma del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>average</em>: calcola la media del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>median</em>: calcola la mediana del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>mode</em>: calcola la moda del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>minimum</em>: calcola il minimo del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>maximum</em>: calcola il massimo del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>range</em>: calcola l’intervallo di valori del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>stddev</em>: calcola la deviazione standard del parametro di interesse sull’area di interesse.</p></li>
+<li><p><em>variance</em>: calcola la varianza del parametro di interesse sull’area di interesse.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output. Il file di output sara’ uguale al file delle aree di input, in cui viene aggiunta una colonna relativa al prodotto richiesto.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

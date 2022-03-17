@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support Vector regression &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Post-elaborazione" href="toc_post_stima.html" />
+    <link rel="prev" title="Stimatore lineare" href="stimatore_lineare.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Support Vector regression</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="support-vector-regression">
+<h1>Support Vector regression<a class="headerlink" href="#support-vector-regression" title="Permalink to this headline">¶</a></h1>
+<p>IIl modulo effettua la classificazione di immagini o vettori usando l’algoritmo di supervisionato non-parametrico Support Vector Regression (SVR). L’algoritmo SVM si basa sul principio che lo spazio delle variabili di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui la stima lineare è possibile. La trasformazione è effettuata utilizzando una funzione kernel.
+Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione o di mappatura di un’area più ampia (es. vettoriale di una griglia). Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input vettoriale di training</strong>: file vettoriale contente le aree di training e l’indicazione del parametro da stimare.</p>
+<p><strong>Seleziona la colonna con indicazione del parametro da stimare</strong>: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.</p>
+<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
+<p><strong>Vettoriale di validazione</strong> (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.</p>
+<p><strong>Seleziona la colonna per la validazione</strong> (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Inserire il numero di fold della cross-validation</strong> (opzionale): inserire il numero di fold della cross-validation.</p>
+<p><strong>Selezionare il kernel da utilizzare</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>radiale</em>: kernel di tipo gaussiano Radial Basis Function (scelta consigliata).</p></li>
+<li><p><em>lineare</em>: kernel di tipo lineare.</p></li>
+<li><p><em>polinomiale</em>: kernel polinomiale.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Si suggerisce di evitare il kernel lineare poichè fa aumentare a dismisura i tempi di elaborazione.</p>
+</div>
+<p><strong>Inserire il parametro C</strong> (opzionale): parametro di regolarizzazione. Valori suggeriti: numero intero tra 1 e 100.</p>
+<p><strong>Inserire il valore di gamma</strong> (opzionale): parametro del kernel radiale.</p>
+<p><strong>Inserire il valore del grado del polinomio</strong> (opzionale): parametro del kernel polinomiale.</p>
+<p><strong>Inserire il valore di epsilon</strong>: parametro dello stimatore SVR.</p>
+<p><strong>Seleziona la trasformazione</strong>: tipologia di trasformazione dei dati. Può essere nessuna, radice quadra e logaritmica.</p>
+<p><strong>Selezione variabili</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>no</em>: nessuna selezione delle variabili. Tutte le variabili verranno utilizzate.</p></li>
+<li><p><em>manuale</em>: le variabili vengono selezionate manualmente.</p></li>
+<li><p><em>file</em>: le variabili sono scelte in base al file di output del modulo “Selezione variabili per la stima”.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Colonne delle features da utilizzare</strong> (opzionale): selezionare le varaibili da utilizzare separate da uno spazio. Attivo solo se la selezione varaibili <em>manuale</em> è selezionata.</p>
+<p><strong>Nome colonna per i valori della stima</strong>: inserire il nome della colonna del risultato ottenuto con stimatore lineare.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+<p><strong>Accuratezza</strong>: inserire il percorso e il nome del file di output .txt, contenente le metriche di accuratezza nel caso si sia inserito il vettoriale di validazione.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

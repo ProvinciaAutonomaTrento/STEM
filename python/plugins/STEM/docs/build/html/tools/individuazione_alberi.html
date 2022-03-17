@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Individuazione alberi &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Delimitazione chiome" href="delimitazione_chiome.html" />
+    <link rel="prev" title="Struttura bosco" href="toc_struttura.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Individuazione alberi</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="individuazione-alberi">
+<h1>Individuazione alberi<a class="headerlink" href="#individuazione-alberi" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo permette di individuare le posizioni degli alberi a partire da un file .las del Canopy Height Model (ottenuto in uscita dal modulo <em>Estrazione CHM</em>). Vi sono due algoritmi di segmentazione selezionabili: Li (<a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/3.0.4/topics/li2012">https://www.rdocumentation.org/packages/lidR/versions/3.0.4/topics/li2012</a>) e Dalponte (<a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/3.0.2/topics/dalponte2016">https://www.rdocumentation.org/packages/lidR/versions/3.0.2/topics/dalponte2016</a>).
+Si otterrà una nuvola di punti con un nuovo attributo “treeID” indipendentemente dall’algoritmo scelto e la posizione delle cime come file vettoriale.</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>File Las di input</strong>: selezionare il file .las (o .laz).</p>
+<p><strong>CHM raster Dalponte</strong> (opzionale): selezionare il file raster del CHM necessario per l’agoritmo di Dalponte.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Algoritmo segmentazione</strong>: selezionare l’agoritmo di segmentazione.</p>
+<p><strong>Inserire altezza minima albero</strong>: inserire l’altezza in metri. Questo è un parametro necessario per entrambi gli algoritmi.</p>
+<p><strong>Ampiezza minima finestra Dalponte</strong>: dimensione minima in piexels della finestra mobile usata per identificare i massimi locali. Questo è un parametro necessario per l’algoritmo Dalponte.</p>
+<p><strong>Forma finestra Dalponte</strong>: definire la forma della finestra mobile. Questo è un parametro necessario per l’algoritmo Dalponte.</p>
+<p><strong>Zu Li</strong>: parametro necessario per l’algoritmo di Li. Si consiglia un valore di 15,0.</p>
+<p><strong>Distanza 1 Li</strong>: parametro necessario per l’algoritmo di Li. Si consiglia un valore di 1,5.</p>
+<p><strong>Distanza 2 Li</strong>: parametro necessario per l’algoritmo di Li. Si consiglia un valore di 2,0.</p>
+<p><strong>Massimo raggio chioma Li</strong>: parametro necessario per l’algoritmo di Li. Si consiglia un valore di 10,0.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome dello shapefile di output.</p>
+<p><strong>Output Las</strong>: inserire percorso file .las (o .laz) contenente il nuovo attributo “treeID”.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

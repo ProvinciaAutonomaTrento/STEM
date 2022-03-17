@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dark object subtraction &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pansharpening" href="pansharpening.html" />
+    <link rel="prev" title="Segmentazione" href="segmentazione.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Dark object subtraction</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="dark-object-subtraction">
+<h1>Dark object subtraction<a class="headerlink" href="#dark-object-subtraction" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo esegue la correzione atmosferica sulla mappa raster di input utilizzando l’algoritmo “Dark Object Subtraction””. Il modulo funziona solo con dati satellitari Landsat. Non utilizzare per dati da aereo.</p>
+<p>Questo modulo viene utilizzato per trasformare i digital number calibrati di immagini Landsat in radianza “top-of-atmosphere” o riflettanza “top-of-atmosphere” e in temperatura (banda 6 dei sensori TM e ETM +). Facoltativamente, può essere usato per calcolare la radianza in superficie o riflettanza con correzione atmosferica (metodo DOS).
+Di solito, per farlo sono necessari la data di produzione, la data di acquisizione, e l’elevazione solare. Inoltre, per Landsat-7 ETM + è necessario anche il “gain” (alto o basso) delle bande Landsat. Questi dati vengono letti dal file di metadati (.met o MTL.txt) per tutti i Landsat MSS, TM, ETM + e OLI / TIRS.</p>
+<p>Attenzione: Qualsiasi valore del raster nullo o inferiore rispetto QCALmin viene impostato a null nel raster di uscita e non è incluso nelle equazioni.</p>
+<p><strong>Valori “uncorrected at-sensor” (Metodo di correzione atmosferica = uncorrected, default)</strong></p>
+<p>Le correzioni geometriche e radiometriche standard generano delle immagini con digital number calibrati (QCAL = DN). Per poter standardizzare ulteriormente l’impatto dell’illuminazione sulla geometria, le immagini QCAL sono convertite prima di tutto in radianza “at-sensor” e poi in riflettanza “at-sensor”. La banda termica è prima convertita da QCAL in radianza “at-sensor”, e poi in temperatura effettiva “at-sensor” in gradi Kelvin. La correzione radiometrica converte i valori QCAL in radianza “at-sensor” (misurata in W/(m² * sr * µm)) usando le equazioni:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>gain = (Lmax - Lmin) / (QCALmax - QCALmin)</p></li>
+<li><p>bias = Lmin - gain * QCALmin</p></li>
+<li><p>radianza = gain * QCAL + bias</p></li>
+</ul>
+</div></blockquote>
+<p>dove, <em>Lmax</em> e <em>Lmin</em> sono costanti di calibrazione, e <em>QCALmax</em> e <em>QCALmin</em> sono i valori massimo e minimo del range della radianza riscalata in QCAL.
+Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>sun_radiance = [Esun * sin(e)] / (PI * d^2)</p></li>
+<li><p>reflectance = radiance / sun_radiance</p></li>
+</ul>
+</div></blockquote>
+<p>dove, <em>d</em> è la distanza Terra-Sole in unità astronomiche, <em>e</em> è l’angolo di elevazione del sole, e <em>Esun</em> è il valore medio di irradianza esoatmosferica in W/(m² * µm).</p>
+<p><strong>Valori semplificati “at-surface” (Metodo di correzione atmosferica = dos[1-4])</strong></p>
+<p>La correzione atmosferica e la calibrazione della riflettanza rimuovono la “path radiance”, ovvero la luce sporadica dall’atmosfera, e l’effetto spettrale dell’illuminazione solare. Le equazioni per ottenere la radianza “at-surface” e la riflettanza “at-surface” (non valide per le bande termiche) sono le seguenti:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>sun_radiance = TAUv * [Esun * sin(e) * TAUz + Esky] / (PI * d^2)</p></li>
+<li><p>radiance_path = radiance_dark - percent * sun_radiance</p></li>
+<li><p>radiance = (at-sensor_radiance - radiance_path)</p></li>
+<li><p>reflectance = radiance / sun_radiance</p></li>
+</ul>
+</div></blockquote>
+<p>dove <em>percent</em> è un valore tra 0.0 e 1.0 (di solito 0.01), <em>Esky</em> è l’irradianza diffusa, <em>TAUz</em> è la trasmittanza dell’atmosfera lungo il percorso tra il sole e la superficie del suolo, e <em>TAUv</em> è la trasmittanza dell’atmosfera lungo il percorso tra la superficie del suolo e il sensore. <em>radiance_dark</em> è la radianza “at-sensor” calcolata dall’oggetto più scuro, ad esempio il valore di digital number con almeno ‘dark_parameter’ (solitamente 1000) pixels per l’intera immagine. I valori sono,</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>DOS1: TAUv = 1.0, TAUz = 1.0 and Esky = 0.0</p></li>
+<li><p>DOS2: TAUv = 1.0, Esky = 0.0, and TAUz = sin(e) per tutte le bande con lunghezza d’onda massima minore di 1 (i.e. bands 4-6 MSS, 1-4 TM, and 1-4 ETM+). Per le altre bande TAUz = 1.0</p></li>
+<li><p>DOS3: TAUv = exp[-t/cos(sat_zenith)], TAUz = exp[-t/sin(e)], Esky = rayleigh</p></li>
+<li><p>DOS4: TAUv = exp[-t/cos(sat_zenith)], TAUz = exp[-t/sin(e)], Esky = PI * radiance_dark</p></li>
+</ul>
+</div></blockquote>
+<p>Attenzione: la radinaza in uscita non viene modificata (es.: i valori negativi non vengono settati a 0) quindi è possibile vi siano valori negativi. In ogni caso i valori di riflettanza vengono settati a 0 quando negativi.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/i.landsat.toar.html">i.landsat.toar</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezionare la cartella contenente i file Landsat</strong>: selezionare la acrtella contenet i file Landsat. I file devono avere i nomi nel segunte formato: “basename.1” per la banda 1, “basename.2” per la banda 2, ecc. “basename” viene inserito tra i parametri.</p>
+<p><strong>Selezionare il file dei metadata dei dati Landsat da analizzare</strong>: Selezionare il file dei metadati dei dati Landsat da analizzare che dovrà essere o “.met” o chiamarsi “MTL.txt”.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezionare il prefisso dei dati Landsat</strong>: inserire il prefisso per i nomi dei file di input (“basename”).</p>
+<p><strong>Metodo di correzione atmosferica</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>uncorrected</em></p></li>
+<li><p><em>dos1</em></p></li>
+<li><p><em>dos2</em></p></li>
+<li><p><em>dos2b</em></p></li>
+<li><p><em>dos3</em></p></li>
+<li><p><em>dos4</em></p></li>
+</ul>
+</div></blockquote>
+<p><strong>Percentuale della radianza solare</strong>: percentuale della radianza solare nella path radiance. E’ richiesto solo se il methodo è un “dos”. Valore di default: 0.01.</p>
+<p><strong>Numero minimo di pixel da considerare numero digitale dark object</strong>: numero minimo di pixel da considerare digital number come dark object. E’ richiesto solo se il methodo è un “dos”. Valore di default: 1000.</p>
+<p><strong>Valore dello scattering di Rayleigh, si utilizza solo con il metodo “dos3”</strong>: valore di irradianza diffusa di Rayleigh. Richiesto solo per il metodo “dos3”. Valore di default: 0.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezionare il prefisso per salvare i risultati</strong>: prefisso dei nomi dei file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

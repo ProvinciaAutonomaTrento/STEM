@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feature geometriche &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Indici di vegetazione" href="indici_di_vegetazione.html" />
+    <link rel="prev" title="Feature di tessitura" href="feature_di_tessitura.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Feature geometriche</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="feature-geometriche">
+<h1>Feature geometriche<a class="headerlink" href="#feature-geometriche" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo effettua l’estrazione di feature geometriche da un’immagine raster. Il processo di estrazione delle feature geometriche avviene su ciascuna banda dell’immagine analizzata, all’interno di un intervallo (definito dall’utente) di segmentazione delle immagini.
+Per ogni banda e per ogni livello di smoothing, è eseguita una segmentazione (vedi modulo segmentazione) che tiene conto sia delle informazioni spettrali sia della geometria dei singoli segmenti presi in considerazione durante il processo di region growing.
+Il risultato finale di questo processo è una serie (scala) di immagini accatastate per ogni banda in un unico file di output.
+Nota che questo modulo è stato ottimizzato per utilizzare immagini multispettrali (4 bande).</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/i.segment.html">i.segment</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare il raster su cui eseguire l’estrazione delle feature geometriche.</p>
+<p><strong>Selezionare le bande da utilizzae cliccandoci sopra</strong>: selezionare le bande dell’immagine su cui effettuare la segmentazione.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona il threshold minimo</strong>: questo valore definisce il threshold minimo da cui iniziare il processo di estrazione delle feature geometriche. Tale valore esprime il threshold minimo della segmentazione dell’immagine.</p>
+<p><strong>Seleziona il threshold massimo</strong>: questo valore definisce il threshold massimo da cui iniziare il processo di estrazione delle feature geometriche. Tale valore esprime il threshold massimo della segmentazione dell’immagine.</p>
+<p><strong>Seleziona il valore incrementale del threshold</strong>: questo valore definisce di quanto incrementare il valore di segmentazione all’interno di ciascuna scala. Da questo valore dipente il numero di feature che verrà estratto per ogni banda dell’immagine.</p>
+<p><strong>Inserire il valore di memoria da utilizzare in MB</strong>: esprime il valore in MB di RAM da utilizzare per il processo in corso.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

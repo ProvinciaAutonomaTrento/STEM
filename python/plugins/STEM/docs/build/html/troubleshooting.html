@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Risoluzione dei problemi noti &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Struttura bosco" href="tools/struttura_bosco.html" />
+<link rel="stylesheet" href="_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Risoluzione dei problemi noti</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="risoluzione-dei-problemi-noti">
+<h1>Risoluzione dei problemi noti<a class="headerlink" href="#risoluzione-dei-problemi-noti" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="le-finestre-dei-moduli-non-si-aprono">
+<h2>Le finestre dei moduli non si aprono<a class="headerlink" href="#le-finestre-dei-moduli-non-si-aprono" title="Permalink to this headline">¶</a></h2>
+<p>Se la finestre del plugin non si aprono e non viene stampato a video
+alcun errore, procedere con l’apertura della console Python su QGIS per
+indagare più a fondo sul problema.</p>
+</div>
+<div class="section" id="percorsi-a-grass-gis-non-corretti">
+<h2>Percorsi a GRASS GIS non corretti<a class="headerlink" href="#percorsi-a-grass-gis-non-corretti" title="Permalink to this headline">¶</a></h2>
+<p>Se ottenete un errore simile a quello che segue molto probabilmente
+non avrete settato correttamente i percorsi alle variabili di GRASS GIS
+nelle impostazioni, in particolare:</p>
+<ul class="simple">
+<li><p>Percorso all’eseguibile di GRASS GIS 7.8</p></li>
+<li><p>Percorso alla GRASSDATA directory</p></li>
+<li><p>Nome della LOCATION da utilizzare</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/tools/error_reduction.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">89</span><span class="p">,</span> <span class="ow">in</span> <span class="n">onRunLocal</span>
+    <span class="n">tempin</span><span class="p">,</span> <span class="n">tempout</span><span class="p">,</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">STEMUtils</span><span class="o">.</span><span class="n">temporaryFilesGRASS</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LocalCheck</span><span class="o">.</span><span class="n">isChecked</span><span class="p">)</span>
+    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/stem_utils.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">407</span><span class="p">,</span> <span class="ow">in</span> <span class="n">temporaryFilesGRASS</span>
+    <span class="n">gs</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">grassdatabase</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">grassbin</span><span class="p">,</span> <span class="n">epsg</span><span class="p">)</span>
+    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/libs/grass_stem.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">84</span><span class="p">,</span> <span class="ow">in</span> <span class="n">initialize</span>
+    <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="n">File</span> <span class="s2">&quot;/usr/lib/python2.7/subprocess.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">710</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__init__</span>
+    <span class="n">errread</span><span class="p">,</span> <span class="n">errwrite</span><span class="p">)</span>
+    <span class="n">File</span> <span class="s2">&quot;/usr/lib/python2.7/subprocess.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1335</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_execute_child</span>
+    <span class="k">raise</span> <span class="n">child_exception</span>
+<span class="ne">OSError</span><span class="p">:</span> <span class="p">[</span><span class="n">Errno</span> <span class="mi">2</span><span class="p">]</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</pre></div>
+</div>
+<p>Questo può capitare quando si passa da lanciare i comandi in locale a
+lanciarli sul server e viceversa.</p>
+</div>
+<div class="section" id="classificazione">
+<h2>Classificazione<a class="headerlink" href="#classificazione" title="Permalink to this headline">¶</a></h2>
+<p>Se con i moduli di classificazione ottenete degli errori provate a rimuovere
+il contenuto della cartella <cite>$HOME/.qgis2/stem/</cite>. Questa contiene i risultati
+delle analisi di classificazione precedenti, che servono per velocizzare
+analisi identiche, e potrebbero essere la causa di qualche malfunzionamento.</p>
+</div>
+<div class="section" id="caricamento-output">
+<h2>Caricamento output<a class="headerlink" href="#caricamento-output" title="Permalink to this headline">¶</a></h2>
+<p>Alcune volte, in modo casuale, succede che i layer di output, anche se creati
+correttamente non vengano caricati su QGIS. Questa situazione capita più
+frequentemente quando il processo è lanciato su un server. Se non si ottengono
+errori controllate la cartella selezionata per l’output e controllare se
+il file è presente.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

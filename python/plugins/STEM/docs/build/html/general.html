@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Informazioni di base &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pre-elaborazione immagini" href="tools/toc_pre_image.html" />
+    <link rel="prev" title="Come installare il plugin" href="installation.html" />
+<link rel="stylesheet" href="_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Informazioni di base</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="informazioni-di-base">
+<h1>Informazioni di base<a class="headerlink" href="#informazioni-di-base" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dati-di-input">
+<h2>Dati di input<a class="headerlink" href="#dati-di-input" title="Permalink to this headline">¶</a></h2>
+<p>Tutti i moduli, tranne quelli che hanno come input un file
+<a class="reference external" href="http://www.asprs.org/Committee-General/LASer-LAS-File-Format-Exchange-Activities.html">LAS</a>,
+utilizzano i dati caricati nell’albero dei layer di QGIS,
+questo significa che è possibile utilizzare tutti i
+<a class="reference external" href="www.gdal.org/formats_list.html">formati</a>, supportati da GDAL.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Se il formato pur essendo nella lista sopra non viene letto
+da GDAL vuol dire che la vostra versione di GDAL non è stata
+compilata con il supporto per quel formato, per risolvere il
+problema dovete contattare chi gestisce la creazione
+dell’eseguibile per il vostro sistema operativo</p>
+</div>
+<p>Per i file LAS è possibile impostare il percorso al file
+direttamente all’interno del modulo selezionato.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>I dati devono avere tutti lo stesso sistema di coordinate, non è possibile
+eseguire alcuna analisi con dati con proiezioni diverse e non viene
+effettuata nessuna riproiezione. Se necessario utilizzare lo strumento
+di riproiezione prima di eseguire le analisi.</p>
+</div>
+</div>
+<div class="section" id="dati-di-output">
+<h2>Dati di output<a class="headerlink" href="#dati-di-output" title="Permalink to this headline">¶</a></h2>
+<p>I dati di output vengono salvati nella directory e con il nome specificato
+nel campo apposito.</p>
+</div>
+<div class="section" id="opzioni-comuni-dei-moduli">
+<h2>Opzioni comuni dei moduli<a class="headerlink" href="#opzioni-comuni-dei-moduli" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><em>Aggiungi risultato alla mappa</em>: selezionare se il risultato va aggiunto alla mappa</p></li>
+<li><p><em>Utilizza estensione QGIS</em>: taglia i dati sulla estensione attuale della
+finestra di visualizzazione dei dati di QGIS</p></li>
+</ul>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

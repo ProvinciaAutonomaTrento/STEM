@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avvio applicativi lato server &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<link rel="stylesheet" href="_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Avvio applicativi lato server</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="avvio-applicativi-lato-server">
+<h1>Avvio applicativi lato server<a class="headerlink" href="#avvio-applicativi-lato-server" title="Permalink to this headline">¶</a></h1>
+<p>Per la comunicazione client-server viene utilizzato Pyro4,</p>
+<p>Dopo aver installato Pyro4 sul server, bisogna scaricare il
+codice sorgente di STEM sul server (basta anche solo la cartella <cite>libs</cite>).</p>
+<p>A questo punto ci si sposta dentro la cartella <cite>libs</cite> e si modifica il file
+<cite>pyro_stem.py</cite> settando i parametri corretti alle variabili presenti.</p>
+<p>Pyro4 sarà raggiungibile dai client all’IP e alle porte che sono state
+impostate.</p>
+<p>Salvare il file e avviare il server di Pyro4 con</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">Pyro4</span><span class="o">.</span><span class="n">naming</span> <span class="o">-</span><span class="n">h</span> <span class="n">IP</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Se non viene utilizzata l’opzione <cite>-h</cite> il server viene avviato
+localmente e non sarà visibile ai client</p>
+</div>
+<p>A questo punto bisognerà lanciare gli script delle librerie (<cite>grass_stem.py</cite>,
+<cite>gdal_stem.py</cite>, <cite>machine_learning.py</cite>, <cite>las_stem.py</cite>).</p>
+<p>Per lanciare tutti i vari processi in contemporanea si può utilizzare
+l’utility <cite>screen</cite> oppure <cite>python grass_stem.py &amp;</cite>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Se il client non comunica con il vostro server controllate che
+i client possano raggiungere l’IP alle porte impostate. Se questo
+è stato appurato controllate che le versioni di Pyro4 siano
+compatibili.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

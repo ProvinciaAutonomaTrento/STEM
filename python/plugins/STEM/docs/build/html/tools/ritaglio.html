@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ritaglio &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Accatastamento" href="accatastamento.html" />
+    <link rel="prev" title="Pre-elaborazione immagini" href="toc_pre_image.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Ritaglio</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="ritaglio">
+<h1>Ritaglio<a class="headerlink" href="#ritaglio" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo Ritaglio serve per preprocessare i layer (sia vettoriali che raster) sui quali si intende lanciare i moduli STEM creando dei nuovi dataset coerenti con la forma della maschera. Una volta lanciata l’elaborazione, i nuovi layer vengono aggiunti nella cartella identificata ed, eventualmente, aggiunti alla TOC. La maschera (ritaglio) è di tipo shapefile M-poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l’area all’interno del poligono viene rimossa. I dati presenti nella TOC (sia vettoriali che raster) vengono caricati di default tra quelli utilizzabili come input, mentre i soli vettoriali vengono aggiunti come scelta sulla quale effettuare il ritaglio. E’ possibile aggiungere ulteriori dataset tramite il pulsante “Sfoglia”.</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare i layer da usare come maschera. Per rimoverle un dataset, selezionarlo e cancellare il layer tramite il tasto “canc”. E’ possibile i drag and drop e la scelta multipla.</p>
+<p><strong>Layer maschera</strong>: selezionare lo shapefile da usare come maschera.</p>
+<p><strong>Usa Maschera Inversa</strong>: inverte l’area da rimuovere.</p>
+<p><strong>Cartella output</strong>: cartella dove vengono salvati i dati processati.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

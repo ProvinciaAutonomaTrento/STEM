@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selezione feature per classificazione &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Selezione variabili per la stima" href="selezione_variabili_per_la_stima.html" />
+    <link rel="prev" title="Selezione feature/variabili" href="toc_sel_feat_var.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Selezione feature per classificazione</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="selezione-feature-per-classificazione">
+<h1>Selezione feature per classificazione<a class="headerlink" href="#selezione-feature-per-classificazione" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo esegue la selezione delle feature per la classificazione. La selezione verrà effettuata utilizzando l’algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vi saranno 2 file di testo: il primo con un riassunto generale della selezione, il secondo con l’indicazione delle feature da selezionare (per i moduli di classificazione supervisionata).
+La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade. Per maggiori informazioni vedi la funzione ‘varSelSFFS’ in <a class="reference external" href="https://cran.r-project.org/web/packages/varSel/varSel.pdf">https://cran.r-project.org/web/packages/varSel/varSel.pdf</a></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a causa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Il modulo da comunque in output la selezione con un numero di bande non ottimale.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Se una banda del file di input contiene valori dei pixel tutti uguali è probabile che la selezione si blocchi alla prima iterazione. Si consiglia di verificare quindi i valori delle bande, e semmai rimuovere le bande corrotte, per evitare questo problema.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Questo modulo non prende in considerazione l’estensione di QGIS e/o una maschera</p>
+</div>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input vettoriale</strong>: selezionare il file di input vettoriale contente le aree di training.</p>
+<p><strong>Seleziona la colonna con l’indicazione della classe</strong>: selezionare la colonna con l’indicazione dei codici delle classi. Vedi sopra i codici delle classi utilizzabili.</p>
+<p><strong>Dati di input raster</strong>: selezionare il file raster da cui estrarre i valori dei pixel.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezionare la strategia da utilizzare</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>minimum</em>: distanza di Jeffries-Matusita minima tra le classi;</p></li>
+<li><p><em>mean</em>: distanza di Jeffries-Matusita media tra le classi;</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Selezionare numero variabili</strong>: numero di features da selezionare.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Report Selezione</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete una lista con le distanze JM delle singole bande, una matrice con set delle features selezionate e un vettore contenente le distanze delle feature.</p>
+<p><strong>Lista feature selezionate</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete la lista delle features selezionate (utilizzabile per i moduli di classificazione)</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

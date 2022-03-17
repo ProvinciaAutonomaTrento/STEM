@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attribuzione/modifica classi tematiche &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Filtro maggioranza" href="filtro_maggioranza.html" />
+    <link rel="prev" title="Post-classificazione" href="toc_post_class.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Attribuzione/modifica classi tematiche</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="attribuzione-modifica-classi-tematiche">
+<h1>Attribuzione/modifica classi tematiche<a class="headerlink" href="#attribuzione-modifica-classi-tematiche" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo permette di modificare un mappa di classificazione aggregando le classi manualmente.
+Questo modulo va usato nella fase di post-classificazione, per esempio per passare da una mappa di dettaglio delle specie forestali ad una meno dettagliata contenente solo le classi “conifere” e “latifoglie”.
+Può anche essere usato per aggregare i valori del CHM in classi di altezza.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.reclass.html">r.reclass</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare la mappa classificata da modificare.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Regole per la classificazione manuale</strong>: nella finestra vanno inserite le regole da utilizzare per la riclassificazione dell’immagine. Ogni riga deve essere strutturata in questo modo:</p>
+<blockquote>
+<div><p><em>input_categories=output_category [label]</em></p>
+<p><em>input_categories</em> é una lista numerica di una o più classi;  <em>output_category</em> deve essere una classe; <em>[label]</em> é la nuova etichetta della nuova classe.</p>
+<p>Esempio:</p>
+<blockquote>
+<div><img alt="../_images/attribuzione_modifica_classi_tematiche_esempio_input_1.png" src="../_images/attribuzione_modifica_classi_tematiche_esempio_input_1.png" />
+<p>In questo caso le classi 1, 2 e 3 sono trasformate nella classe 1 che viene rinominata “conifere”, le classi 4 e 5 sono trasformate
+nella classe 2 rinominata “latifoglie”, e tutte le altre classi vengono lasciate inalterate ” * = * “.</p>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

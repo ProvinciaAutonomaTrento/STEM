@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indici di vegetazione &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Selezione feature/variabili" href="toc_sel_feat_var.html" />
+    <link rel="prev" title="Feature geometriche" href="feature_geometriche.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Indici di vegetazione</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="indici-di-vegetazione">
+<h1>Indici di vegetazione<a class="headerlink" href="#indici-di-vegetazione" title="Permalink to this headline">¶</a></h1>
+<p>Questo modulo estrae da un’immagine multibanda raster i più utilizzati indici di vegetazione presenti in letteratura. Tali indici possono essere utilizzati poi come input nella fase di classificazione o di stima. La maggioranza degli indici é stat sviluppata per immagini satellitari, quindi se ne consiglia l’uso con immagini acquisite da satellite. Si può usare comunque anche con dati da aereo.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/i.vi.html">i.vi</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare il raster multibanda da utilizzare.</p>
+<p><strong>Selezionare la banda per il canale rosso</strong>: tra le bande disponibili selezionare quella corrispondente al canale spettrale del rosso.</p>
+<p><strong>Selezionare la banda per il canale verde</strong>: tra le bande disponibili selezionare quella corrispondente al canale spettrale del verde.</p>
+<p><strong>Selezionare la banda per il canale blu</strong>: tra le bande disponibili selezionare quella corrispondente al canale spettrale del blu.</p>
+<p><strong>Selezionare la banda per il canale infrarosso</strong>: tra le bande disponibili selezionare quella corrispondente al canale spettrale dell’infrarosso.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona l’indice di vegetazione</strong>: selezionare l’indice di vegetazione da calcolare.</p>
+<blockquote>
+<div><ul>
+<li><p><em>arvi</em>:  Atmospheric Resistant Vegetation Index. L’indice ARVI è un indice resistente agli effetti atmosferici (in confronto all’NDVI) ed è realizzato mediante un processo di autocorrezione per l’effetto atmosferico nel canale del rosso, utilizzando la differenza di luminosità tra il canale del blu e il canale rosso. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>ARVI = [infrarosso - (2.0 * rosso - blu)] / [infrarosso + (2.0 * rosso - blu)]</p>
+</div></blockquote>
+</li>
+<li><p><em>dvi</em>: Difference Vegetation Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>DVI = (infrarosso - rosso)</p>
+</div></blockquote>
+</li>
+<li><p><em>evi</em>: Enhanced Vegetation Index. L’indice EVI è un indice ottimizzato progettato per evidenziare la vegetazione con una migliore sensibilità in regioni ad alta biomassa e migliorando il controllo della vegetazione attraverso un disaccoppiamento del segnale di background della canopy e una riduzione dell’influenza dell’atmosfera. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>EVI = 2.5 * (infrarosso - rosso) / (infrarosso + 6.0 * rosso - 7.5 * blu + 1.0)</p>
+</div></blockquote>
+</li>
+<li><p><em>evi2</em>: Enhanced Vegetation Index 2. Indice EVI a 2 bande senza la banda blu. Fornisce valori molto simili all’EVI a 3 bande quando gli effetti atmosferici sono insignificanti e la qualità dei dati è buona. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>EVI2 = 2.5 * (infrarosso - rosso) / (infrarosso + 2.4 * rosso + 1.0)</p>
+</div></blockquote>
+</li>
+<li><p><em>gari</em>: Green Atmospherically Resistant Vegetation Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>GARI = (infrarosso - (verde - (blu - rosso))) / (infrarosso + (verde - (blu - rosso)))</p>
+</div></blockquote>
+</li>
+<li><p><em>gemi</em>: Global Environmental Monitoring Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>GEMI = (((2 * ((infrarosso * infrarosso) - (rosso * rosso)) + 1.5 * infrarosso + 0.5 * rosso) / (infrarosso + rosso + 0.5)) * (1 - 0.25 * (2 * ((infrarosso * infrarosso) - (rosso * rosso)) + 1.5 * infrarosso + 0.5 * rosso) / (infrarosso + rosso + 0.5))) - ((rosso - 0.125) / (1 - rosso))</p>
+</div></blockquote>
+</li>
+<li><p><em>ipvi</em>: Infrared Percentage Vegetation Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>IPVI = infrarosso / (rosso + infrarosso)</p>
+</div></blockquote>
+</li>
+<li><p><em>ndvi</em>: Normalized Difference Vegetation Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>NDVI = (infrarosso - rosso) / (infrarosso + rosso)</p>
+</div></blockquote>
+</li>
+<li><p><em>savi</em>:  Soil Adjusted Vegetation Index. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>SAVI = ((1.0 + 0.5) * (infrarosso - rosso)) / (infrarosso + rosso +0.5)</p>
+</div></blockquote>
+</li>
+<li><p><em>sr</em>: Simple Ratio. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>SR = (infrarosso / rosso)</p>
+</div></blockquote>
+</li>
+<li><p><em>vari</em>: Visible Atmospherically Resistant Index. L’indice VARI è stato studiato per introdurre un’autocorrezione degli effetti atmosferici. Si calcola nel modo seguente:</p>
+<blockquote>
+<div><p>VARI = (verde - rosso) / (verde + rosso - blu)</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

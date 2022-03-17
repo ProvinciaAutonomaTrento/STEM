@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filtro riduzione del rumore &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Segmentazione" href="segmentazione.html" />
+    <link rel="prev" title="Correzione atmosferica" href="correzione_atmosferica.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Filtro riduzione del rumore</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="filtro-riduzione-del-rumore">
+<h1>Filtro riduzione del rumore<a class="headerlink" href="#filtro-riduzione-del-rumore" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo riduce il rumore di un’immagine raster applicando filtri spaziali al raster selezionato. Il filtraggio è solitamente utilizzato come fase preliminare del processamento delle immagini telerilevate. In particolare, l’algoritmo sostituisce il valore di ogni pixel nell’immagine con il valore della funzione scelta applicata ad un intorno di pixel scelto dall’utente. Il file di output sarà una nuova immagine raster.</p>
+<p>A seconda del tipo di metodo scelto l’utput potrà essere usato per diverse applicazioni: ad esempio il metodo <em>average</em> é solitamente utilizzato per uniformare i valori dei pixel in un’immagine ed evitare di avere in fase di classificazione pixel classificati in modo erroneo sparsi per l’immagine (errore <em>salt and pepper</em>).</p>
+<p><strong>Esempio di funzionamento del metodo average</strong>:</p>
+<ul>
+<li><p>Valori dei pixel dell’immagine di input:</p>
+<blockquote>
+<div><p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       10      1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+</div></blockquote>
+</li>
+<li><p>Scegliendo  un neighborhood 3, e una finestra circolare si avrà in output:</p>
+<blockquote>
+<div><p>1       1       1       1       1</p>
+<p>1       1       2       1       1</p>
+<p>1       2       2       2       1</p>
+<p>1       1       2       1       1</p>
+<p>1       1       1       1       1</p>
+</div></blockquote>
+</li>
+</ul>
+<p>Come si può vedere l’immagine é stata smussata e il valore 10 (molto superiore agli altri valori dell’immagine) é sparito.</p>
+<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.neighbors.html">r.neighbors</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare l’immagine raster da utilizzare tra i raster attualmente aperti in QGIS.</p>
+<p><strong>Selezione bande</strong>: selezionare le bande che si vogliono utilizzare; se non si seleziona nulla vengono utilizzate tutte le bande.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezione l’algoritmo</strong>: selezionare uno degli algoritmi possibili, attualmente solo neighbors.</p>
+<p><strong>Selezione il metodo per il neighbors</strong>: si possono scegliere diversi metodi per effettuare la riduzione del rumore</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>average</em>: media dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>median</em>: mediana dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>mode</em>: moda dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>minimum</em>: minimo dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>maximum</em>: massimo dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>range</em>: intervallo dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>stddev</em>: deviazione standard dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>sum</em>: somma dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>count</em>: numero dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>variance</em>: varianza dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>diversity</em>: diversità dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>interspersion</em>: interspersion dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>quart1</em>: primo quartile dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>quart3</em>: terzo quartile dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>perc90</em>: 90esimo percentile dei pixel dell’intorno (neighbors);</p></li>
+<li><p><em>quantile</em>: n-esimo quartile dei pixel dell’intorno (neighbors).</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Valore del quantile</strong>: valore tra 0 e 1 indicante il quantile da calcolare. Opzione attiva solo se si selezione <em>quantile</em> come metodo per il neighbor.</p>
+<p><strong>Dimensione del neighborhood</strong>: valore numerico dispari indicativo della dimensione della finestra mobile del filtro. Il valore deve essere dispari.</p>
+<p><strong>Usa neighborhood circolare</strong>: se selezionato viene usata una finestra mobile circolare anzichè quadrata.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

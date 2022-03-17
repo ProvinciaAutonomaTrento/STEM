@@ -1,0 +1,18 @@
+[general]
+name=STEM
+qgisMinimumVersion=3.0
+description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
+about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di Trento, Italian language is used for plugin interface
+category=
+version=3.0.0
+author=Fabio Roncato, Thomas Maffei, Stefano Piffer, Michele Dalponte
+email=luca.delucchi@fmach.it
+
+repository=https://gitlab.com/trilogis/stem
+tracker=https://gitlab.com/trilogis/stem/issues
+homepage=https://gitlab.com/trilogis/stem
+icon=images/icon.svg
+
+changelog=
+experimental=True
+deprecated=False

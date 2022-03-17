@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Come installare il plugin &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Informazioni di base" href="general.html" />
+    <link rel="prev" title="Introduzione" href="intro.html" />
+<link rel="stylesheet" href="_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Come installare il plugin</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="come-installare-il-plugin">
+<h1>Come installare il plugin<a class="headerlink" href="#come-installare-il-plugin" title="Permalink to this headline">¶</a></h1>
+<p>Il plugin supporta la versione <strong>QGIS 3.10 LTR</strong> con <strong>GRASS GIS 7.8</strong>.</p>
+<p><strong>STEP</strong>: installazione dipendenze:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Provvedere a configurare <strong>GRASS</strong> (in termini di LOCATION) correttamente, lanciando direttamente l’applicazione e seguendo le istruzioni mostrate a video per la creazione della LOCATION.</p></li>
+<li><p>Installare il motore di calcolo R, scaricandolo direttamente dal sito <a class="reference external" href="https://cran.r-project.org/">https://cran.r-project.org/</a>. Il plugin supporta la versione 4.0.3.</p></li>
+<li><p>Installare il plugin <strong>Processing R Provider</strong> e configurarlo alla voce <code class="docutils literal notranslate"><span class="pre">Impostazioni</span> <span class="pre">-&gt;</span> <span class="pre">Opzioni</span> <span class="pre">-&gt;</span> <span class="pre">Processing</span> <span class="pre">-&gt;</span> <span class="pre">Programmi</span> <span class="pre">-&gt;</span> <span class="pre">R</span></code>.
+Per verificare la corretta installazione, si consiglia di provare uno degli script già presenti nella installazione del plugin.</p></li>
+<li><p>Verificare che in <code class="docutils literal notranslate"><span class="pre">Strumenti</span> <span class="pre">di</span> <span class="pre">Processing</span></code> sia presente la voce <strong>R</strong> e le cartelle <code class="docutils literal notranslate"><span class="pre">Pre</span> <span class="pre">Elaborazione,</span> <span class="pre">Classificazione</span> <span class="pre">Supervisionata,</span> <span class="pre">Stima</span> <span class="pre">dei</span> <span class="pre">Parametri,</span> <span class="pre">...)</span></code>.</p></li>
+<li><p>Verificare che in Impostazioni -&gt; Opzioni -&gt; Processing -&gt; Generale -&gt; Percorso della cartella temporanea in uscita le barre del percorso siano “/” e non “”</p></li>
+</ol>
+</div></blockquote>
+<div class="section" id="installazione-pacchetti-aggiuntivi-grass-gis">
+<h2>Installazione pacchetti aggiuntivi GRASS GIS<a class="headerlink" href="#installazione-pacchetti-aggiuntivi-grass-gis" title="Permalink to this headline">¶</a></h2>
+<p>Il modulo per calcolare lo Spectral Angle Mapper richiede un modulo aggiuntivo
+per GRASS GIS (denominati <a class="reference external" href="https://grass.osgeo.org/grass70/manuals/addons/">Addons</a>).
+In special modo bisogna installare l’addons <a class="reference external" href="https://grass.osgeo.org/grass70/manuals/addons/i.spec.sam.html">i.spec.sam</a>,
+per fare ciò bisogna:</p>
+<ul class="simple">
+<li><p>lanciare GRASS GIS</p></li>
+<li><p>andare in <code class="docutils literal notranslate"><span class="pre">Impostazioni</span> <span class="pre">-&gt;</span> <span class="pre">Estensioni</span> <span class="pre">(addons)</span> <span class="pre">aggiuntive</span> <span class="pre">-&gt;</span> <span class="pre">Installa</span> <span class="pre">estensione</span> <span class="pre">dagli</span> <span class="pre">addons</span></code></p></li>
+<li><p>cliccare su <code class="docutils literal notranslate"><span class="pre">imagery</span> <span class="pre">-&gt;</span> <span class="pre">i.spec.sam</span></code> all’interno della <code class="docutils literal notranslate"><span class="pre">Lista</span> <span class="pre">delle</span> <span class="pre">estensioni</span></code></p></li>
+<li><p>cliccare sul bottone <code class="docutils literal notranslate"><span class="pre">Installa</span></code></p></li>
+</ul>
+<p>A questo punto l’estensione è installata. Per controllare la corretta installazione
+si può digitare <code class="docutils literal notranslate"><span class="pre">i.spec.sam</span></code> nel <code class="docutils literal notranslate"><span class="pre">Layer</span> <span class="pre">Manager</span></code> all’interno della
+<code class="docutils literal notranslate"><span class="pre">Console</span> <span class="pre">dei</span> <span class="pre">programmi</span></code>; se tutto è andato a buon fine si aprirà la finestra
+del comando.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

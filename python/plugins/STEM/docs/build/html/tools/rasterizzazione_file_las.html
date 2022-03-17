@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rasterizzazione file LAS &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Estrazione feature LIDAR da poligoni" href="estrazione_feature_lidar_da_poligoni.html" />
+    <link rel="prev" title="Estrazione CHM" href="estrazione_chm.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Rasterizzazione file LAS</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="rasterizzazione-file-las">
+<h1>Rasterizzazione file LAS<a class="headerlink" href="#rasterizzazione-file-las" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo serve per creare immagini raster partendo da file in formato .las (o .laz). Una volta scelto il file da elaborare, cliccando sul tasto ‘Cariche Statistiche’ viene lanciata una preelaborazione per determinare i ritorni e le classi presenti nel dataset i quali verranno usati per valorizzare i parametri del modulo. I principali passaggi effettuati dall’algoritmo sono: 1) creazione di una griglia uniforme di risoluzione spaziale pari alla risoluzione scelta dall’utente; 2) per ogni cella vengono estratte le altezze (Z) dei punti LIDAR contenuti in essa; 3) ai valori di altezza (Z) estratti precedentemente viene applicato il metodo statistico scelto dall’utente (es. media); 4) partendo dai valori ottenuti al punto 3 viene creata un’immagine raster.
+L’utente può scegliere tra una varietà di metodi statistici nella creazione dell’immagine raster. L’output sarà un’immagine raster.</p>
+<p>Per maggiori informazioni si veda la documentazione della funzione grid_terrain del pacchetto lidR di R <a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/3.0.3/topics/grid_terrain">https://www.rdocumentation.org/packages/lidR/versions/3.0.3/topics/grid_terrain</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>File LAS di input</strong>: selezionare il file .las (o .laz) da rasterizzare.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezionare il ritorno da mantenere</strong>: valore del ritorno da mantenere. Se non si seleziona nulla vengono matenuti tutti i ritorni.</p>
+<p><strong>Selezionare il valore della classe da mantenere</strong>: valore della classe da mantenere. Se non si seleziona nulla vengono matenute tutte le classi.</p>
+<p><strong>Selezionare il metodo statistico da utilizzare</strong>: con questo parametro si sceglie il metodo statistico da utilizzare nella fase di rasterizzazione</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>n</em>: numero di punti nel pixel;</p></li>
+<li><p><em>min</em>: valore minimo dei punti nel pixel;</p></li>
+<li><p><em>max</em>: valore massimo dei punti nel pixel;</p></li>
+<li><p><em>range</em>: intervallo dei valori dei punti nel pixel;</p></li>
+<li><p><em>sum</em>: somma dei valori dei punti nel pixel;</p></li>
+<li><p><em>mean</em>: media dei punti nel pixel;</p></li>
+<li><p><em>stddev</em>:     deviazione standard dei punti nel pixel;</p></li>
+<li><p><em>variance</em>: varianza dei punti nel pixel</p></li>
+<li><p><em>coeff_var</em>: coefficiente di variazione dei punti nel pixel in percentuale [(deviazione_standard/media)*100];</p></li>
+<li><p><em>median</em>: mediana dei punti nel pixel</p></li>
+<li><p><em>percentile</em>: n-esimo percentile dei punti nel pixel</p></li>
+<li><p><em>skewness</em>: skewness dei punti nel pixel</p></li>
+<li><p><em>trimmean</em>: media dei punti nel pixel al di sopra (del valore minimo) e al di sotto (del valore massimo) rispetto al valore di trim definita come soglia (percentuale).</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Percentile valori supportati 1 100</strong> (opzionale): valore del percentile (attivo solo se si estrae il percentile).</p>
+<p><strong>Soglia trim</strong>: valore della soglia da usare in trimmean (attivo solo se si estrae il trimmean).</p>
+<p><strong>Risoluzione finale del raster</strong>: risoluzione geometrica del file di output in metri.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

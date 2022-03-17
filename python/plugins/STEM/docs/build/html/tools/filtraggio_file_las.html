@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filtraggio file LAS &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Unione file LAS" href="unione_file_las.html" />
+    <link rel="prev" title="Pre-elaborazione LIDAR" href="toc_pre_lidar.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Filtraggio file LAS</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="filtraggio-file-las">
+<h1>Filtraggio file LAS<a class="headerlink" href="#filtraggio-file-las" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo esegue il filtraggio dei file .las (o .laz) in modo da selezionare solo i punti LIDAR che rispettano determinate regole. Una volta scelto il file da elaborare, cliccando sul tasto ‘Cariche Statistiche’ viene lanciata una preelaborazione per determinare i ritorni e le classi presenti nel dataset i quali verranno usati per valorizzare i parametri del modulo.</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/4.0.0/topics/filters">filter_poi</a>.</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>File LAS di input</strong>: selezionare il file .las (o .laz) da filtrare.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p>Tutti i parametri sono opzionali. Se non viene impostato nessun parametro il modulo darà in output lo stesso file .las (o .laz) di input.</p>
+<p><strong>Selezionare il ritorno da mantenere</strong>: valore del ritorno da mantenere. Se non si seleziona nulla vengono matenuti tutti i ritorni.</p>
+<p><strong>Selezionare il valore della classe da mantenere</strong>: valore della classe da mantenere. Se non si seleziona nulla vengono matenute tutte le classi.</p>
+<p><strong>Inserire il valore minimo per la X</strong>: valore minimo della X da mantenere. Se non si inserisce non ci sarà una soglia minima per la X.</p>
+<p><strong>Inserire il valore massimo per la X</strong>: valore massimo della X da mantenere. Se non si inserisce non ci sarà una soglia massima per la X.</p>
+<p><strong>Inserire il valore minimo per la Y</strong>: valore minimo della Y da mantenere. Se non si inserisce non ci sarà una soglia minima per la Y.</p>
+<p><strong>Inserire il valore massimo per la Y</strong>: valore massimo della Y da mantenere. Se non si inserisce non ci sarà una soglia massima per la Y.</p>
+<p><strong>Inserire il valore minimo per la Z</strong>: valore minimo della Z da mantenere. Se non si inserisce non ci sarà una soglia minima per la Z.</p>
+<p><strong>Inserire il valore massimo per la Z</strong>: valore massimo della Z da mantenere. Se non si inserisce non ci sarà una soglia massima per la Z.</p>
+<p><strong>Inserire il valore minimo per l’intensita’</strong>: valore minimo dell’intensita’ da mantenere. Se non si inserisce non ci sarà una soglia minima per l’intensita’.</p>
+<p><strong>Inserire il valore massimo per l’intensita’</strong>: valore massimo dell’intensita’ da mantenere. Se non si inserisce non ci sarà una soglia massima per l’intensita’.</p>
+<p><strong>Inserire il valore minimo per l’angolo di scansione</strong>: valore minimo dell’angolo di scansione da mantenere. Se non si inserisce non ci sarà una soglia minima per l’angolo di scansione.</p>
+<p><strong>Inserire il valore massimo per l’angolo di scansione</strong>: valore massimo dell’angolo di scansione da mantenere. Se non si inserisce non ci sarà una soglia massima per l’angolo di scansione.</p>
+<p><strong>Inserire i valori minimo e massimo per l’angolo di scansione</strong>: valori minimo e massimo per l’angolo di scansione da mantenere. I valori vanno seprati da uno spazio.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+<p><strong>Comprimere il file di output</strong>: se selzionato l’output sara’ in formato .laz.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filtro maggioranza &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Metriche di accuratezza" href="metriche_di_accuratezza.html" />
+    <link rel="prev" title="Attribuzione/modifica classi tematiche" href="attribuzione_modifica_classi_tematiche.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Filtro maggioranza</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="filtro-maggioranza">
+<h1>Filtro maggioranza<a class="headerlink" href="#filtro-maggioranza" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo effettua un filtraggio tramite la regola di maggioranza delle mappe di classificazione. Il modulo va utilizzato per rimuovere i pixel di una classe isolati tra pixel di un’altra classe, o piccole aree classificate in una classe ma circondate da altre classi. Il filtro di maggioranza può essere effettuato in due diverse modalità: <em>vicinanza</em>, e <em>aree</em>.</p>
+<p>Esempio di funzionamento del metodo <em>vicinanza</em>:</p>
+<blockquote>
+<div><p>Supponiamo di avere un’immagine classificata di questo tipo:</p>
+<blockquote>
+<div><p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       10      1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+</div></blockquote>
+<p>Nell’immagine abbiamo 24 pixel della classe 1 e un solo pixel isolato della classe 10. Scegliendo un neighborhood di dimensione 3x3 si avrà in output:</p>
+<blockquote>
+<div><p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+<p>1       1       1       1       1</p>
+</div></blockquote>
+<p>Come si può vedere il pixel isolato della classe 10 é stato rimosso e sostituito dal valore maggioritario tra quelli del suo intorno 3x3.</p>
+</div></blockquote>
+<p>Per maggiori informazioni si veda la documentazione dei comandi di GRASS GIS utilizzati: per il metodo <em>vicinanza</em> <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.neighbors.html">r.neighbors</a> per <em>area</em>
+<a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.reclass.area.html">r.reclass.area</a></p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Dati di input</strong>: selezionare il raster da utilizzare tra quelli attualmente aperti in QGIS.</p>
+<p><strong>Selezione bande</strong>: selezionare le bande che si vogliono utilizzate; se non si seleziona nulla vengono utilizzate tutte le bande.</p>
+</div>
+<div class="section" id="parametri">
+<h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
+<p><strong>Selezione il metodo da utilizzare</strong>: si possono scegliere diversi metodi per effettuare il filtro di maggioranza</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>vicinanza</em>: il valore del pixel centrale della finestra di dimensioni impostata dall’utente viene sostituito con il valore più frequente dei pixel di quell’intorno;</p></li>
+<li><p><em>area</em>: in questo modo tutti i gruppi di pixel di area inferiore ad una certa soglia impostata dall’utente vengono uniti al gruppo di pixel più vicino di dimensioni superiori alla soglia.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Dimensione del neighborhood</strong> (opzionale): valore numerico dispari indicativo della dimensione della finestra mobile del filtro. Il valore deve essere dispari. Attivo solo se il metodo selezionato è “vicinanza”. Valori alti del neighborhood comportano una maggiore “smussatura” dell’immagine classificata.</p>
+<p><strong>Inserire la dimensione minima da tenere in considerazione (in ettari)</strong> (opzionale): valore numerico indicativo della dimensione minima in ettari da tenere in considerazione nel filtraggio. Attivo solo se il metodo selezionato è “area”.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>

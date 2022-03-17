@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estrazione CHM &#8212; Documentazione STEM 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rasterizzazione file LAS" href="rasterizzazione_file_las.html" />
+    <link rel="prev" title="Ritaglio file LAS" href="ritaglio_file_las.html" />
+<link rel="stylesheet" href="../_static/stem.css" type="text/css" />
+
+  </head><body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>Documentazione STEM</span></a></h1>
+        <h2 class="heading"><span>Estrazione CHM</span></h2>
+      </div>
+      <div class="topnav">
+        <a class="uplink" href="../index.html">Home page</a>
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="estrazione-chm">
+<h1>Estrazione CHM<a class="headerlink" href="#estrazione-chm" title="Permalink to this headline">¶</a></h1>
+<p>Il modulo può estrarre il CHM da un singolo file oppure da una serie di file LiDAR (LASCatalog). Il modulo “normalizza” rispetto alla quota del suolo la Z delle coordinate dei punti LiDAR all’interno di un file .las. Se il file .las ricopre un’area forestale si avrà in uscita il Canopy Height Model.
+L’algoritmo sottrae alla Z di ogni punto del file .las di input la quota del DTM in quel punto.
+Il CHM in uscita è un file .las in cui sono memorizzati i punti la cui quota è data dalla differenza fra i punti del file .las di input e la quota del Digital Terrain Model - DTM (fornito in formato raster).</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://">normalize_height</a>.</p>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<p><strong>Seleziona la sorgente</strong>: scegliere tra l’utilizzo del modulo su un singolo file oppure su più file (LASCatalog) contenuti in una cartella.</p>
+<p><strong>File LAS di input</strong>: scegliere il file .las a cui sottrarre la quota del suolo.</p>
+<p><strong>File DTM di input</strong>: scegliere il file raster del Digital Terrain Model (DTM).</p>
+<p>oppure</p>
+<p><strong>Cartella dei file LAS</strong>: scegliere la cartella dei file .las (LASCatalog).</p>
+<p><strong>Cartella dei file DTM</strong>: scegliere la cartella dei raster del Digital Terrain Model (DTM).</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p><strong>Risultato</strong>: inserire il percorso e il nome del file .las (o .laz) di output.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+	<a class="uplink" href="../index.html">Home page</a>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Thomas Maffei, Michele Dalponte, Stefano Piffer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>
