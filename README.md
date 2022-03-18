@@ -1,26 +1,21 @@
-Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
+STEM - Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
 
-Developed by Fondazione Edmund Mach, GIS & Telerilevamento Unit funded
-by Provincia di Trento
+Il progetto STEM, finanziato dalla Provincia Autonoma di Trento, ha previsto lo sviluppo di un sistema informativo finalizzato all’archiviazione, elaborazione e diffusione delle informazioni telerilevate utili ai processi di pianificazione, gestione e monitoraggio territoriale. Una componente fondamentale è costituita da plugin, in ambiente open-source QGIS, per la classificazione di uso del suolo e la stima di parametri forestali quali: altezza, densità, struttura e volume legnoso.
 
-Requirements
+Requisiti
 ============
 
-* QGIS >= 2.6
-* GRASS >= 7.0
-* GDAL/OGR = 1.11
-* PDAL 1.0.1
-* Python libraries:
-  * GDAL/OGR
-  * sklearn > 0.15.0
-  * psutil >= 2.1.1
-  * numpy
+* QGIS >= 3.22
+* GRASS >= 7.8
+* R >= 4.0
 
-How to install on windows
+Passi installazione
 -------------------------
+1.	Installare QGIS. Il plugin è stato creato per la versione QGIS 3.X, ma se ne consiglia l'utilizzo dalla versione LTR 3.22 (o sucessive).
+2.	Installare il motore di calcolo R, scaricandolo direttamente dal sito https://cran.r-project.org/. Il plugin supporta la versione 4.0 o successive.
+3.	Da QGIS, tramite l’apposito modulo, installare il plugin "Processing R Provider" e configurarlo alla voce Impostazioni -> Opzioni -> Processing -> Programmi -> R. 
+4.	Copiare il contenuto della Repository Git (cartelle "processing" e "python") nella cartella del profilo utente di QGIS (Impostazioni -> Profili Utente -> Apri la Cartella del Profilo Attivo). 
+5.	Verificare la presenza della voce STEM nelle voci di menu di QGIS, nel caso ricaricare i Plugin o riavviare QGIS.
+7.	Verificare che in Strumenti di Processing sia presente la voce R e le cartelle Pre Elaborazione, Classificazione Supervisionata, Stimadei Parametri, ...).
+8.	 Da QGIS, verificare che i parametri presenti in STEM -> impostazioni siano corretti, nel caso di prima installazione premere il pulsante "Init/Reload Configuration" per impostarli in automatico.
 
-QGIS, GRASS, GDAL, numpy, sklearn from OSGeo4W
-
-Install `pip`
-
-With pip update scikit-learn, install psutil
