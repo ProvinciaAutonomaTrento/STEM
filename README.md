@@ -1,7 +1,7 @@
 STEM - Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
 ===========
 
-Il progetto STEM, finanziato dalla Provincia Autonoma di Trento, ha previsto lo sviluppo di un sistema informativo finalizzato all’archiviazione, elaborazione e diffusione delle informazioni telerilevate utili ai processi di pianificazione, gestione e monitoraggio territoriale. Una componente fondamentale è costituita da plugin, in ambiente open-source QGIS, per la classificazione di uso del suolo e la stima di parametri forestali quali: altezza, densità, struttura e volume legnoso.
+Il progetto STEM, finanziato dalla Provincia Autonoma di Trento, ha previsto lo sviluppo di un sistema informativo finalizzato all’archiviazione, elaborazione e diffusione delle informazioni telerilevate utili ai processi di pianificazione, gestione e monitoraggio territoriale. Una componente fondamentale del progetto è costituita da plugin, per ambiente open-source QGIS, utili alla classificazione dell'uso del suolo e stima di parametri forestali quali: altezza, densità, struttura e volume legnoso.
 
 Requisiti
 -------------------------
