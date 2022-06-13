@@ -1,9 +1,10 @@
 Support Vector Machines
 ================================
 
-Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM). L'algoritmo SVM si basa sul principio che lo spazio delle feature di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione è effettuata utilizzando una funzione kernel di tipo gaussiano Radial Basis Function.
-Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N) e un immagine raster da classificare.
+Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM). 
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l'indicazione delle classi da classificare in formato numerico (1,2,...,N).
 L'utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+L'algoritmo SVM si basa sul principio che lo spazio delle feature di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione è effettuata utilizzando una funzione kernel di tipo gaussiano Radial Basis Function.
 
 .. only:: latex
 
@@ -26,9 +27,9 @@ Parametri
 
 **Creazione mappa**: se la casella è spuntata verrà generata la mappa in formato '.tif'. 
 
-**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
+**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features (delle bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
 
-**File features** (opzionale): selezionare il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features".
+**File features** (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features" che elenca le feature da utilizzare.
 
 **Valore C** (opzionale): parametro di regolarizzazione.
 

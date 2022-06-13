@@ -1,8 +1,8 @@
 Selezione feature per classificazione
 =========================================
 
-Il modulo esegue la selezione delle feature per la classificazione. La selezione verrà effettuata utilizzando l'algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vi saranno 2 file di testo: il primo con un riassunto generale della selezione, il secondo con l'indicazione delle feature da selezionare (per i moduli di classificazione supervisionata).
-La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade. Per maggiori informazioni vedi la funzione 'varSelSFFS' in https://cran.r-project.org/web/packages/varSel/varSel.pdf
+Il modulo esegue la selezione delle feature (bande di un raster) con un maggior contributo informativo ai fini della successiva classificazione. La ricerca viene effettuata sulla base di una serie di aree di training (input vettoriale) con l'indicazione, per ciascun'area, della classe di appartenenza. La selezione viene effettuata utilizzando l'algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vengono generati 2 file di testo: il primo con un riassunto generale della selezione, il secondo con l'indicazione delle feature da selezionare (per i moduli di classificazione supervisionata).
+La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi, il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade. Per maggiori informazioni vedi la funzione 'varSelSFFS' in https://cran.r-project.org/web/packages/varSel/varSel.pdf
 
 
 .. warning::
@@ -26,9 +26,9 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
 Input
 ------------
 
-**Dati di input vettoriale**: selezionare il file di input vettoriale contente le aree di training.
+**Dati di input vettoriale**: selezionare il file di input vettoriale contente le aree di training con un campo numerico della classe di appartenenza.
 
-**Seleziona la colonna con l'indicazione della classe**: selezionare la colonna con l'indicazione dei codici delle classi. Vedi sopra i codici delle classi utilizzabili.
+**Seleziona la colonna con l'indicazione della classe**: selezionare la colonna con l'indicazione dei codici delle classi. 
 
 **Dati di input raster**: selezionare il file raster da cui estrarre i valori dei pixel.
 
@@ -40,7 +40,7 @@ Parametri
 	* *minimum*: distanza di Jeffries-Matusita minima tra le classi;
 	* *mean*: distanza di Jeffries-Matusita media tra le classi;
 
-**Selezionare numero variabili**: numero di features da selezionare. 
+**Selezionare numero variabili**: numero di features da selezionare (deve essere maggiore di 2). 
 
 Output
 ------------

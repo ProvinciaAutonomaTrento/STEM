@@ -1,7 +1,7 @@
 Ritaglio
 ================================
 
-Il modulo Ritaglio serve per preprocessare i layer (sia vettoriali che raster) sui quali si intende lanciare i moduli STEM creando dei nuovi dataset coerenti con la forma della maschera. Una volta lanciata l'elaborazione, i nuovi layer vengono aggiunti nella cartella identificata ed, eventualmente, aggiunti alla TOC. La maschera (ritaglio) è di tipo shapefile M-poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l'area all'interno del poligono viene rimossa. I dati presenti nella TOC (sia vettoriali che raster) vengono caricati di default tra quelli utilizzabili come input, mentre i soli vettoriali vengono aggiunti come scelta sulla quale effettuare il ritaglio. E' possibile aggiungere ulteriori dataset tramite il pulsante "Sfoglia".
+Il modulo Ritaglio serve per ritagliare, con una maschera, più layer (sia vettoriali che raster) sui quali si intende effettuare le successive elaborazioni STEM. Una volta lanciata l'elaborazione, i nuovi layer vengono aggiunti nella cartella specificata ed, eventualmente, aggiunti alla TOC. La maschera (ritaglio) è di tipo shapefile M-poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l'area all'interno del poligono viene rimossa. I dati presenti nella TOC (sia vettoriali che raster) vengono caricati di default tra quelli utilizzabili come input, mentre i soli vettoriali vengono proposti come maschera di ritaglio. E' possibile aggiungere ulteriori dataset tramite il pulsante "Sfoglia".
 
 .. only:: latex
 
@@ -11,9 +11,9 @@ Il modulo Ritaglio serve per preprocessare i layer (sia vettoriali che raster) s
 Input
 ------------
 
-**Dati di input**: selezionare i layer da usare come maschera. Per rimoverle un dataset, selezionarlo e cancellare il layer tramite il tasto "canc". E' possibile i drag and drop e la scelta multipla.
+**Dati di input**: selezionare i layer da ritagliare. Per rimoverle un dataset, selezionarlo e cancellare il layer tramite il tasto "canc". E' possibile i drag and drop e la scelta multipla.
 
-**Layer maschera**: selezionare lo shapefile da usare come maschera.
+**Layer maschera**: selezionare lo shapefile da usare come maschera di ritaglio.
 
 **Usa Maschera Inversa**: inverte l'area da rimuovere.
 

@@ -127,7 +127,7 @@ class STEMToolsDialog(BaseDialog):
         self.lm = "Selezione la strategia da utilizzare"
         self._insertMethod(mets, self.lm, 0)
         label1 = "Seleziona numero variabili"
-        self._insertThresholdInteger(label=label1, minn=0, maxx=99, step=1, posnum =1)
+        self._insertThresholdInteger(label=label1, minn=2, maxx=99, step=1, posnum =1)
         
         self._insertSecondFileOutput(label = "Lista feature selezionate", posnum=2, filt= "TXT files (*.txt)")
         

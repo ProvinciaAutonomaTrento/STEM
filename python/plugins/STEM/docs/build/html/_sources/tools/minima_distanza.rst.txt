@@ -1,9 +1,10 @@
 Minima distanza
 ================================
 
-Il modulo effettua la classificazione di immagini usando l'algoritmo di classificazione supervisionata non-parametrico Minima Distanza. L'algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell'immagine la classe corrispondente al centroide più vicino nello spazio delle feature.
-Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N) e un immagine raster da classificare.
-L'utente potrà anche inserire un vettoraile da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+Il modulo effettua la classificazione di immagini usando l'algoritmo di classificazione supervisionata non-parametrico Minima Distanza. 
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l'indicazione delle classi da classificare in formato numerico (1,2,...,N).
+L'utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+L'algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell'immagine la classe corrispondente al centroide più vicino nello spazio delle feature.
 
 .. only:: latex
 
@@ -26,9 +27,9 @@ Parametri
 
 **Creazione mappa**: se la casella è spuntata verrà generata la mappa in formato '.tif'. 
 
-**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
+**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features (bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
 
-**File features** (opzionale): selezionare il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features".
+**File features** (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features" che elenca le feature da utilizzare.
 
 
 **Numero di neighbors** (opzionale): numero di pixel di training vicini al pixel da classificare da considerare per la classificazione.

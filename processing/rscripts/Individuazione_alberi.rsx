@@ -53,7 +53,9 @@ if(Algoritmo_segmentazione == 1){
   proj <- "+init=epsg:"
   proj_EPSG <- paste(proj, Definisci_EPSG, sep="")
   crs(tree_tops) <- proj_EPSG
-  Output_cima = st_as_sf(tree_tops)
+  tree_tops <- st_as_sf(tree_tops)
+  tree_tops <- st_zm(tree_tops, drop = TRUE, what = "ZM")
+  Output_cima = tree_tops
   writeLAS(seg_tree, file = Output_las)
 } else {
   chm_raster <- raster(chm_raster_path)
@@ -63,6 +65,8 @@ if(Algoritmo_segmentazione == 1){
   proj <- "+init=epsg:"
   proj_EPSG <- paste(proj, Definisci_EPSG, sep="")
   crs(tree_tops2) <- proj_EPSG
+  tree_tops2 <- st_as_sf(tree_tops2)
+  tree_tops2 <- st_zm(tree_tops2, drop = TRUE, what = "ZM")
   Output_cima = st_as_sf(tree_tops2)
   writeLAS(seg_tree2, file = Output_las)
 }

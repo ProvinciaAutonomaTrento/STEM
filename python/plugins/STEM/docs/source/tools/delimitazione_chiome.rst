@@ -1,7 +1,7 @@
 Delimitazione chiome
 ================================
 
-Il modulo permette di delineare le chiome degli alberi a partire da un file raster del Canopy Height Model (ottenuto in uscita dal modulo *Rasterizzazione file LAS*). L'algoritmo si basa sulla funzione itcLiDAR consultabile in https://rdrr.io/cran/itcSegment/man/itcLiDAR.html.
+Il modulo permette di delineare le chiome e la posizione degli apici delle singole piante a partire da un file raster del Canopy Height Model (ottenuto in uscita dal modulo *Rasterizzazione file LAS*). L'algoritmo si basa sulla funzione itcLiDAR consultabile in https://rdrr.io/cran/itcSegment/man/itcLiDAR.html.
 
 NB: l'algoritmo può essere lento se il file di input è grande.
 

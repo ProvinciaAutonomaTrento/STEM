@@ -1,9 +1,10 @@
 Massima verosimiglianza
 ================================
 
-Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata Massima Verosimiglianza. Il classificatore a massima verosimilglianza é un classificatore parametrico supervisionato che assume una distribuzione gaussiana dei valori dei pixel all'interno di una classe. La classificazione avverrà in tre passaggi: 1) partendo dalle aree di training il classificatore stima la media e la varianza di ogni classe.  Nel caso di dati multidimensionali si avrà un vettore di medie 1xN (con N = numero di bande) e una matrice di covarainza (NxN) per ogni classe.; ii) una funzione di tipo gaussiano viene definita per ogni classe partendo dalle medie e dalle varianze stimate al passaggio precedente; e iii) per ogni pixel dell'immagine da classificare si ottiene un valore della funzione gaussiana di ogni classe e si sceglie la classe che fornisce il valore più alto.
-Gli input al classificatore sono un file vettoriale contente una colonna con l'indicazione della classe in formato numerico (1,2,...,N) e un immagine raster da classificare.
-L'utente potrà anche inserire un vettoraile da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+Il modulo effettua la classificazione di immagini o vettori usando l'algoritmo di classificazione supervisionata Massima Verosimiglianza. 
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l'indicazione delle classi da classificare in formato numerico (1,2,...,N).
+L'utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+Il classificatore a massima verosimilglianza é un classificatore parametrico supervisionato che assume una distribuzione gaussiana dei valori dei pixel all'interno di una classe. La classificazione avverrà in tre passaggi: 1) partendo dalle aree di training il classificatore stima la media e la varianza di ogni classe.  Nel caso di dati multidimensionali si avrà un vettore di medie 1xN (con N = numero di bande) e una matrice di covarainza (NxN) per ogni classe.; ii) una funzione di tipo gaussiano viene definita per ogni classe partendo dalle medie e dalle varianze stimate al passaggio precedente; e iii) per ogni pixel dell'immagine da classificare si ottiene un valore della funzione gaussiana di ogni classe e si sceglie la classe che fornisce il valore più alto.
 
 .. warning::
 
@@ -30,9 +31,9 @@ Parametri
 
 **Creazione mappa**: se la casella è spuntata verrà generata la mappa in formato '.tif'. 
 
-**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
+**Elenco features** (opzionale): digitare manualmente il numero identificativo delle features (delle bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.
 
-**File features** (opzionale): selezionare il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features".
+**File features** (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di 'Selezione feature per classificazione' alla voce "Output features" che elenca le feature da utilizzare.
 
 **Numero fold cross validation** (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L'accuratezza finale sarà la media delle N accuratezze.
 

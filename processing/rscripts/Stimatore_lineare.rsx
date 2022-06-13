@@ -55,6 +55,9 @@ if(Seleziona_variabili=="file"){
   predict <- Dati_di_input_vettoriale_di_training[[colonna]]
 }
 
+predict <- as.numeric(predict)
+
+
 if(Selezionare_la_trasformazione== 0){
   Selezionare_la_trasformazione="nessuna"
 } else if (Selezionare_la_trasformazione== 1){
@@ -98,10 +101,10 @@ if(Seleziona_variabili=="no"){
   colonna <- which(colnames(Vettoriale_di_validazione@data) == Seleziona_la_colonna_del_parametro_da_stimare)
   new_validazione <- Vettoriale_di_validazione[-colonna]
 } else {
-  new_validazione <- Vettoriale_di_validazione[ , my_variable]
+  new_validazione <- Vettoriale_di_validazione[ ,my_variable]
 }
   predictions <- predict(fit_mod, new_validazione)
-  test <- Vettoriale_di_validazione[[Seleziona_la_colonna_del_parametro_da_stimare]]
+  test <- as.numeric(Vettoriale_di_validazione[[Seleziona_colonna_per_la_validazione]])
   statistics_validation <- data.frame(
   R2 = R2(predictions, test),
   RMSE = RMSE(predictions, test),

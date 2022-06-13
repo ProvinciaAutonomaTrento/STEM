@@ -1,12 +1,12 @@
 Come installare il plugin
 ==============================
 
-Il plugin supporta la versione **QGIS 3.10 LTR** con **GRASS GIS 7.8**.
+Il plugin supporta la versione **QGIS 3.24 LTR** con **GRASS GIS 7.8**.
 
 **STEP**: installazione dipendenze:
 
 	1.	Provvedere a configurare **GRASS** (in termini di LOCATION) correttamente, lanciando direttamente l'applicazione e seguendo le istruzioni mostrate a video per la creazione della LOCATION.
-	2.	Installare il motore di calcolo R, scaricandolo direttamente dal sito https://cran.r-project.org/. Il plugin supporta la versione 4.0.3.
+	2.	Installare il motore di calcolo R, scaricandolo direttamente dal sito https://cran.r-project.org/. Il plugin supporta la versione 4.1.2.
 	3.	Installare il plugin **Processing R Provider** e configurarlo alla voce ``Impostazioni -> Opzioni -> Processing -> Programmi -> R``.
 		Per verificare la corretta installazione, si consiglia di provare uno degli script già presenti nella installazione del plugin.
 	4.	Verificare che in ``Strumenti di Processing`` sia presente la voce **R** e le cartelle ``Pre Elaborazione, Classificazione Supervisionata, Stima dei Parametri, ...)``. 

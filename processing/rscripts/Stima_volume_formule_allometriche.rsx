@@ -1,5 +1,5 @@
 ##Stima dei parametri=group
-##Dati_di_input=vector point
+##Dati_di_input=vector
 ##Seleziona_colonna_indicazione_specie=Field Dati_di_input
 ##Seleziona_colonna_indicazione_diametro=Field Dati_di_input
 ##Seleziona_colonna_indicazione_altezza=Field Dati_di_input
@@ -66,11 +66,16 @@ for(i in 1:length(tree1[[Seleziona_colonna_indicazione_specie]])){
     tree1$volume[i] = volume_ps(tree1)
   } else if (tree1[[Seleziona_colonna_indicazione_specie]][i]=="pc"){
     tree1$volume[i] = volume_pc(tree1)
-  } else if (tree1[[Seleziona_colonna_indicazione_specie]][i]=="pn"){
+  } else {
     tree1$volume[i] = volume_pn(tree1)
   }
 }
 
-new_SPDF <- SpatialPointsDataFrame(coords = Dati_di_input@coords, data = tree1, proj4string = Dati_di_input@proj4string)
+if(isTRUE(class(Dati_di_input)[1] == "SpatialPolygonsDataFrame")){
+  new_SPDF <- SpatialPolygonsDataFrame(Sr = SpatialPolygons(Dati_di_input@polygons), data = tree1)
+  new_SPDF@proj4string <-  Dati_di_input@proj4string
+} else {
+  new_SPDF <- SpatialPointsDataFrame(coords = Dati_di_input@coords, data = tree1, proj4string = Dati_di_input@proj4string)
+}
 
 Output = new_SPDF

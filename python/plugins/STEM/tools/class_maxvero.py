@@ -273,6 +273,18 @@ class STEMToolsDialog(BaseDialog):
                 return False
             return True
 
+    def changeRStoolbox_files(self):
+        from qgis.core import QgsApplication
+        
+        projDB = QgsApplication.qgisSettingsDirPath() + "processing/rlibs/RStoolbox"
+        
+        import shutil
+
+        if os.path.exists(projDB):
+            shutil.rmtree(projDB)
+
+        shutil.copytree(QgsApplication.qgisSettingsDirPath() + "python/plugins/STEM/dep/RStoolbox", projDB)
+
 
     def onRunLocal(self):
         STEMSettings.saveWidgetsValue(self, self.toolName)
@@ -341,7 +353,9 @@ class STEMToolsDialog(BaseDialog):
                     
             self.runButton.setEnabled(False)
             self.tabWidget.setCurrentIndex(1)
-              
+  
+            self.changeRStoolbox_files()
+            
             alg = QgsApplication.processingRegistry().algorithmById(
                 'r:Massima_Verosomiglianza')
             

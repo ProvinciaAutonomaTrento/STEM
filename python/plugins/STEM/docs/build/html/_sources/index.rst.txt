@@ -26,7 +26,6 @@ Documentazione STEM
   tools/toc_stima_parametri
   tools/toc_post_stima
   tools/toc_struttura
-  troubleshooting
 
 
 .. only:: latex

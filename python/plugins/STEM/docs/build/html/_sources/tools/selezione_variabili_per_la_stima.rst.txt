@@ -1,7 +1,7 @@
 Selezione variabili per la stima
 =========================================
 
-Il modulo esegue la selezione delle variabili per la stima. La selezione viene effettuata costruendo un modello di regressione da un set di variabili predittori candidati inserendo e rimuovendo i predittori in base al p-value, con approccio stepwise fino a che non ci sono più variabili da inserire o rimuovere. Il valore di p-value per l'inserimento nel modello  di regressione è 0,05. Per altre informazioni vedere in https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p
+Il modulo esegue la selezione delle variabili con maggior contributo ai fini della stima dei parametri dendrometrici. Il file di input vettoriale (in genere una serie di celle di trainig) deve avere come attributi sia la serie delle possibili variabili di input che il parametro da stimare valorizzato. La selezione viene effettuata costruendo un modello di regressione da un set di variabili predittori candidati inserendo e rimuovendo i predittori in base al p-value, con approccio stepwise fino a che non ci sono più variabili da inserire o rimuovere. Il valore di p-value per l'inserimento nel modello  di regressione è 0,05. Per altre informazioni vedere in https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p
 
 .. warning::
 
@@ -14,7 +14,7 @@ Il modulo esegue la selezione delle variabili per la stima. La selezione viene e
 Input
 ------------
 
-**Dati di input vettoriale di training**: selezionare il file di input vettoriale contente le aree di training.
+**Dati di input vettoriale di training**: selezionare il file di input vettoriale contente le aree di training. Devomno essere presenti come attributi sia le possibili variabili di input che il parametro da stimare valorizzato.
 
 **Seleziona la colonna con l'indicazione del parametro da stimare**: selezionare la colonna con l'indicazione del target.
 

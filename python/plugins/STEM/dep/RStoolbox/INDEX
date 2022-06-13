@@ -1,0 +1,54 @@
+ImageMetaData           ImageMetaData Class
+RStoolbox               RStoolbox: A Collection of Remote Sensing Tools
+classifyQA              Classify Landsat QA bands
+cloudMask               Simple Cloud Detection
+cloudShadowMask         Cloud Shadow Masking for Flat Terrain
+coregisterImages        Image to Image Co-Registration based on Mutual
+                        Information
+decodeQA                Decode QA flags to bit-words
+encodeQA                Encode QA Conditions to Integers
+estimateHaze            Estimate Image Haze for Dark Object Subtraction
+                        (DOS)
+fCover                  Fractional Cover Analysis
+fortify.raster          Fortify method for classes from the raster
+                        package.
+getMeta                 Extract bandwise information from ImageMetaData
+getValidation           Extract validation results from superClass
+                        objects
+ggR                     Plot RasterLayers in ggplot with greyscale
+ggRGB                   Create ggplot2 Raster Plots with RGB from 3
+                        RasterLayers
+histMatch               Image to Image Contrast Matching
+lsat                    Landsat 5TM Example Data
+mesma                   Multiple Endmember Spectral Mixture Analysis
+                        (Spectral Unmixing)
+normImage               Normalize Raster Images: Center and Scale
+oneHotEncode            One-hot encode a raster or vector
+panSharpen              Pan Sharpen Imagery / Image Fusion
+pifMatch                Pseudo-Invariant Features based Image Matching
+predict.superClass      Predict a raster map based on a superClass
+                        model fit.
+predict.unsuperClass    Predict a raster map based on a unsuperClass
+                        model fit.
+radCor                  Radiometric Calibration and Correction
+rasterCVA               Change Vector Analysis
+rasterEntropy           Multi-layer Pixel Entropy
+rasterPCA               Principal Component Analysis for Rasters
+readEE                  Tidy import tool for EarthExplorer .csv export
+                        files
+readMeta                Read Landsat MTL metadata files
+readSLI                 Read ENVI spectral libraries
+rescaleImage            Linear Image Rescaling
+rlogo                   Rlogo as RasterBrick
+rsOpts                  Set global options for RStoolbox
+sam                     Spectral Angle Mapper
+saveRSTBX               Save and Read RStoolbox Classification Results
+spectralIndices         Spectral Indices
+srtm                    SRTM Digital Elevation Model
+stackMeta               Import separate Landsat files into single stack
+superClass              Supervised Classification
+tasseledCap             Tasseled Cap Transformation
+topCor                  Topographic Illumination Correction
+unsuperClass            Unsupervised Classification
+validateMap             Map accuracy assessment
+writeSLI                Write ENVI spectral libraries

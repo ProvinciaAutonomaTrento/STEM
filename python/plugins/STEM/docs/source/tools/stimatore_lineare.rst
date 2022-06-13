@@ -2,7 +2,7 @@ Stimatore lineare
 =================
 
 Il modulo esegue la stima di parametri utilizzando uno stimatore lineare.
-Gli input allo stimatore sono un file vettoriale contente una colonna con l'indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l'indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). L'utente potrà anche inserire un vettoriale da usare nella fase di validazione o per mappare un'area più ampia (es. vettoriale di una griglia). Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.
+Gli input allo stimatore sono un file vettoriale contente una colonna con l'indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l'indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). Va inserito il vettoriale di mappa e cioè l'intera area da stimare (es. griglia) avente come attributi le stesse variabili indicate nel vettoriale di training. L'utente potrà anche inserire un vettoriale da usare nella fase di validazione. Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.
 
 .. only:: latex
 
@@ -23,11 +23,13 @@ Input
 
 **Seleziona la colonna con indicazione del parametro da stimare**: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.
 
-**File di selezione** (opzionale): inserire il file ottenuto in output dal modulo "Selezione variabili per la stima". Attivato solo se l'opzione "file" viene scelta nel menu "selezione variabili".
+**Vettoriale di mappa**: file vettoriale dell'area da stimare. Gli attributi devono chiamarsi nella stessa maniera e essere dello stesso tipo del vettoriale di training.
 
 **Vettoriale di validazione** (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.
 
 **Seleziona la colonna per la validazione** (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.
+
+**File di selezione** (opzionale): inserire il file ottenuto in output dal modulo "Selezione variabili per la stima". Attivato solo se l'opzione "file" viene scelta nel menu "selezione variabili".
 
 Parametri
 ------------

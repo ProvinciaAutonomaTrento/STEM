@@ -239,6 +239,38 @@ class STEMToolsDialog(BaseDialog):
             driver = STEMUtils.getFormat(file_path)
             proj  = STEMUtils.getProjection(file_path)
             
+            import os.path
+            extension =  os.path.splitext(file_path)[1]
+            
+            if (driver =="GTiff"):
+                if (proj ==""):
+                    
+                    import processing
+        
+                    ###################### R script here ##############################
+                    processing.run("gdal:assignprojection", { 'CRS' : 'EPSG:25832','INPUT' : file_path})
+                    ###################################################################
+           
+                    
+            if (driver =="HFA"):
+                if (proj ==""):
+                    from osgeo import gdal  
+                    from osgeo import osr
+            
+                    sr = osr.SpatialReference()
+                    if sr.SetFromUserInput('EPSG:25832') != 0:
+                
+                        print('Failed to process SRS definition: %s' % srs)
+                        return -1
+            
+                    wkt = sr.ExportToWkt()
+            
+                    fs = open(file_path.replace(".img",".prj"), 'w')
+        
+                    fs.write(wkt)
+                    fs.close()          
+            
+            
             if (driver =="AAIGrid"):
                 if (proj ==""):
                    # gdal_translate -a_srs EPSG:25832 -of AAIGrid G:/.shortcut-targets-by-id/1invx6AIKebcfe6GfuxgjIPED9z1u4rmG/STEM-v3/test2022/5h658051265_DTM.asc C:/temp/TEST/altro/test_translata.asc

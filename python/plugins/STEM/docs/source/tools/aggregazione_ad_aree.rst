@@ -1,7 +1,7 @@
 Aggregazione ad aree
 ================================
 
-Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile del catasto sull'area di competenza).
+Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile delle particelle forestali).
 Per ogni area del secondo vettoriale vengono calcolate le statistiche di uno o più parametri di interesse (ad es. altezze medie, volume totale, ecc.) memorizzati nel primo file.
 Questo modulo e' utile per aggregare in aree di maggiore dimensioni risultati ottenuti a livello di singoli alberi, o misure puntuali a terra (es. misure di volumi di singoli alberi).
 Il file di output e' uguale al file delle aree di input, in cui viene aggiunta una colonna relativa al prodotto richiesto.

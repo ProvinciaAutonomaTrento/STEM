@@ -32,9 +32,10 @@
         
   <div class="section" id="minima-distanza">
 <h1>Minima distanza<a class="headerlink" href="#minima-distanza" title="Permalink to this headline">¶</a></h1>
-<p>Il modulo effettua la classificazione di immagini usando l’algoritmo di classificazione supervisionata non-parametrico Minima Distanza. L’algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell’immagine la classe corrispondente al centroide più vicino nello spazio delle feature.
-Gli input al classificatore sono un file vettoriale contente una colonna con l’indicazione della classe in formato numerico (1,2,…,N) e un immagine raster da classificare.
-L’utente potrà anche inserire un vettoraile da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).</p>
+<p>Il modulo effettua la classificazione di immagini usando l’algoritmo di classificazione supervisionata non-parametrico Minima Distanza.
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l’indicazione delle classi da classificare in formato numerico (1,2,…,N).
+L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+L’algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell’immagine la classe corrispondente al centroide più vicino nello spazio delle feature.</p>
 <div class="section" id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <p><strong>File raster</strong>: immagine raster da classificare.</p>
@@ -45,8 +46,8 @@ L’utente potrà anche inserire un vettoraile da usare nella fase di validazion
 <div class="section" id="parametri">
 <h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>
 <p><strong>Creazione mappa</strong>: se la casella è spuntata verrà generata la mappa in formato ‘.tif’.</p>
-<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
-<p><strong>File features</strong> (opzionale): selezionare il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features”.</p>
+<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features (bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
+<p><strong>File features</strong> (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features” che elenca le feature da utilizzare.</p>
 <p><strong>Numero di neighbors</strong> (opzionale): numero di pixel di training vicini al pixel da classificare da considerare per la classificazione.</p>
 <p><strong>Numero fold cross validation</strong> (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L’accuratezza finale sarà la media delle N accuratezze.</p>
 </div>

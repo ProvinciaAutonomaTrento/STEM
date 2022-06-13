@@ -33,14 +33,15 @@
   <div class="section" id="support-vector-regression">
 <h1>Support Vector regression<a class="headerlink" href="#support-vector-regression" title="Permalink to this headline">¶</a></h1>
 <p>IIl modulo effettua la classificazione di immagini o vettori usando l’algoritmo di supervisionato non-parametrico Support Vector Regression (SVR). L’algoritmo SVM si basa sul principio che lo spazio delle variabili di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui la stima lineare è possibile. La trasformazione è effettuata utilizzando una funzione kernel.
-Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione o di mappatura di un’area più ampia (es. vettoriale di una griglia). Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
+Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). Va inserito il vettoriale di mappa e cioè l’intera area da stimare (es. griglia) avente come attributi le stesse variabili indicate nel vettoriale di training. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione. Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
 <div class="section" id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <p><strong>Dati di input vettoriale di training</strong>: file vettoriale contente le aree di training e l’indicazione del parametro da stimare.</p>
 <p><strong>Seleziona la colonna con indicazione del parametro da stimare</strong>: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.</p>
-<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
+<p><strong>Vettoriale di mappa</strong>: file vettoriale dell’area da stimare. Gli attributi devono chiamarsi nella stessa maniera e essere dello stesso tipo del vettoriale di training.</p>
 <p><strong>Vettoriale di validazione</strong> (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.</p>
 <p><strong>Seleziona la colonna per la validazione</strong> (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.</p>
+<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
 </div>
 <div class="section" id="parametri">
 <h2>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h2>

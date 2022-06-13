@@ -31,6 +31,10 @@ library(raster)
 library(rgdal)
 library(varSel)
 
+if(Seleziona_numero_variabili > as.numeric(nbands(Dati_di_input_raster))){
+  Seleziona_numero_variabili <- as.numeric(nbands(Dati_di_input_raster))
+}
+
 band_values <- extract(Dati_di_input_raster, Dati_di_input_vettoriale_di_training, na.rm = TRUE)
 
 nomi <- Dati_di_input_vettoriale_di_training[[Colonna_indicazione_classe]]
@@ -52,29 +56,40 @@ df <- cbind(nomi_1, df)
 Number <- ncol(df)
 
 if(Strategia_selezione_feature == 0){ 
-Strategia_selezione_feature <- "mean"
+  Strategia_selezione_feature <- "mean"
 } else {
-Strategia_selezione_feature <- "minimum"
+  Strategia_selezione_feature <- "minimum"
 }
 
-n_select = Seleziona_numero_variabili - 1
+
 
 tryCatch( expr = {
-se <- varSelSFFS(g =df$V1, X =df[,c(2:Number)], 
-                 strategy = Strategia_selezione_feature, n = n_select)
-     print("La selezione e' andata a buon fine.")
+  se <- varSelSFFS(g =df$V1, X =df[,c(2:Number)], 
+                   strategy = Strategia_selezione_feature, n = Seleziona_numero_variabili)
+  print("La selezione e' andata a buon fine.")
 },  error = function(e){
-    print("Si e' generato un errore. La matrice generata e' singolare, non e' possibile effettuare la selezione.")
-    print("Si consiglia di verificare le bande del dato in input nel caso presentassero una possibile singolarita'")
-    print("Si consiglia di controllare i poligoni di training. Il numero di campioni di ciascuna classe deve essere maggiore del numero di bande.") 
-  },
-  finally = {
-    print("Funzione terminata.")
-  }
-    )
+  print("Si e' generato un errore. La matrice generata e' singolare, non e' possibile effettuare la selezione.")
+  print("Si consiglia di verificare le bande del dato in input nel caso presentassero una possibile singolarita'")
+  print("Si consiglia di controllare i poligoni di training. Il numero di campioni di ciascuna classe deve essere maggiore del numero di bande.") 
+},
+finally = {
+  print("Funzione terminata.")
+}
+)
 
-bande <- c(se$features[Seleziona_numero_variabili, ])
-bande <- bande[complete.cases(bande)]
+
+#clean matrix from rows and colums with all values as NA
+bande <- se$features[rowSums(is.na(se$features)) != ncol(se$features), ]
+bande <- bande[ , colSums(is.na(bande)) != nrow(bande)]
+
+#select the row with the selected features
+if(Seleziona_numero_variabili > nrow(bande)){
+  bande <- c(bande[nrow(bande), ])
+  bande <- bande[complete.cases(bande)]
+} else {
+  bande <- c(bande[Seleziona_numero_variabili, ])
+  bande <- bande[complete.cases(bande)]
+}
 
 capture.output(se, file = Output_JM)
 write.table(t(bande), file = Output_features,col.names=F,row.names=F,sep=" ",quote=F)

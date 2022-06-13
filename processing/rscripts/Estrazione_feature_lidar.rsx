@@ -34,49 +34,74 @@ Seleziona_le_statistiche_da_calcolare = strsplit(Seleziona_le_statistiche_da_cal
 Seleziona_le_statistiche_da_calcolare = as.numeric(Seleziona_le_statistiche_da_calcolare)
 
 funct <- function(n){ # user-defined fucntion
-  list(
-  Max=(if(0%in%Seleziona_le_statistiche_da_calcolare){
-     Max = max(n)
-   }),
-  Mean=(if(1%in%Seleziona_le_statistiche_da_calcolare){
-    Mean = mean(n)
-  }),
-  Mode=(if(2%in%Seleziona_le_statistiche_da_calcolare){
-    Mode = mfv1(n)
-    print("Mode:-----")
-    print(Mode)
-  }),
-  CoefVar=(if(3%in%Seleziona_le_statistiche_da_calcolare){
-    CoefVar = ((sd(n)/mean(n))*100)
-  }),
-  p10=(if(4%in%Seleziona_le_statistiche_da_calcolare){
-    p10 = quantile(n, 0.10)
-  }),
-  p20=(if(5%in%Seleziona_le_statistiche_da_calcolare){
-    p20 = quantile(n, 0.20)
-  }),
-  p30=(if(6%in%Seleziona_le_statistiche_da_calcolare){
-    p30 = quantile(n, 0.30)
-  }),
-  p40=(if(7%in%Seleziona_le_statistiche_da_calcolare){
-    p40 = quantile(n, 0.40)
-  }),
-  p50=(if(8%in%Seleziona_le_statistiche_da_calcolare){
-    p50 = quantile(n, 0.50)
-  }),
-  p60=(if(9%in%Seleziona_le_statistiche_da_calcolare){
-    p60 = quantile(n, 0.60)
-  }),
-  p70=(if(10%in%Seleziona_le_statistiche_da_calcolare){
-    p70 = quantile(n, 0.70)
-  }),
-  p80=(if(11%in%Seleziona_le_statistiche_da_calcolare){
-    p80 = quantile(n, 0.80)
-  }),
-  p90=(if(12%in%Seleziona_le_statistiche_da_calcolare){
-    p90 = quantile(n, 0.90)
+    prova <-list() 
+
+  (if(0%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(Max = max(n))
+    prova<-c(prova, loc)
   })
-  )
+
+  (if(1%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(Mean = mean(n))
+    prova<-c(prova, loc)
+  })
+  
+  (if(2%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(Mode = mfv1(n))
+    prova<-c(prova, loc)
+  })
+  
+    
+  (if(3%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(CoefVar = ((sd(n)/mean(n))*100))
+    prova<-c(prova, loc)
+  })
+  
+  (if(4%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p10 = quantile(n, 0.10))
+    prova<-c(prova, loc)
+  })
+  
+  (if(5%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p20 = quantile(n, 0.20))
+    prova<-c(prova, loc)
+  })
+  
+  (if(6%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p30 = quantile(n, 0.30))
+    prova<-c(prova, loc)
+  })
+  
+  (if(7%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p40 = quantile(n, 0.40))
+    prova<-c(prova, loc)
+  })
+  
+  (if(8%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p50 = quantile(n, 0.50))
+    prova<-c(prova, loc)
+  })
+  
+  (if(9%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p60 = quantile(n, 0.60))
+    prova<-c(prova, loc)
+  })
+  
+  (if(10%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p70 = quantile(n, 0.70))
+    prova<-c(prova, loc)
+  })
+  
+  (if(11%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p80 = quantile(n, 0.80))
+    prova<-c(prova, loc)
+  })
+  
+  (if(12%in%Seleziona_le_statistiche_da_calcolare){
+    loc <- list(p90 = quantile(n, 0.90))
+    prova<-c(prova, loc)
+  })
+ return(prova)
 }
 
 if(Seleziona_la_dimensione==0){
@@ -85,91 +110,106 @@ if(Seleziona_la_dimensione==0){
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Z))
      })
-} else if(Seleziona_la_dimensione==1){
+} 
+if(Seleziona_la_dimensione==1){
     fileLas <- readLAS(File_LAS_di_input, select = "x")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(X))
      })
-} else if(Seleziona_la_dimensione==2){
+} 
+if(Seleziona_la_dimensione==2){
     fileLas <- readLAS(File_LAS_di_input, select = "y")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Y))
      })
-} else if(Seleziona_la_dimensione==3){
+} 
+if(Seleziona_la_dimensione==3){
     fileLas <- readLAS(File_LAS_di_input, select = "i")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Intensity))
      })
-} else if(Seleziona_la_dimensione==4){
+} 
+if(Seleziona_la_dimensione==4){
     fileLas <- readLAS(File_LAS_di_input, select = "r")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(ReturnNumber))
      })
-} else if(Seleziona_la_dimensione==5){
+} 
+if(Seleziona_la_dimensione==5){
     fileLas <- readLAS(File_LAS_di_input, select = "n")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(NumberOfReturns))
      })
-} else if(Seleziona_la_dimensione==6){
+} 
+if(Seleziona_la_dimensione==6){
     fileLas <- readLAS(File_LAS_di_input, select = "d")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(ScanDirectionFlag))
      })
-} else if(Seleziona_la_dimensione==7){
+} 
+if(Seleziona_la_dimensione==7){
     fileLas <- readLAS(File_LAS_di_input, select = "e")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(EdgeOfFlightLine))
      })
-} else if(Seleziona_la_dimensione==8){
+} 
+if(Seleziona_la_dimensione==8){
     fileLas <- readLAS(File_LAS_di_input, select = "c")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Classification))
      })
-} else if(Seleziona_la_dimensione==9){
+} 
+if(Seleziona_la_dimensione==9){
     fileLas <- readLAS(File_LAS_di_input, select = "a")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(ScanAngleRank))
      })
-} else if(Seleziona_la_dimensione==10){
+} 
+if(Seleziona_la_dimensione==10){
     fileLas <- readLAS(File_LAS_di_input, select = "u")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(UserData))
      })
-} else if(Seleziona_la_dimensione==11){
+} 
+if(Seleziona_la_dimensione==11){
     fileLas <- readLAS(File_LAS_di_input, select = "p")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(PointSourceId))
      })
-} else if(Seleziona_la_dimensione==12){
+} 
+if(Seleziona_la_dimensione==12){
     fileLas <- readLAS(File_LAS_di_input, select = "t")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(GpsTime))
      })
-} else if(Seleziona_la_dimensione==13){
+} 
+if(Seleziona_la_dimensione==13){
     fileLas <- readLAS(File_LAS_di_input, select = "R")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Red))
      })
-} else if(Seleziona_la_dimensione==14){
+} 
+if(Seleziona_la_dimensione==14){
     fileLas <- readLAS(File_LAS_di_input, select = "G")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
     cloud_metrics(seg_cloud, func = ~funct(Green))
      })
-} else if(Seleziona_la_dimensione==15){
+} 
+if(Seleziona_la_dimensione==15){
     fileLas <- readLAS(File_LAS_di_input, select = "B")
     seg_cloud <- clip_roi(fileLas, Dati_di_input)
     metrics <- lapply(seg_cloud, function(seg_cloud) {
