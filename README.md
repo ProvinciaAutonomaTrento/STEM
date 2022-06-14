@@ -6,7 +6,7 @@ Il progetto STEM, finanziato dalla Provincia Autonoma di Trento, ha previsto lo 
 Requisiti
 -------------------------
 
-* QGIS >= 3.22
+* QGIS >= 3.24
 * GRASS >= 7.8
 * R >= 4.0
 
