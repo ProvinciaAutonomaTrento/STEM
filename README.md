@@ -12,7 +12,7 @@ Requisiti
 
 Passi installazione
 -------------------------
-1.	Installare QGIS. Il plugin è stato creato per la versione QGIS 3.X, ma se ne consiglia l'utilizzo dalla versione LTR 3.22 (o successive).
+1.	Installare QGIS. Il plugin è stato creato per la versione QGIS 3.X, ma se ne consiglia l'utilizzo dalla versione LTR 3.24 (o successive).
 2.	Installare il motore di calcolo R, scaricandolo direttamente dal sito https://cran.r-project.org/. Il plugin supporta la versione 4.0 o successive.
 3.	Da QGIS, tramite l’apposito modulo, installare il plugin "Processing R Provider" e configurarlo alla voce "Impostazioni -> Opzioni -> Processing -> Programmi -> R". 
 4.	Copiare il contenuto della Repository Git (cartelle "processing" e "python") nella cartella del profilo utente di QGIS ("Impostazioni -> Profili Utente -> Apri la Cartella del Profilo Attivo"). 
