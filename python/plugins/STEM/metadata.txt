@@ -5,7 +5,7 @@ description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'a
 about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di Trento, Italian language is used for plugin interface
 category=
 version=3.0.0
-author=Fabio Roncato, Thomas Maffei, Stefano Piffer, Michele Dalponte
+author=Angelo Carriero, Michele Fioretto, Fabio Roncato, Thomas Maffei, Stefano Piffer, Michele Dalponte
 email=luca.delucchi@fmach.it
 
 repository=https://gitlab.com/trilogis/stem
