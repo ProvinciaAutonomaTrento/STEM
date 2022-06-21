@@ -13,6 +13,8 @@ tracker=https://github.com/ProvinciaAutonomaTrento/STEM/issues
 homepage=https://github.com/ProvinciaAutonomaTrento/STEM
 icon=images/icon.svg
 
+plugin_dependencies=Processing R Provider
+
 changelog=
 experimental=True
 deprecated=False

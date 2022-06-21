@@ -60,8 +60,8 @@ class STEMPlugin(object):
         self.iface = iface
         self.stemMenu = None
         STEMUtils.stemMkdir()
-        self.copyRScriptFiles()
-
+        
+ 
 
     def copyRScriptFiles(self):
         from qgis.core import QgsApplication
@@ -145,6 +145,20 @@ class STEMPlugin(object):
             #STEMSettings.setValue("epsgcode", r"25832")
             #STEMSettings.setValue("memory", "1")
             
+            
+            
+        #from qgis.utils import plugins
+        #if 'processing_r' not in plugins:
+        #    QMessageBox.critical(None, "ERRORE", str("Per poter eseguire il plugin STEM è necessario aver installato il plugin Processing R Provider.")) 
+        #    self.toolbox.setVisible(False)
+        #    return
+        #self.toolbox.setVisible(True)
+        self.copyRScriptFiles()
+        
+        from qgis.utils import plugins
+        plugin2_instance = plugins['processing_r']
+        plugin2_instance.provider.load()
+  # Or: plugin2_instance.get_another_object_from_plugin2()
         
        
         
