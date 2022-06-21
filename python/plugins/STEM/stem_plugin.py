@@ -155,11 +155,13 @@ class STEMPlugin(object):
         #self.toolbox.setVisible(True)
         self.copyRScriptFiles()
         
-        from qgis.utils import plugins
-        plugin2_instance = plugins['processing_r']
-        plugin2_instance.provider.load()
+        try:
+            from qgis.utils import plugins
+            plugin2_instance = plugins['processing_r']
+            plugin2_instance.provider.load()
   # Or: plugin2_instance.get_another_object_from_plugin2()
-        
+        except Exception as e:
+            logging.exception(e)
        
         
         
