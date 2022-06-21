@@ -34,29 +34,26 @@
 <div class="toctree-wrapper compound">
 <span id="document-intro"></span><div class="section" id="introduzione">
 <h2>Introduzione<a class="headerlink" href="#introduzione" title="Permalink to this headline">¶</a></h2>
-<p>Il <strong>progetto STEM</strong> (Sistema informativo per il Telerilevamento E il Monitoraggio delle risorse del territorio e dell’ambiente trentino)
+<p>Il <strong>progetto STEM</strong> (Sistema informativo per il Telerilevamento E il Monitoraggio del territorio e dell’ambiente trentino)
 risponde alla necessità di dotare la Provincia Autonoma di Trento (PAT) di uno strumento integrato per l’elaborazione, archiviazione
-e diffusione, in maniera accurata e aggiornata, di informazioni acquisite mediante sistemi di telerilevamento
-(dati multispettrali, iperspettrali, LIDAR, RADAR, ecc.), al fine di supportare i processi di pianificazione, gestione e
-controllo territoriale. il sistema prevede:</p>
+e diffusione di informazioni acquisite mediante sistemi di telerilevamento (dati multispettrali, iperspettrali, LIDAR, RADAR, ecc.)
+al fine di supportare i processi di pianificazione, gestione e controllo territoriale. il sistema prevede:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>strumenti per l’aggiornamento periodico distribuzione della classificazione delle aree agro-silvo-pastorali e delle principali
-specie forestali, nonché per la stima dei parametri forestali, attraverso tre tipologie di elaborazione di dati telerilevati (con
-riferimento alle metodologie e procedure sviluppate nelle sperimentazioni FORLIDAR e AGRICOLTURA)</p></li>
-<li><p>archiviazione e gestione dei dati telerilevati attraverso un’infrastruttura dati territoriale per il telerilevamento coordinata con
-l’attuale sistema SIAT</p></li>
+<li><p>strumenti per la classificazione delle aree agro-silvo-pastorali e delle principali specie forestali e per la stima dei
+principali parametri dendrometrici.</p></li>
+<li><p>archiviazione e gestione dei dati telerilevati attraverso un’infrastruttura dedicata e integrata nell’attuale sistema SIAT</p></li>
 </ul>
 </div></blockquote>
 </div>
 <span id="document-installation"></span><div class="section" id="come-installare-il-plugin">
 <h2>Come installare il plugin<a class="headerlink" href="#come-installare-il-plugin" title="Permalink to this headline">¶</a></h2>
-<p>Il plugin supporta la versione <strong>QGIS 3.10 LTR</strong> con <strong>GRASS GIS 7.8</strong>.</p>
+<p>Il plugin supporta la versione <strong>QGIS 3.24 LTR</strong> con <strong>GRASS GIS 7.8</strong>.</p>
 <p><strong>STEP</strong>: installazione dipendenze:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p>Provvedere a configurare <strong>GRASS</strong> (in termini di LOCATION) correttamente, lanciando direttamente l’applicazione e seguendo le istruzioni mostrate a video per la creazione della LOCATION.</p></li>
-<li><p>Installare il motore di calcolo R, scaricandolo direttamente dal sito <a class="reference external" href="https://cran.r-project.org/">https://cran.r-project.org/</a>. Il plugin supporta la versione 4.0.3.</p></li>
+<li><p>Installare il motore di calcolo R, scaricandolo direttamente dal sito <a class="reference external" href="https://cran.r-project.org/">https://cran.r-project.org/</a>. Il plugin supporta la versione 4.1.2.</p></li>
 <li><p>Installare il plugin <strong>Processing R Provider</strong> e configurarlo alla voce <code class="docutils literal notranslate"><span class="pre">Impostazioni</span> <span class="pre">-&gt;</span> <span class="pre">Opzioni</span> <span class="pre">-&gt;</span> <span class="pre">Processing</span> <span class="pre">-&gt;</span> <span class="pre">Programmi</span> <span class="pre">-&gt;</span> <span class="pre">R</span></code>.
 Per verificare la corretta installazione, si consiglia di provare uno degli script già presenti nella installazione del plugin.</p></li>
 <li><p>Verificare che in <code class="docutils literal notranslate"><span class="pre">Strumenti</span> <span class="pre">di</span> <span class="pre">Processing</span></code> sia presente la voce <strong>R</strong> e le cartelle <code class="docutils literal notranslate"><span class="pre">Pre</span> <span class="pre">Elaborazione,</span> <span class="pre">Classificazione</span> <span class="pre">Supervisionata,</span> <span class="pre">Stima</span> <span class="pre">dei</span> <span class="pre">Parametri,</span> <span class="pre">...)</span></code>.</p></li>
@@ -127,24 +124,26 @@ finestra di visualizzazione dei dati di QGIS</p></li>
 <div class="toctree-wrapper compound">
 <span id="document-tools/ritaglio"></span><div class="section" id="ritaglio">
 <h3>Ritaglio<a class="headerlink" href="#ritaglio" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo Ritaglio serve per preprocessare i layer (sia vettoriali che raster) sui quali si intende lanciare i moduli STEM creando dei nuovi dataset coerenti con la forma della maschera. Una volta lanciata l’elaborazione, i nuovi layer vengono aggiunti alla TOC. La maschera (ritaglio) è di tipo shapefile M-poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l’area all’interno del poligono viene rimossa. I dati presenti nella TOC (sia vettoriali che raster) vengono caricati di default tra quelli utilizzabili come input, mentre i soli vettoriali vengono aggiunti come scelta sulla quale effettuare il ritaglio. E’ possibile aggiungere ulteriori dataset tramite il pulsante “Sfoglia”.</p>
+<p>Il modulo Ritaglio serve per ritagliare, con una maschera, più layer (sia vettoriali che raster) sui quali si intende effettuare le successive elaborazioni STEM. Una volta lanciata l’elaborazione, i nuovi layer vengono aggiunti nella cartella specificata ed, eventualmente, aggiunti alla TOC. La maschera (ritaglio) è di tipo shapefile M-poligonale. Il poligono può essere usato anche come maschera inversa, ovvero l’area all’interno del poligono viene rimossa. I dati presenti nella TOC (sia vettoriali che raster) vengono caricati di default tra quelli utilizzabili come input, mentre i soli vettoriali vengono proposti come maschera di ritaglio. E’ possibile aggiungere ulteriori dataset tramite il pulsante “Sfoglia”.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Dati di input</strong>: selezionare i layer da usare come maschera. Per rimoverle un dataset, selezionarlo e cancellare il layer tramite il tasto “canc”. E’ possibile i drag and drop e la scelta multipla.</p>
-<p><strong>Layer maschera</strong>: selezionare lo shapefile da usare come maschera.</p>
+<p><strong>Dati di input</strong>: selezionare i layer da ritagliare. Per rimoverle un dataset, selezionarlo e cancellare il layer tramite il tasto “canc”. E’ possibile i drag and drop e la scelta multipla.</p>
+<p><strong>Layer maschera</strong>: selezionare lo shapefile da usare come maschera di ritaglio.</p>
 <p><strong>Usa Maschera Inversa</strong>: inverte l’area da rimuovere.</p>
+<p><strong>Cartella output</strong>: cartella dove vengono salvati i dati processati.</p>
 </div>
 </div>
 <span id="document-tools/accatastamento"></span><div class="section" id="accatastamento">
 <h3>Accatastamento<a class="headerlink" href="#accatastamento" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo accatastamento (o layer stacking) crea un nuovo raster multibanda a partire da più file raster mono o multibanda. L’output sarà un nuovo file multibanda in cui ogni banda (o gruppo di bande) sarà estratta da uno dei file selezionati come input. L’estensione del nuovo file raster dipendera’ dall’utilizzo o meno della funzione ‘forza ritaglio su overlap’. Se questa funzione non viene selezionata l’estensione sara’ pari alla massima estensione dei raster che si sono selezionati per l’accatastamento. Se invece si utilizza ‘forza ritaglio su overlap’ l’estensione dell’output sara’ pari all’estensione massima di sovrapposizione dei raster selezionati rispetto al primo raster.</p>
+<p>Il modulo accatastamento (o layer stacking) crea un nuovo raster multibanda a partire da più file raster mono o multibanda. L’output è un nuovo file multibanda in cui ogni banda (o gruppo di bande) deriva da uno dei file selezionati come input. L’estensione spaziale del nuovo file raster dipendera’ dall’utilizzo o meno della funzione ‘forza ritaglio su overlap’. Se questa funzione non viene selezionata l’estensione sara’ pari alla massima estensione dei raster che si sono selezionati per l’accatastamento. Se invece si utilizza ‘forza ritaglio su overlap’ l’estensione dell’output sara’ pari all’estensione di sovrapposizione dei raster selezionati rispetto al primo raster.</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://www.rdocumentation.org/packages/gdalUtils/versions/2.0.3.2/topics/align_rasters">align_rasters</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Dati di input</strong>: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare i raster da accatastare. E’ possibile eliminare dalla lista uno o piu’ raster selezionarli e premere ‘canc’ o variare l’ordine trascinando il raster selezionato lungo la lista. Si puo’ indicare quali bande accatastare per ciascun raster selezionato inserendo il numero delle bande separate da uno spazio. Per esempio se un raster ha 4 bande e si desidera accatastare solo la prima e seconda banda si dovra’ inserire “1 2”. Se non si seleziona quali bande accatastare per un raster verranno utilizzate tutte.</p>
+<p><strong>Dati di input</strong>: nella finestra compaiono i raster attualmente aperti in QGIS. Selezionare i raster da accatastare. E’ possibile eliminare dalla lista uno o piu’ raster selezionarli e premere ‘canc’ o variare l’ordine trascinando il raster selezionato lungo la lista. Si puo’ indicare quali bande accatastare per ciascun raster selezionato inserendo il numero delle bande separate da uno spazio. Per esempio se un raster ha 4 bande e si desidera accatastare solo la prima e la seconda banda si dovra’ inserire “1 2”. Se non si seleziona nulla verranno utilizzate tutte le bande.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>L’ordine dei raster è importante soprattutto per definire l’estensione
-dell’output. Il primo raster, dall’alto verso il basso, selezionato
+dell’output. Il primo raster selezionato, dall’alto verso il basso,
 sarà quello sul quale si effettuera’ l’accatastamento e l’eventuale ritaglio se si utilizza la funzione ‘forza ritaglio su overlap’.</p>
 </div>
 </div>
@@ -157,6 +156,9 @@ sarà quello sul quale si effettuera’ l’accatastamento e l’eventuale ritag
 <li><p><em>GTIFF</em>: formato GeoTiff.</p></li>
 </ul>
 </div></blockquote>
+<p><strong>Forza ritaglio su overlap</strong>: definisce l’estensione finale del raster</p>
+<p><strong>Metodo di interpolazione</strong>: definisce con che metodo i diversi raster sono allineati tra di loro</p>
+<p><strong>Risoluzione immagine accatastata</strong>: mostra le possibili risoluzioni spaziali che il raster di destinazione può assumere. Tali risoluzioni sono basate sulle risoluzioni dei raster di input</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
@@ -465,7 +467,8 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 <div class="toctree-wrapper compound">
 <span id="document-tools/filtraggio_file_las"></span><div class="section" id="filtraggio-file-las">
 <h3>Filtraggio file LAS<a class="headerlink" href="#filtraggio-file-las" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo esegue il filtraggio dei file .las (o .laz) in modo da selezionare solo i punti LIDAR che rispettano determinate regole.</p>
+<p>Il modulo esegue il filtraggio dei file .las (o .laz) in modo da selezionare solo i punti LIDAR che rispettano determinate regole. Una volta scelto il file da elaborare, cliccando sul tasto ‘Cariche Statistiche’ viene lanciata una preelaborazione per determinare i ritorni e le classi presenti nel dataset i quali verranno usati per valorizzare i parametri del modulo.</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/4.0.0/topics/filters">filter_poi</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>File LAS di input</strong>: selezionare il file .las (o .laz) da filtrare.</p>
@@ -473,14 +476,8 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
 <p>Tutti i parametri sono opzionali. Se non viene impostato nessun parametro il modulo darà in output lo stesso file .las (o .laz) di input.</p>
-<p><strong>Selezionare il ritorno da mantenere</strong>: se non si seleziona nulla vengono matenuti tutti i ritorni.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>primo</em>: primi ritorni;</p></li>
-<li><p><em>ultimo</em>: ultimi ritorni;</p></li>
-<li><p><em>altri</em>: ritorni intermedi;</p></li>
-</ul>
-</div></blockquote>
+<p><strong>Selezionare il ritorno da mantenere</strong>: valore del ritorno da mantenere. Se non si seleziona nulla vengono matenuti tutti i ritorni.</p>
+<p><strong>Selezionare il valore della classe da mantenere</strong>: valore della classe da mantenere. Se non si seleziona nulla vengono matenute tutte le classi.</p>
 <p><strong>Inserire il valore minimo per la X</strong>: valore minimo della X da mantenere. Se non si inserisce non ci sarà una soglia minima per la X.</p>
 <p><strong>Inserire il valore massimo per la X</strong>: valore massimo della X da mantenere. Se non si inserisce non ci sarà una soglia massima per la X.</p>
 <p><strong>Inserire il valore minimo per la Y</strong>: valore minimo della Y da mantenere. Se non si inserisce non ci sarà una soglia minima per la Y.</p>
@@ -492,7 +489,6 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 <p><strong>Inserire il valore minimo per l’angolo di scansione</strong>: valore minimo dell’angolo di scansione da mantenere. Se non si inserisce non ci sarà una soglia minima per l’angolo di scansione.</p>
 <p><strong>Inserire il valore massimo per l’angolo di scansione</strong>: valore massimo dell’angolo di scansione da mantenere. Se non si inserisce non ci sarà una soglia massima per l’angolo di scansione.</p>
 <p><strong>Inserire i valori minimo e massimo per l’angolo di scansione</strong>: valori minimo e massimo per l’angolo di scansione da mantenere. I valori vanno seprati da uno spazio.</p>
-<p><strong>Inserire il valore della classe da tenere</strong>: valore della classe da mantenere (deve essere un numero intero).</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
@@ -503,6 +499,7 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 <span id="document-tools/unione_file_las"></span><div class="section" id="unione-file-las">
 <h3>Unione file LAS<a class="headerlink" href="#unione-file-las" title="Permalink to this headline">¶</a></h3>
 <p>Il modulo unisce due file .las (o .laz) e li salva in un unico file .las (o .laz).</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://">rbind</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>File las di input</strong>: selezionare il primo file .las (o .laz) da unire.</p>
@@ -516,9 +513,10 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 <span id="document-tools/ritaglio_file_las"></span><div class="section" id="ritaglio-file-las">
 <h3>Ritaglio file LAS<a class="headerlink" href="#ritaglio-file-las" title="Permalink to this headline">¶</a></h3>
 <p>Il modulo permette di ritagliare un file .las (o .laz) rispetto ad una maschera (può contenere più poligoni). L’output é un file .las (o .laz) contente i punti ritagliati.</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://">clip_roi</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Mascherat</strong>: selezionare il vettoriale (es: .shp) con cui ritagliare.</p>
+<p><strong>Maschera</strong>: selezionare il vettoriale (es: .shp) con cui ritagliare.</p>
 <p><strong>File las di input</strong>: selezionare il file las (o .laz) da ritagliare.</p>
 </div>
 <div class="section" id="output">
@@ -528,13 +526,18 @@ Successivamente per calcolare la riflettanza “at-sensor” le equazioni sono:<
 </div>
 <span id="document-tools/estrazione_chm"></span><div class="section" id="estrazione-chm">
 <h3>Estrazione CHM<a class="headerlink" href="#estrazione-chm" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo “normalizza” rispetto alla quota del suolo la Z delle coordinate dei punti LiDAR all’interno di un file .las. Se il file .las ricopre un’area forestale si avrà in uscita il Canopy Height Model.
+<p>Il modulo può estrarre il CHM da un singolo file oppure da una serie di file LiDAR (LASCatalog). Il modulo “normalizza” rispetto alla quota del suolo la Z delle coordinate dei punti LiDAR all’interno di un file .las. Se il file .las ricopre un’area forestale si avrà in uscita il Canopy Height Model.
 L’algoritmo sottrae alla Z di ogni punto del file .las di input la quota del DTM in quel punto.
 Il CHM in uscita è un file .las in cui sono memorizzati i punti la cui quota è data dalla differenza fra i punti del file .las di input e la quota del Digital Terrain Model - DTM (fornito in formato raster).</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://">normalize_height</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
+<p><strong>Seleziona la sorgente</strong>: scegliere tra l’utilizzo del modulo su un singolo file oppure su più file (LASCatalog) contenuti in una cartella.</p>
 <p><strong>File LAS di input</strong>: scegliere il file .las a cui sottrarre la quota del suolo.</p>
 <p><strong>File DTM di input</strong>: scegliere il file raster del Digital Terrain Model (DTM).</p>
+<p>oppure</p>
+<p><strong>Cartella dei file LAS</strong>: scegliere la cartella dei file .las (LASCatalog).</p>
+<p><strong>Cartella dei file DTM</strong>: scegliere la cartella dei raster del Digital Terrain Model (DTM).</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
@@ -543,7 +546,7 @@ Il CHM in uscita è un file .las in cui sono memorizzati i punti la cui quota è
 </div>
 <span id="document-tools/rasterizzazione_file_las"></span><div class="section" id="rasterizzazione-file-las">
 <h3>Rasterizzazione file LAS<a class="headerlink" href="#rasterizzazione-file-las" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo serve per creare immagini raster partendo da file in formato .las (o .laz). I principali passaggi effettuati dall’algoritmo sono: 1) creazione di una griglia uniforme di risoluzione spaziale pari alla risoluzione scelta dall’utente; 2) per ogni cella vengono estratte le altezze (Z) dei punti LIDAR contenuti in essa; 3) ai valori di altezza (Z) estratti precedentemente viene applicato il metodo statistico scelto dall’utente (es. media); 4) partendo dai valori ottenuti al punto 3 viene creata un’immagine raster.
+<p>Il modulo serve per creare immagini raster partendo da file in formato .las (o .laz). Una volta scelto il file da elaborare, cliccando sul tasto ‘Cariche Statistiche’ viene lanciata una preelaborazione per determinare i ritorni e le classi presenti nel dataset i quali verranno usati per valorizzare i parametri del modulo. I principali passaggi effettuati dall’algoritmo sono: 1) creazione di una griglia uniforme di risoluzione spaziale pari alla risoluzione scelta dall’utente; 2) per ogni cella vengono estratte le altezze (Z) dei punti LIDAR contenuti in essa; 3) ai valori di altezza (Z) estratti precedentemente viene applicato il metodo statistico scelto dall’utente (es. media); 4) partendo dai valori ottenuti al punto 3 viene creata un’immagine raster.
 L’utente può scegliere tra una varietà di metodi statistici nella creazione dell’immagine raster. L’output sarà un’immagine raster.</p>
 <p>Per maggiori informazioni si veda la documentazione della funzione grid_terrain del pacchetto lidR di R <a class="reference external" href="https://www.rdocumentation.org/packages/lidR/versions/3.0.3/topics/grid_terrain">https://www.rdocumentation.org/packages/lidR/versions/3.0.3/topics/grid_terrain</a></p>
 <div class="section" id="input">
@@ -552,15 +555,8 @@ L’utente può scegliere tra una varietà di metodi statistici nella creazione 
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
-<p><strong>Selezionare il ritorno desiderato</strong>: con questo parametro si sceglie quali ritorni utilizzare nella fase di rasterizzazione.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><em>all</em>: tutti i ritorni;</p></li>
-<li><p><em>first</em>: solo il primo ritorno;</p></li>
-<li><p><em>last</em>: solo l’ultimo ritorno;</p></li>
-<li><p><em>mid</em>: solo i ritorni intermedi.</p></li>
-</ul>
-</div></blockquote>
+<p><strong>Selezionare il ritorno da mantenere</strong>: valore del ritorno da mantenere. Se non si seleziona nulla vengono matenuti tutti i ritorni.</p>
+<p><strong>Selezionare il valore della classe da mantenere</strong>: valore della classe da mantenere. Se non si seleziona nulla vengono matenute tutte le classi.</p>
 <p><strong>Selezionare il metodo statistico da utilizzare</strong>: con questo parametro si sceglie il metodo statistico da utilizzare nella fase di rasterizzazione</p>
 <blockquote>
 <div><ul class="simple">
@@ -576,13 +572,12 @@ L’utente può scegliere tra una varietà di metodi statistici nella creazione 
 <li><p><em>median</em>: mediana dei punti nel pixel</p></li>
 <li><p><em>percentile</em>: n-esimo percentile dei punti nel pixel</p></li>
 <li><p><em>skewness</em>: skewness dei punti nel pixel</p></li>
-<li><p><em>trimmean</em>: media dei punti nel pixel al di sopra e al di sotto di una soglia.</p></li>
+<li><p><em>trimmean</em>: media dei punti nel pixel al di sopra (del valore minimo) e al di sotto (del valore massimo) rispetto al valore di trim definita come soglia (percentuale).</p></li>
 </ul>
 </div></blockquote>
 <p><strong>Percentile valori supportati 1 100</strong> (opzionale): valore del percentile (attivo solo se si estrae il percentile).</p>
 <p><strong>Soglia trim</strong>: valore della soglia da usare in trimmean (attivo solo se si estrae il trimmean).</p>
 <p><strong>Risoluzione finale del raster</strong>: risoluzione geometrica del file di output in metri.</p>
-<p><strong>Classe</strong> (opzionale): i numeri della classe o classi da considerare, se si seleziona più classi vanno separate da uno spazio.</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
@@ -592,6 +587,7 @@ L’utente può scegliere tra una varietà di metodi statistici nella creazione 
 <span id="document-tools/estrazione_feature_lidar_da_poligoni"></span><div class="section" id="estrazione-feature-lidar-da-poligoni">
 <h3>Estrazione feature LIDAR da poligoni<a class="headerlink" href="#estrazione-feature-lidar-da-poligoni" title="Permalink to this headline">¶</a></h3>
 <p>Il modulo permette di estrarre feature LIDAR a partire da un file .las (o .laz) e uno shapefile poligonale. L’output è uno shapefile contente come attributi i parametri estratti dal file.</p>
+<p>Per maggiori informazioni si veda la documentazione R del metodo  <a class="reference external" href="https://">cloud_metrics</a>.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>Dati di input</strong>: selezionare lo shapefile da usare per ritagliare il file .las. Lo shapefile deve essere stato precedentemente aperto in Qgis.</p>
@@ -623,11 +619,11 @@ L’utente può scegliere tra una varietà di metodi statistici nella creazione 
 <div class="toctree-wrapper compound">
 <span id="document-tools/feature_di_tessitura"></span><div class="section" id="feature-di-tessitura">
 <h3>Feature di tessitura<a class="headerlink" href="#feature-di-tessitura" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo crea mappe raster contenti le feature di tessitura estratte a partire da un layer raster specificato dall’utente. Il modulo calcola caratteristiche tessiturali basate su matrici di dipendenza spaziale a 0, 45, 90, e 135 gradi di distanza (default = 1). Il modulo assume livelli di grigio che vanno da 0 a 255 come input. L’ingresso è riscalato automaticamente a 0 a 255 se la gamma del file di input è al di fuori di questo intervallo.
+<p>Il modulo estrae le feature di tessitura a partire da un layer raster specificato dall’utente. Il modulo calcola caratteristiche tessiturali basate su matrici di dipendenza spaziale a 0, 45, 90, e 135 gradi di distanza (default = 1). Il modulo assume livelli di grigio che vanno da 0 a 255 come input. L’ingresso è riscalato automaticamente a 0 a 255 se la gamma del file di input è al di fuori di questo intervallo.
 In generale, più variabili costituiscono feature di tessitura: differenze nei valori di livello di grigio, grossolanità come scala di differenze dei livelli di grigio, la presenza o la mancanza di direzionalità e di schemi regolari. Una feature di tessitura può essere caratterizzata da toni (proprietà di intensità dei liveli di grigio) e da struttura (relazioni spaziali). Dal momento che le feature di tessitura sono altamente dipendenti dalla scala, si possono verificare strutture gerarchiche tra le feature.</p>
-<p>Il modulo prende in input un layer raster e calcola le caratteristiche tessiturali basandosi su matrici di dipendenza spaziale in direzione nord-sud, est-ovest, nord-ovest, sud-ovest e nelle direzioni con un fianco a fianco, in zona (ad esempio, una distanza di 1). L’uscita consiste in quattro immagini per ogni funzione strutturale, una per ogni direzione.</p>
-<p>Un modello di struttura comunemente usato è basato sulla cosiddetta matrice di co-occorrenza dei livelli di grigio. Questa matrice è un istogramma bidimensionale di livelli di grigio per ogni coppia di pixel che sono separati da una relazione spaziale fissa. La matrice approssima la distribuzione di probabilità congiunta di una coppia di pixel. Diverse misure di tessitura sono direttamente calcolate sulla matrice di co-occorrenza dei livelli di grigio.</p>
-<p>Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.texture.html">r.texture</a></p>
+<p>Il modulo prende in input un layer raster e calcola le caratteristiche tessiturali basandosi su matrici di dipendenza spaziale in direzione nord-sud, est-ovest, nord-ovest, sud-ovest. L’uscita consiste in quattro immagini per ogni funzione strutturale, una per ogni direzione.
+L’utente può specificare le dimensioni della finestra mobile di esplorazione.
+Per maggiori informazioni si veda la documentazione del comando di GRASS GIS utilizzato <a class="reference external" href="http://grass.osgeo.org/grass70/manuals/r.texture.html">r.texture</a></p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>Dati di input</strong>: selezionare il raster da utilizzare tra quelli attualmente aperti in QGIS.</p>
@@ -771,8 +767,8 @@ Nota che questo modulo è stato ottimizzato per utilizzare immagini multispettra
 <div class="toctree-wrapper compound">
 <span id="document-tools/selezione_feature_per_classificazione"></span><div class="section" id="selezione-feature-per-classificazione">
 <h3>Selezione feature per classificazione<a class="headerlink" href="#selezione-feature-per-classificazione" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo esegue la selezione delle feature per la classificazione. La selezione verrà effettuata utilizzando l’algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vi saranno 2 file di testo: il primo con un riassunto generale della selezione, il secondo con l’indicazione delle feature da selezionare (per i moduli di classificazione supervisionata).
-La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade. Per maggiori informazioni vedi la funzione ‘varSelSFFS’ in <a class="reference external" href="https://cran.r-project.org/web/packages/varSel/varSel.pdf">https://cran.r-project.org/web/packages/varSel/varSel.pdf</a></p>
+<p>Il modulo esegue la selezione delle feature (bande di un raster) con un maggior contributo informativo ai fini della successiva classificazione. La ricerca viene effettuata sulla base di una serie di aree di training (input vettoriale) con l’indicazione, per ciascun’area, della classe di appartenenza. La selezione viene effettuata utilizzando l’algoritmo Sequential Forward Floating Selection (SFFS) e la distanza di Jeffries-Matusita. In output vengono generati 2 file di testo: il primo con un riassunto generale della selezione, il secondo con l’indicazione delle feature da selezionare (per i moduli di classificazione supervisionata).
+La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi, il numero ottimale di feature si avrà quando la distanza è uguale a radice di 2. La selezione si ferma automaticamente quando questo accade. Per maggiori informazioni vedi la funzione ‘varSelSFFS’ in <a class="reference external" href="https://cran.r-project.org/web/packages/varSel/varSel.pdf">https://cran.r-project.org/web/packages/varSel/varSel.pdf</a></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Ogni classe deve avere un numero di pixel superiore al numero totale di bande. Se questo vincolo non è soddisfatto la selezione si blocca in anticipo rispetto al valore ottimale a causa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Il modulo da comunque in output la selezione con un numero di bande non ottimale.</p>
@@ -787,8 +783,8 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
 </div>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Dati di input vettoriale</strong>: selezionare il file di input vettoriale contente le aree di training.</p>
-<p><strong>Seleziona la colonna con l’indicazione della classe</strong>: selezionare la colonna con l’indicazione dei codici delle classi. Vedi sopra i codici delle classi utilizzabili.</p>
+<p><strong>Dati di input vettoriale</strong>: selezionare il file di input vettoriale contente le aree di training con un campo numerico della classe di appartenenza.</p>
+<p><strong>Seleziona la colonna con l’indicazione della classe</strong>: selezionare la colonna con l’indicazione dei codici delle classi.</p>
 <p><strong>Dati di input raster</strong>: selezionare il file raster da cui estrarre i valori dei pixel.</p>
 </div>
 <div class="section" id="parametri">
@@ -800,24 +796,24 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
 <li><p><em>mean</em>: distanza di Jeffries-Matusita media tra le classi;</p></li>
 </ul>
 </div></blockquote>
-<p><strong>Selezionare numero variabili</strong>: numero di features da selezionare.</p>
+<p><strong>Selezionare numero variabili</strong>: numero di features da selezionare (deve essere maggiore di 2).</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
-<p><strong>Risultato</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete una lista con le distanze JM delle singole bande, una matrice con set delle features selezionate e un vettore contenente le distanze delle feature.</p>
-<p><strong>Output features</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete la lista delle features selezionate (utilizzabile per i moduli di classificazione)</p>
+<p><strong>Report Selezione</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete una lista con le distanze JM delle singole bande, una matrice con set delle features selezionate e un vettore contenente le distanze delle feature.</p>
+<p><strong>Lista feature selezionate</strong>: inserire il percorso e il nome del file di output. Il file di output è un file .txt contenete la lista delle features selezionate (utilizzabile per i moduli di classificazione)</p>
 </div>
 </div>
 <span id="document-tools/selezione_variabili_per_la_stima"></span><div class="section" id="selezione-variabili-per-la-stima">
 <h3>Selezione variabili per la stima<a class="headerlink" href="#selezione-variabili-per-la-stima" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo esegue la selezione delle variabili per la stima. La selezione viene effettuata costruendo un modello di regressione da un set di variabili predittori candidati inserendo e rimuovendo i predittori in base al p-value, con approccio stepwise fino a che non ci sono più variabili da inserire o rimuovere. Il valore di p-value per l’inserimento nel modello  di regressione è 0,05. Per altre informazioni vedere in <a class="reference external" href="https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p">https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p</a></p>
+<p>Il modulo esegue la selezione delle variabili con maggior contributo ai fini della stima dei parametri dendrometrici. Il file di input vettoriale (in genere una serie di celle di trainig) deve avere come attributi sia la serie delle possibili variabili di input che il parametro da stimare valorizzato. La selezione viene effettuata costruendo un modello di regressione da un set di variabili predittori candidati inserendo e rimuovendo i predittori in base al p-value, con approccio stepwise fino a che non ci sono più variabili da inserire o rimuovere. Il valore di p-value per l’inserimento nel modello  di regressione è 0,05. Per altre informazioni vedere in <a class="reference external" href="https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p">https://www.rdocumentation.org/packages/olsrr/versions/0.5.3/topics/ols_step_both_p</a></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Questo modulo non prende in considerazione l’estensione di QGIS e/o una maschera</p>
 </div>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Dati di input vettoriale di training</strong>: selezionare il file di input vettoriale contente le aree di training.</p>
+<p><strong>Dati di input vettoriale di training</strong>: selezionare il file di input vettoriale contente le aree di training. Devomno essere presenti come attributi sia le possibili variabili di input che il parametro da stimare valorizzato.</p>
 <p><strong>Seleziona la colonna con l’indicazione del parametro da stimare</strong>: selezionare la colonna con l’indicazione del target.</p>
 <p><strong>Colonna da non considerare nella selezione</strong>: selezionare quale colonna non si vuole considerare nella selezione delle variabili.</p>
 </div>
@@ -834,9 +830,10 @@ La distanza di Jeffries-Matusita satura ad un valore pari a radice di 2, quindi 
 <div class="toctree-wrapper compound">
 <span id="document-tools/support_vector_machines"></span><div class="section" id="support-vector-machines">
 <h3>Support Vector Machines<a class="headerlink" href="#support-vector-machines" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo effettua la classificazione di immagini o vettori usando l’algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM). L’algoritmo SVM si basa sul principio che lo spazio delle feature di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione è effettuata utilizzando una funzione kernel di tipo gaussiano Radial Basis Function.
-Gli input al classificatore sono un file vettoriale contente una colonna con l’indicazione della classe in formato numerico (1,2,…,N) e un immagine raster da classificare.
-L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).</p>
+<p>Il modulo effettua la classificazione di immagini o vettori usando l’algoritmo di classificazione supervisionata non-parametrico Support Vector Machine (SVM).
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l’indicazione delle classi da classificare in formato numerico (1,2,…,N).
+L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+L’algoritmo SVM si basa sul principio che lo spazio delle feature di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui le classi sono linearmente separabili. La trasformazione è effettuata utilizzando una funzione kernel di tipo gaussiano Radial Basis Function.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>File raster</strong>: immagine raster da classificare.</p>
@@ -846,9 +843,9 @@ L’utente potrà anche inserire un vettoriale da usare nella fase di validazion
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
-<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
-<p><strong>File features</strong> (opzionale): selezionare il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features”.</p>
 <p><strong>Creazione mappa</strong>: se la casella è spuntata verrà generata la mappa in formato ‘.tif’.</p>
+<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features (delle bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
+<p><strong>File features</strong> (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features” che elenca le feature da utilizzare.</p>
 <p><strong>Valore C</strong> (opzionale): parametro di regolarizzazione.</p>
 <p><strong>Valore di sigma</strong> (opzionale): parametro del kernel RBF.</p>
 <p><strong>Numero fold cross validation</strong> (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L’accuratezza finale sarà la media delle N accuratezze.</p>
@@ -862,9 +859,10 @@ L’utente potrà anche inserire un vettoriale da usare nella fase di validazion
 </div>
 <span id="document-tools/minima_distanza"></span><div class="section" id="minima-distanza">
 <h3>Minima distanza<a class="headerlink" href="#minima-distanza" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo effettua la classificazione di immagini usando l’algoritmo di classificazione supervisionata non-parametrico Minima Distanza. L’algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell’immagine la classe corrispondente al centroide più vicino nello spazio delle feature.
-Gli input al classificatore sono un file vettoriale contente una colonna con l’indicazione della classe in formato numerico (1,2,…,N) e un immagine raster da classificare.
-L’utente potrà anche inserire un vettoraile da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).</p>
+<p>Il modulo effettua la classificazione di immagini usando l’algoritmo di classificazione supervisionata non-parametrico Minima Distanza.
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l’indicazione delle classi da classificare in formato numerico (1,2,…,N).
+L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+L’algoritmo partendo dai dati di training definisce il centroide delle classi nello spazio delle feature ed assegna ad ogni pixel dell’immagine la classe corrispondente al centroide più vicino nello spazio delle feature.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>File raster</strong>: immagine raster da classificare.</p>
@@ -874,9 +872,9 @@ L’utente potrà anche inserire un vettoraile da usare nella fase di validazion
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
-<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
-<p><strong>File features</strong> (opzionale): selezionare il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features”.</p>
 <p><strong>Creazione mappa</strong>: se la casella è spuntata verrà generata la mappa in formato ‘.tif’.</p>
+<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features (bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
+<p><strong>File features</strong> (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features” che elenca le feature da utilizzare.</p>
 <p><strong>Numero di neighbors</strong> (opzionale): numero di pixel di training vicini al pixel da classificare da considerare per la classificazione.</p>
 <p><strong>Numero fold cross validation</strong> (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L’accuratezza finale sarà la media delle N accuratezze.</p>
 </div>
@@ -889,9 +887,10 @@ L’utente potrà anche inserire un vettoraile da usare nella fase di validazion
 </div>
 <span id="document-tools/massima_verosimiglianza"></span><div class="section" id="massima-verosimiglianza">
 <h3>Massima verosimiglianza<a class="headerlink" href="#massima-verosimiglianza" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo effettua la classificazione di immagini o vettori usando l’algoritmo di classificazione supervisionata Massima Verosimiglianza. Il classificatore a massima verosimilglianza é un classificatore parametrico supervisionato che assume una distribuzione gaussiana dei valori dei pixel all’interno di una classe. La classificazione avverrà in tre passaggi: 1) partendo dalle aree di training il classificatore stima la media e la varianza di ogni classe.  Nel caso di dati multidimensionali si avrà un vettore di medie 1xN (con N = numero di bande) e una matrice di covarainza (NxN) per ogni classe.; ii) una funzione di tipo gaussiano viene definita per ogni classe partendo dalle medie e dalle varianze stimate al passaggio precedente; e iii) per ogni pixel dell’immagine da classificare si ottiene un valore della funzione gaussiana di ogni classe e si sceglie la classe che fornisce il valore più alto.
-Gli input al classificatore sono un file vettoriale contente una colonna con l’indicazione della classe in formato numerico (1,2,…,N) e un immagine raster da classificare.
-L’utente potrà anche inserire un vettoraile da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).</p>
+<p>Il modulo effettua la classificazione di immagini o vettori usando l’algoritmo di classificazione supervisionata Massima Verosimiglianza.
+Gli input al classificatore sono un file raster da classificare e un vettoriale di training contente una colonna con l’indicazione delle classi da classificare in formato numerico (1,2,…,N).
+L’utente potrà anche inserire un vettoriale da usare nella fase di validazione (la colonna con le classi deve avere lo stesso nome di quella del vettoriale di training).
+Il classificatore a massima verosimilglianza é un classificatore parametrico supervisionato che assume una distribuzione gaussiana dei valori dei pixel all’interno di una classe. La classificazione avverrà in tre passaggi: 1) partendo dalle aree di training il classificatore stima la media e la varianza di ogni classe.  Nel caso di dati multidimensionali si avrà un vettore di medie 1xN (con N = numero di bande) e una matrice di covarainza (NxN) per ogni classe.; ii) una funzione di tipo gaussiano viene definita per ogni classe partendo dalle medie e dalle varianze stimate al passaggio precedente; e iii) per ogni pixel dell’immagine da classificare si ottiene un valore della funzione gaussiana di ogni classe e si sceglie la classe che fornisce il valore più alto.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Ogni classe deve avere un numero di pixel superiore al numero totale di feature. Se questo vincolo non è soddisfatto il classificatore si blocca a acusa della non invertibilità della matrice di covarianza della classe il cui numero di campioni è limitato. Questo problema si può evitare riducendo il numero di feature o aumentando il numero di campioni.</p>
@@ -905,9 +904,9 @@ L’utente potrà anche inserire un vettoraile da usare nella fase di validazion
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
-<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
-<p><strong>File features</strong> (opzionale): selezionare il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features”.</p>
 <p><strong>Creazione mappa</strong>: se la casella è spuntata verrà generata la mappa in formato ‘.tif’.</p>
+<p><strong>Elenco features</strong> (opzionale): digitare manualmente il numero identificativo delle features (delle bande) da utilizzare. Ciascun numero deve essere separato da uno spazio. Esempio: 30 52 16 9 6.</p>
+<p><strong>File features</strong> (opzionale): opzionalmente può essere dato in input il file .txt ottenuto mediante il modulo di ‘Selezione feature per classificazione’ alla voce “Output features” che elenca le feature da utilizzare.</p>
 <p><strong>Numero fold cross validation</strong> (opzionale): inserire il numero di subset in cui verrà diviso il training set nella cross validation. Deve essere maggiore o uguale a 2. Dato N il numero di fold, il classificatore a rotazione verrà allenato con N-1 subsets e validato sul subset rimanente. L’accuratezza finale sarà la media delle N accuratezze.</p>
 </div>
 <div class="section" id="output">
@@ -1043,7 +1042,7 @@ nella classe 2 rinominata “latifoglie”, e tutte le altre classi vengono lasc
 <p>Il modulo effettua la stima del volume delle singole piante utilizzando le formule allometriche pubblicate in Scrinzi et al. (2010).</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
-<p><strong>Dati di input vettoriale</strong>: file vettoriale contente la posizione degli alberi. Tra gli attributi deve essere presente il diametro, la specie e l’altezza.</p>
+<p><strong>Dati di input vettoriale</strong>: file vettoriale contente la posizione degli alberi (dataset puntuale). Tra gli attributi deve essere presente il diametro, la specie e l’altezza.</p>
 <p><strong>Seleziona la colonna con indicazione della specie</strong>: selezionare tra le colonne del file vettoriale quella che indica la specie. La specie deve essere fornita con i seguenti codici:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1059,18 +1058,15 @@ nella classe 2 rinominata “latifoglie”, e tutte le altre classi vengono lasc
 <p><strong>Seleziona la colonna con indicazione del diametro</strong>: selezionare tra le colonne del file vettoriale quella che indica il diametro.</p>
 <p><strong>Seleziona la colonna con indicazione dell’altezza</strong>: selezionare tra le colonne del file vettoriale quella che indica l’altezza.</p>
 </div>
-<div class="section" id="parametri">
-<h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
-</div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
-<p><strong>Nome della nuova colonna con il volume</strong>: inserire il nome dell’output. Negli attributi di quest’ultimo sarà presenta una nuova colonna di nome ‘volume’ contenente i risultati dello stimatore.</p>
+<p><strong>Risultato</strong>: inserire il nome del file di output. Negli attributi di quest’ultimo sarà presenta una nuova colonna di nome ‘volume’ contenente i risultati dello stimatore.</p>
 </div>
 </div>
 <span id="document-tools/stimatore_lineare"></span><div class="section" id="stimatore-lineare">
 <h3>Stimatore lineare<a class="headerlink" href="#stimatore-lineare" title="Permalink to this headline">¶</a></h3>
 <p>Il modulo esegue la stima di parametri utilizzando uno stimatore lineare.
-Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). L’utente potrà anche inserire un vettoriale da usare nella fase di validazione o per mappare un’area più ampia (es. vettoriale di una griglia). Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
+Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). Va inserito il vettoriale di mappa e cioè l’intera area da stimare (es. griglia) avente come attributi le stesse variabili indicate nel vettoriale di training. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione. Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
 <p><em>Esempio</em>: stima diametro singoli alberi
 Lo shapefile di input (“Dati di input vettoriale”) avrà per esempio una tabella degli attributidi questo tipo:</p>
 <blockquote>
@@ -1083,9 +1079,10 @@ Lo shapefile di input (“Dati di input vettoriale”) avrà per esempio una tab
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>Dati di input vettoriale di training</strong>: file vettoriale contente le aree di training e l’indicazione del parametro da stimare.</p>
 <p><strong>Seleziona la colonna con indicazione del parametro da stimare</strong>: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.</p>
-<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
+<p><strong>Vettoriale di mappa</strong>: file vettoriale dell’area da stimare. Gli attributi devono chiamarsi nella stessa maniera e essere dello stesso tipo del vettoriale di training.</p>
 <p><strong>Vettoriale di validazione</strong> (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.</p>
 <p><strong>Seleziona la colonna per la validazione</strong> (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.</p>
+<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
@@ -1111,14 +1108,15 @@ Lo shapefile di input (“Dati di input vettoriale”) avrà per esempio una tab
 <span id="document-tools/support_vector_regression"></span><div class="section" id="support-vector-regression">
 <h3>Support Vector regression<a class="headerlink" href="#support-vector-regression" title="Permalink to this headline">¶</a></h3>
 <p>IIl modulo effettua la classificazione di immagini o vettori usando l’algoritmo di supervisionato non-parametrico Support Vector Regression (SVR). L’algoritmo SVM si basa sul principio che lo spazio delle variabili di partenza può essere trasformato in uno spazio a più alta dimensionalità in cui la stima lineare è possibile. La trasformazione è effettuata utilizzando una funzione kernel.
-Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione o di mappatura di un’area più ampia (es. vettoriale di una griglia). Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
+Gli input allo stimatore sono un file vettoriale contente una colonna con l’indicazione del target da stimare (es: volume) in formato numerico, e (opzionale) l’indicazione delle variabili (attributi del vettore) da usare nella stima (es: percentili LIDAR, altezza LIDAR media, dimensione della chioma, ecc.). Va inserito il vettoriale di mappa e cioè l’intera area da stimare (es. griglia) avente come attributi le stesse variabili indicate nel vettoriale di training. L’utente potrà anche inserire un vettoriale da usare nella fase di validazione. Se si inserisce un vettoriale di validazione le metriche calcolate saranno: R2, RMSE e MAE.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
 <p><strong>Dati di input vettoriale di training</strong>: file vettoriale contente le aree di training e l’indicazione del parametro da stimare.</p>
 <p><strong>Seleziona la colonna con indicazione del parametro da stimare</strong>: selezionare tra le colonne del file vettoriale quella che indica il target da stimare.</p>
-<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
+<p><strong>Vettoriale di mappa</strong>: file vettoriale dell’area da stimare. Gli attributi devono chiamarsi nella stessa maniera e essere dello stesso tipo del vettoriale di training.</p>
 <p><strong>Vettoriale di validazione</strong> (opzionale): file vettoriale contenente le aree di validazione o di mappatura. I nomi delle colonne del vettoriale devono essere le stesse delle varaibili utilizzate nella creazione del modello.</p>
 <p><strong>Seleziona la colonna per la validazione</strong> (opzionale): selezionare tra le colonne del file vettoriale quella che indica il target. Se si effettua la mappatura non ve scelto nulla.</p>
+<p><strong>File di selezione</strong> (opzionale): inserire il file ottenuto in output dal modulo “Selezione variabili per la stima”. Attivato solo se l’opzione “file” viene scelta nel menu “selezione variabili”.</p>
 </div>
 <div class="section" id="parametri">
 <h4>Parametri<a class="headerlink" href="#parametri" title="Permalink to this headline">¶</a></h4>
@@ -1164,7 +1162,7 @@ Gli input allo stimatore sono un file vettoriale contente una colonna con l’in
 <div class="toctree-wrapper compound">
 <span id="document-tools/aggregazione_ad_aree"></span><div class="section" id="aggregazione-ad-aree">
 <h3>Aggregazione ad aree<a class="headerlink" href="#aggregazione-ad-aree" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile del catasto sull’area di competenza).
+<p>Il modulo prende in input un primo vettoriale relativo a parametri di interesse (ad es. shape file delle chiome) e un secondo vettoriale che delimita le aree di interesse (ad es. shapefile delle particelle forestali).
 Per ogni area del secondo vettoriale vengono calcolate le statistiche di uno o più parametri di interesse (ad es. altezze medie, volume totale, ecc.) memorizzati nel primo file.
 Questo modulo e’ utile per aggregare in aree di maggiore dimensioni risultati ottenuti a livello di singoli alberi, o misure puntuali a terra (es. misure di volumi di singoli alberi).
 Il file di output e’ uguale al file delle aree di input, in cui viene aggiunta una colonna relativa al prodotto richiesto.</p>
@@ -1196,6 +1194,8 @@ Selezionare il vettoriale relativo ai parametri di interesse.</p>
 <li><p><em>variance</em>: calcola la varianza del parametro di interesse sull’area di interesse.</p></li>
 </ul>
 </div></blockquote>
+<p><strong>Nome della nuova colonna con il numero di elementi all’interno di ogni area</strong>: Nome della nuova colonna con il numero di elementi all’interno di ogni area.</p>
+<p><strong>Nome della nuova colonna con la statistica sugli elementi all’interno di ogni area</strong>: Nome della nuova colonna con la statistica sugli elementi all’interno di ogni area</p>
 </div>
 <div class="section" id="output">
 <h4>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h4>
@@ -1313,7 +1313,7 @@ Si otterrà una nuvola di punti con un nuovo attributo “treeID” indipendente
 </div>
 <span id="document-tools/delimitazione_chiome"></span><div class="section" id="delimitazione-chiome">
 <h3>Delimitazione chiome<a class="headerlink" href="#delimitazione-chiome" title="Permalink to this headline">¶</a></h3>
-<p>Il modulo permette di delineare le chiome degli alberi a partire da un file raster del Canopy Height Model (ottenuto in uscita dal modulo <em>Rasterizzazione file LAS</em>). L’algoritmo si basa sulla funzione itcLiDAR consultabile in <a class="reference external" href="https://rdrr.io/cran/itcSegment/man/itcLiDAR.html">https://rdrr.io/cran/itcSegment/man/itcLiDAR.html</a>.</p>
+<p>Il modulo permette di delineare le chiome e la posizione degli apici delle singole piante a partire da un file raster del Canopy Height Model (ottenuto in uscita dal modulo <em>Rasterizzazione file LAS</em>). L’algoritmo si basa sulla funzione itcLiDAR consultabile in <a class="reference external" href="https://rdrr.io/cran/itcSegment/man/itcLiDAR.html">https://rdrr.io/cran/itcSegment/man/itcLiDAR.html</a>.</p>
 <p>NB: l’algoritmo può essere lento se il file di input è grande.</p>
 <div class="section" id="input">
 <h4>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h4>
@@ -1348,57 +1348,6 @@ Si otterrà una nuvola di punti con un nuovo attributo “treeID” indipendente
 <p><strong>Risultato</strong>: inserire il percorso e il nome del file .las di output.</p>
 </div>
 </div>
-</div>
-</div>
-<span id="document-troubleshooting"></span><div class="section" id="risoluzione-dei-problemi-noti">
-<h2>Risoluzione dei problemi noti<a class="headerlink" href="#risoluzione-dei-problemi-noti" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="le-finestre-dei-moduli-non-si-aprono">
-<h3>Le finestre dei moduli non si aprono<a class="headerlink" href="#le-finestre-dei-moduli-non-si-aprono" title="Permalink to this headline">¶</a></h3>
-<p>Se la finestre del plugin non si aprono e non viene stampato a video
-alcun errore, procedere con l’apertura della console Python su QGIS per
-indagare più a fondo sul problema.</p>
-</div>
-<div class="section" id="percorsi-a-grass-gis-non-corretti">
-<h3>Percorsi a GRASS GIS non corretti<a class="headerlink" href="#percorsi-a-grass-gis-non-corretti" title="Permalink to this headline">¶</a></h3>
-<p>Se ottenete un errore simile a quello che segue molto probabilmente
-non avrete settato correttamente i percorsi alle variabili di GRASS GIS
-nelle impostazioni, in particolare:</p>
-<ul class="simple">
-<li><p>Percorso all’eseguibile di GRASS GIS 7.8</p></li>
-<li><p>Percorso alla GRASSDATA directory</p></li>
-<li><p>Nome della LOCATION da utilizzare</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/tools/error_reduction.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">89</span><span class="p">,</span> <span class="ow">in</span> <span class="n">onRunLocal</span>
-    <span class="n">tempin</span><span class="p">,</span> <span class="n">tempout</span><span class="p">,</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">STEMUtils</span><span class="o">.</span><span class="n">temporaryFilesGRASS</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">LocalCheck</span><span class="o">.</span><span class="n">isChecked</span><span class="p">)</span>
-    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/stem_utils.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">407</span><span class="p">,</span> <span class="ow">in</span> <span class="n">temporaryFilesGRASS</span>
-    <span class="n">gs</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">grassdatabase</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">grassbin</span><span class="p">,</span> <span class="n">epsg</span><span class="p">)</span>
-    <span class="n">File</span> <span class="s2">&quot;/home/lucadelu/.qgis2/python/plugins/STEM/libs/grass_stem.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">84</span><span class="p">,</span> <span class="ow">in</span> <span class="n">initialize</span>
-    <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
-    <span class="n">File</span> <span class="s2">&quot;/usr/lib/python2.7/subprocess.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">710</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__init__</span>
-    <span class="n">errread</span><span class="p">,</span> <span class="n">errwrite</span><span class="p">)</span>
-    <span class="n">File</span> <span class="s2">&quot;/usr/lib/python2.7/subprocess.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1335</span><span class="p">,</span> <span class="ow">in</span> <span class="n">_execute_child</span>
-    <span class="k">raise</span> <span class="n">child_exception</span>
-<span class="ne">OSError</span><span class="p">:</span> <span class="p">[</span><span class="n">Errno</span> <span class="mi">2</span><span class="p">]</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
-</pre></div>
-</div>
-<p>Questo può capitare quando si passa da lanciare i comandi in locale a
-lanciarli sul server e viceversa.</p>
-</div>
-<div class="section" id="classificazione">
-<h3>Classificazione<a class="headerlink" href="#classificazione" title="Permalink to this headline">¶</a></h3>
-<p>Se con i moduli di classificazione ottenete degli errori provate a rimuovere
-il contenuto della cartella <cite>$HOME/.qgis2/stem/</cite>. Questa contiene i risultati
-delle analisi di classificazione precedenti, che servono per velocizzare
-analisi identiche, e potrebbero essere la causa di qualche malfunzionamento.</p>
-</div>
-<div class="section" id="caricamento-output">
-<h3>Caricamento output<a class="headerlink" href="#caricamento-output" title="Permalink to this headline">¶</a></h3>
-<p>Alcune volte, in modo casuale, succede che i layer di output, anche se creati
-correttamente non vengano caricati su QGIS. Questa situazione capita più
-frequentemente quando il processo è lanciato su un server. Se non si ottengono
-errori controllate la cartella selezionata per l’output e controllare se
-il file è presente.</p>
 </div>
 </div>
 </div>

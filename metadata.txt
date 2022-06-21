@@ -1,16 +1,16 @@
 [general]
 name=STEM
-qgisMinimumVersion=2.0.0
+qgisMinimumVersion=3.0
 description=Sistema di TElerilevamento e di Monitoraggio del territorio e dell'ambiente trentino
 about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di Trento, Italian language is used for plugin interface
 category=
-version=0.6.5
-author=Luca Delucchi, Pietro Zambelli, Salvatore Larosa, Michele Dalponte, Francesco Nex
-email=luca.delucchi@fmach.it
+version=3.0.0
+author=Angelo Carriero, Michele Fioretto, Fabio Roncato, Thomas Maffei, Stefano Piffer, Michele Dalponte
+email=stefano.piffer@trilogis.it
 
-repository=https://gitlab.com/lucadelu/stem
-tracker=https://gitlab.com/lucadelu/stem/issues
-homepage=https://gitlab.com/lucadelu/stem
+repository=https://github.com/ProvinciaAutonomaTrento/STEM
+tracker=https://github.com/ProvinciaAutonomaTrento/STEM/issues
+homepage=https://github.com/ProvinciaAutonomaTrento/STEM
 icon=images/icon.svg
 
 changelog=

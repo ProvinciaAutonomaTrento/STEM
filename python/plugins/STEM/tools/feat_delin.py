@@ -97,10 +97,10 @@ class STEMToolsDialog(BaseDialog):
         self._insertThirdThresholdInteger(label=label3, minn=3, maxx=99, step=0.05, posnum =2)
         
         label4 = "Soglia crescita chioma"
-        self._insertFourthThresholdInteger(label=label4, minn=0.01, maxx=0.99, step=0.01, posnum =3)
+        self._insertFourthThresholdInteger(label=label4, minn=0.01, maxx=1, step=0.01, posnum =3)
         
         label5 = "Soglia crescita albero"
-        self._insertFifthThresholdInteger(label=label5, minn=0.01, maxx=0.99, step=0.01, posnum =4)
+        self._insertFifthThresholdInteger(label=label5, minn=0.01, maxx=1, step=0.01, posnum =4)
         
         label6 = "Soglia minima diametro chioma"
         self._insertSixthThresholdInteger(label=label6, minn=0, maxx=99, step=0.05, posnum =5)

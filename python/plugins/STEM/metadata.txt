@@ -6,11 +6,11 @@ about=Plugin to analize hyperspectral and lidar data for Provincia Autonoma di T
 category=
 version=3.0.0
 author=Angelo Carriero, Michele Fioretto, Fabio Roncato, Thomas Maffei, Stefano Piffer, Michele Dalponte
-email=luca.delucchi@fmach.it
+email=stefano.piffer@trilogis.it
 
-repository=https://gitlab.com/trilogis/stem
-tracker=https://gitlab.com/trilogis/stem/issues
-homepage=https://gitlab.com/trilogis/stem
+repository=https://github.com/ProvinciaAutonomaTrento/STEM
+tracker=https://github.com/ProvinciaAutonomaTrento/STEM/issues
+homepage=https://github.com/ProvinciaAutonomaTrento/STEM
 icon=images/icon.svg
 
 changelog=

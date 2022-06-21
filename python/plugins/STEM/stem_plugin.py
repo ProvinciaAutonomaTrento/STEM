@@ -60,6 +60,34 @@ class STEMPlugin(object):
         self.iface = iface
         self.stemMenu = None
         STEMUtils.stemMkdir()
+        self.copyRScriptFiles()
+
+
+    def copyRScriptFiles(self):
+        from qgis.core import QgsApplication
+        import shutil
+        
+        
+        source_folder = QgsApplication.qgisSettingsDirPath() + "python/plugins/STEM/builtin_scripts/"
+        destination_folder = QgsApplication.qgisSettingsDirPath() + "processing/rscripts/"
+        
+         # projDB = QgsApplication.qgisSettingsDirPath() + "processing/rscripts/Accatastamento.rsx"
+        
+        
+        #shutil.copyfile(QgsApplication.qgisSettingsDirPath() + "python/plugins/STEM/builtin_scripts/Accatastamento.rsx", projDB)
+
+        for file_name in os.listdir(source_folder):
+            # construct full file path
+            source = source_folder + file_name
+            destination = destination_folder + file_name
+            # copy only files
+            if os.path.isfile(source):
+                shutil.copy(source, destination)
+                print('copied', file_name)
+
+
+
+
 
     def initGui(self):
         """Function used to initialize the gui."""
